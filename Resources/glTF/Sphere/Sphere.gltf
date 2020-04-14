@@ -1,0 +1,121 @@
+{
+	"accessors": [
+		{
+			"bufferView": 0,
+			"byteOffset": 0,
+			"componentType": 5126,
+			"count": 2495,
+			"max": [
+				0.9872313737869263,
+				0.9975767135620117,
+				0.9872314929962158
+			],
+			"min": [
+				-0.9872310161590576,
+				-0.9975767135620117,
+				-0.9872310161590576
+			],
+			"type": "VEC3"
+		},
+		{
+			"bufferView": 1,
+			"byteOffset": 0,
+			"componentType": 5126,
+			"count": 2495,
+			"type": "VEC3"
+		},
+		{
+			"bufferView": 2,
+			"byteOffset": 0,
+			"componentType": 5126,
+			"count": 2495,
+			"type": "VEC2"
+		},
+		{
+			"bufferView": 3,
+			"byteOffset": 0,
+			"componentType": 5123,
+			"count": 11904,
+			"type": "SCALAR"
+		}
+	],
+	"asset": {
+		"generator": "Gestaltor 2020.1.2 Alpha 'Pilzgutsle' (dev-5c133ca38)",
+		"version": "2.0"
+	},
+	"bufferViews": [
+		{
+			"buffer": 0,
+			"byteLength": 29940,
+			"byteOffset": 0
+		},
+		{
+			"buffer": 0,
+			"byteLength": 29940,
+			"byteOffset": 29940
+		},
+		{
+			"buffer": 0,
+			"byteLength": 19960,
+			"byteOffset": 59880
+		},
+		{
+			"buffer": 0,
+			"byteLength": 23808,
+			"byteOffset": 79840
+		}
+	],
+	"buffers": [
+		{
+			"byteLength": 103648,
+			"uri": "Sphere.bin"
+		}
+	],
+	"materials": [
+		{
+			"name": "Material",
+			"pbrMetallicRoughness": {
+				"baseColorFactor": [
+					0.8,
+					0.8,
+					0.8,
+					1.0
+				],
+				"metallicFactor": 1.0,
+				"roughnessFactor": 0.1
+			}
+		}
+	],
+	"meshes": [
+		{
+			"name": "Sphere",
+			"primitives": [
+				{
+					"attributes": {
+						"NORMAL": 1,
+						"POSITION": 0,
+						"TEXCOORD_0": 2
+					},
+					"indices": 3,
+					"material": 0,
+					"mode": 4
+				}
+			]
+		}
+	],
+	"nodes": [
+		{
+			"mesh": 0,
+			"name": "Sphere"
+		}
+	],
+	"scene": 0,
+	"scenes": [
+		{
+			"name": "Scene",
+			"nodes": [
+				0
+			]
+		}
+	]
+}
