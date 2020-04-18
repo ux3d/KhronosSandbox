@@ -77,7 +77,15 @@ layout (binding = TEXCOORD0_BINDING, set = 0, scalar) buffer TexCoord0 { vec2 i[
 
 hitAttributeEXT vec3 in_hitAttribute;
 
-layout(location = 0) rayPayloadInEXT vec3 out_hitValue;
+struct Payload
+{
+  vec3 color;
+  uint depth;
+  uint maxDepth;
+  bool primitive;
+};
+
+layout(location = 0) rayPayloadInEXT Payload out_hitValue;
 
 //
 
@@ -360,7 +368,8 @@ void main()
     {
         if(alphaChannel < u_materials.ubf[materialIndex].uniformBuffer.alphaCutoff)
         {
-            out_hitValue = vec3(0.0, 0.0, 0.0);
+            out_hitValue.color = vec3(0.0, 0.0, 0.0);
+            out_hitValue.primitive = true;
             return;
         }
         alphaChannel = 1.0;
@@ -381,5 +390,6 @@ void main()
     color = mix(color, color * getOcclusion(materialIndex, texCoord0), u_materials.ubf[materialIndex].uniformBuffer.occlusionStrength);
 	
 	// Gamma correction, as raytracing into non-SRGB framebuffer.
-    out_hitValue = toNonLinear(color);
+    out_hitValue.color = toNonLinear(color);
+    out_hitValue.primitive = true;
 }

@@ -5,9 +5,18 @@ layout (binding = DIFFUSE_BINDING) uniform samplerCube u_diffuseTexture;
 layout (binding = SPECULAR_BINDING) uniform samplerCube u_specularTexture;
 layout (binding = LUT_BINDING) uniform sampler2D u_lutTexture;
 
-layout(location = 0) rayPayloadInEXT vec3 out_hitValue;
+struct Payload
+{
+  vec3 color;
+  uint depth;
+  uint maxDepth;
+  bool primitive;
+};
+
+layout(location = 0) rayPayloadInEXT Payload out_hitValue;
 
 void main()
 {
-    out_hitValue = vec3(0.0, 0.0, 0.0);
+    out_hitValue.color = vec3(0.0, 0.0, 0.0);
+    out_hitValue.primitive = false;
 }

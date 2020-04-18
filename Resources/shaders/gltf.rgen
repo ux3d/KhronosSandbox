@@ -10,7 +10,15 @@ layout(binding = ACCELERATION_BINDING, set = 0) uniform accelerationStructureEXT
 
 layout(binding = OUTPUT_BINDING, set = 0, rgba8) uniform image2D out_image;
 
-layout(location = 0) rayPayloadEXT vec3 out_hitValue;
+struct Payload
+{
+  vec3 color;
+  uint depth;
+  uint maxDepth;
+  bool primitive;
+};
+
+layout(location = 0) rayPayloadEXT Payload out_hitValue;
 
 void main() 
 {
@@ -27,9 +35,12 @@ void main()
 	float tmin = 0.1;
 	float tmax = 100.0;
 
-    out_hitValue = vec3(0.0);
+    out_hitValue.color = vec3(0.0);
+    out_hitValue.depth = 0;
+    out_hitValue.maxDepth = 0;
+    out_hitValue.primitive = false;
 
     traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, origin, tmin, direction, tmax, 0);
 
-	imageStore(out_image, ivec2(gl_LaunchIDEXT.xy), vec4(out_hitValue, 0.0));
+	imageStore(out_image, ivec2(gl_LaunchIDEXT.xy), vec4(out_hitValue.color, 0.0));
 }
