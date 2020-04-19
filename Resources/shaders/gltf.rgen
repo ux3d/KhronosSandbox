@@ -17,6 +17,7 @@ struct Payload
   uint depth;
   uint maxDepth;
   bool primitive;
+  vec3 ray;
 };
 
 layout(location = 0) rayPayloadEXT Payload out_hitValue;
@@ -54,6 +55,7 @@ void main()
     out_hitValue.depth = 0;
     out_hitValue.maxDepth = in_upc.maxDepth;
     out_hitValue.primitive = false;
+    out_hitValue.ray = direction;
 
     traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, origin, tmin, direction, tmax, 0);
 	

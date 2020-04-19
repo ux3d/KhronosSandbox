@@ -83,6 +83,7 @@ struct Payload
   uint depth;
   uint maxDepth;
   bool primitive;
+  vec3 ray;
 };
 
 layout(location = 0) rayPayloadInEXT Payload out_hitValue;

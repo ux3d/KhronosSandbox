@@ -1135,7 +1135,7 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 		rayTracingPipelineCreateInfo.pStages           = raytracePipelineShaderStageCreateInfos.data();
 		rayTracingPipelineCreateInfo.groupCount        = rayTracingShaderGroupCreateInfos.size();
 		rayTracingPipelineCreateInfo.pGroups           = rayTracingShaderGroupCreateInfos.data();
-		rayTracingPipelineCreateInfo.maxRecursionDepth = 1;
+		rayTracingPipelineCreateInfo.maxRecursionDepth = 2;
 		rayTracingPipelineCreateInfo.layout            = scene.raytracePipelineLayout;
 		rayTracingPipelineCreateInfo.libraries.sType   = VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR;
 
