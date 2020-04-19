@@ -2,6 +2,8 @@
 
 This R&D project is a playground to evaluate raytracing vs. pathtracing vs. rasterizing glTF 2.0 with it's Metallic-Roughness material model.  
 
+![Screenshot DamagedHelmet](screenshot.jpg)
+
 Evaluation
 - [x] glTF rasterize
 - [x] glTF raytrace
