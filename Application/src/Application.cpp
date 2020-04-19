@@ -43,6 +43,15 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	ImGui::Begin("Settings");
 	ImGui::Checkbox("Raytrace", &raytrace);
+	if (raytrace)
+	{
+		int temp = (int)maxDepth;
+		ImGui::InputInt("Max depth", &temp);
+		if (temp >= 0 && temp <= 1)
+		{
+			maxDepth = (uint32_t)temp;
+		}
+	}
 	ImGui::Separator();
 	ImGui::SliderFloat("Zoom Speed", &zoomSpeed, 0.01f, 0.1f, "ratio = %.2f");
 	ImGui::End();
@@ -94,6 +103,8 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 		glTF.inverseViewProjection.inverseView = glm::inverse(glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
 		vkCmdPushConstants(commandBuffers[frameIndex], glTF.scenes[glTF.defaultScene].raytracePipelineLayout, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, 0, sizeof(glTF.inverseViewProjection), &glTF.inverseViewProjection);
+
+		vkCmdPushConstants(commandBuffers[frameIndex], glTF.scenes[glTF.defaultScene].raytracePipelineLayout, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, sizeof(glTF.inverseViewProjection), sizeof(uint32_t), &maxDepth);
 
 		VkStridedBufferRegionKHR rayGenStridedBufferRegion = {};
 		rayGenStridedBufferRegion.buffer = glTF.scenes[glTF.defaultScene].shaderBindingBufferResource.buffer;

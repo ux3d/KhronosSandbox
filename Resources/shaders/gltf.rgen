@@ -4,6 +4,7 @@
 layout(push_constant) uniform UniformPushConstant {
     mat4 inverseProjection;
     mat4 inverseView;
+    uint maxDepth;
 } in_upc;
 
 layout(binding = ACCELERATION_BINDING, set = 0) uniform accelerationStructureEXT topLevelAS;
@@ -19,6 +20,20 @@ struct Payload
 };
 
 layout(location = 0) rayPayloadEXT Payload out_hitValue;
+
+//
+
+vec3 toLinear(vec3 color)
+{
+    return pow(color, vec3(2.2));
+}
+
+vec3 toNonLinear(vec3 color)
+{
+    return pow(color, vec3(1.0/2.2));
+}
+
+//
 
 void main() 
 {
@@ -37,10 +52,11 @@ void main()
 
     out_hitValue.color = vec3(0.0);
     out_hitValue.depth = 0;
-    out_hitValue.maxDepth = 0;
+    out_hitValue.maxDepth = in_upc.maxDepth;
     out_hitValue.primitive = false;
 
     traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, origin, tmin, direction, tmax, 0);
-
-	imageStore(out_image, ivec2(gl_LaunchIDEXT.xy), vec4(out_hitValue.color, 0.0));
+	
+	// Gamma correction, as raytracing into non-SRGB framebuffer.
+	imageStore(out_image, ivec2(gl_LaunchIDEXT.xy), vec4(toNonLinear(out_hitValue.color), 0.0));
 }

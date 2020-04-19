@@ -27,6 +27,7 @@ private:
 	ImageViewResource raytraceImageViewResource;
 
 	bool raytrace = true;
+	uint32_t maxDepth = 0;
 
 	virtual bool applicationInit();
 	virtual bool applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime);

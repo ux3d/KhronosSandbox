@@ -383,13 +383,26 @@ void main()
 
     float roughness = getRoughness(materialIndex, texCoord0);
 	
-	// BRDF
-    vec3 color = getEmissive(materialIndex, texCoord0) + getLambertian(normal, diffuseColor) + getSpecular(normal, view, roughness, f0);
+	if (out_hitValue.depth == out_hitValue.maxDepth)
+	{
+		// BRDF
+	    vec3 color = getEmissive(materialIndex, texCoord0) + getLambertian(normal, diffuseColor) + getSpecular(normal, view, roughness, f0);
+		
+	    // Ambient occlusion
+	    color = mix(color, color * getOcclusion(materialIndex, texCoord0), u_materials.ubf[materialIndex].uniformBuffer.occlusionStrength);
+		
+	    out_hitValue.color = color;	    
+	}
+	else
+	{
+		out_hitValue.depth++;
+		
+		// BRDF
+		vec3 color = getEmissive(materialIndex, texCoord0);
 	
-    // Ambient occlusion
-    color = mix(color, color * getOcclusion(materialIndex, texCoord0), u_materials.ubf[materialIndex].uniformBuffer.occlusionStrength);
-	
-	// Gamma correction, as raytracing into non-SRGB framebuffer.
-    out_hitValue.color = toNonLinear(color);
-    out_hitValue.primitive = true;
+		// TODO: Implement Monte Carlo integration for lambert and specular.
+		
+	    out_hitValue.color = color;
+	}
+	out_hitValue.primitive = true;
 }

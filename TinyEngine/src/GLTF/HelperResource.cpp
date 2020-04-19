@@ -971,7 +971,7 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 		VkPushConstantRange pushConstantRange = {};
 	    pushConstantRange.stageFlags = VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
 	    pushConstantRange.offset = 0;
-	    pushConstantRange.size = sizeof(InverseViewProjectionUniformPushConstant);
+	    pushConstantRange.size = sizeof(RaytraceUniformPushConstant);
 
 		VkPipelineLayoutCreateInfo raytracePipelineLayoutCreateInfo = {};
 		raytracePipelineLayoutCreateInfo.sType          = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

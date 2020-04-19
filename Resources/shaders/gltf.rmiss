@@ -17,6 +17,14 @@ layout(location = 0) rayPayloadInEXT Payload out_hitValue;
 
 void main()
 {
-    out_hitValue.color = vec3(0.0, 0.0, 0.0);
-    out_hitValue.primitive = false;
+	if (!out_hitValue.primitive)
+	{
+	    out_hitValue.color = vec3(0.0, 0.0, 0.0);
+	}
+	else
+	{
+		// TODO: Write back specular level 0 from environment map.
+		out_hitValue.color = vec3(1.0, 0.0, 0.0);
+	}
+	out_hitValue.primitive = false;
 }

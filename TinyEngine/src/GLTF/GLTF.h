@@ -18,6 +18,11 @@ struct InverseViewProjectionUniformPushConstant {
 	glm::mat4 inverseView;
 };
 
+struct RaytraceUniformPushConstant {
+	InverseViewProjectionUniformPushConstant inverseViewProjection = {};
+	uint32_t maxDepth = 0;
+};
+
 struct MaterialUniformBuffer {
 	glm::vec4 baseColorFactor = glm::vec4(1.0f);
 
