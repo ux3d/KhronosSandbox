@@ -3,6 +3,8 @@
 #extension GL_EXT_scalar_block_layout : enable
 #extension GL_EXT_nonuniform_qualifier : enable
 
+#define MATH_PI 3.14159265359 
+
 layout(push_constant) uniform UniformPushConstant {
     mat4 inverseProjection;
     mat4 inverseView;
@@ -64,7 +66,9 @@ layout (binding = DIFFUSE_BINDING) uniform samplerCube u_diffuseTexture;
 layout (binding = SPECULAR_BINDING) uniform samplerCube u_specularTexture;
 layout (binding = LUT_BINDING) uniform sampler2D u_lutTexture;
 
+#ifdef HAS_TEXTURES
 layout (binding = TEXTURES_BINDING) uniform sampler2D u_textures[];
+#endif
 layout (binding = MATERIALS_BINDING, set = 0, scalar) buffer Materials { UniformBufferRaytrace ubf[]; } u_materials;
 layout (binding = PRIMITIVES_BINDING, set = 0, scalar) buffer InstanceResources { InstanceResource i[]; } u_instanceResources;
 
@@ -92,6 +96,37 @@ struct Payload
 };
 
 layout(location = 0) rayPayloadInEXT Payload out_hitValue;
+
+//
+
+float radicalInverse(uint bits)
+{
+     bits = (bits << 16u) | (bits >> 16u);
+     bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
+     bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
+     bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
+     bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
+     return float(bits) * 2.3283064365386963e-10; // Division by 0x100000000
+}
+
+vec2 hammersley(uint i, uint N)
+{
+	return vec2(float(i)/float(N), radicalInverse(i));
+}
+
+vec3 lambertToCartesian(vec2 point)
+{
+	float sinTheta = sqrt(point.x);
+
+	float cosTheta = sqrt(1.0f - sinTheta * sinTheta);
+	float phi = point.y * 2.0 * MATH_PI;
+
+	float x = sinTheta * sin(phi);
+	float y = cosTheta;
+	float z = sinTheta * cos(phi);
+
+	return vec3(x, y, z);
+}
 
 //
 
@@ -152,7 +187,7 @@ vec4 getPosition(uvec3 indices, vec3 barycentrics)
 	return vec4(position_x * barycentrics.x + position_y * barycentrics.y + position_z * barycentrics.z, 1.0);
 }
 
-vec3 getNormal(uvec3 indices, vec3 barycentrics, int normalInstanceID, int tangentInstanceID, int texCoord0InstanceID, int materialIndex, vec2 st)
+vec3 getNormal(uvec3 indices, vec3 barycentrics, int normalInstanceID, int tangentInstanceID, int texCoord0InstanceID, int materialIndex, vec2 st, out mat3 tbn)
 {
 	vec3 normal = vec3(0.0, 1.0, 0.0); 
 
@@ -171,7 +206,10 @@ vec3 getNormal(uvec3 indices, vec3 barycentrics, int normalInstanceID, int tange
 
 	if (u_materials.ubf[materialIndex].normalTexture >= 0)
 	{
-	    vec3 n = texture(u_textures[u_materials.ubf[materialIndex].normalTexture], st).rgb;
+		vec3 n = vec3(0.0, 1.0, 0.0); 
+#ifdef HAS_TEXTURES
+	    n = texture(u_textures[u_materials.ubf[materialIndex].normalTexture], st).rgb;
+#endif
 	    n = normalize((2.0 * n - 1.0) * vec3(u_materials.ubf[materialIndex].uniformBuffer.normalScale, u_materials.ubf[materialIndex].uniformBuffer.normalScale, 1.0));
 	    
 	    vec3 tangent = vec3(1.0, 0.0, 0.0);
@@ -204,7 +242,7 @@ vec3 getNormal(uvec3 indices, vec3 barycentrics, int normalInstanceID, int tange
 #endif
 	    }
 	    
-	    mat3 tbn = mat3(tangent, bitangent, normal);
+	    tbn = mat3(tangent, bitangent, normal);
 	    
 	    normal = tbn * n;
 	}
@@ -271,7 +309,10 @@ vec4 getBaseColor(int materialIndex, vec2 st)
 	vec4 baseColor = u_materials.ubf[materialIndex].uniformBuffer.baseColorFactor;
 	if (u_materials.ubf[materialIndex].baseColorTexture >= 0)
 	{
-		vec4 baseColorTexture = texture(u_textures[u_materials.ubf[materialIndex].baseColorTexture], st).rgba;
+		vec4 baseColorTexture = vec4(1.0, 1.0, 1.0, 1.0);
+#ifdef HAS_TEXTURES
+		baseColorTexture = texture(u_textures[u_materials.ubf[materialIndex].baseColorTexture], st).rgba;
+#endif		
 
 	    baseColor.rgb *= toLinear(baseColorTexture.rgb);
 	    baseColor.a *= baseColorTexture.a;
@@ -286,7 +327,9 @@ float getMetallic(int materialIndex, vec2 st)
 
 	if (u_materials.ubf[materialIndex].metallicRoughnessTexture >= 0)
 	{
+#ifdef HAS_TEXTURES
 		metallic *= texture(u_textures[u_materials.ubf[materialIndex].metallicRoughnessTexture], st).b;
+#endif
 	}
 	
 	return metallic;
@@ -298,7 +341,9 @@ float getRoughness(int materialIndex, vec2 st)
 
 	if (u_materials.ubf[materialIndex].metallicRoughnessTexture >= 0)
 	{
+#ifdef HAS_TEXTURES
 		roughness *= texture(u_textures[u_materials.ubf[materialIndex].metallicRoughnessTexture], st).g;
+#endif
 	}
 	
 	return roughness;
@@ -310,7 +355,9 @@ vec3 getEmissive(int materialIndex, vec2 st)
 	
 	if (u_materials.ubf[materialIndex].emissiveTexture >= 0)
 	{
+#ifdef HAS_TEXTURES
 		emissive *= toLinear(texture(u_textures[u_materials.ubf[materialIndex].emissiveTexture], st).rgb);
+#endif
 	}
 
     return emissive;
@@ -322,7 +369,9 @@ float getOcclusion(int materialIndex, vec2 st)
 
 	if (u_materials.ubf[materialIndex].occlusionTexture >= 0)
 	{
+#ifdef HAS_TEXTURES
     	occlusion = texture(u_textures[u_materials.ubf[materialIndex].occlusionTexture], st).r;
+#endif
 	}
 	
     return occlusion;
@@ -349,13 +398,15 @@ void main()
 		
 	//
 	
+	mat3 tbn = mat3(1.0); 
+	
 	uvec3 indices = uvec3(getIndex(0, componentTypeSize), getIndex(1, componentTypeSize), getIndex(2, componentTypeSize));
 
 	vec4 position = worldMatrix * getPosition(indices, barycentrics);
 
 	vec2 texCoord0 = getTexCoord0(indices, barycentrics, texCoord0InstanceID);
 	
-	vec3 normal = normalWorldMatrix * getNormal(indices, barycentrics, normalInstanceID, tangentInstanceID, texCoord0InstanceID, materialIndex, texCoord0);
+	vec3 normal = normalWorldMatrix * getNormal(indices, barycentrics, normalInstanceID, tangentInstanceID, texCoord0InstanceID, materialIndex, texCoord0, tbn);
 		
 	//
 	
@@ -403,17 +454,28 @@ void main()
 	{
 		out_hitValue.depth++;
 	    out_hitValue.primitive = true;
+
+		float tmin = 0.1;
+		float tmax = 100.0;
 		
 		// BRDF
 		vec3 color = getEmissive(materialIndex, texCoord0);
 	
-		// TODO: Implement Monte Carlo integration for lambert and specular.
-	    out_hitValue.ray = normal;
-		float tmin = 0.1;
-		float tmax = 100.0;
-	    traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, position.xyz, tmin, normal, tmax, 0);
+		vec3 diffuse = vec3(0.0, 0.0, 0.0);
+		for (uint i = 0; i < in_upc.diffuseSamples; i++)
+		{	
+			vec2 point = hammersley(i, in_upc.diffuseSamples);
 		
-	    out_hitValue.color += color;
+		    out_hitValue.ray = normalWorldMatrix * tbn * lambertToCartesian(point);
+			
+		    traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, position.xyz, tmin, out_hitValue.ray, tmax, 0);
+		    
+		    diffuse += out_hitValue.color;
+		}
+
+		// TODO: Implement Monte Carlo integration for specular.
+		
+	    out_hitValue.color = color + diffuse / in_upc.diffuseSamples;
 	}
 	out_hitValue.primitive = true;
 }

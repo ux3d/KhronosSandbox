@@ -1011,6 +1011,11 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 		macros["TANGENT_BINDING"] = std::to_string(tangentBinding);
 		macros["TEXCOORD0_BINDING"] = std::to_string(texCoord0Binding);
 
+		if (descriptorImageInfoTextures.size() > 0)
+		{
+			macros["HAS_TEXTURES"] = "";
+		}
+
 		if (descriptorBufferInfoNormal.size() > 0)
 		{
 			macros["NORMAL_VEC3"] = "";
