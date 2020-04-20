@@ -99,33 +99,64 @@ layout(location = 0) rayPayloadInEXT Payload out_hitValue;
 
 //
 
-float radicalInverse(uint bits)
-{
-     bits = (bits << 16u) | (bits >> 16u);
-     bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
-     bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
-     bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
-     bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
-     return float(bits) * 2.3283064365386963e-10; // Division by 0x100000000
-}
-
 vec2 hammersley(uint i, uint N)
 {
-	return vec2(float(i)/float(N), radicalInverse(i));
+	return vec2(float(i)/float(N), bitfieldReverse(i));
 }
 
 vec3 lambertToCartesian(vec2 point)
 {
-	float sinTheta = sqrt(point.x);
+	float cosTheta = sqrt(1.0 - point.x);
 
-	float cosTheta = sqrt(1.0f - sinTheta * sinTheta);
+	float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
 	float phi = point.y * 2.0 * MATH_PI;
 
-	float x = sinTheta * sin(phi);
-	float y = cosTheta;
-	float z = sinTheta * cos(phi);
+	float x = sinTheta * cos(phi);
+	float y = sinTheta * sin(phi);
+	float z = cosTheta;
 
 	return vec3(x, y, z);
+}
+
+vec3 ggxToCartesian(vec2 point, float alpha)
+{
+	float cosTheta = sqrt((1.0 - point.x) / (point.x * (alpha * alpha - 1.0) + 1.0));
+
+	float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+	float phi = point.y * 2.0 * MATH_PI;
+
+	float x = sinTheta * cos(phi);
+	float y = sinTheta * sin(phi);
+	float z = cosTheta;
+
+	return vec3(x, y, z);
+}
+
+vec3 getDirection(vec3 normal, vec3 H)
+{
+    vec3 bitangent = vec3(0.0, 1.0, 0.0);
+	
+	// Eliminates singularities.
+	float NdotX = dot(normal, vec3(1.0, 0.0, 0.0));
+	float NdotY = dot(normal, vec3(0.0, 1.0, 0.0));
+	float NdotZ = dot(normal, vec3(0.0, 0.0, 1.0));
+	if (abs(NdotY) > abs(NdotX) && abs(NdotY) > abs(NdotZ))
+	{
+		// Sampling +Y or -Y, so we need a more robust bitangent.
+		if (NdotY > 0.0)
+		{
+			bitangent = vec3(0.0, 0.0, 1.0);
+		}
+		else
+		{
+			bitangent = vec3(0.0, 0.0, -1.0);
+		}
+	}
+
+    vec3 tangent = cross(bitangent, normal);
+    bitangent = cross(normal, tangent);
+    
+	return normalize(tangent * H.x + bitangent * H.y + normal * H.z);
 }
 
 //
@@ -204,46 +235,46 @@ vec3 getNormal(uvec3 indices, vec3 barycentrics, int normalInstanceID, int tange
 	normal = normalize(normal_x * barycentrics.x + normal_y * barycentrics.y + normal_z * barycentrics.z);
 #endif
 
+    vec3 tangent = vec3(1.0, 0.0, 0.0);
+    vec3 bitangent = vec3(0.0, 0.0, 1.0);
+    
+    if (tangentInstanceID >= 0)
+   	{
+#ifdef TANGENT_VEC4
+    	vec4 tangent_x = u_tangent[tangentInstanceID].i[indices.x];
+    	vec4 tangent_y = u_tangent[tangentInstanceID].i[indices.y];
+    	vec4 tangent_z = u_tangent[tangentInstanceID].i[indices.z];
+
+		vec4 t = tangent_x * barycentrics.x + tangent_y * barycentrics.y + tangent_z * barycentrics.z;
+		
+		tangent = normalize(t.xyz);
+		bitangent = cross(normal, tangent) * t.w;
+#endif
+   	}
+    else
+    {
+#ifdef TEXCOORD0_VEC2
+		vec3 pos0 = vec3(u_position[gl_InstanceID].i[3 * indices.x + 0], u_position[gl_InstanceID].i[3 * indices.x + 1], u_position[gl_InstanceID].i[3 * indices.x + 2]);
+		vec3 pos1 = vec3(u_position[gl_InstanceID].i[3 * indices.y + 0], u_position[gl_InstanceID].i[3 * indices.y + 1], u_position[gl_InstanceID].i[3 * indices.y + 2]);
+		vec3 pos2 = vec3(u_position[gl_InstanceID].i[3 * indices.z + 0], u_position[gl_InstanceID].i[3 * indices.z + 1], u_position[gl_InstanceID].i[3 * indices.z + 2]);
+    	vec2 uv0 = u_texCoord0[texCoord0InstanceID].i[indices.x];
+    	vec2 uv1 = u_texCoord0[texCoord0InstanceID].i[indices.y];
+    	vec2 uv2 = u_texCoord0[texCoord0InstanceID].i[indices.z];
+    
+    	computeTangent(pos0, pos1, pos2, uv0, uv1, uv2, normal, tangent, bitangent);
+#endif
+    }
+	    
+	tbn = mat3(tangent, bitangent, normal);
+
 	if (u_materials.ubf[materialIndex].normalTexture >= 0)
 	{
-		vec3 n = vec3(0.0, 1.0, 0.0); 
+		vec3 n = vec3(0.5, 1.0, 0.5); 
 #ifdef HAS_TEXTURES
 	    n = texture(u_textures[u_materials.ubf[materialIndex].normalTexture], st).rgb;
 #endif
 	    n = normalize((2.0 * n - 1.0) * vec3(u_materials.ubf[materialIndex].uniformBuffer.normalScale, u_materials.ubf[materialIndex].uniformBuffer.normalScale, 1.0));
-	    
-	    vec3 tangent = vec3(1.0, 0.0, 0.0);
-	    vec3 bitangent = vec3(0.0, 0.0, 1.0);
-	    
-	    if (tangentInstanceID >= 0)
-	   	{
-#ifdef TANGENT_VEC4
-	    	vec4 tangent_x = u_tangent[tangentInstanceID].i[indices.x];
-	    	vec4 tangent_y = u_tangent[tangentInstanceID].i[indices.y];
-	    	vec4 tangent_z = u_tangent[tangentInstanceID].i[indices.z];
-	
-			vec4 t = tangent_x * barycentrics.x + tangent_y * barycentrics.y + tangent_z * barycentrics.z;
-			
-			tangent = normalize(t.xyz);
-			bitangent = cross(normal, tangent) * t.w;
-#endif
-	   	}
-	    else
-	    {
-#ifdef TEXCOORD0_VEC2
-			vec3 pos0 = vec3(u_position[gl_InstanceID].i[3 * indices.x + 0], u_position[gl_InstanceID].i[3 * indices.x + 1], u_position[gl_InstanceID].i[3 * indices.x + 2]);
-			vec3 pos1 = vec3(u_position[gl_InstanceID].i[3 * indices.y + 0], u_position[gl_InstanceID].i[3 * indices.y + 1], u_position[gl_InstanceID].i[3 * indices.y + 2]);
-			vec3 pos2 = vec3(u_position[gl_InstanceID].i[3 * indices.z + 0], u_position[gl_InstanceID].i[3 * indices.z + 1], u_position[gl_InstanceID].i[3 * indices.z + 2]);
-	    	vec2 uv0 = u_texCoord0[texCoord0InstanceID].i[indices.x];
-	    	vec2 uv1 = u_texCoord0[texCoord0InstanceID].i[indices.y];
-	    	vec2 uv2 = u_texCoord0[texCoord0InstanceID].i[indices.z];
-	    
-	    	computeTangent(pos0, pos1, pos2, uv0, uv1, uv2, normal, tangent, bitangent);
-#endif
-	    }
-	    
-	    tbn = mat3(tangent, bitangent, normal);
-	    
+	    	    
 	    normal = tbn * n;
 	}
 
@@ -406,11 +437,11 @@ void main()
 
 	vec2 texCoord0 = getTexCoord0(indices, barycentrics, texCoord0InstanceID);
 	
-	vec3 normal = normalWorldMatrix * getNormal(indices, barycentrics, normalInstanceID, tangentInstanceID, texCoord0InstanceID, materialIndex, texCoord0, tbn);
+	vec3 N = normalWorldMatrix * getNormal(indices, barycentrics, normalInstanceID, tangentInstanceID, texCoord0InstanceID, materialIndex, texCoord0, tbn);
 		
 	//
 	
-	vec3 view = normalize(mat3(in_upc.inverseView) * vec3(0.0, 0.0, 1.0));
+	vec3 V = normalize(mat3(in_upc.inverseView) * vec3(0.0, 0.0, 1.0));
 	
 	//
 	
@@ -437,13 +468,13 @@ void main()
     float metallic = getMetallic(materialIndex, texCoord0);
     vec3 diffuseColor = baseColor.rgb * (vec3(1.0) - f0) * (1.0 - metallic);
     f0 = mix(f0, baseColor.rgb, metallic);
-
+    
     float roughness = getRoughness(materialIndex, texCoord0);
 	
 	if (out_hitValue.depth == out_hitValue.maxDepth)
 	{
 		// BRDF
-	    vec3 color = getEmissive(materialIndex, texCoord0) + getLambertian(normal, diffuseColor) + getSpecular(normal, view, roughness, f0);
+	    vec3 color = getEmissive(materialIndex, texCoord0) + getLambertian(N, diffuseColor) + getSpecular(N, V, roughness, f0);
 		
 	    // Ambient occlusion
 	    color = mix(color, color * getOcclusion(materialIndex, texCoord0), u_materials.ubf[materialIndex].uniformBuffer.occlusionStrength);
@@ -460,22 +491,36 @@ void main()
 		
 		// BRDF
 		vec3 color = getEmissive(materialIndex, texCoord0);
-	
-		vec3 diffuse = vec3(0.0, 0.0, 0.0);
-		for (uint i = 0; i < in_upc.diffuseSamples; i++)
-		{	
-			vec2 point = hammersley(i, in_upc.diffuseSamples);
-		
-		    out_hitValue.ray = normalWorldMatrix * tbn * lambertToCartesian(point);
-			
-		    traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, position.xyz, tmin, out_hitValue.ray, tmax, 0);
-		    
-		    diffuse += out_hitValue.color;
-		}
 
-		// TODO: Implement Monte Carlo integration for specular.
+		float NdotV = dot(N, V);
+	
+		vec3 specular = vec3(0.0, 0.0, 0.0);
+		float alpha2 = roughness * roughness;
+		for (uint i = 0; i < in_upc.specularSamples; i++)
+		{	
+			vec2 point = hammersley(i, in_upc.specularSamples);
+			vec3 S = ggxToCartesian(point, roughness);
+			vec3 H = getDirection(N, S);
+			vec3 L = normalize(reflect(-V, H));
+			float NdotL = dot(N, L);
+			
+			if (NdotL > 0.0)
+			{
+			    out_hitValue.ray = L;
+			    traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, position.xyz, tmin, L, tmax, 0);
+
+				//
+				
+				float VdotH = dot(V, H);
+				vec3 F = f0 + (1.0 - f0) * pow(1.0 - VdotH, 5.0);
+				
+				float Vis = 0.5 / (NdotL * sqrt(NdotV*NdotV * (1.0 - alpha2)*(1.0 - alpha2) + alpha2) + NdotV * sqrt(NdotL*NdotL * (1.0 - alpha2)*(1.0 - alpha2) + alpha2)); 
+			    
+			    specular += F * Vis * out_hitValue.color;
+			}
+		}
 		
-	    out_hitValue.color = color + diffuse / in_upc.diffuseSamples;
+	    out_hitValue.color = color + specular;
 	}
 	out_hitValue.primitive = true;
 }

@@ -40,7 +40,7 @@
 		}
 	],
 	"asset": {
-		"generator": "Gestaltor 2020.1.2 Alpha 'Pilzgutsle' (dev-5c133ca38)",
+		"generator": "Gestaltor 2020.1.2 Alpha 'Pilzgutsle' (dev-f267a642)",
 		"version": "2.0"
 	},
 	"bufferViews": [
@@ -82,7 +82,7 @@
 					1.0
 				],
 				"metallicFactor": 1.0,
-				"roughnessFactor": 0.1
+				"roughnessFactor": 0.2
 			}
 		}
 	],

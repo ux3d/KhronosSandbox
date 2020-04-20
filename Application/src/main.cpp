@@ -7,7 +7,7 @@
 
 int main(int argc, char **argv)
 {
-	std::string filename = "../Resources/glTF/Cube/Cube.gltf";
+	std::string filename = "../Resources/glTF/Sphere/Sphere.gltf";
 
 	std::string environment = "../Resources/brdf/doge2";
 

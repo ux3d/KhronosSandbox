@@ -4,46 +4,23 @@
 // and https://www.tobias-franke.eu/log/2014/03/30/notes_on_importance_sampling.html
 // and https://agraphicsguy.wordpress.com/2015/11/01/sampling-microfacet-brdf/
 
-glm::vec3 Sample::uniformToCartesian(const glm::vec2& point)
+glm::vec3 Sample::lambertToCartesian(const glm::vec2& point)
 {
-	float cosTheta = 1.0 - point.x;
+	float cosTheta = sqrtf(1.0f - point.x);
 
 	float sinTheta = sqrtf(1.0f - cosTheta * cosTheta);
 	float phi = point.y * 2.0f * glm::pi<float>();
 
-	float x = sinTheta * sinf(phi);
-	float y = cosTheta;
-	float z = sinTheta * cosf(phi);
-
-	return glm::vec3(x, y, z);
-}
-
-Spherical Sample::uniformToSpherical(const glm::vec2& point)
-{
-	float theta = acosf(1.0 - point.x);
-
-	float phi = point.y * 2.0f * glm::pi<float>();
-
-	return Spherical(theta, phi);
-}
-
-glm::vec3 Sample::lambertToCartesian(const glm::vec2& point)
-{
-	float sinTheta = sqrtf(point.x);
-
-	float cosTheta = sqrtf(1.0f - sinTheta * sinTheta);
-	float phi = point.y * 2.0f * glm::pi<float>();
-
-	float x = sinTheta * sinf(phi);
-	float y = cosTheta;
-	float z = sinTheta * cosf(phi);
+	float x = sinTheta * cosf(phi);
+	float y = sinTheta * sinf(phi);
+	float z = cosTheta;
 
 	return glm::vec3(x, y, z);
 }
 
 Spherical Sample::lambertToSpherical(const glm::vec2& point)
 {
-	float theta = asinf(sqrtf(point.x));
+	float theta = acosf(sqrtf(1.0f - point.x));
 
 	float phi = point.y * 2.0f * glm::pi<float>();
 
@@ -57,9 +34,9 @@ glm::vec3 Sample::ggxToCartesian(const glm::vec2& point, float alpha)
 	float sinTheta = sqrtf(1.0f - cosTheta * cosTheta);
 	float phi = point.y * 2.0f * glm::pi<float>();
 
-	float x = sinTheta * sinf(phi);
-	float y = cosTheta;
-	float z = sinTheta * cosf(phi);
+	float x = sinTheta * cosf(phi);
+	float y = sinTheta * sinf(phi);
+	float z = cosTheta;
 
 	return glm::vec3(x, y, z);
 }

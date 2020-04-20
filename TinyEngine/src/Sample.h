@@ -19,16 +19,15 @@ public:
 	{
 		rho = glm::length(cartesian);
 
-		theta = acosf(cartesian.y / rho);
-		phi = atanf(cartesian.z / cartesian.x);
+		theta = acosf(cartesian.z / rho);
+		phi = atanf(cartesian.y / cartesian.x);
 	}
 
-	// X-Right, Y-Up, Z-Forward
 	glm::vec3 toCartesian() const
 	{
-		float x = rho * sinf(theta) * sinf(phi);
-		float y = rho * cosf(theta);
-		float z = rho * sinf(theta) * cosf(phi);
+		float x = rho * sinf(theta) * cosf(phi);
+		float y = rho * sinf(theta) * sinf(phi);
+		float z = rho * cosf(theta);
 
 		return glm::vec3(x, y, z);
 	}
@@ -41,10 +40,6 @@ public:
 
 class Sample {
 public:
-
-	static glm::vec3 uniformToCartesian(const glm::vec2& point);
-
-	static Spherical uniformToSpherical(const glm::vec2& point);
 
 	static glm::vec3 lambertToCartesian(const glm::vec2& point);
 
