@@ -55,6 +55,8 @@ struct InstanceResource {
 };
 
 
+layout (binding = ACCELERATION_BINDING, set = 0) uniform accelerationStructureEXT topLevelAS;
+
 layout (binding = DIFFUSE_BINDING) uniform samplerCube u_diffuseTexture;
 layout (binding = SPECULAR_BINDING) uniform samplerCube u_specularTexture;
 layout (binding = LUT_BINDING) uniform sampler2D u_lutTexture;
@@ -397,13 +399,18 @@ void main()
 	else
 	{
 		out_hitValue.depth++;
+	    out_hitValue.primitive = true;
 		
 		// BRDF
 		vec3 color = getEmissive(materialIndex, texCoord0);
 	
 		// TODO: Implement Monte Carlo integration for lambert and specular.
+	    out_hitValue.ray = normal;
+		float tmin = 0.1;
+		float tmax = 100.0;
+	    traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, position.xyz, tmin, normal, tmax, 0);
 		
-	    out_hitValue.color = color;
+	    out_hitValue.color += color;
 	}
 	out_hitValue.primitive = true;
 }

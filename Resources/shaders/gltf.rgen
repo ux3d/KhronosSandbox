@@ -7,7 +7,7 @@ layout(push_constant) uniform UniformPushConstant {
     uint maxDepth;
 } in_upc;
 
-layout(binding = ACCELERATION_BINDING, set = 0) uniform accelerationStructureEXT topLevelAS;
+layout (binding = ACCELERATION_BINDING, set = 0) uniform accelerationStructureEXT topLevelAS;
 
 layout(binding = OUTPUT_BINDING, set = 0, rgba8) uniform image2D out_image;
 

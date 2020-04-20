@@ -1,9 +1,7 @@
 #version 460 core
 #extension GL_EXT_ray_tracing : enable
 
-layout (binding = DIFFUSE_BINDING) uniform samplerCube u_diffuseTexture;
 layout (binding = SPECULAR_BINDING) uniform samplerCube u_specularTexture;
-layout (binding = LUT_BINDING) uniform sampler2D u_lutTexture;
 
 struct Payload
 {
@@ -24,8 +22,7 @@ void main()
 	}
 	else
 	{
-		// TODO: Write back specular level 0 from environment map.
-		out_hitValue.color = vec3(1.0, 0.0, 0.0);
+		out_hitValue.color = textureLod(u_specularTexture, out_hitValue.ray, 0.0).rgb;
 	}
 	out_hitValue.primitive = false;
 }

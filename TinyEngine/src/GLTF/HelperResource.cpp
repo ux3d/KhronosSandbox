@@ -585,7 +585,7 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 		raytraceDescriptorSetLayoutBinding.binding         = accelerationBinding;
 		raytraceDescriptorSetLayoutBinding.descriptorType  = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
 		raytraceDescriptorSetLayoutBinding.descriptorCount = 1;
-		raytraceDescriptorSetLayoutBinding.stageFlags      = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
+		raytraceDescriptorSetLayoutBinding.stageFlags      = VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
 		raytraceDescriptorSetLayoutBindings.push_back(raytraceDescriptorSetLayoutBinding);
 
 		raytraceDescriptorSetLayoutBinding = {};
