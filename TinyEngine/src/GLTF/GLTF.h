@@ -21,6 +21,8 @@ struct InverseViewProjectionUniformPushConstant {
 struct RaytraceUniformPushConstant {
 	InverseViewProjectionUniformPushConstant inverseViewProjection = {};
 	uint32_t maxDepth = 0;
+	uint32_t specularSamples = 1;
+	uint32_t diffuseSamples = 1;
 };
 
 struct MaterialUniformBuffer {
@@ -105,7 +107,7 @@ public:
 
 	// Raytrace helper
 
-	InverseViewProjectionUniformPushConstant inverseViewProjection = {};
+	RaytraceUniformPushConstant pushConstant = {};
 };
 
 #endif /* GLTF_GLTF_H_ */

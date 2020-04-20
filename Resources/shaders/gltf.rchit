@@ -6,6 +6,9 @@
 layout(push_constant) uniform UniformPushConstant {
     mat4 inverseProjection;
     mat4 inverseView;
+    uint maxDepth;
+    uint specularSamples;
+    uint diffuseSamples;
 } in_upc;
 
 struct UniformBuffer {

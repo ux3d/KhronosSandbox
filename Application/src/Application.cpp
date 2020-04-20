@@ -105,16 +105,17 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 		// Update view & projection
 		//
 
-		glTF.inverseViewProjection.inverseProjection = glm::inverse(Math::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f));
+		glTF.pushConstant.inverseViewProjection.inverseProjection = glm::inverse(Math::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f));
 
 		glm::mat3 orbitMatrix = glm::rotate(rotY, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(rotX, glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::vec3 orbitEye = orbitMatrix * glm::vec3(0.0f, 0.0f, eyeObjectDistance);
 
-		glTF.inverseViewProjection.inverseView = glm::inverse(glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+		glTF.pushConstant.inverseViewProjection.inverseView = glm::inverse(glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+		glTF.pushConstant.maxDepth = maxDepth;
+		glTF.pushConstant.specularSamples = specularSamples;
+		glTF.pushConstant.diffuseSamples = diffuseSamples;
 
-		vkCmdPushConstants(commandBuffers[frameIndex], glTF.scenes[glTF.defaultScene].raytracePipelineLayout, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, 0, sizeof(glTF.inverseViewProjection), &glTF.inverseViewProjection);
-
-		vkCmdPushConstants(commandBuffers[frameIndex], glTF.scenes[glTF.defaultScene].raytracePipelineLayout, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, sizeof(glTF.inverseViewProjection), sizeof(uint32_t), &maxDepth);
+		vkCmdPushConstants(commandBuffers[frameIndex], glTF.scenes[glTF.defaultScene].raytracePipelineLayout, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, 0, sizeof(glTF.pushConstant), &glTF.pushConstant);
 
 		VkStridedBufferRegionKHR rayGenStridedBufferRegion = {};
 		rayGenStridedBufferRegion.buffer = glTF.scenes[glTF.defaultScene].shaderBindingBufferResource.buffer;
