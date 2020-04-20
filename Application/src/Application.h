@@ -28,7 +28,7 @@ private:
 
 	bool raytrace = true;
 	uint32_t maxDepth = 0;
-	uint32_t specularSamples = 1;
+	uint32_t specularSamples = 128;
 	uint32_t diffuseSamples = 1;
 
 	virtual bool applicationInit();

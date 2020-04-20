@@ -101,7 +101,7 @@ layout(location = 0) rayPayloadInEXT Payload out_hitValue;
 
 vec2 hammersley(uint i, uint N)
 {
-	return vec2(float(i)/float(N), bitfieldReverse(i));
+	return vec2(float(i)/float(N), bitfieldReverse(i) * 2.3283064365386963e-10);
 }
 
 vec3 lambertToCartesian(vec2 point)
@@ -495,32 +495,38 @@ void main()
 		float NdotV = dot(N, V);
 	
 		vec3 specular = vec3(0.0, 0.0, 0.0);
-		float alpha2 = roughness * roughness;
+		float alpha = roughness * roughness;
+		float alpha2 = alpha * alpha;
+		float specularCount = 0.0;
 		for (uint i = 0; i < in_upc.specularSamples; i++)
 		{	
 			vec2 point = hammersley(i, in_upc.specularSamples);
-			vec3 S = ggxToCartesian(point, roughness);
-			vec3 H = getDirection(N, S);
-			vec3 L = normalize(reflect(-V, H));
+			vec3 H = ggxToCartesian(point, alpha);
+			H = getDirection(N, H);
+			vec3 L = reflect(-V, H);
 			float NdotL = dot(N, L);
 			
 			if (NdotL > 0.0)
 			{
 			    out_hitValue.ray = L;
 			    traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, position.xyz, tmin, L, tmax, 0);
+			    
+			    vec3 D = out_hitValue.color;
 
 				//
 				
 				float VdotH = dot(V, H);
 				vec3 F = f0 + (1.0 - f0) * pow(1.0 - VdotH, 5.0);
 				
-				float Vis = 0.5 / (NdotL * sqrt(NdotV*NdotV * (1.0 - alpha2)*(1.0 - alpha2) + alpha2) + NdotV * sqrt(NdotL*NdotL * (1.0 - alpha2)*(1.0 - alpha2) + alpha2)); 
+				float Vis = 0.5 / (NdotL * sqrt(NdotV*NdotV * (1.0 - alpha2) + alpha2) + NdotV * sqrt(NdotL*NdotL * (1.0 - alpha2) + alpha2)); 
 			    
-			    specular += F * Vis * out_hitValue.color;
+			    specular += F * Vis * D;
+			    
+			    specularCount += 1.0; 
 			}
 		}
 		
-	    out_hitValue.color = color + specular;
+	    out_hitValue.color = color + specular / specularCount;
 	}
 	out_hitValue.primitive = true;
 }

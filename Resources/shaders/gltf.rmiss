@@ -24,5 +24,4 @@ void main()
 	{
 		out_hitValue.color = textureLod(u_specularTexture, out_hitValue.ray, 0.0).rgb;
 	}
-	out_hitValue.primitive = false;
 }

@@ -54,11 +54,11 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 		if (maxDepth > 0)
 		{
 			temp = (int)specularSamples;
-			ImGui::SliderInt("Specular samples", &temp, 1, 128);
+			ImGui::SliderInt("Specular samples", &temp, 1, 256);
 			specularSamples = (uint32_t)temp;
 
 			temp = (int)diffuseSamples;
-			ImGui::SliderInt("Diffuse samples", &temp, 1, 128);
+			ImGui::SliderInt("Diffuse samples", &temp, 1, 256);
 			diffuseSamples = (uint32_t)temp;
 		}
 	}
