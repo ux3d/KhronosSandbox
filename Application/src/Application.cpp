@@ -51,6 +51,16 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 		{
 			maxDepth = (uint32_t)temp;
 		}
+		if (maxDepth > 0)
+		{
+			temp = (int)specularSamples;
+			ImGui::SliderInt("Specular samples", &temp, 1, 128);
+			specularSamples = (uint32_t)temp;
+
+			temp = (int)diffuseSamples;
+			ImGui::SliderInt("Diffuse samples", &temp, 1, 128);
+			diffuseSamples = (uint32_t)temp;
+		}
 	}
 	ImGui::Separator();
 	ImGui::SliderFloat("Zoom Speed", &zoomSpeed, 0.01f, 0.1f, "ratio = %.2f");
