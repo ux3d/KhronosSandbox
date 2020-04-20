@@ -492,6 +492,24 @@ void main()
 		// BRDF
 		vec3 color = getEmissive(materialIndex, texCoord0);
 
+
+		vec3 diffuse = vec3(0.0, 0.0, 0.0);
+		float diffuseCount = 0.0;
+		for (uint i = 0; i < in_upc.diffuseSamples; i++)
+		{	
+			vec2 point = hammersley(i, in_upc.diffuseSamples);
+			vec3 H = lambertToCartesian(point);
+			H = getDirection(N, H);
+
+		    out_hitValue.ray = H;
+		    traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, position.xyz, tmin, H, tmax, 0);
+		    
+			diffuse += diffuseColor * out_hitValue.color;
+			    
+			diffuseCount += 1.0; 
+		}
+
+
 		float NdotV = dot(N, V);
 	
 		vec3 specular = vec3(0.0, 0.0, 0.0);
@@ -526,7 +544,7 @@ void main()
 			}
 		}
 		
-	    out_hitValue.color = color + specular / specularCount;
+	    out_hitValue.color = color + diffuse/diffuseCount + specular/specularCount;
 	}
 	out_hitValue.primitive = true;
 }

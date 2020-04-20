@@ -84,6 +84,19 @@
 				"metallicFactor": 1.0,
 				"roughnessFactor": 0.2
 			}
+		},
+		{
+			"name": "Copy of Material",
+			"pbrMetallicRoughness": {
+				"baseColorFactor": [
+					0.800000011920929,
+					0.0,
+					0.800000011920929,
+					1.0
+				],
+				"metallicFactor": 0.0,
+				"roughnessFactor": 0.2
+			}
 		}
 	],
 	"meshes": [
@@ -101,12 +114,36 @@
 					"mode": 4
 				}
 			]
+		},
+		{
+			"name": "Copy of Sphere",
+			"primitives": [
+				{
+					"attributes": {
+						"NORMAL": 1,
+						"POSITION": 0,
+						"TEXCOORD_0": 2
+					},
+					"indices": 3,
+					"material": 1,
+					"mode": 4
+				}
+			]
 		}
 	],
 	"nodes": [
 		{
 			"mesh": 0,
 			"name": "Sphere"
+		},
+		{
+			"mesh": 1,
+			"name": "Unnamed Node 1",
+			"translation": [
+				3.0,
+				0.0,
+				0.0
+			]
 		}
 	],
 	"scene": 0,
@@ -114,7 +151,8 @@
 		{
 			"name": "Scene",
 			"nodes": [
-				0
+				0,
+				1
 			]
 		}
 	]
