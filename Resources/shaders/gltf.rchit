@@ -503,8 +503,9 @@ void main()
 
 		    out_hitValue.ray = H;
 		    traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, position.xyz, tmin, H, tmax, 0);
+			vec3 D = out_hitValue.color;
 		    
-			diffuse += diffuseColor * out_hitValue.color;
+			diffuse += diffuseColor * D;
 			    
 			diffuseCount += 1.0; 
 		}
@@ -528,7 +529,6 @@ void main()
 			{
 			    out_hitValue.ray = L;
 			    traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, position.xyz, tmin, L, tmax, 0);
-			    
 			    vec3 D = out_hitValue.color;
 
 				//
