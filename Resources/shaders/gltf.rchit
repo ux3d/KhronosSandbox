@@ -159,6 +159,26 @@ vec3 getDirection(vec3 normal, vec3 H)
 	return normalize(tangent * H.x + bitangent * H.y + normal * H.z);
 }
 
+vec3 F_Schlick(vec3 f0, vec3 f90, float VdotH)
+{
+    return f0 + (f90 - f0) * pow(clamp(1.0 - VdotH, 0.0, 1.0), 5.0);
+}
+
+float V_GGX(float NdotL, float NdotV, float alphaRoughness)
+{
+    float alphaRoughnessSq = alphaRoughness * alphaRoughness;
+
+    float GGXV = NdotL * sqrt(NdotV * NdotV * (1.0 - alphaRoughnessSq) + alphaRoughnessSq);
+    float GGXL = NdotV * sqrt(NdotL * NdotL * (1.0 - alphaRoughnessSq) + alphaRoughnessSq);
+
+    float GGX = GGXV + GGXL;
+    if (GGX > 0.0)
+    {
+        return 0.5 / GGX;
+    }
+    return 0.0;
+}
+
 //
 
 void computeTangent(in vec3 pos0, in vec3 pos1, in vec3 pos2, in vec2 uv0, in vec2 uv1, in vec2 uv2, in vec3 geo_normal, out vec3 tangent, out vec3 binormal)
@@ -491,8 +511,9 @@ void main()
 		
 		// BRDF
 		vec3 color = getEmissive(materialIndex, texCoord0);
-
-
+		
+		float NdotV = dot(N, V);
+		
 		vec3 diffuse = vec3(0.0, 0.0, 0.0);
 		float diffuseCount = 0.0;
 		for (uint i = 0; i < in_upc.diffuseSamples; i++)
@@ -503,19 +524,15 @@ void main()
 
 		    out_hitValue.ray = H;
 		    traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, position.xyz, tmin, H, tmax, 0);
-			vec3 D = out_hitValue.color;
 		    
-			diffuse += diffuseColor * D;
+			diffuse += diffuseColor * out_hitValue.color;
 			    
 			diffuseCount += 1.0; 
 		}
 
-
-		float NdotV = dot(N, V);
 	
 		vec3 specular = vec3(0.0, 0.0, 0.0);
 		float alpha = roughness * roughness;
-		float alpha2 = alpha * alpha;
 		float specularCount = 0.0;
 		for (uint i = 0; i < in_upc.specularSamples; i++)
 		{	
@@ -527,18 +544,19 @@ void main()
 			
 			if (NdotL > 0.0)
 			{
+				float NdotH = dot(N, H);
+				float VdotH = dot(V, H);
+				float LdotH = dot(L, H);
+			
 			    out_hitValue.ray = L;
 			    traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, position.xyz, tmin, L, tmax, 0);
-			    vec3 D = out_hitValue.color;
-
-				//
-				
-				float VdotH = dot(V, H);
-				vec3 F = f0 + (1.0 - f0) * pow(1.0 - VdotH, 5.0);
-				
-				float Vis = 0.5 / (NdotL * sqrt(NdotV*NdotV * (1.0 - alpha2) + alpha2) + NdotV * sqrt(NdotL*NdotL * (1.0 - alpha2) + alpha2)); 
+			    vec3 sampleColor = out_hitValue.color;
 			    
-			    specular += F * Vis * D;
+			    float f90 = LdotH * LdotH * roughness;
+			    vec3 F = F_Schlick(f0, vec3(f90), NdotH);
+			    float Vis = V_GGX(NdotL, NdotV, alpha);
+			    
+			    specular += sampleColor * F * Vis;
 			    
 			    specularCount += 1.0; 
 			}
