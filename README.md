@@ -7,7 +7,8 @@ This R&D project is a playground to evaluate raytracing vs. pathtracing vs. rast
 Evaluation
 - [x] glTF rasterize
 - [x] glTF raytrace
-- [ ] glTF pathtrace
+- [x] glTF pathtrace
+- [ ] Pre-filtered vs. spherical harmonics
 
 ## How to build?
 - [Vulkan SDK 1.2.135.0 or later](https://vulkan.lunarg.com/sdk/home)

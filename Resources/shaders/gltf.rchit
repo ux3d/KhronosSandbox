@@ -164,21 +164,6 @@ vec3 F_Schlick(vec3 f0, vec3 f90, float VdotH)
     return f0 + (f90 - f0) * pow(clamp(1.0 - VdotH, 0.0, 1.0), 5.0);
 }
 
-float V_GGX(float NdotL, float NdotV, float alphaRoughness)
-{
-    float alphaRoughnessSq = alphaRoughness * alphaRoughness;
-
-    float GGXV = NdotL * sqrt(NdotV * NdotV * (1.0 - alphaRoughnessSq) + alphaRoughnessSq);
-    float GGXL = NdotV * sqrt(NdotL * NdotL * (1.0 - alphaRoughnessSq) + alphaRoughnessSq);
-
-    float GGX = GGXV + GGXL;
-    if (GGX > 0.0)
-    {
-        return 0.5 / GGX;
-    }
-    return 0.0;
-}
-
 //
 
 void computeTangent(in vec3 pos0, in vec3 pos1, in vec3 pos2, in vec2 uv0, in vec2 uv1, in vec2 uv2, in vec3 geo_normal, out vec3 tangent, out vec3 binormal)
@@ -489,6 +474,9 @@ void main()
     vec3 diffuseColor = baseColor.rgb * (vec3(1.0) - f0) * (1.0 - metallic);
     f0 = mix(f0, baseColor.rgb, metallic);
     
+    float reflectance = max(max(f0.r, f0.g), f0.b);
+    vec3 f90 = vec3(clamp(reflectance * 50.0, 0.0, 1.0));
+    
     float roughness = getRoughness(materialIndex, texCoord0);
 	
 	if (out_hitValue.depth == out_hitValue.maxDepth)
@@ -515,54 +503,46 @@ void main()
 		float NdotV = dot(N, V);
 		
 		vec3 diffuse = vec3(0.0, 0.0, 0.0);
-		float diffuseCount = 0.0;
 		for (uint i = 0; i < in_upc.diffuseSamples; i++)
 		{	
 			vec2 point = hammersley(i, in_upc.diffuseSamples);
 			vec3 H = lambertToCartesian(point);
 			H = getDirection(N, H);
+			
+			vec3 L = reflect(-V, H);
+			float VdotH = dot(V, H);
 
 		    out_hitValue.ray = H;
 		    traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, position.xyz, tmin, H, tmax, 0);
+		    vec3 sampleColor = out_hitValue.color;
 		    
-			diffuse += diffuseColor * out_hitValue.color;
-			    
-			diffuseCount += 1.0; 
+		    vec3 F = F_Schlick(f0, f90, VdotH);
+		    
+			diffuse += (1.0 - F) * diffuseColor * sampleColor;
 		}
 
 	
 		vec3 specular = vec3(0.0, 0.0, 0.0);
 		float alpha = roughness * roughness;
-		float specularCount = 0.0;
 		for (uint i = 0; i < in_upc.specularSamples; i++)
 		{	
 			vec2 point = hammersley(i, in_upc.specularSamples);
 			vec3 H = ggxToCartesian(point, alpha);
 			H = getDirection(N, H);
+			
 			vec3 L = reflect(-V, H);
-			float NdotL = dot(N, L);
+			float VdotH = dot(V, H);
 			
-			if (NdotL > 0.0)
-			{
-				float NdotH = dot(N, H);
-				float VdotH = dot(V, H);
-				float LdotH = dot(L, H);
-			
-			    out_hitValue.ray = L;
-			    traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, position.xyz, tmin, L, tmax, 0);
-			    vec3 sampleColor = out_hitValue.color;
-			    
-			    float f90 = LdotH * LdotH * roughness;
-			    vec3 F = F_Schlick(f0, vec3(f90), NdotH);
-			    float Vis = V_GGX(NdotL, NdotV, alpha);
-			    
-			    specular += sampleColor * F * Vis;
-			    
-			    specularCount += 1.0; 
-			}
+		    out_hitValue.ray = L;
+		    traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, position.xyz, tmin, L, tmax, 0);
+		    vec3 sampleColor = out_hitValue.color;
+		    
+		    vec3 F = F_Schlick(f0, f90, VdotH);
+		    
+		    specular += F * sampleColor;
 		}
 		
-	    out_hitValue.color = color + diffuse/diffuseCount + specular/specularCount;
+	    out_hitValue.color = color + diffuse/in_upc.diffuseSamples + specular/in_upc.specularSamples;
 	}
 	out_hitValue.primitive = true;
 }
