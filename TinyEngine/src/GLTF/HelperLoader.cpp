@@ -169,7 +169,7 @@ bool HelperLoader::initImages(GLTF& glTF, const std::string& path)
 		Image image;
 
 		image.uri = model.images[i].uri;
-		if (!FileIO::openImageData(image.imageDataResources, path + image.uri))
+		if (!ImageIO::openImageData(image.imageDataResources, path + image.uri))
 		{
 			return false;
 		}
@@ -1029,7 +1029,7 @@ bool HelperLoader::open(GLTF& glTF, const std::string& filename, const std::stri
 	diffuseMap.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
 	diffuseMap.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
 
-	if(!FileIO::openImageData(diffuseMap.imageDataResources, diffuseFilename))
+	if(!ImageIO::openImageData(diffuseMap.imageDataResources, diffuseFilename))
 	{
 		return false;
 	}
@@ -1047,7 +1047,7 @@ bool HelperLoader::open(GLTF& glTF, const std::string& filename, const std::stri
 	specularMap.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
 	specularMap.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
-	if(!FileIO::openImageData(specularMap.imageDataResources, specularFilename))
+	if(!ImageIO::openImageData(specularMap.imageDataResources, specularFilename))
 	{
 		return false;
 	}
@@ -1067,7 +1067,7 @@ bool HelperLoader::open(GLTF& glTF, const std::string& filename, const std::stri
 	lutMap.samplerResourceCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 	lutMap.samplerResourceCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 
-	if(!FileIO::openImageData(lutMap.imageDataResources, lutFilename))
+	if(!ImageIO::openImageData(lutMap.imageDataResources, lutFilename))
 	{
 		return false;
 	}

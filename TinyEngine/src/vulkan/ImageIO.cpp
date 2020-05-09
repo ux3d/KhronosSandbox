@@ -1,9 +1,6 @@
-#include "FileIO.h"
+#include "ImageIO.h"
 
-#include <algorithm>
-#include <cstdio>
-#include <cstring>
-#include <fstream>
+#include "../generic/FileIO.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ONLY_JPEG
@@ -16,63 +13,14 @@
 
 using namespace ux3d;
 
-std::string FileIO::getPath(const std::string& filename)
-{
-	size_t position = filename.rfind("/");
-	if (position == std::string::npos)
-	{
-		position = filename.rfind("\\");
-	}
-
-	if (position != std::string::npos)
-	{
-		return filename.substr(0, position + 1);
-	}
-
-	return "";
-}
-
-std::string FileIO::getExtension(const std::string& filename)
-{
-	size_t position = filename.rfind(".");
-
-	if (position != std::string::npos)
-	{
-		std::string result = filename.substr(position + 1);
-		std::transform(result.begin(), result.end(), result.begin(), ::tolower);
-		return result;
-	}
-
-	return "";
-}
-
-bool FileIO::openText(std::string& output, const std::string& filename)
-{
-	std::ifstream file(filename, std::ios::ate | std::ios::binary);
-	if (!file.is_open())
-	{
-		return false;
-	}
-
-	size_t fileSize = static_cast<size_t>(file.tellg());
-	file.seekg(0);
-
-	output.resize(fileSize);
-
-	file.read(output.data(), fileSize);
-	file.close();
-
-	return true;
-}
-
-bool FileIO::openImageData(ImageDataResources& output, const std::string& filename, const uint32_t channels)
+bool ImageIO::openImageData(ImageDataResources& output, const std::string& filename, const uint32_t channels)
 {
 	if (channels < 1 || channels > 4)
 	{
 		return false;
 	}
 
-	if (getExtension(filename) == "ktx2")
+	if (FileIO::getExtension(filename) == "ktx2")
 	{
 		slimktx2::DefaultFileIOCallback defaultFileIOCallback;
 		slimktx2::DefaultAllocationCallback defaultAllocationCallback;
@@ -138,7 +86,7 @@ bool FileIO::openImageData(ImageDataResources& output, const std::string& filena
 
 		return true;
 	}
-	else if (getExtension(filename) == "png" || getExtension(filename) == "jpg" || getExtension(filename) == "jpeg")
+	else if (FileIO::getExtension(filename) == "png" || FileIO::getExtension(filename) == "jpg" || FileIO::getExtension(filename) == "jpeg")
 	{
 		int x = 0;
 		int y = 0;

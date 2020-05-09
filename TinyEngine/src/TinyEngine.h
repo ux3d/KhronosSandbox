@@ -2,7 +2,8 @@
 #define TINYENGINE_H_
 
 #include "Compiler.h"
-#include "FileIO.h"
+#include "generic/FileIO.h"
+#include "vulkan/ImageIO.h"
 #include "Helper.h"
 #include "HelperRaytrace.h"
 #include "generic/Logger.h"
