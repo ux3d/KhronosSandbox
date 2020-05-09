@@ -14,7 +14,7 @@ const std::vector<std::string> Logger::LOG_STRINGS = {"ERROR", "WARNING", "INFO"
 
 DebugLevel Logger::debugLevel = TE_INFO;
 
-void Logger::print(DebugLevel debugLevel, const char* fileName, uint32_t lineNumber, VkResult result)
+void Logger::print(DebugLevel debugLevel, const char* fileName, uint32_t lineNumber, int32_t result)
 {
 	static std::map<int32_t, const char *> resultToString = {
 		{  0, "VK_SUCCESS"},
@@ -58,7 +58,7 @@ void Logger::print(DebugLevel debugLevel, const char* fileName, uint32_t lineNum
 		{  1000297000, "VK_ERROR_PIPELINE_COMPILE_REQUIRED_EXT"}
 	};
 
-	print(debugLevel, fileName, lineNumber, "VkResult = %s\n", resultToString[static_cast<int32_t>(result)]);
+	print(debugLevel, fileName, lineNumber, "VkResult = %s\n", resultToString[result]);
 }
 
 void Logger::print(DebugLevel debugLevel, const char* fileName, uint32_t lineNumber, const char* format, ...)

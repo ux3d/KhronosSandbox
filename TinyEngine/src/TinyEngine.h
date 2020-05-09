@@ -5,8 +5,8 @@
 #include "FileIO.h"
 #include "Helper.h"
 #include "HelperRaytrace.h"
-#include "Logger.h"
-#include "Math.h"
+#include "generic/Logger.h"
+#include "generic/Math.h"
 
 #include <optional>
 #include <vector>

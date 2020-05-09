@@ -1,6 +1,6 @@
 #include "Helper.h"
 
-#include "Logger.h"
+#include "generic/Logger.h"
 
 #include <cmath>
 #include <cstring>

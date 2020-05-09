@@ -1,6 +1,6 @@
 #include "Compiler.h"
 
-#include "Logger.h"
+#include "generic/Logger.h"
 
 bool Compiler::buildShader(std::vector<uint32_t>& spirv, const std::string& source, const std::map<std::string, std::string>& macros, shaderc_shader_kind shaderKind, shaderc_optimization_level optimizationLevel)
 {
