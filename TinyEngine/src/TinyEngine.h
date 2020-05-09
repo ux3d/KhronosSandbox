@@ -2,6 +2,7 @@
 #define TINYENGINE_H_
 
 #include "generic/FileIO.h"
+#include "generic/ImageDataIO.h"
 #include "generic/Logger.h"
 #include "generic/Math.h"
 
@@ -9,13 +10,11 @@
 
 #include "vulkan/HelperRaytrace.h"
 #include "vulkan/HelperVulkan.h"
+#include "vulkan/HelperVulkanResource.h"
 
 #include <cstddef>
 #include <optional>
 #include <vector>
-
-#include "generic/ImageDataIO.h"
-#include "vulkan/HelperVulkanResource.h"
 
 // Volk
 #define VK_ENABLE_BETA_EXTENSIONS
