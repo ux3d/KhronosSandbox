@@ -4,6 +4,10 @@
 #include <string>
 #include <vector>
 
+// Note: Only header required.
+#define VK_ENABLE_BETA_EXTENSIONS
+#include "volk.h"
+
 enum DebugLevel {
 	TE_ERROR,
 	TE_WARNING,
@@ -23,7 +27,7 @@ public:
 
 	static DebugLevel debugLevel;
 
-	static void print(DebugLevel debugLevel, const char* fileName, uint32_t lineNumber, int32_t result);
+	static void print(DebugLevel debugLevel, const char* fileName, uint32_t lineNumber, VkResult result);
 
 	static void print(DebugLevel debugLevel, const char* fileName, uint32_t lineNumber, const char* format, ...);
 
