@@ -1,7 +1,7 @@
 #ifndef GLTF_TEXTURE_H_
 #define GLTF_TEXTURE_H_
 
-#include "../TinyEngine.h"
+#include "../../TinyEngine.h"
 
 class Texture {
 public:

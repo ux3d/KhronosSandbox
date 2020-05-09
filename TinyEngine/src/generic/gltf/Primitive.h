@@ -1,7 +1,7 @@
 #ifndef GLTF_PRIMITIVE_H_
 #define GLTF_PRIMITIVE_H_
 
-#include "../TinyEngine.h"
+#include "../../TinyEngine.h"
 
 class GLTF;
 

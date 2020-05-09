@@ -1,7 +1,7 @@
 #ifndef GLTF_BUFFERVIEW_H_
 #define GLTF_BUFFERVIEW_H_
 
-#include "../TinyEngine.h"
+#include "../../TinyEngine.h"
 
 #include "Buffer.h"
 

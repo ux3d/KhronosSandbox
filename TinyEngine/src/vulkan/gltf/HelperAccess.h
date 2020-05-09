@@ -1,7 +1,7 @@
 #ifndef GLTF_HELPERACCESS_H_
 #define GLTF_HELPERACCESS_H_
 
-#include "GLTF.h"
+#include "../../generic/gltf/GLTF.h"
 
 class HelperAccess {
 public:

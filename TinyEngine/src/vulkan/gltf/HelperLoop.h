@@ -1,7 +1,7 @@
 #ifndef GLTF_HELPERLOOP_H_
 #define GLTF_HELPERLOOP_H_
 
-#include "GLTF.h"
+#include "../../generic/gltf/GLTF.h"
 
 class HelperLoop {
 public:

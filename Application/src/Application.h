@@ -1,7 +1,7 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
-#include <gltf/GLTF.h>
+#include "generic/gltf/GLTF.h"
 #include "TinyEngine.h"
 
 #include "imgui/imgui_impl_glfw.h"

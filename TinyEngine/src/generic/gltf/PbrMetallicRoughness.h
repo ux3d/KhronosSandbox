@@ -1,7 +1,7 @@
 #ifndef GLTF_PBRMETALLICROUGHNESS_H_
 #define GLTF_PBRMETALLICROUGHNESS_H_
 
-#include "../TinyEngine.h"
+#include "../../TinyEngine.h"
 
 #include "TextureInfo.h"
 

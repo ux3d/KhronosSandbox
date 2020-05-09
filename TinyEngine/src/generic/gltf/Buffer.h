@@ -1,7 +1,7 @@
 #ifndef GLTF_BUFFER_H_
 #define GLTF_BUFFER_H_
 
-#include "../TinyEngine.h"
+#include "../../TinyEngine.h"
 
 class Buffer {
 public:

@@ -1,7 +1,7 @@
 #ifndef GLTF_SAMPLER_H_
 #define GLTF_SAMPLER_H_
 
-#include "../TinyEngine.h"
+#include "../../TinyEngine.h"
 
 class Sampler {
 public:

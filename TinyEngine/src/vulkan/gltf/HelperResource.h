@@ -1,7 +1,7 @@
 #ifndef GLTF_HELPERRESOURCE_H_
 #define GLTF_HELPERRESOURCE_H_
 
-#include "GLTF.h"
+#include "../../generic/gltf/GLTF.h"
 
 class HelperResource {
 public:

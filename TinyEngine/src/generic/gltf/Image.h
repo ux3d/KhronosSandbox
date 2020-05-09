@@ -1,7 +1,7 @@
 #ifndef GLTF_IMAGE_H_
 #define GLTF_IMAGE_H_
 
-#include "../TinyEngine.h"
+#include "../../TinyEngine.h"
 
 class Image {
 public:

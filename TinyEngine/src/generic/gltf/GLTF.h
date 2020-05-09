@@ -1,7 +1,7 @@
 #ifndef GLTF_GLTF_H_
 #define GLTF_GLTF_H_
 
-#include "../TinyEngine.h"
+#include "../../TinyEngine.h"
 
 struct ViewProjectionUniformPushConstant {
 	glm::mat4 projection = glm::mat4(1.0f);

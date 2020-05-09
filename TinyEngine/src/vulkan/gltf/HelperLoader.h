@@ -1,7 +1,7 @@
 #ifndef GLTF_HELPERLOADER_H_
 #define GLTF_HELPERLOADER_H_
 
-#include "GLTF.h"
+#include "../../generic/gltf/GLTF.h"
 
 #define TINYGLTF_NO_EXTERNAL_IMAGE
 #define TINYGLTF_NO_STB_IMAGE

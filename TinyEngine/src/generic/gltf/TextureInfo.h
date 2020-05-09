@@ -1,7 +1,7 @@
 #ifndef GLTF_TEXTUREINFO_H_
 #define GLTF_TEXTUREINFO_H_
 
-#include "../TinyEngine.h"
+#include "../../TinyEngine.h"
 
 class TextureInfo {
 public:
