@@ -49,8 +49,3 @@ const uint8_t* HelperAccess::accessData(const Image& image, uint32_t index)
 
 	return image.imageDataResources.images[index].pixels.data();
 }
-
-std::string HelperAccess::getTexCoord(const TextureInfo& textureInfo)
-{
-	return "in_texCoord" + std::to_string(textureInfo.texCoord);
-}

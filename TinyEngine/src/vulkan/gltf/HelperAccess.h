@@ -18,8 +18,6 @@ public:
 	static size_t getRange(const Accessor& accessor);
 
 	static const uint8_t* accessData(const Image& image, uint32_t index = 0);
-
-	static std::string getTexCoord(const TextureInfo& textureInfo);
 };
 
 #endif /* GLTF_HELPERACCESS_H_ */
