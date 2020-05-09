@@ -1,20 +1,25 @@
 #ifndef TINYENGINE_H_
 #define TINYENGINE_H_
 
-#include "Compiler.h"
-#include "generic/FileIO.h"
-#include "vulkan/ImageIO.h"
 #include "Helper.h"
 #include "HelperRaytrace.h"
+
+#include "generic/FileIO.h"
 #include "generic/Logger.h"
 #include "generic/Math.h"
+
+#include "spir/Compiler.h"
+
+#include "vulkan/ImageIO.h"
 
 #include <optional>
 #include <vector>
 
+// Volk
 #define VK_ENABLE_BETA_EXTENSIONS
 #include "volk.h"
 
+// glm
 #define GLM_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -22,6 +27,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
+// Dear ImGui
 #include "generic/imgui/imgui.h"
 #include "vulkan/imgui/imgui_impl_vulkan.h"
 

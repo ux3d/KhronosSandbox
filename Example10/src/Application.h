@@ -1,9 +1,9 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
+#include <gltf/GLTF.h>
 #include "TinyEngine.h"
 
-#include "GLTF/GLTF.h"
 
 class Application: public TinyEngine
 {

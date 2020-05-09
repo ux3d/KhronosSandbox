@@ -1,9 +1,9 @@
 #include "Application.h"
 
-#include "GLTF/HelperAccess.h"
-#include "GLTF/HelperLoader.h"
-#include "GLTF/HelperLoop.h"
-#include "GLTF/HelperResource.h"
+#include <gltf/HelperAccess.h>
+#include <gltf/HelperLoader.h>
+#include <gltf/HelperLoop.h>
+#include <gltf/HelperResource.h>
 
 // Private
 
