@@ -461,7 +461,7 @@ bool TinyEngine::createColorResources()
 	imageViewResourceCreateInfo.usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	imageViewResourceCreateInfo.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
-	return Helper::createImageViewResource(physicalDevice, device, msaa, imageViewResourceCreateInfo);
+	return HelperVulkanResource::createImageViewResource(physicalDevice, device, msaa, imageViewResourceCreateInfo);
 }
 
 bool TinyEngine::createDepthStencilResources()
@@ -471,7 +471,7 @@ bool TinyEngine::createDepthStencilResources()
 		return true;
 	}
 
-	if (!Helper::isDepthStencilFormat(depthStencilFormat))
+	if (!HelperVulkan::isDepthStencilFormat(depthStencilFormat))
 	{
 		return false;
 	}
@@ -484,7 +484,7 @@ bool TinyEngine::createDepthStencilResources()
 	imageViewResourceCreateInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	imageViewResourceCreateInfo.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
 
-	return Helper::createImageViewResource(physicalDevice, device, depth, imageViewResourceCreateInfo);
+	return HelperVulkanResource::createImageViewResource(physicalDevice, device, depth, imageViewResourceCreateInfo);
 }
 
 bool TinyEngine::createRenderpass()
@@ -796,7 +796,7 @@ bool TinyEngine::createImgui()
 	}
 
 	VkCommandBuffer imguiCommandBuffer = VK_NULL_HANDLE;
-	if (!Helper::beginOneTimeSubmitCommand(device, commandPool, imguiCommandBuffer))
+	if (!HelperVulkan::beginOneTimeSubmitCommand(device, commandPool, imguiCommandBuffer))
 	{
 		return false;
 	}
@@ -806,7 +806,7 @@ bool TinyEngine::createImgui()
 		return false;
 	}
 
-	if (!Helper::endOneTimeSubmitCommand(device, queue, commandPool, imguiCommandBuffer))
+	if (!HelperVulkan::endOneTimeSubmitCommand(device, queue, commandPool, imguiCommandBuffer))
 	{
 		return false;
 	}
@@ -1203,9 +1203,9 @@ bool TinyEngine::terminate()
 		}
 	}
 
-	Helper::destroyImageViewResource(device, depth);
+	HelperVulkanResource::destroyImageViewResource(device, depth);
 
-	Helper::destroyImageViewResource(device, msaa);
+	HelperVulkanResource::destroyImageViewResource(device, msaa);
 
 	for (const VkImageView& currentImageView : swapchainImageViews)
 	{

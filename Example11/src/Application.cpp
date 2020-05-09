@@ -30,7 +30,7 @@ bool Application::applicationInit()
 	vertexIndexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	vertexIndexBufferResourceCreateInfo.data = vertexIndices.data();
 
-	if (!Helper::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexIndexBufferResource, vertexIndexBufferResourceCreateInfo))
+	if (!HelperVulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexIndexBufferResource, vertexIndexBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -50,7 +50,7 @@ bool Application::applicationInit()
 	vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	vertexBufferResourceCreateInfo.data = vertexData.data();
 
-	if (!Helper::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexBufferResource, vertexBufferResourceCreateInfo))
+	if (!HelperVulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexBufferResource, vertexBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -115,12 +115,12 @@ bool Application::applicationInit()
 	bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
 	bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-	if (!Helper::createBufferResource(physicalDevice, device, accelerationStructureInstanceBuffer, bufferResourceCreateInfo))
+	if (!HelperVulkanResource::createBufferResource(physicalDevice, device, accelerationStructureInstanceBuffer, bufferResourceCreateInfo))
 	{
 		return false;
 	}
 
-	if (!Helper::copyHostToDevice(device, accelerationStructureInstanceBuffer, &accelerationStructureInstance, sizeof(VkAccelerationStructureInstanceKHR)))
+	if (!HelperVulkanResource::copyHostToDevice(device, accelerationStructureInstanceBuffer, &accelerationStructureInstance, sizeof(VkAccelerationStructureInstanceKHR)))
 	{
 		return false;
 	}
@@ -156,7 +156,7 @@ bool Application::applicationInit()
 	imageViewResourceCreateInfo.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
 	imageViewResourceCreateInfo.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
-	if (!Helper::createImageViewResource(physicalDevice, device, raytraceImageViewResource, imageViewResourceCreateInfo))
+	if (!HelperVulkanResource::createImageViewResource(physicalDevice, device, raytraceImageViewResource, imageViewResourceCreateInfo))
 	{
 		return false;
 	}
@@ -176,7 +176,7 @@ bool Application::applicationInit()
 	uniformBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	uniformBufferResourceCreateInfo.data = &uniformData;
 
-	if (!Helper::createUniformBufferResource(physicalDevice, device, uniformBufferResource, uniformBufferResourceCreateInfo))
+	if (!HelperVulkanResource::createUniformBufferResource(physicalDevice, device, uniformBufferResource, uniformBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -328,7 +328,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	if (!Helper::createShaderModule(rayGenShaderModule, device, rayGenShaderCode))
+	if (!HelperVulkanResource::createShaderModule(rayGenShaderModule, device, rayGenShaderCode))
 	{
 		return false;
 	}
@@ -347,7 +347,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	if (!Helper::createShaderModule(missShaderModule, device, missShaderCode))
+	if (!HelperVulkanResource::createShaderModule(missShaderModule, device, missShaderCode))
 	{
 		return false;
 	}
@@ -366,7 +366,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	if (!Helper::createShaderModule(closestHitShaderModule, device, closestHitShaderCode))
+	if (!HelperVulkanResource::createShaderModule(closestHitShaderModule, device, closestHitShaderCode))
 	{
 		return false;
 	}
@@ -448,7 +448,7 @@ bool Application::applicationInit()
 	bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_RAY_TRACING_BIT_KHR;
 	bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-	if (!Helper::createBufferResource(physicalDevice, device, shaderBindingBufferResource, bufferResourceCreateInfo))
+	if (!HelperVulkanResource::createBufferResource(physicalDevice, device, shaderBindingBufferResource, bufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -463,7 +463,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	if (!Helper::copyHostToDevice(device, shaderBindingBufferResource, rayTracingShaderGroupHandles.data(), rayTracingShaderGroupHandles.size()))
+	if (!HelperVulkanResource::copyHostToDevice(device, shaderBindingBufferResource, rayTracingShaderGroupHandles.data(), rayTracingShaderGroupHandles.size()))
 	{
 		return false;
 	}
@@ -569,7 +569,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 void Application::applicationTerminate()
 {
-	Helper::destroyBufferResource(device, shaderBindingBufferResource);
+	HelperVulkanResource::destroyBufferResource(device, shaderBindingBufferResource);
 
 	if (pipeline != VK_NULL_HANDLE)
 	{
@@ -615,22 +615,22 @@ void Application::applicationTerminate()
 		descriptorSetLayout = VK_NULL_HANDLE;
 	}
 
-	Helper::destroyUniformBufferResource(device, uniformBufferResource);
+	HelperVulkanResource::destroyUniformBufferResource(device, uniformBufferResource);
 
-	Helper::destroyImageViewResource(device, raytraceImageViewResource);
+	HelperVulkanResource::destroyImageViewResource(device, raytraceImageViewResource);
 
 	//
 
 	HelperRaytrace::destroyTopLevelResource(device, topLevelResource);
 
-	Helper::destroyBufferResource(device, accelerationStructureInstanceBuffer);
+	HelperVulkanResource::destroyBufferResource(device, accelerationStructureInstanceBuffer);
 
 	//
 
 	HelperRaytrace::destroyBottomLevelResource(device, bottomLevelResource);
 
-	Helper::destroyVertexBufferResource(device, vertexBufferResource);
-	Helper::destroyVertexBufferResource(device, vertexIndexBufferResource);
+	HelperVulkanResource::destroyVertexBufferResource(device, vertexBufferResource);
+	HelperVulkanResource::destroyVertexBufferResource(device, vertexIndexBufferResource);
 }
 
 // Public

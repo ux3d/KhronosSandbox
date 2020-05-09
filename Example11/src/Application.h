@@ -3,7 +3,7 @@
 
 #include "TinyEngine.h"
 
-#include "HelperRaytrace.h"
+#include "vulkan/HelperRaytrace.h"
 
 class Application: public TinyEngine
 {

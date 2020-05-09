@@ -271,7 +271,7 @@ bool HelperLoader::initTextures(GLTF& glTF)
 			textureResourceCreateInfo.samplerResourceCreateInfo = glTF.samplers[model.textures[i].sampler].samplerResourceCreateInfo;
 		}
 
-		if (!Helper::createTextureResource(physicalDevice, device, queue, commandPool, texture.textureResource, textureResourceCreateInfo))
+		if (!HelperVulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, texture.textureResource, textureResourceCreateInfo))
 		{
 			return false;
 		}
@@ -569,7 +569,7 @@ bool HelperLoader::initMaterials(GLTF& glTF)
 		uniformBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(MaterialUniformBuffer);
 		uniformBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 
-		if (!Helper::createUniformBufferResource(physicalDevice, device, material.uniformBufferResource, uniformBufferResourceCreateInfo))
+		if (!HelperVulkanResource::createUniformBufferResource(physicalDevice, device, material.uniformBufferResource, uniformBufferResourceCreateInfo))
 		{
 			return false;
 		}
@@ -615,7 +615,7 @@ bool HelperLoader::initMaterials(GLTF& glTF)
 
 		uniformBuffer.doubleSided = material.doubleSided;
 
-		if (!Helper::copyHostToDevice(device, material.uniformBufferResource.bufferResource, &uniformBuffer, sizeof(uniformBuffer)))
+		if (!HelperVulkanResource::copyHostToDevice(device, material.uniformBufferResource.bufferResource, &uniformBuffer, sizeof(uniformBuffer)))
 		{
 			return false;
 		}
@@ -693,7 +693,7 @@ bool HelperLoader::initMeshes(GLTF& glTF, bool useRaytrace)
 
 				VkFormat format = VK_FORMAT_UNDEFINED;
 
-				if (!Helper::getFormat(format, glTF.accessors[accessorIndex].componentTypeSize, glTF.accessors[accessorIndex].componentTypeSigned, glTF.accessors[accessorIndex].componentTypeInteger, glTF.accessors[accessorIndex].typeCount))
+				if (!HelperVulkan::getFormat(format, glTF.accessors[accessorIndex].componentTypeSize, glTF.accessors[accessorIndex].componentTypeSigned, glTF.accessors[accessorIndex].componentTypeInteger, glTF.accessors[accessorIndex].typeCount))
 				{
 					return false;
 				}
@@ -917,12 +917,12 @@ bool HelperLoader::initMeshes(GLTF& glTF, bool useRaytrace)
 				return false;
 			}
 
-			if (!Helper::createShaderModule(primitive.vertexShaderModule, device, vertexShaderCode))
+			if (!HelperVulkanResource::createShaderModule(primitive.vertexShaderModule, device, vertexShaderCode))
 			{
 				return false;
 			}
 
-			if (!Helper::createShaderModule(primitive.fragmentShaderModule, device, fragmentShaderCode))
+			if (!HelperVulkanResource::createShaderModule(primitive.fragmentShaderModule, device, fragmentShaderCode))
 			{
 				return false;
 			}
@@ -1035,7 +1035,7 @@ bool HelperLoader::open(GLTF& glTF, const std::string& filename, const std::stri
 		return false;
 	}
 
-	if (!Helper::createTextureResource(physicalDevice, device, queue, commandPool, glTF.diffuse, diffuseMap))
+	if (!HelperVulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, glTF.diffuse, diffuseMap))
 	{
 		return false;
 	}
@@ -1053,7 +1053,7 @@ bool HelperLoader::open(GLTF& glTF, const std::string& filename, const std::stri
 		return false;
 	}
 
-	if (!Helper::createTextureResource(physicalDevice, device, queue, commandPool, glTF.specular, specularMap))
+	if (!HelperVulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, glTF.specular, specularMap))
 	{
 		return false;
 	}
@@ -1073,7 +1073,7 @@ bool HelperLoader::open(GLTF& glTF, const std::string& filename, const std::stri
 		return false;
 	}
 
-	if (!Helper::createTextureResource(physicalDevice, device, queue, commandPool, glTF.lut, lutMap))
+	if (!HelperVulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, glTF.lut, lutMap))
 	{
 		return false;
 	}

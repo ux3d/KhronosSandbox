@@ -23,7 +23,7 @@ bool HelperResource::initBufferView(BufferView& bufferView, const GLTF& glTF, Vk
 		vertexBufferResourceCreateInfo.bufferResourceCreateInfo.usage |= (VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 	}
 
-	if (!Helper::createVertexBufferResource(physicalDevice, device, queue, commandPool, bufferView.vertexBufferResource, vertexBufferResourceCreateInfo))
+	if (!HelperVulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, bufferView.vertexBufferResource, vertexBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -294,7 +294,7 @@ bool HelperResource::initPrimitive(Primitive& primitive, const GLTF& glTF, VkPhy
 
 		VkFormat positionFormat = VK_FORMAT_UNDEFINED;
 
-		if (!Helper::getFormat(positionFormat, glTF.accessors[primitive.position].componentTypeSize, glTF.accessors[primitive.position].componentTypeSigned, glTF.accessors[primitive.position].componentTypeInteger, glTF.accessors[primitive.position].typeCount))
+		if (!HelperVulkan::getFormat(positionFormat, glTF.accessors[primitive.position].componentTypeSize, glTF.accessors[primitive.position].componentTypeSigned, glTF.accessors[primitive.position].componentTypeInteger, glTF.accessors[primitive.position].typeCount))
 		{
 			return false;
 		}
@@ -457,12 +457,12 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 		bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
 		bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-		if (!Helper::createBufferResource(physicalDevice, device, scene.accelerationStructureInstanceBuffer, bufferResourceCreateInfo))
+		if (!HelperVulkanResource::createBufferResource(physicalDevice, device, scene.accelerationStructureInstanceBuffer, bufferResourceCreateInfo))
 		{
 			return false;
 		}
 
-		if (!Helper::copyHostToDevice(device, scene.accelerationStructureInstanceBuffer, scene.accelerationStructureInstances.data(), sizeof(VkAccelerationStructureInstanceKHR) * scene.accelerationStructureInstances.size()))
+		if (!HelperVulkanResource::copyHostToDevice(device, scene.accelerationStructureInstanceBuffer, scene.accelerationStructureInstances.data(), sizeof(VkAccelerationStructureInstanceKHR) * scene.accelerationStructureInstances.size()))
 		{
 			return false;
 		}
@@ -497,7 +497,7 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 		storageBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 		storageBufferResourceCreateInfo.data = scene.instanceResources.data();
 
-		if (!Helper::createStorageBufferResource(physicalDevice, device, queue, commandPool, scene.instanceResourcesStorageBufferResource, storageBufferResourceCreateInfo))
+		if (!HelperVulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, scene.instanceResourcesStorageBufferResource, storageBufferResourceCreateInfo))
 		{
 			return false;
 		}
@@ -536,7 +536,7 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 		storageBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 		storageBufferResourceCreateInfo.data = materialBuffers.data();
 
-		if (!Helper::createStorageBufferResource(physicalDevice, device, queue, commandPool, scene.materialStorageBufferResource, storageBufferResourceCreateInfo))
+		if (!HelperVulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, scene.materialStorageBufferResource, storageBufferResourceCreateInfo))
 		{
 			return false;
 		}
@@ -1042,7 +1042,7 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 			return false;
 		}
 
-		if (!Helper::createShaderModule(scene.rayGenShaderModule, device, rayGenShaderCode))
+		if (!HelperVulkanResource::createShaderModule(scene.rayGenShaderModule, device, rayGenShaderCode))
 		{
 			return false;
 		}
@@ -1061,7 +1061,7 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 			return false;
 		}
 
-		if (!Helper::createShaderModule(scene.missShaderModule, device, missShaderCode))
+		if (!HelperVulkanResource::createShaderModule(scene.missShaderModule, device, missShaderCode))
 		{
 			return false;
 		}
@@ -1080,7 +1080,7 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 			return false;
 		}
 
-		if (!Helper::createShaderModule(scene.closestHitShaderModule, device, closestHitShaderCode))
+		if (!HelperVulkanResource::createShaderModule(scene.closestHitShaderModule, device, closestHitShaderCode))
 		{
 			return false;
 		}
@@ -1170,7 +1170,7 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 		bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_RAY_TRACING_BIT_KHR;
 		bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-		if (!Helper::createBufferResource(physicalDevice, device, scene.shaderBindingBufferResource, bufferResourceCreateInfo))
+		if (!HelperVulkanResource::createBufferResource(physicalDevice, device, scene.shaderBindingBufferResource, bufferResourceCreateInfo))
 		{
 			return false;
 		}
@@ -1185,7 +1185,7 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 			return false;
 		}
 
-		if (!Helper::copyHostToDevice(device, scene.shaderBindingBufferResource, rayTracingShaderGroupHandles.data(), rayTracingShaderGroupHandles.size()))
+		if (!HelperVulkanResource::copyHostToDevice(device, scene.shaderBindingBufferResource, rayTracingShaderGroupHandles.data(), rayTracingShaderGroupHandles.size()))
 		{
 			return false;
 		}
@@ -1249,31 +1249,31 @@ void HelperResource::terminate(GLTF& glTF, VkDevice device)
 			glTF.materials[i].descriptorSetLayout = VK_NULL_HANDLE;
 		}
 
-		Helper::destroyUniformBufferResource(device, glTF.materials[i].uniformBufferResource);
+		HelperVulkanResource::destroyUniformBufferResource(device, glTF.materials[i].uniformBufferResource);
 	}
 	glTF.materials.clear();
 
 	for (size_t i = 0; i < glTF.bufferViews.size(); i++)
 	{
-		Helper::destroyVertexBufferResource(device, glTF.bufferViews[i].vertexBufferResource);
+		HelperVulkanResource::destroyVertexBufferResource(device, glTF.bufferViews[i].vertexBufferResource);
 	}
 	glTF.bufferViews.clear();
 
 	for (size_t i = 0; i < glTF.textures.size(); i++)
 	{
-		Helper::destroyTextureResource(device, glTF.textures[i].textureResource);
+		HelperVulkanResource::destroyTextureResource(device, glTF.textures[i].textureResource);
 	}
 	glTF.textures.clear();
 
 	for (size_t i = 0; i < glTF.scenes.size(); i++)
 	{
-		Helper::destroyStorageBufferResource(device, glTF.scenes[i].instanceResourcesStorageBufferResource);
-		Helper::destroyStorageBufferResource(device, glTF.scenes[i].materialStorageBufferResource);
+		HelperVulkanResource::destroyStorageBufferResource(device, glTF.scenes[i].instanceResourcesStorageBufferResource);
+		HelperVulkanResource::destroyStorageBufferResource(device, glTF.scenes[i].materialStorageBufferResource);
 
 		HelperRaytrace::destroyTopLevelResource(device, glTF.scenes[i].topLevelResource);
-		Helper::destroyBufferResource(device, glTF.scenes[i].accelerationStructureInstanceBuffer);
+		HelperVulkanResource::destroyBufferResource(device, glTF.scenes[i].accelerationStructureInstanceBuffer);
 
-		Helper::destroyBufferResource(device, glTF.scenes[i].shaderBindingBufferResource);
+		HelperVulkanResource::destroyBufferResource(device, glTF.scenes[i].shaderBindingBufferResource);
 
 		glTF.scenes[i].accelerationStructureInstances.clear();
 
@@ -1323,7 +1323,7 @@ void HelperResource::terminate(GLTF& glTF, VkDevice device)
 	}
 	glTF.scenes.clear();
 
-	Helper::destroyTextureResource(device, glTF.diffuse);
-	Helper::destroyTextureResource(device, glTF.specular);
-	Helper::destroyTextureResource(device, glTF.lut);
+	HelperVulkanResource::destroyTextureResource(device, glTF.diffuse);
+	HelperVulkanResource::destroyTextureResource(device, glTF.specular);
+	HelperVulkanResource::destroyTextureResource(device, glTF.lut);
 }

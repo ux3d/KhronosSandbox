@@ -1,6 +1,8 @@
 #include "HelperRaytrace.h"
 
-#include "generic/Logger.h"
+#include "HelperVulkan.h"
+
+#include "../generic/Logger.h"
 
 bool HelperRaytrace::createAccelerationStructureResource(VkPhysicalDevice physicalDevice, VkDevice device, AccelerationStructureResource& accelerationStructureResource, const AccelerationStructureResourceCreateInfo& accelerationStructureResourceCreateInfo)
 {
@@ -36,7 +38,7 @@ bool HelperRaytrace::createAccelerationStructureResource(VkPhysicalDevice physic
 	VkMemoryRequirements memoryRequirements = memoryRequirements2.memoryRequirements;
 
 	uint32_t memoryTypeIndex = 0;
-	if (!Helper::findMemoryTypeIndex(memoryTypeIndex, physicalDevice, memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT))
+	if (!HelperVulkan::findMemoryTypeIndex(memoryTypeIndex, physicalDevice, memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT))
 	{
 		return false;
 	}
@@ -110,7 +112,7 @@ bool HelperRaytrace::createScratchBuffer(VkPhysicalDevice physicalDevice, VkDevi
 	bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_RAY_TRACING_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
 	bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 
-	if (!Helper::createBufferResource(physicalDevice, device, scratchBufferResource.bufferResource, bufferResourceCreateInfo))
+	if (!HelperVulkanResource::createBufferResource(physicalDevice, device, scratchBufferResource.bufferResource, bufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -120,7 +122,7 @@ bool HelperRaytrace::createScratchBuffer(VkPhysicalDevice physicalDevice, VkDevi
 
 void HelperRaytrace::destroyScratchBuffer(VkDevice device, ScratchBufferResource& scratchBufferResource)
 {
-	Helper::destroyBufferResource(device, scratchBufferResource.bufferResource);
+	HelperVulkanResource::destroyBufferResource(device, scratchBufferResource.bufferResource);
 }
 
 void HelperRaytrace::destroyLevelResource(VkDevice device, LevelResource& levelResource)
@@ -149,14 +151,14 @@ bool HelperRaytrace::buildAccelerationStructure(VkDevice device, VkQueue queue, 
 	{
 		VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
 
-		if (!Helper::beginOneTimeSubmitCommand(device, commandPool, commandBuffer))
+		if (!HelperVulkan::beginOneTimeSubmitCommand(device, commandPool, commandBuffer))
 		{
 			return false;
 		}
 
 		vkCmdBuildAccelerationStructureKHR(commandBuffer, infoCount, accelerationStructureBuildGeometryInfos, accelerationStructureBuildOffsetInfos);
 
-		if (!Helper::endOneTimeSubmitCommand(device, queue, commandPool, commandBuffer))
+		if (!HelperVulkan::endOneTimeSubmitCommand(device, queue, commandPool, commandBuffer))
 		{
 			return false;
 		}

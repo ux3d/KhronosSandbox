@@ -45,12 +45,12 @@ bool Application::applicationInit()
 
 	//
 
-	if (!Helper::createShaderModule(vertexShaderModule, device, vertexShaderCode))
+	if (!HelperVulkanResource::createShaderModule(vertexShaderModule, device, vertexShaderCode))
 	{
 		return false;
 	}
 
-	if (!Helper::createShaderModule(fragmentShaderModule, device, fragmentShaderCode))
+	if (!HelperVulkanResource::createShaderModule(fragmentShaderModule, device, fragmentShaderCode))
 	{
 		return false;
 	}
@@ -66,7 +66,7 @@ bool Application::applicationInit()
 	uniformBufferResources.resize(commandBuffers.size());
 	for (auto& currentUniformBufferResource : uniformBufferResources)
 	{
-		if (!Helper::createUniformBufferResource(physicalDevice, device, currentUniformBufferResource, uniformBufferResourceCreateInfo))
+		if (!HelperVulkanResource::createUniformBufferResource(physicalDevice, device, currentUniformBufferResource, uniformBufferResourceCreateInfo))
 		{
 			return false;
 		}
@@ -174,7 +174,7 @@ bool Application::applicationInit()
 	vertexIndexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	vertexIndexBufferResourceCreateInfo.data = vertexIndices.data();
 
-	if (!Helper::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexIndexBufferResource, vertexIndexBufferResourceCreateInfo))
+	if (!HelperVulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexIndexBufferResource, vertexIndexBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -195,7 +195,7 @@ bool Application::applicationInit()
 	vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	vertexBufferResourceCreateInfo.data = vertexData;
 
-	if (!Helper::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexBufferResource, vertexBufferResourceCreateInfo))
+	if (!HelperVulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexBufferResource, vertexBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -343,7 +343,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	UniformData uniformData = {};
 	uniformData.transform = glm::mat4(1.0f);
 
-	if (!Helper::copyHostToDevice(device, uniformBufferResources[frameIndex].bufferResource, &uniformData, sizeof(uniformData)))
+	if (!HelperVulkanResource::copyHostToDevice(device, uniformBufferResources[frameIndex].bufferResource, &uniformData, sizeof(uniformData)))
 	{
 		return false;
 	}
@@ -367,11 +367,11 @@ void Application::applicationTerminate()
 {
 	for (auto& currentUniformBufferResource : uniformBufferResources)
 	{
-		Helper::destroyUniformBufferResource(device, currentUniformBufferResource);
+		HelperVulkanResource::destroyUniformBufferResource(device, currentUniformBufferResource);
 	}
 
-	Helper::destroyVertexBufferResource(device, vertexBufferResource);
-	Helper::destroyVertexBufferResource(device, vertexIndexBufferResource);
+	HelperVulkanResource::destroyVertexBufferResource(device, vertexBufferResource);
+	HelperVulkanResource::destroyVertexBufferResource(device, vertexIndexBufferResource);
 
 	if (graphicsPipeline != VK_NULL_HANDLE)
 	{

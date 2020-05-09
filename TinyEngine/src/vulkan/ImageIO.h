@@ -1,9 +1,8 @@
 #ifndef IMAGEIO_H_
 #define IMAGEIO_H_
 
-#include "../Helper.h"
-
 #include <string>
+#include "HelperVulkanResource.h"
 
 class ImageIO
 {

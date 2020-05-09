@@ -21,7 +21,7 @@ bool Application::applicationInit()
 	imageViewResourceCreateInfo.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
 	imageViewResourceCreateInfo.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
-	if (!Helper::createImageViewResource(physicalDevice, device, raytraceImageViewResource, imageViewResourceCreateInfo))
+	if (!HelperVulkanResource::createImageViewResource(physicalDevice, device, raytraceImageViewResource, imageViewResourceCreateInfo))
 	{
 		return false;
 	}
@@ -259,7 +259,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 void Application::applicationTerminate()
 {
-	Helper::destroyImageViewResource(device, raytraceImageViewResource);
+	HelperVulkanResource::destroyImageViewResource(device, raytraceImageViewResource);
 
 	HelperResource::terminate(glTF, device);
 }

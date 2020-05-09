@@ -1,9 +1,8 @@
 #ifndef HELPERRAYTRACE_H_
 #define HELPERRAYTRACE_H_
 
-#include "Helper.h"
-
 #include <vector>
+#include "HelperVulkanResource.h"
 
 #define VK_ENABLE_BETA_EXTENSIONS
 #include "volk.h"

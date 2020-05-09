@@ -36,12 +36,12 @@ bool Application::applicationInit()
 
 	//
 
-	if (!Helper::createShaderModule(vertexShaderModule, device, vertexShaderCode))
+	if (!HelperVulkanResource::createShaderModule(vertexShaderModule, device, vertexShaderCode))
 	{
 		return false;
 	}
 
-	if (!Helper::createShaderModule(fragmentShaderModule, device, fragmentShaderCode))
+	if (!HelperVulkanResource::createShaderModule(fragmentShaderModule, device, fragmentShaderCode))
 	{
 		return false;
 	}

@@ -1,19 +1,20 @@
 #ifndef TINYENGINE_H_
 #define TINYENGINE_H_
 
-#include "Helper.h"
-#include "HelperRaytrace.h"
-
 #include "generic/FileIO.h"
 #include "generic/Logger.h"
 #include "generic/Math.h"
 
 #include "spir/Compiler.h"
 
+#include "vulkan/HelperRaytrace.h"
+#include "vulkan/HelperVulkan.h"
 #include "vulkan/ImageIO.h"
 
+#include <cstddef>
 #include <optional>
 #include <vector>
+#include "vulkan/HelperVulkanResource.h"
 
 // Volk
 #define VK_ENABLE_BETA_EXTENSIONS
