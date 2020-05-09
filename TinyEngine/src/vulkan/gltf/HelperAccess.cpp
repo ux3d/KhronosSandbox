@@ -35,9 +35,9 @@ VkBuffer HelperAccess::getBuffer(const Accessor& accessor)
 	return HelperAccess::getBuffer(*accessor.pBufferView);
 }
 
-VkDeviceSize HelperAccess::getRange(const Accessor& accessor)
+size_t HelperAccess::getRange(const Accessor& accessor)
 {
-	return static_cast<VkDeviceSize>(accessor.pBufferView->byteLength - accessor.byteOffset);
+	return accessor.pBufferView->byteLength - accessor.byteOffset;
 }
 
 const uint8_t* HelperAccess::accessData(const Image& image, uint32_t index)

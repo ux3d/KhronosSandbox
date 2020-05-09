@@ -15,7 +15,7 @@ public:
 	static const uint8_t* accessData(const Accessor& accessor);
 	static size_t getOffset(const Accessor& accessor);
 	static VkBuffer getBuffer(const Accessor& accessor);
-	static VkDeviceSize getRange(const Accessor& accessor);
+	static size_t getRange(const Accessor& accessor);
 
 	static const uint8_t* accessData(const Image& image, uint32_t index = 0);
 
