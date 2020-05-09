@@ -21,8 +21,8 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_vulkan.h"
+#include "generic/imgui/imgui.h"
+#include "vulkan/imgui/imgui_impl_vulkan.h"
 
 class TinyEngine
 {
