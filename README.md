@@ -5,10 +5,13 @@ This R&D project is a playground to evaluate raytracing vs. pathtracing vs. rast
 ![Screenshot DamagedHelmet](screenshot.jpg)
 
 Evaluation
+- [x] TinyEngine
+  - [ ] Resize/maximize
 - [x] glTF rasterize
 - [x] glTF raytrace
+  - [ ] Shadows
+  - [ ] Transparency
 - [x] glTF pathtrace
-- [ ] Pre-filtered vs. spherical harmonics
 
 ## How to build?
 - [Vulkan SDK 1.2.135.0 or later](https://vulkan.lunarg.com/sdk/home)
@@ -52,7 +55,6 @@ Evaluation
 
 ## Limitiations by purpose
 - Vulkan  
-  - No resize/maximize of window possible. This avoids resource destroying/creating and simplifies the Vulkan code.
   - During minimize, the update loop is stopped.
   - Helper methods for initalization are not optimal and causing a stall on the GPU. Again, this is done for Vulkan code simplicity.
 - Tooling
