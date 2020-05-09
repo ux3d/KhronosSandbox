@@ -1,10 +1,11 @@
 #include "HelperLoader.h"
 
 #include "../../spir/HelperCompiler.h"
+#include "../../generic/gltf/HelperAccess.h"
 
-#include "HelperAccess.h"
 #include "HelperLoop.h"
 #include "HelperResource.h"
+#include "HelperVulkanAccess.h"
 
 #define TINYGLTF_IMPLEMENTATION
 #define TINYGLTF_NO_EXTERNAL_IMAGE
@@ -888,7 +889,7 @@ bool HelperLoader::initMeshes(GLTF& glTF, bool useRaytrace)
 
 				//
 
-				primitive.vertexBuffers[attributesIndex] = HelperAccess::getBuffer(glTF.accessors[accessorIndex]);
+				primitive.vertexBuffers[attributesIndex] = HelperVulkanAccess::getBuffer(glTF.accessors[accessorIndex]);
 				primitive.vertexBuffersOffsets[attributesIndex] = HelperAccess::getOffset(glTF.accessors[accessorIndex]);
 
 				//

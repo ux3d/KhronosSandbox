@@ -15,11 +15,6 @@ size_t HelperAccess::getOffset(const BufferView& bufferView)
 	return bufferView.byteOffset;
 }
 
-VkBuffer HelperAccess::getBuffer(const BufferView& bufferView)
-{
-	return bufferView.vertexBufferResource.bufferResource.buffer;
-}
-
 const uint8_t* HelperAccess::accessData(const Accessor& accessor)
 {
 	return HelperAccess::accessData(*accessor.pBufferView) + accessor.byteOffset;
@@ -28,11 +23,6 @@ const uint8_t* HelperAccess::accessData(const Accessor& accessor)
 size_t HelperAccess::getOffset(const Accessor& accessor)
 {
 	return accessor.byteOffset;
-}
-
-VkBuffer HelperAccess::getBuffer(const Accessor& accessor)
-{
-	return HelperAccess::getBuffer(*accessor.pBufferView);
 }
 
 size_t HelperAccess::getRange(const Accessor& accessor)

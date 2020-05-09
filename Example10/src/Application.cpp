@@ -1,6 +1,6 @@
 #include "Application.h"
 
-#include "vulkan/gltf/HelperAccess.h"
+#include <vulkan/gltf/HelperVulkanAccess.h>
 #include "vulkan/gltf/HelperLoader.h"
 #include "vulkan/gltf/HelperLoop.h"
 #include "vulkan/gltf/HelperResource.h"

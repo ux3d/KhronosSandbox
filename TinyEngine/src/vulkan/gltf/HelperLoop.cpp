@@ -1,7 +1,8 @@
-#include "HelperAccess.h"
 #include "HelperLoop.h"
 
-#include "HelperAccess.h"
+#include "../../generic/gltf/HelperAccess.h"
+
+#include "HelperVulkanAccess.h"
 
 bool HelperLoop::update(Mesh& mesh, GLTF& glTF, const glm::mat4& parentWorldMatrix)
 {
@@ -91,7 +92,7 @@ void HelperLoop::draw(const Primitive& primitive, const GLTF& glTF, VkCommandBuf
 			indexType = VK_INDEX_TYPE_UINT32;
 		}
 
-		vkCmdBindIndexBuffer(commandBuffer, HelperAccess::getBuffer(glTF.accessors[primitive.indices]), HelperAccess::getOffset(glTF.accessors[primitive.indices]), indexType);
+		vkCmdBindIndexBuffer(commandBuffer, HelperVulkanAccess::getBuffer(glTF.accessors[primitive.indices]), HelperAccess::getOffset(glTF.accessors[primitive.indices]), indexType);
 	}
 
 	vkCmdBindVertexBuffers(commandBuffer, 0, primitive.attributesCount, primitive.vertexBuffers.data(), primitive.vertexBuffersOffsets.data());
