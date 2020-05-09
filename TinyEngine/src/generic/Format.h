@@ -1,7 +1,7 @@
 #ifndef FORMAT_H_
 #define FORMAT_H_
 
-// Note: Only VkFormat required.
+// Note: Only using enum's.
 #define VK_ENABLE_BETA_EXTENSIONS
 #include "volk.h"
 
