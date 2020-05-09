@@ -4,9 +4,7 @@
 #include <string>
 #include <vector>
 
-// Note: Only header required.
-#define VK_ENABLE_BETA_EXTENSIONS
-#include "volk.h"
+#include "Format.h"
 
 enum DebugLevel {
 	TE_ERROR,

@@ -2,7 +2,6 @@
 #define TINYENGINE_H_
 
 #include "generic/FileIO.h"
-#include "generic/ImageIO.h"
 #include "generic/Logger.h"
 #include "generic/Math.h"
 
@@ -14,6 +13,8 @@
 #include <cstddef>
 #include <optional>
 #include <vector>
+
+#include "generic/ImageDataIO.h"
 #include "vulkan/HelperVulkanResource.h"
 
 // Volk

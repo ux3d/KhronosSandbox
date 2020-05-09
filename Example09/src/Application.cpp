@@ -15,7 +15,7 @@ bool Application::applicationInit()
 {
 	TextureResourceCreateInfo textureResourceCreateInfo = {};
 
-	if (!ImageIO::openImageData(textureResourceCreateInfo.imageDataResources, "../Resources/images/desert.jpg"))
+	if (!ImageDataIO::openImageData(textureResourceCreateInfo.imageDataResources, "../Resources/images/desert.jpg"))
 	{
 		return false;
 	}
