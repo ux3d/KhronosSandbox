@@ -387,8 +387,12 @@ bool ResourceManager::initPrimitive(const Primitive& primitive, const GLTF& glTF
 	return true;
 }
 
-bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
+bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
 {
+	SceneResource* sceneResource = getSceneResource(&scene);
+
+	//
+
 	if (useRaytrace)
 	{
 		TopLevelResourceCreateInfo topLevelResourceCreateInfo = {};
@@ -434,7 +438,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 					accelerationStructureInstance.flags                                  = VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR;
 					accelerationStructureInstance.accelerationStructureReference         = bottomDeviceAddress;
 
-					scene.accelerationStructureInstances.push_back(accelerationStructureInstance);
+					sceneResource->accelerationStructureInstances.push_back(accelerationStructureInstance);
 
 					InstanceResource primitiveInformation = {};
 					primitiveInformation.materialIndex = currentPrimitive.material;
@@ -460,7 +464,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 						texCoord0InstanceID++;
 					}
 
-					scene.instanceResources.push_back(primitiveInformation);
+					sceneResource->instanceResources.push_back(primitiveInformation);
 
 					primitiveInstanceID++;
 
@@ -526,16 +530,16 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 			}
 		}
 		BufferResourceCreateInfo bufferResourceCreateInfo = {};
-		bufferResourceCreateInfo.size = sizeof(VkAccelerationStructureInstanceKHR) * scene.accelerationStructureInstances.size();
+		bufferResourceCreateInfo.size = sizeof(VkAccelerationStructureInstanceKHR) * sceneResource->accelerationStructureInstances.size();
 		bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
 		bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-		if (!VulkanResource::createBufferResource(physicalDevice, device, scene.accelerationStructureInstanceBuffer, bufferResourceCreateInfo))
+		if (!VulkanResource::createBufferResource(physicalDevice, device, sceneResource->accelerationStructureInstanceBuffer, bufferResourceCreateInfo))
 		{
 			return false;
 		}
 
-		if (!VulkanResource::copyHostToDevice(device, scene.accelerationStructureInstanceBuffer, scene.accelerationStructureInstances.data(), sizeof(VkAccelerationStructureInstanceKHR) * scene.accelerationStructureInstances.size()))
+		if (!VulkanResource::copyHostToDevice(device, sceneResource->accelerationStructureInstanceBuffer, sceneResource->accelerationStructureInstances.data(), sizeof(VkAccelerationStructureInstanceKHR) * sceneResource->accelerationStructureInstances.size()))
 		{
 			return false;
 		}
@@ -543,7 +547,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		VkBufferDeviceAddressInfo bufferDeviceAddressInfo = {};
 		bufferDeviceAddressInfo.sType  = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
 
-		bufferDeviceAddressInfo.buffer = scene.accelerationStructureInstanceBuffer.buffer;
+		bufferDeviceAddressInfo.buffer = sceneResource->accelerationStructureInstanceBuffer.buffer;
 		VkDeviceAddress deviceAddress = vkGetBufferDeviceAddressKHR(device, &bufferDeviceAddressInfo);
 
 		//
@@ -551,11 +555,11 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		//
 
 		topLevelResourceCreateInfo.deviceAddress = deviceAddress;
-		topLevelResourceCreateInfo.primitiveCount = scene.accelerationStructureInstances.size();
+		topLevelResourceCreateInfo.primitiveCount = sceneResource->accelerationStructureInstances.size();
 
 		topLevelResourceCreateInfo.useHostCommand = false;
 
-		if (!VulkanRaytraceResource::createTopLevelResource(physicalDevice, device, queue, commandPool, scene.topLevelResource, topLevelResourceCreateInfo))
+		if (!VulkanRaytraceResource::createTopLevelResource(physicalDevice, device, queue, commandPool, sceneResource->topLevelResource, topLevelResourceCreateInfo))
 		{
 			return false;
 		}
@@ -565,12 +569,12 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		//
 
 		StorageBufferResourceCreateInfo storageBufferResourceCreateInfo = {};
-		storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(InstanceResource) * scene.instanceResources.size();
+		storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(InstanceResource) * sceneResource->instanceResources.size();
 		storageBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 		storageBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-		storageBufferResourceCreateInfo.data = scene.instanceResources.data();
+		storageBufferResourceCreateInfo.data = sceneResource->instanceResources.data();
 
-		if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, scene.instanceResourcesStorageBufferResource, storageBufferResourceCreateInfo))
+		if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, sceneResource->instanceResourcesStorageBufferResource, storageBufferResourceCreateInfo))
 		{
 			return false;
 		}
@@ -609,7 +613,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		storageBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 		storageBufferResourceCreateInfo.data = materialBuffers.data();
 
-		if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, scene.materialStorageBufferResource, storageBufferResourceCreateInfo))
+		if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, sceneResource->materialStorageBufferResource, storageBufferResourceCreateInfo))
 		{
 			return false;
 		}
@@ -763,7 +767,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		raytraceDescriptorSetLayoutCreateInfo.bindingCount = raytraceDescriptorSetLayoutBindings.size();
 		raytraceDescriptorSetLayoutCreateInfo.pBindings = raytraceDescriptorSetLayoutBindings.data();
 
-		VkResult result = vkCreateDescriptorSetLayout(device, &raytraceDescriptorSetLayoutCreateInfo, nullptr, &scene.raytraceDescriptorSetLayout);
+		VkResult result = vkCreateDescriptorSetLayout(device, &raytraceDescriptorSetLayoutCreateInfo, nullptr, &sceneResource->raytraceDescriptorSetLayout);
 		if (result != VK_SUCCESS)
 		{
 			Logger::print(TE_ERROR, __FILE__, __LINE__, result);
@@ -856,7 +860,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		raytraceDescriptorPoolCreateInfo.pPoolSizes = raytraceDescriptorPoolSizes.data();
 		raytraceDescriptorPoolCreateInfo.maxSets = 1;
 
-		result = vkCreateDescriptorPool(device, &raytraceDescriptorPoolCreateInfo, nullptr, &scene.raytraceDescriptorPool);
+		result = vkCreateDescriptorPool(device, &raytraceDescriptorPoolCreateInfo, nullptr, &sceneResource->raytraceDescriptorPool);
 		if (result != VK_SUCCESS)
 		{
 			Logger::print(TE_ERROR, __FILE__, __LINE__, result);
@@ -866,11 +870,11 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 
 		VkDescriptorSetAllocateInfo raytraceDescriptorSetAllocateInfo = {};
 		raytraceDescriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		raytraceDescriptorSetAllocateInfo.descriptorPool = scene.raytraceDescriptorPool;
+		raytraceDescriptorSetAllocateInfo.descriptorPool = sceneResource->raytraceDescriptorPool;
 		raytraceDescriptorSetAllocateInfo.descriptorSetCount = 1;
-		raytraceDescriptorSetAllocateInfo.pSetLayouts = &scene.raytraceDescriptorSetLayout;
+		raytraceDescriptorSetAllocateInfo.pSetLayouts = &sceneResource->raytraceDescriptorSetLayout;
 
-		result = vkAllocateDescriptorSets(device, &raytraceDescriptorSetAllocateInfo, &scene.raytraceDescriptorSet);
+		result = vkAllocateDescriptorSets(device, &raytraceDescriptorSetAllocateInfo, &sceneResource->raytraceDescriptorSet);
 		if (result != VK_SUCCESS)
 		{
 			Logger::print(TE_ERROR, __FILE__, __LINE__, result);
@@ -885,7 +889,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		VkWriteDescriptorSetAccelerationStructureKHR writeDescriptorSetAccelerationStructure = {};
 		writeDescriptorSetAccelerationStructure.sType                      = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
 		writeDescriptorSetAccelerationStructure.accelerationStructureCount = 1;
-		writeDescriptorSetAccelerationStructure.pAccelerationStructures    = &glTF.scenes[glTF.defaultScene].topLevelResource.levelResource.accelerationStructureResource.accelerationStructure;
+		writeDescriptorSetAccelerationStructure.pAccelerationStructures    = &sceneResource->topLevelResource.levelResource.accelerationStructureResource.accelerationStructure;
 
 		VkDescriptorImageInfo descriptorImageInfo = {};
 		descriptorImageInfo.sampler = VK_NULL_HANDLE;
@@ -893,14 +897,14 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 
 		VkDescriptorBufferInfo descriptorBufferInfo = {};
-		descriptorBufferInfo.buffer = glTF.scenes[glTF.defaultScene].materialStorageBufferResource.bufferResource.buffer;
+		descriptorBufferInfo.buffer = sceneResource->materialStorageBufferResource.bufferResource.buffer;
 		descriptorBufferInfo.offset = 0;
 		descriptorBufferInfo.range = sizeof(MaterialUniformBufferRaytrace) * glTF.materials.size();
 
 		VkDescriptorBufferInfo descriptorBufferInfo2 = {};
-		descriptorBufferInfo2.buffer = glTF.scenes[glTF.defaultScene].instanceResourcesStorageBufferResource.bufferResource.buffer;
+		descriptorBufferInfo2.buffer = sceneResource->instanceResourcesStorageBufferResource.bufferResource.buffer;
 		descriptorBufferInfo2.offset = 0;
-		descriptorBufferInfo2.range = sizeof(InstanceResource) * glTF.scenes[glTF.defaultScene].instanceResources.size();
+		descriptorBufferInfo2.range = sizeof(InstanceResource) * sceneResource->instanceResources.size();
 
 		VkDescriptorImageInfo descriptorImageInfoDiffuse = {};
 		descriptorImageInfoDiffuse.sampler = glTF.diffuse.samplerResource.sampler;
@@ -921,7 +925,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 
 		VkWriteDescriptorSet writeDescriptorSet = {};
 		writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		writeDescriptorSet.dstSet          = scene.raytraceDescriptorSet;
+		writeDescriptorSet.dstSet          = sceneResource->raytraceDescriptorSet;
 		writeDescriptorSet.dstBinding      = accelerationBinding;
 		writeDescriptorSet.descriptorType  = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
 		writeDescriptorSet.descriptorCount = 1;
@@ -929,7 +933,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		writeDescriptorSets.push_back(writeDescriptorSet);
 
 		writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		writeDescriptorSet.dstSet = scene.raytraceDescriptorSet;
+		writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 		writeDescriptorSet.dstBinding = outputBinding;
 		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 		writeDescriptorSet.descriptorCount = 1;
@@ -937,7 +941,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		writeDescriptorSets.push_back(writeDescriptorSet);
 
 		writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		writeDescriptorSet.dstSet = scene.raytraceDescriptorSet;
+		writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 		writeDescriptorSet.dstBinding = diffuseBinding;
 		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		writeDescriptorSet.descriptorCount = 1;
@@ -945,7 +949,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		writeDescriptorSets.push_back(writeDescriptorSet);
 
 		writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		writeDescriptorSet.dstSet = scene.raytraceDescriptorSet;
+		writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 		writeDescriptorSet.dstBinding = specularBinding;
 		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		writeDescriptorSet.descriptorCount = 1;
@@ -953,7 +957,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		writeDescriptorSets.push_back(writeDescriptorSet);
 
 		writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		writeDescriptorSet.dstSet = scene.raytraceDescriptorSet;
+		writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 		writeDescriptorSet.dstBinding = lutBinding;
 		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		writeDescriptorSet.descriptorCount = 1;
@@ -963,7 +967,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		if (descriptorImageInfoTextures.size() > 0)
 		{
 			writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			writeDescriptorSet.dstSet = scene.raytraceDescriptorSet;
+			writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 			writeDescriptorSet.dstBinding = texturesBinding;
 			writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			writeDescriptorSet.descriptorCount = descriptorImageInfoTextures.size();
@@ -972,7 +976,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		}
 
 		writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		writeDescriptorSet.dstSet = scene.raytraceDescriptorSet;
+		writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 		writeDescriptorSet.dstBinding = materialStorageBufferResourcesBinding;
 		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 		writeDescriptorSet.descriptorCount = 1;
@@ -980,7 +984,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		writeDescriptorSets.push_back(writeDescriptorSet);
 
 		writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		writeDescriptorSet.dstSet = scene.raytraceDescriptorSet;
+		writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 		writeDescriptorSet.dstBinding = primitivesBinding;
 		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 		writeDescriptorSet.descriptorCount = 1;
@@ -988,7 +992,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		writeDescriptorSets.push_back(writeDescriptorSet);
 
 		writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		writeDescriptorSet.dstSet = scene.raytraceDescriptorSet;
+		writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 		writeDescriptorSet.dstBinding = indicesBinding;
 		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 		writeDescriptorSet.descriptorCount = descriptorBufferInfoIndices.size();
@@ -996,7 +1000,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		writeDescriptorSets.push_back(writeDescriptorSet);
 
 		writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		writeDescriptorSet.dstSet = scene.raytraceDescriptorSet;
+		writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 		writeDescriptorSet.dstBinding = positionBinding;
 		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 		writeDescriptorSet.descriptorCount = descriptorBufferInfoPosition.size();
@@ -1006,7 +1010,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		if (descriptorBufferInfoNormal.size() > 0)
 		{
 			writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			writeDescriptorSet.dstSet = scene.raytraceDescriptorSet;
+			writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 			writeDescriptorSet.dstBinding = normalBinding;
 			writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 			writeDescriptorSet.descriptorCount = descriptorBufferInfoNormal.size();
@@ -1017,7 +1021,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		if (descriptorBufferInfoTangent.size() > 0)
 		{
 			writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			writeDescriptorSet.dstSet = scene.raytraceDescriptorSet;
+			writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 			writeDescriptorSet.dstBinding = tangentBinding;
 			writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 			writeDescriptorSet.descriptorCount = descriptorBufferInfoTangent.size();
@@ -1028,7 +1032,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		if (descriptorBufferInfoTexCoord0.size() > 0)
 		{
 			writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			writeDescriptorSet.dstSet = scene.raytraceDescriptorSet;
+			writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 			writeDescriptorSet.dstBinding = texCoord0Binding;
 			writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 			writeDescriptorSet.descriptorCount = descriptorBufferInfoTexCoord0.size();
@@ -1050,11 +1054,11 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		VkPipelineLayoutCreateInfo raytracePipelineLayoutCreateInfo = {};
 		raytracePipelineLayoutCreateInfo.sType          = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		raytracePipelineLayoutCreateInfo.setLayoutCount = 1;
-		raytracePipelineLayoutCreateInfo.pSetLayouts    = &scene.raytraceDescriptorSetLayout;
+		raytracePipelineLayoutCreateInfo.pSetLayouts    = &sceneResource->raytraceDescriptorSetLayout;
 		raytracePipelineLayoutCreateInfo.pushConstantRangeCount = 1;
 		raytracePipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;
 
-		result = vkCreatePipelineLayout(device, &raytracePipelineLayoutCreateInfo, nullptr, &scene.raytracePipelineLayout);
+		result = vkCreatePipelineLayout(device, &raytracePipelineLayoutCreateInfo, nullptr, &sceneResource->raytracePipelineLayout);
 		if (result != VK_SUCCESS)
 		{
 			Logger::print(TE_ERROR, __FILE__, __LINE__, result);
@@ -1115,7 +1119,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 			return false;
 		}
 
-		if (!VulkanResource::createShaderModule(scene.rayGenShaderModule, device, rayGenShaderCode))
+		if (!VulkanResource::createShaderModule(sceneResource->rayGenShaderModule, device, rayGenShaderCode))
 		{
 			return false;
 		}
@@ -1134,7 +1138,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 			return false;
 		}
 
-		if (!VulkanResource::createShaderModule(scene.missShaderModule, device, missShaderCode))
+		if (!VulkanResource::createShaderModule(sceneResource->missShaderModule, device, missShaderCode))
 		{
 			return false;
 		}
@@ -1153,7 +1157,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 			return false;
 		}
 
-		if (!VulkanResource::createShaderModule(scene.closestHitShaderModule, device, closestHitShaderCode))
+		if (!VulkanResource::createShaderModule(sceneResource->closestHitShaderModule, device, closestHitShaderCode))
 		{
 			return false;
 		}
@@ -1166,17 +1170,17 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 
 		raytracePipelineShaderStageCreateInfos[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		raytracePipelineShaderStageCreateInfos[0].stage = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
-		raytracePipelineShaderStageCreateInfos[0].module = scene.rayGenShaderModule;
+		raytracePipelineShaderStageCreateInfos[0].module = sceneResource->rayGenShaderModule;
 		raytracePipelineShaderStageCreateInfos[0].pName = "main";
 
 		raytracePipelineShaderStageCreateInfos[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		raytracePipelineShaderStageCreateInfos[1].stage = VK_SHADER_STAGE_MISS_BIT_KHR;
-		raytracePipelineShaderStageCreateInfos[1].module = scene.missShaderModule;
+		raytracePipelineShaderStageCreateInfos[1].module = sceneResource->missShaderModule;
 		raytracePipelineShaderStageCreateInfos[1].pName = "main";
 
 		raytracePipelineShaderStageCreateInfos[2].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		raytracePipelineShaderStageCreateInfos[2].stage = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
-		raytracePipelineShaderStageCreateInfos[2].module = scene.closestHitShaderModule;
+		raytracePipelineShaderStageCreateInfos[2].module = sceneResource->closestHitShaderModule;
 		raytracePipelineShaderStageCreateInfos[2].pName = "main";
 
 		//
@@ -1215,10 +1219,10 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		rayTracingPipelineCreateInfo.groupCount        = rayTracingShaderGroupCreateInfos.size();
 		rayTracingPipelineCreateInfo.pGroups           = rayTracingShaderGroupCreateInfos.data();
 		rayTracingPipelineCreateInfo.maxRecursionDepth = 2;
-		rayTracingPipelineCreateInfo.layout            = scene.raytracePipelineLayout;
+		rayTracingPipelineCreateInfo.layout            = sceneResource->raytracePipelineLayout;
 		rayTracingPipelineCreateInfo.libraries.sType   = VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR;
 
-		result = vkCreateRayTracingPipelinesKHR(device, VK_NULL_HANDLE, 1, &rayTracingPipelineCreateInfo, nullptr, &scene.raytracePipeline);
+		result = vkCreateRayTracingPipelinesKHR(device, VK_NULL_HANDLE, 1, &rayTracingPipelineCreateInfo, nullptr, &sceneResource->raytracePipeline);
 		if (result != VK_SUCCESS)
 		{
 			Logger::print(TE_ERROR, __FILE__, __LINE__, result);
@@ -1243,14 +1247,14 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 		bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_RAY_TRACING_BIT_KHR;
 		bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-		if (!VulkanResource::createBufferResource(physicalDevice, device, scene.shaderBindingBufferResource, bufferResourceCreateInfo))
+		if (!VulkanResource::createBufferResource(physicalDevice, device, sceneResource->shaderBindingBufferResource, bufferResourceCreateInfo))
 		{
 			return false;
 		}
 
 		std::vector<uint8_t> rayTracingShaderGroupHandles(bufferResourceCreateInfo.size);
 
-		result = vkGetRayTracingShaderGroupHandlesKHR(device, scene.raytracePipeline, 0, rayTracingShaderGroupCreateInfos.size(), rayTracingShaderGroupHandles.size(), rayTracingShaderGroupHandles.data());
+		result = vkGetRayTracingShaderGroupHandlesKHR(device, sceneResource->raytracePipeline, 0, rayTracingShaderGroupCreateInfos.size(), rayTracingShaderGroupHandles.size(), rayTracingShaderGroupHandles.data());
 		if (result != VK_SUCCESS)
 		{
 			Logger::print(TE_ERROR, __FILE__, __LINE__, result);
@@ -1258,7 +1262,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 			return false;
 		}
 
-		if (!VulkanResource::copyHostToDevice(device, scene.shaderBindingBufferResource, rayTracingShaderGroupHandles.data(), rayTracingShaderGroupHandles.size()))
+		if (!VulkanResource::copyHostToDevice(device, sceneResource->shaderBindingBufferResource, rayTracingShaderGroupHandles.data(), rayTracingShaderGroupHandles.size()))
 		{
 			return false;
 		}
@@ -1344,58 +1348,60 @@ void ResourceManager::terminate(GLTF& glTF, VkDevice device)
 
 	for (size_t i = 0; i < glTF.scenes.size(); i++)
 	{
-		VulkanResource::destroyStorageBufferResource(device, glTF.scenes[i].instanceResourcesStorageBufferResource);
-		VulkanResource::destroyStorageBufferResource(device, glTF.scenes[i].materialStorageBufferResource);
+		SceneResource* sceneResource = getSceneResource(&glTF.scenes[i]);
 
-		VulkanRaytraceResource::destroyTopLevelResource(device, glTF.scenes[i].topLevelResource);
-		VulkanResource::destroyBufferResource(device, glTF.scenes[i].accelerationStructureInstanceBuffer);
+		VulkanResource::destroyStorageBufferResource(device, sceneResource->instanceResourcesStorageBufferResource);
+		VulkanResource::destroyStorageBufferResource(device, sceneResource->materialStorageBufferResource);
 
-		VulkanResource::destroyBufferResource(device, glTF.scenes[i].shaderBindingBufferResource);
+		VulkanRaytraceResource::destroyTopLevelResource(device, sceneResource->topLevelResource);
+		VulkanResource::destroyBufferResource(device, sceneResource->accelerationStructureInstanceBuffer);
 
-		glTF.scenes[i].accelerationStructureInstances.clear();
+		VulkanResource::destroyBufferResource(device, sceneResource->shaderBindingBufferResource);
 
-		if (glTF.scenes[i].raytracePipeline != VK_NULL_HANDLE)
+		sceneResource->accelerationStructureInstances.clear();
+
+		if (sceneResource->raytracePipeline != VK_NULL_HANDLE)
 		{
-			vkDestroyPipeline(device, glTF.scenes[i].raytracePipeline, nullptr);
-			glTF.scenes[i].raytracePipeline = VK_NULL_HANDLE;
+			vkDestroyPipeline(device, sceneResource->raytracePipeline, nullptr);
+			sceneResource->raytracePipeline = VK_NULL_HANDLE;
 		}
 
-		if (glTF.scenes[i].rayGenShaderModule != VK_NULL_HANDLE)
+		if (sceneResource->rayGenShaderModule != VK_NULL_HANDLE)
 		{
-			vkDestroyShaderModule(device, glTF.scenes[i].rayGenShaderModule, nullptr);
-			glTF.scenes[i].rayGenShaderModule = VK_NULL_HANDLE;
+			vkDestroyShaderModule(device, sceneResource->rayGenShaderModule, nullptr);
+			sceneResource->rayGenShaderModule = VK_NULL_HANDLE;
 		}
 
-		if (glTF.scenes[i].missShaderModule != VK_NULL_HANDLE)
+		if (sceneResource->missShaderModule != VK_NULL_HANDLE)
 		{
-			vkDestroyShaderModule(device, glTF.scenes[i].missShaderModule, nullptr);
-			glTF.scenes[i].missShaderModule = VK_NULL_HANDLE;
+			vkDestroyShaderModule(device, sceneResource->missShaderModule, nullptr);
+			sceneResource->missShaderModule = VK_NULL_HANDLE;
 		}
 
-		if (glTF.scenes[i].closestHitShaderModule != VK_NULL_HANDLE)
+		if (sceneResource->closestHitShaderModule != VK_NULL_HANDLE)
 		{
-			vkDestroyShaderModule(device, glTF.scenes[i].closestHitShaderModule, nullptr);
-			glTF.scenes[i].closestHitShaderModule = VK_NULL_HANDLE;
+			vkDestroyShaderModule(device, sceneResource->closestHitShaderModule, nullptr);
+			sceneResource->closestHitShaderModule = VK_NULL_HANDLE;
 		}
 
-		if (glTF.scenes[i].raytracePipelineLayout != VK_NULL_HANDLE)
+		if (sceneResource->raytracePipelineLayout != VK_NULL_HANDLE)
 		{
-			vkDestroyPipelineLayout(device, glTF.scenes[i].raytracePipelineLayout, nullptr);
-			glTF.scenes[i].raytracePipelineLayout = VK_NULL_HANDLE;
+			vkDestroyPipelineLayout(device, sceneResource->raytracePipelineLayout, nullptr);
+			sceneResource->raytracePipelineLayout = VK_NULL_HANDLE;
 		}
 
-		glTF.scenes[i].raytraceDescriptorSet = VK_NULL_HANDLE;
+		sceneResource->raytraceDescriptorSet = VK_NULL_HANDLE;
 
-		if (glTF.scenes[i].raytraceDescriptorPool != VK_NULL_HANDLE)
+		if (sceneResource->raytraceDescriptorPool != VK_NULL_HANDLE)
 		{
-			vkDestroyDescriptorPool(device, glTF.scenes[i].raytraceDescriptorPool, nullptr);
-			glTF.scenes[i].raytraceDescriptorPool = VK_NULL_HANDLE;
+			vkDestroyDescriptorPool(device, sceneResource->raytraceDescriptorPool, nullptr);
+			sceneResource->raytraceDescriptorPool = VK_NULL_HANDLE;
 		}
 
-		if (glTF.scenes[i].raytraceDescriptorSetLayout != VK_NULL_HANDLE)
+		if (sceneResource->raytraceDescriptorSetLayout != VK_NULL_HANDLE)
 		{
-			vkDestroyDescriptorSetLayout(device, glTF.scenes[i].raytraceDescriptorSetLayout, nullptr);
-			glTF.scenes[i].raytraceDescriptorSetLayout = VK_NULL_HANDLE;
+			vkDestroyDescriptorSetLayout(device, sceneResource->raytraceDescriptorSetLayout, nullptr);
+			sceneResource->raytraceDescriptorSetLayout = VK_NULL_HANDLE;
 		}
 	}
 	glTF.scenes.clear();

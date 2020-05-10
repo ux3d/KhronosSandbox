@@ -73,6 +73,10 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	if (raytrace)
 	{
+		SceneResource* defaultSceneResource = resourceManager.getSceneResource(&glTF.scenes[glTF.defaultScene]);
+
+		//
+
 		VkImageMemoryBarrier imageMemoryBarrier[2] = {};
 
 		imageMemoryBarrier[0].sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -114,27 +118,27 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 		glTF.pushConstant.specularSamples = specularSamples;
 		glTF.pushConstant.diffuseSamples = diffuseSamples;
 
-		vkCmdPushConstants(commandBuffers[frameIndex], glTF.scenes[glTF.defaultScene].raytracePipelineLayout, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, 0, sizeof(glTF.pushConstant), &glTF.pushConstant);
+		vkCmdPushConstants(commandBuffers[frameIndex], defaultSceneResource->raytracePipelineLayout, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, 0, sizeof(glTF.pushConstant), &glTF.pushConstant);
 
 		VkStridedBufferRegionKHR rayGenStridedBufferRegion = {};
-		rayGenStridedBufferRegion.buffer = glTF.scenes[glTF.defaultScene].shaderBindingBufferResource.buffer;
+		rayGenStridedBufferRegion.buffer = defaultSceneResource->shaderBindingBufferResource.buffer;
 		rayGenStridedBufferRegion.offset = physicalDeviceRayTracingProperties.shaderGroupHandleSize * 0;
 		rayGenStridedBufferRegion.size   = physicalDeviceRayTracingProperties.shaderGroupHandleSize;
 
 		VkStridedBufferRegionKHR missStridedBufferRegion = {};
-		missStridedBufferRegion.buffer = glTF.scenes[glTF.defaultScene].shaderBindingBufferResource.buffer;
+		missStridedBufferRegion.buffer = defaultSceneResource->shaderBindingBufferResource.buffer;
 		missStridedBufferRegion.offset = physicalDeviceRayTracingProperties.shaderGroupHandleSize * 1;
 		missStridedBufferRegion.size   = physicalDeviceRayTracingProperties.shaderGroupHandleSize;
 
 		VkStridedBufferRegionKHR closestHitStridedBufferRegion = {};
-		closestHitStridedBufferRegion.buffer = glTF.scenes[glTF.defaultScene].shaderBindingBufferResource.buffer;
+		closestHitStridedBufferRegion.buffer = defaultSceneResource->shaderBindingBufferResource.buffer;
 		closestHitStridedBufferRegion.offset = physicalDeviceRayTracingProperties.shaderGroupHandleSize * 2;
 		closestHitStridedBufferRegion.size   = physicalDeviceRayTracingProperties.shaderGroupHandleSize;
 
 		VkStridedBufferRegionKHR callableStridedBufferRegion = {};
 
-		vkCmdBindPipeline(commandBuffers[frameIndex], VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, glTF.scenes[glTF.defaultScene].raytracePipeline);
-		vkCmdBindDescriptorSets(commandBuffers[frameIndex], VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, glTF.scenes[glTF.defaultScene].raytracePipelineLayout, 0, 1, &glTF.scenes[glTF.defaultScene].raytraceDescriptorSet, 0, 0);
+		vkCmdBindPipeline(commandBuffers[frameIndex], VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, defaultSceneResource->raytracePipeline);
+		vkCmdBindDescriptorSets(commandBuffers[frameIndex], VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, defaultSceneResource->raytracePipelineLayout, 0, 1, &defaultSceneResource->raytraceDescriptorSet, 0, 0);
 
 		vkCmdTraceRaysKHR(commandBuffers[frameIndex], &rayGenStridedBufferRegion, &missStridedBufferRegion, &closestHitStridedBufferRegion, &callableStridedBufferRegion, width, height, 1);
 
