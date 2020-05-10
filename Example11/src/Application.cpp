@@ -30,7 +30,7 @@ bool Application::applicationInit()
 	vertexIndexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	vertexIndexBufferResourceCreateInfo.data = vertexIndices.data();
 
-	if (!HelperVulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexIndexBufferResource, vertexIndexBufferResourceCreateInfo))
+	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexIndexBufferResource, vertexIndexBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -50,7 +50,7 @@ bool Application::applicationInit()
 	vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	vertexBufferResourceCreateInfo.data = vertexData.data();
 
-	if (!HelperVulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexBufferResource, vertexBufferResourceCreateInfo))
+	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexBufferResource, vertexBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -78,7 +78,7 @@ bool Application::applicationInit()
 	bottomLevelResourceCreateInfo.primitiveCount = 1;
 	bottomLevelResourceCreateInfo.useHostCommand = physicalDeviceRayTracingFeatures.rayTracingHostAccelerationStructureCommands;
 
-	if (!HelperRaytrace::createBottomLevelResource(physicalDevice, device, queue, commandPool, bottomLevelResource, bottomLevelResourceCreateInfo))
+	if (!VulkanRaytraceResource::createBottomLevelResource(physicalDevice, device, queue, commandPool, bottomLevelResource, bottomLevelResourceCreateInfo))
 	{
 		return false;
 	}
@@ -115,12 +115,12 @@ bool Application::applicationInit()
 	bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
 	bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-	if (!HelperVulkanResource::createBufferResource(physicalDevice, device, accelerationStructureInstanceBuffer, bufferResourceCreateInfo))
+	if (!VulkanResource::createBufferResource(physicalDevice, device, accelerationStructureInstanceBuffer, bufferResourceCreateInfo))
 	{
 		return false;
 	}
 
-	if (!HelperVulkanResource::copyHostToDevice(device, accelerationStructureInstanceBuffer, &accelerationStructureInstance, sizeof(VkAccelerationStructureInstanceKHR)))
+	if (!VulkanResource::copyHostToDevice(device, accelerationStructureInstanceBuffer, &accelerationStructureInstance, sizeof(VkAccelerationStructureInstanceKHR)))
 	{
 		return false;
 	}
@@ -137,7 +137,7 @@ bool Application::applicationInit()
 	topLevelResourceCreateInfo.primitiveCount = 1;
 	topLevelResourceCreateInfo.useHostCommand = physicalDeviceRayTracingFeatures.rayTracingHostAccelerationStructureCommands;
 
-	if (!HelperRaytrace::createTopLevelResource(physicalDevice, device, queue, commandPool, topLevelResource, topLevelResourceCreateInfo))
+	if (!VulkanRaytraceResource::createTopLevelResource(physicalDevice, device, queue, commandPool, topLevelResource, topLevelResourceCreateInfo))
 	{
 		return false;
 	}
@@ -156,7 +156,7 @@ bool Application::applicationInit()
 	imageViewResourceCreateInfo.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
 	imageViewResourceCreateInfo.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
-	if (!HelperVulkanResource::createImageViewResource(physicalDevice, device, raytraceImageViewResource, imageViewResourceCreateInfo))
+	if (!VulkanResource::createImageViewResource(physicalDevice, device, raytraceImageViewResource, imageViewResourceCreateInfo))
 	{
 		return false;
 	}
@@ -176,7 +176,7 @@ bool Application::applicationInit()
 	uniformBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	uniformBufferResourceCreateInfo.data = &uniformData;
 
-	if (!HelperVulkanResource::createUniformBufferResource(physicalDevice, device, uniformBufferResource, uniformBufferResourceCreateInfo))
+	if (!VulkanResource::createUniformBufferResource(physicalDevice, device, uniformBufferResource, uniformBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -328,7 +328,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	if (!HelperVulkanResource::createShaderModule(rayGenShaderModule, device, rayGenShaderCode))
+	if (!VulkanResource::createShaderModule(rayGenShaderModule, device, rayGenShaderCode))
 	{
 		return false;
 	}
@@ -347,7 +347,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	if (!HelperVulkanResource::createShaderModule(missShaderModule, device, missShaderCode))
+	if (!VulkanResource::createShaderModule(missShaderModule, device, missShaderCode))
 	{
 		return false;
 	}
@@ -366,7 +366,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	if (!HelperVulkanResource::createShaderModule(closestHitShaderModule, device, closestHitShaderCode))
+	if (!VulkanResource::createShaderModule(closestHitShaderModule, device, closestHitShaderCode))
 	{
 		return false;
 	}
@@ -448,7 +448,7 @@ bool Application::applicationInit()
 	bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_RAY_TRACING_BIT_KHR;
 	bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-	if (!HelperVulkanResource::createBufferResource(physicalDevice, device, shaderBindingBufferResource, bufferResourceCreateInfo))
+	if (!VulkanResource::createBufferResource(physicalDevice, device, shaderBindingBufferResource, bufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -463,7 +463,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	if (!HelperVulkanResource::copyHostToDevice(device, shaderBindingBufferResource, rayTracingShaderGroupHandles.data(), rayTracingShaderGroupHandles.size()))
+	if (!VulkanResource::copyHostToDevice(device, shaderBindingBufferResource, rayTracingShaderGroupHandles.data(), rayTracingShaderGroupHandles.size()))
 	{
 		return false;
 	}
@@ -569,7 +569,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 void Application::applicationTerminate()
 {
-	HelperVulkanResource::destroyBufferResource(device, shaderBindingBufferResource);
+	VulkanResource::destroyBufferResource(device, shaderBindingBufferResource);
 
 	if (pipeline != VK_NULL_HANDLE)
 	{
@@ -615,22 +615,22 @@ void Application::applicationTerminate()
 		descriptorSetLayout = VK_NULL_HANDLE;
 	}
 
-	HelperVulkanResource::destroyUniformBufferResource(device, uniformBufferResource);
+	VulkanResource::destroyUniformBufferResource(device, uniformBufferResource);
 
-	HelperVulkanResource::destroyImageViewResource(device, raytraceImageViewResource);
-
-	//
-
-	HelperRaytrace::destroyTopLevelResource(device, topLevelResource);
-
-	HelperVulkanResource::destroyBufferResource(device, accelerationStructureInstanceBuffer);
+	VulkanResource::destroyImageViewResource(device, raytraceImageViewResource);
 
 	//
 
-	HelperRaytrace::destroyBottomLevelResource(device, bottomLevelResource);
+	VulkanRaytraceResource::destroyTopLevelResource(device, topLevelResource);
 
-	HelperVulkanResource::destroyVertexBufferResource(device, vertexBufferResource);
-	HelperVulkanResource::destroyVertexBufferResource(device, vertexIndexBufferResource);
+	VulkanResource::destroyBufferResource(device, accelerationStructureInstanceBuffer);
+
+	//
+
+	VulkanRaytraceResource::destroyBottomLevelResource(device, bottomLevelResource);
+
+	VulkanResource::destroyVertexBufferResource(device, vertexBufferResource);
+	VulkanResource::destroyVertexBufferResource(device, vertexIndexBufferResource);
 }
 
 // Public

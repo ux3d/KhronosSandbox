@@ -273,7 +273,7 @@ bool HelperLoader::initTextures(GLTF& glTF)
 			textureResourceCreateInfo.samplerResourceCreateInfo = glTF.samplers[model.textures[i].sampler].samplerResourceCreateInfo;
 		}
 
-		if (!HelperVulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, texture.textureResource, textureResourceCreateInfo))
+		if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, texture.textureResource, textureResourceCreateInfo))
 		{
 			return false;
 		}
@@ -571,7 +571,7 @@ bool HelperLoader::initMaterials(GLTF& glTF)
 		uniformBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(MaterialUniformBuffer);
 		uniformBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 
-		if (!HelperVulkanResource::createUniformBufferResource(physicalDevice, device, material.uniformBufferResource, uniformBufferResourceCreateInfo))
+		if (!VulkanResource::createUniformBufferResource(physicalDevice, device, material.uniformBufferResource, uniformBufferResourceCreateInfo))
 		{
 			return false;
 		}
@@ -617,7 +617,7 @@ bool HelperLoader::initMaterials(GLTF& glTF)
 
 		uniformBuffer.doubleSided = material.doubleSided;
 
-		if (!HelperVulkanResource::copyHostToDevice(device, material.uniformBufferResource.bufferResource, &uniformBuffer, sizeof(uniformBuffer)))
+		if (!VulkanResource::copyHostToDevice(device, material.uniformBufferResource.bufferResource, &uniformBuffer, sizeof(uniformBuffer)))
 		{
 			return false;
 		}
@@ -919,12 +919,12 @@ bool HelperLoader::initMeshes(GLTF& glTF, bool useRaytrace)
 				return false;
 			}
 
-			if (!HelperVulkanResource::createShaderModule(primitive.vertexShaderModule, device, vertexShaderCode))
+			if (!VulkanResource::createShaderModule(primitive.vertexShaderModule, device, vertexShaderCode))
 			{
 				return false;
 			}
 
-			if (!HelperVulkanResource::createShaderModule(primitive.fragmentShaderModule, device, fragmentShaderCode))
+			if (!VulkanResource::createShaderModule(primitive.fragmentShaderModule, device, fragmentShaderCode))
 			{
 				return false;
 			}
@@ -1037,7 +1037,7 @@ bool HelperLoader::open(GLTF& glTF, const std::string& filename, const std::stri
 		return false;
 	}
 
-	if (!HelperVulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, glTF.diffuse, diffuseMap))
+	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, glTF.diffuse, diffuseMap))
 	{
 		return false;
 	}
@@ -1055,7 +1055,7 @@ bool HelperLoader::open(GLTF& glTF, const std::string& filename, const std::stri
 		return false;
 	}
 
-	if (!HelperVulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, glTF.specular, specularMap))
+	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, glTF.specular, specularMap))
 	{
 		return false;
 	}
@@ -1075,7 +1075,7 @@ bool HelperLoader::open(GLTF& glTF, const std::string& filename, const std::stri
 		return false;
 	}
 
-	if (!HelperVulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, glTF.lut, lutMap))
+	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, glTF.lut, lutMap))
 	{
 		return false;
 	}

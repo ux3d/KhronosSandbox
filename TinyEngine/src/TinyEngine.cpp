@@ -461,7 +461,7 @@ bool TinyEngine::createColorResources()
 	imageViewResourceCreateInfo.usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	imageViewResourceCreateInfo.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
-	return HelperVulkanResource::createImageViewResource(physicalDevice, device, msaa, imageViewResourceCreateInfo);
+	return VulkanResource::createImageViewResource(physicalDevice, device, msaa, imageViewResourceCreateInfo);
 }
 
 bool TinyEngine::createDepthStencilResources()
@@ -484,7 +484,7 @@ bool TinyEngine::createDepthStencilResources()
 	imageViewResourceCreateInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	imageViewResourceCreateInfo.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
 
-	return HelperVulkanResource::createImageViewResource(physicalDevice, device, depth, imageViewResourceCreateInfo);
+	return VulkanResource::createImageViewResource(physicalDevice, device, depth, imageViewResourceCreateInfo);
 }
 
 bool TinyEngine::createRenderpass()
@@ -1203,9 +1203,9 @@ bool TinyEngine::terminate()
 		}
 	}
 
-	HelperVulkanResource::destroyImageViewResource(device, depth);
+	VulkanResource::destroyImageViewResource(device, depth);
 
-	HelperVulkanResource::destroyImageViewResource(device, msaa);
+	VulkanResource::destroyImageViewResource(device, msaa);
 
 	for (const VkImageView& currentImageView : swapchainImageViews)
 	{

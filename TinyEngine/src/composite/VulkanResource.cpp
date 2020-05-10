@@ -1,5 +1,3 @@
-#include "HelperVulkanResource.h"
-
 #include <cmath>
 #include <cstring>
 
@@ -7,8 +5,9 @@
 
 #include "../common/Logger.h"
 #include "../vulkan/HelperVulkan.h"
+#include "VulkanResource.h"
 
-bool HelperVulkanResource::copyHostToDevice(VkDevice device, BufferResource& bufferResource, const void* data, size_t size)
+bool VulkanResource::copyHostToDevice(VkDevice device, BufferResource& bufferResource, const void* data, size_t size)
 {
 	if (data == nullptr || size == 0)
 	{
@@ -34,7 +33,7 @@ bool HelperVulkanResource::copyHostToDevice(VkDevice device, BufferResource& buf
 	return true;
 }
 
-bool HelperVulkanResource::createBufferResource(VkPhysicalDevice physicalDevice, VkDevice device, BufferResource& bufferResource, const BufferResourceCreateInfo& bufferResourceCreateInfo)
+bool VulkanResource::createBufferResource(VkPhysicalDevice physicalDevice, VkDevice device, BufferResource& bufferResource, const BufferResourceCreateInfo& bufferResourceCreateInfo)
 {
 	VkResult result = VK_SUCCESS;
 
@@ -106,7 +105,7 @@ bool HelperVulkanResource::createBufferResource(VkPhysicalDevice physicalDevice,
 	return true;
 }
 
-void HelperVulkanResource::destroyBufferResource(VkDevice device, BufferResource& bufferResource)
+void VulkanResource::destroyBufferResource(VkDevice device, BufferResource& bufferResource)
 {
 	if (bufferResource.deviceMemory != VK_NULL_HANDLE)
 	{
@@ -121,7 +120,7 @@ void HelperVulkanResource::destroyBufferResource(VkDevice device, BufferResource
 	}
 }
 
-bool HelperVulkanResource::createShaderModule(VkShaderModule& shaderModule, VkDevice device, const std::vector<uint32_t>& code)
+bool VulkanResource::createShaderModule(VkShaderModule& shaderModule, VkDevice device, const std::vector<uint32_t>& code)
 {
 	VkResult result = VK_SUCCESS;
 
@@ -141,7 +140,7 @@ bool HelperVulkanResource::createShaderModule(VkShaderModule& shaderModule, VkDe
 	return true;
 }
 
-bool HelperVulkanResource::createDeviceBufferResource(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, DeviceBufferResource& deviceBufferResource, const DeviceBufferResourceCreateInfo& deviceBufferResourceCreateInfo)
+bool VulkanResource::createDeviceBufferResource(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, DeviceBufferResource& deviceBufferResource, const DeviceBufferResourceCreateInfo& deviceBufferResourceCreateInfo)
 {
 	if (!createBufferResource(physicalDevice, device, deviceBufferResource.bufferResource, deviceBufferResourceCreateInfo.bufferResourceCreateInfo))
 	{
@@ -196,33 +195,33 @@ bool HelperVulkanResource::createDeviceBufferResource(VkPhysicalDevice physicalD
 	return true;
 }
 
-void HelperVulkanResource::destroyDeviceBufferResource(VkDevice device, DeviceBufferResource& deviceBufferResource)
+void VulkanResource::destroyDeviceBufferResource(VkDevice device, DeviceBufferResource& deviceBufferResource)
 {
 	destroyBufferResource(device, deviceBufferResource.bufferResource);
 }
 
 
-bool HelperVulkanResource::createVertexBufferResource(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VertexBufferResource& vertexBufferResource, const VertexBufferResourceCreateInfo& vertexBufferResourceCreateInfo)
+bool VulkanResource::createVertexBufferResource(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VertexBufferResource& vertexBufferResource, const VertexBufferResourceCreateInfo& vertexBufferResourceCreateInfo)
 {
 	return createDeviceBufferResource(physicalDevice, device, queue, commandPool, vertexBufferResource, vertexBufferResourceCreateInfo);
 }
 
-void HelperVulkanResource::destroyVertexBufferResource(VkDevice device, VertexBufferResource& vertexBufferResource)
+void VulkanResource::destroyVertexBufferResource(VkDevice device, VertexBufferResource& vertexBufferResource)
 {
 	destroyDeviceBufferResource(device, vertexBufferResource);
 }
 
-bool HelperVulkanResource::createStorageBufferResource(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, StorageBufferResource& storageBufferResource, const StorageBufferResourceCreateInfo& storageBufferResourceCreateInfo)
+bool VulkanResource::createStorageBufferResource(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, StorageBufferResource& storageBufferResource, const StorageBufferResourceCreateInfo& storageBufferResourceCreateInfo)
 {
 	return createDeviceBufferResource(physicalDevice, device, queue, commandPool, storageBufferResource, storageBufferResourceCreateInfo);
 }
 
-void HelperVulkanResource::destroyStorageBufferResource(VkDevice device, StorageBufferResource& storageBufferResource)
+void VulkanResource::destroyStorageBufferResource(VkDevice device, StorageBufferResource& storageBufferResource)
 {
 	destroyDeviceBufferResource(device, storageBufferResource);
 }
 
-bool HelperVulkanResource::createUniformBufferResource(VkPhysicalDevice physicalDevice, VkDevice device, UniformBufferResource& uniformBufferResource, const UniformBufferResourceCreateInfo& uniformBufferResourceCreateInfo)
+bool VulkanResource::createUniformBufferResource(VkPhysicalDevice physicalDevice, VkDevice device, UniformBufferResource& uniformBufferResource, const UniformBufferResourceCreateInfo& uniformBufferResourceCreateInfo)
 {
 	if ((uniformBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty & (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) != (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT))
 	{
@@ -245,12 +244,12 @@ bool HelperVulkanResource::createUniformBufferResource(VkPhysicalDevice physical
 	return true;
 }
 
-void HelperVulkanResource::destroyUniformBufferResource(VkDevice device, UniformBufferResource& uniformBufferResource)
+void VulkanResource::destroyUniformBufferResource(VkDevice device, UniformBufferResource& uniformBufferResource)
 {
 	destroyBufferResource(device, uniformBufferResource.bufferResource);
 }
 
-bool HelperVulkanResource::createImageViewResource(VkPhysicalDevice physicalDevice, VkDevice device, ImageViewResource& imageViewResource, const ImageViewResourceCreateInfo& imageViewResourceCreateInfo)
+bool VulkanResource::createImageViewResource(VkPhysicalDevice physicalDevice, VkDevice device, ImageViewResource& imageViewResource, const ImageViewResourceCreateInfo& imageViewResourceCreateInfo)
 {
 	VkResult result = VK_SUCCESS;
 
@@ -334,7 +333,7 @@ bool HelperVulkanResource::createImageViewResource(VkPhysicalDevice physicalDevi
 	return true;
 }
 
-void HelperVulkanResource::destroyImageViewResource(VkDevice device, ImageViewResource& imageViewResource)
+void VulkanResource::destroyImageViewResource(VkDevice device, ImageViewResource& imageViewResource)
 {
 	if (imageViewResource.deviceMemory != VK_NULL_HANDLE)
 	{
@@ -355,7 +354,7 @@ void HelperVulkanResource::destroyImageViewResource(VkDevice device, ImageViewRe
 	}
 }
 
-bool HelperVulkanResource::createTextureResource(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, TextureResource& textureResource, const TextureResourceCreateInfo& textureResourceCreateInfo)
+bool VulkanResource::createTextureResource(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, TextureResource& textureResource, const TextureResourceCreateInfo& textureResourceCreateInfo)
 {
 	if (textureResourceCreateInfo.imageDataResources.images.size() != textureResourceCreateInfo.imageDataResources.mipLevels * textureResourceCreateInfo.imageDataResources.faceCount)
 	{
@@ -387,7 +386,7 @@ bool HelperVulkanResource::createTextureResource(VkPhysicalDevice physicalDevice
 		creatMipMaps = true;
 	}
 
-	if (!HelperVulkanResource::createImageViewResource(physicalDevice, device, textureResource.imageViewResource, imageViewResourceCreateInfo))
+	if (!VulkanResource::createImageViewResource(physicalDevice, device, textureResource.imageViewResource, imageViewResourceCreateInfo))
 	{
 		return false;
 	}
@@ -477,7 +476,7 @@ bool HelperVulkanResource::createTextureResource(VkPhysicalDevice physicalDevice
 	return true;
 }
 
-bool HelperVulkanResource::createSamplerResource(VkDevice device, SamplerResource& samplerResource, const SamplerResourceCreateInfo& samplerResourceCreateInfo)
+bool VulkanResource::createSamplerResource(VkDevice device, SamplerResource& samplerResource, const SamplerResourceCreateInfo& samplerResourceCreateInfo)
 {
 	VkResult result = VK_SUCCESS;
 
@@ -502,7 +501,7 @@ bool HelperVulkanResource::createSamplerResource(VkDevice device, SamplerResourc
 	return true;
 }
 
-void HelperVulkanResource::destroySamplerResource(VkDevice device, SamplerResource& samplerResource)
+void VulkanResource::destroySamplerResource(VkDevice device, SamplerResource& samplerResource)
 {
 	if (samplerResource.sampler != VK_NULL_HANDLE)
 	{
@@ -511,7 +510,7 @@ void HelperVulkanResource::destroySamplerResource(VkDevice device, SamplerResour
 	}
 }
 
-void HelperVulkanResource::destroyTextureResource(VkDevice device, TextureResource& textureResource)
+void VulkanResource::destroyTextureResource(VkDevice device, TextureResource& textureResource)
 {
 	destroySamplerResource(device, textureResource.samplerResource);
 

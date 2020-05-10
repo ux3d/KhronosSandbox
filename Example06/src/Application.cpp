@@ -45,12 +45,12 @@ bool Application::applicationInit()
 
 	//
 
-	if (!HelperVulkanResource::createShaderModule(vertexShaderModule, device, vertexShaderCode))
+	if (!VulkanResource::createShaderModule(vertexShaderModule, device, vertexShaderCode))
 	{
 		return false;
 	}
 
-	if (!HelperVulkanResource::createShaderModule(fragmentShaderModule, device, fragmentShaderCode))
+	if (!VulkanResource::createShaderModule(fragmentShaderModule, device, fragmentShaderCode))
 	{
 		return false;
 	}
@@ -66,7 +66,7 @@ bool Application::applicationInit()
 	uniformBufferResources.resize(commandBuffers.size());
 	for (auto& currentUniformBufferResource : uniformBufferResources)
 	{
-		if (!HelperVulkanResource::createUniformBufferResource(physicalDevice, device, currentUniformBufferResource, uniformBufferResourceCreateInfo))
+		if (!VulkanResource::createUniformBufferResource(physicalDevice, device, currentUniformBufferResource, uniformBufferResourceCreateInfo))
 		{
 			return false;
 		}
@@ -176,7 +176,7 @@ bool Application::applicationInit()
 	vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	vertexBufferResourceCreateInfo.data = vertexData;
 
-	if (!HelperVulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexBufferResource, vertexBufferResourceCreateInfo))
+	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexBufferResource, vertexBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -328,7 +328,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	UniformData uniformData = {};
 	uniformData.transform = glm::scale(glm::vec3(scale, scale, scale));
 
-	if (!HelperVulkanResource::copyHostToDevice(device, uniformBufferResources[frameIndex].bufferResource, &uniformData, sizeof(uniformData)))
+	if (!VulkanResource::copyHostToDevice(device, uniformBufferResources[frameIndex].bufferResource, &uniformData, sizeof(uniformData)))
 	{
 		return false;
 	}
@@ -350,10 +350,10 @@ void Application::applicationTerminate()
 {
 	for (auto& currentUniformBufferResource : uniformBufferResources)
 	{
-		HelperVulkanResource::destroyUniformBufferResource(device, currentUniformBufferResource);
+		VulkanResource::destroyUniformBufferResource(device, currentUniformBufferResource);
 	}
 
-	HelperVulkanResource::destroyVertexBufferResource(device, vertexBufferResource);
+	VulkanResource::destroyVertexBufferResource(device, vertexBufferResource);
 
 	if (graphicsPipeline != VK_NULL_HANDLE)
 	{

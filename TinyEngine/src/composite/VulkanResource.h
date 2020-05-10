@@ -1,5 +1,5 @@
-#ifndef COMPOSITE_HELPERVULKANRESOURCE_H_
-#define COMPOSITE_HELPERVULKANRESOURCE_H_
+#ifndef COMPOSITE_VULKANRESOURCE_H_
+#define COMPOSITE_VULKANRESOURCE_H_
 
 #include <vector>
 #include "../io/ImageDataResources.h"
@@ -108,7 +108,7 @@ struct TextureResource {
 	SamplerResource samplerResource = {};
 };
 
-class HelperVulkanResource
+class VulkanResource
 {
 public:
 
@@ -150,4 +150,4 @@ public:
 
 };
 
-#endif /* COMPOSITE_HELPERVULKANRESOURCE_H_ */
+#endif /* COMPOSITE_VULKANRESOURCE_H_ */

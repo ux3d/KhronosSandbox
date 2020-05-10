@@ -1,9 +1,9 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
+#include <composite/VulkanRaytraceResource.h>
 #include "TinyEngine.h"
 
-#include "composite/HelperRaytrace.h"
 
 class Application: public TinyEngine
 {

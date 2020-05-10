@@ -23,7 +23,7 @@ bool Application::applicationInit()
 	textureResourceCreateInfo.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
 	textureResourceCreateInfo.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
 
-	if (!HelperVulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, textureResource, textureResourceCreateInfo))
+	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, textureResource, textureResourceCreateInfo))
 	{
 		return false;
 	}
@@ -62,12 +62,12 @@ bool Application::applicationInit()
 
 	//
 
-	if (!HelperVulkanResource::createShaderModule(vertexShaderModule, device, vertexShaderCode))
+	if (!VulkanResource::createShaderModule(vertexShaderModule, device, vertexShaderCode))
 	{
 		return false;
 	}
 
-	if (!HelperVulkanResource::createShaderModule(fragmentShaderModule, device, fragmentShaderCode))
+	if (!VulkanResource::createShaderModule(fragmentShaderModule, device, fragmentShaderCode))
 	{
 		return false;
 	}
@@ -83,7 +83,7 @@ bool Application::applicationInit()
 	uniformBufferResources.resize(commandBuffers.size());
 	for (auto& currentUniformBufferResource : uniformBufferResources)
 	{
-		if (!HelperVulkanResource::createUniformBufferResource(physicalDevice, device, currentUniformBufferResource, uniformBufferResourceCreateInfo))
+		if (!VulkanResource::createUniformBufferResource(physicalDevice, device, currentUniformBufferResource, uniformBufferResourceCreateInfo))
 		{
 			return false;
 		}
@@ -212,7 +212,7 @@ bool Application::applicationInit()
 	vertexIndexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	vertexIndexBufferResourceCreateInfo.data = vertexIndices.data();
 
-	if (!HelperVulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexIndexBufferResource, vertexIndexBufferResourceCreateInfo))
+	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexIndexBufferResource, vertexIndexBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -233,7 +233,7 @@ bool Application::applicationInit()
 	vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	vertexBufferResourceCreateInfo.data = vertexData;
 
-	if (!HelperVulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexBufferResource, vertexBufferResourceCreateInfo))
+	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexBufferResource, vertexBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -381,7 +381,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	UniformData uniformData = {};
 	uniformData.transform = glm::mat4(1.0f);
 
-	if (!HelperVulkanResource::copyHostToDevice(device, uniformBufferResources[frameIndex].bufferResource, &uniformData, sizeof(uniformData)))
+	if (!VulkanResource::copyHostToDevice(device, uniformBufferResources[frameIndex].bufferResource, &uniformData, sizeof(uniformData)))
 	{
 		return false;
 	}
@@ -405,13 +405,13 @@ void Application::applicationTerminate()
 {
 	for (auto& currentUniformBufferResource : uniformBufferResources)
 	{
-		HelperVulkanResource::destroyUniformBufferResource(device, currentUniformBufferResource);
+		VulkanResource::destroyUniformBufferResource(device, currentUniformBufferResource);
 	}
 
-	HelperVulkanResource::destroyVertexBufferResource(device, vertexBufferResource);
-	HelperVulkanResource::destroyVertexBufferResource(device, vertexIndexBufferResource);
+	VulkanResource::destroyVertexBufferResource(device, vertexBufferResource);
+	VulkanResource::destroyVertexBufferResource(device, vertexIndexBufferResource);
 
-	HelperVulkanResource::destroyTextureResource(device, textureResource);
+	VulkanResource::destroyTextureResource(device, textureResource);
 
 	if (graphicsPipeline != VK_NULL_HANDLE)
 	{

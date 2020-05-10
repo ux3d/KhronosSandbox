@@ -41,12 +41,12 @@ bool Application::applicationInit()
 
 	//
 
-	if (!HelperVulkanResource::createShaderModule(vertexShaderModule, device, vertexShaderCode))
+	if (!VulkanResource::createShaderModule(vertexShaderModule, device, vertexShaderCode))
 	{
 		return false;
 	}
 
-	if (!HelperVulkanResource::createShaderModule(fragmentShaderModule, device, fragmentShaderCode))
+	if (!VulkanResource::createShaderModule(fragmentShaderModule, device, fragmentShaderCode))
 	{
 		return false;
 	}
@@ -80,7 +80,7 @@ bool Application::applicationInit()
 	vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	vertexBufferResourceCreateInfo.data = vertexData;
 
-	if (!HelperVulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexBufferResource, vertexBufferResourceCreateInfo))
+	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, vertexBufferResource, vertexBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -238,7 +238,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 void Application::applicationTerminate()
 {
-	HelperVulkanResource::destroyVertexBufferResource(device, vertexBufferResource);
+	VulkanResource::destroyVertexBufferResource(device, vertexBufferResource);
 
 	if (graphicsPipeline != VK_NULL_HANDLE)
 	{

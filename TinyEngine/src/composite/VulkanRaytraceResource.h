@@ -1,9 +1,9 @@
-#ifndef COMPOSITE_HELPERRAYTRACE_H_
-#define COMPOSITE_HELPERRAYTRACE_H_
+#ifndef COMPOSITE_VULKANRAYTRACERESOURCE_H_
+#define COMPOSITE_VULKANRAYTRACERESOURCE_H_
 
 #include <vector>
 
-#include "HelperVulkanResource.h"
+#include "VulkanResource.h"
 
 #define VK_ENABLE_BETA_EXTENSIONS
 #include "volk.h"
@@ -62,7 +62,7 @@ struct TopLevelResource {
 	LevelResource levelResource = {};
 };
 
-class HelperRaytrace
+class VulkanRaytraceResource
 {
 public:
 
@@ -88,4 +88,4 @@ public:
 
 };
 
-#endif /* COMPOSITE_HELPERRAYTRACE_H_ */
+#endif /* COMPOSITE_VULKANRAYTRACERESOURCE_H_ */

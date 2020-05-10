@@ -2,13 +2,13 @@
 #define TINYENGINE_H_
 
 #include "common/Logger.h"
+#include "composite/VulkanRaytraceResource.h"
+#include "composite/VulkanResource.h"
 #include "io/FileIO.h"
 #include "io/ImageDataIO.h"
 #include "math/Projection.h"
 #include "shader/Compiler.h"
 #include "vulkan/HelperVulkan.h"
-#include "composite/HelperRaytrace.h"
-#include "composite/HelperVulkanResource.h"
 
 #include <cstddef>
 #include <optional>

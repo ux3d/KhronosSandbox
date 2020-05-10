@@ -1,10 +1,9 @@
-#include "HelperRaytrace.h"
-
 #include "../common/Logger.h"
 #include "../vulkan/HelperVulkan.h"
+#include "VulkanRaytraceResource.h"
 
 
-bool HelperRaytrace::createAccelerationStructureResource(VkPhysicalDevice physicalDevice, VkDevice device, AccelerationStructureResource& accelerationStructureResource, const AccelerationStructureResourceCreateInfo& accelerationStructureResourceCreateInfo)
+bool VulkanRaytraceResource::createAccelerationStructureResource(VkPhysicalDevice physicalDevice, VkDevice device, AccelerationStructureResource& accelerationStructureResource, const AccelerationStructureResourceCreateInfo& accelerationStructureResourceCreateInfo)
 {
 	VkResult result = VK_SUCCESS;
 
@@ -72,7 +71,7 @@ bool HelperRaytrace::createAccelerationStructureResource(VkPhysicalDevice physic
 	return true;
 }
 
-void HelperRaytrace::destroyAccelerationStructureResource(VkDevice device, AccelerationStructureResource& accelerationStructureResource)
+void VulkanRaytraceResource::destroyAccelerationStructureResource(VkDevice device, AccelerationStructureResource& accelerationStructureResource)
 {
 	if (accelerationStructureResource.deviceMemory != VK_NULL_HANDLE)
 	{
@@ -87,7 +86,7 @@ void HelperRaytrace::destroyAccelerationStructureResource(VkDevice device, Accel
 	}
 }
 
-bool HelperRaytrace::createScratchBuffer(VkPhysicalDevice physicalDevice, VkDevice device, ScratchBufferResource& scratchBufferResource, const ScratchBufferResourceCreateInfo& scratchBufferResourceCreateInfo)
+bool VulkanRaytraceResource::createScratchBuffer(VkPhysicalDevice physicalDevice, VkDevice device, ScratchBufferResource& scratchBufferResource, const ScratchBufferResourceCreateInfo& scratchBufferResourceCreateInfo)
 {
 	VkAccelerationStructureMemoryRequirementsInfoKHR accelerationStructureMemoryRequirementsInfo = {};
 	accelerationStructureMemoryRequirementsInfo.sType                 = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_KHR;
@@ -112,7 +111,7 @@ bool HelperRaytrace::createScratchBuffer(VkPhysicalDevice physicalDevice, VkDevi
 	bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_RAY_TRACING_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
 	bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 
-	if (!HelperVulkanResource::createBufferResource(physicalDevice, device, scratchBufferResource.bufferResource, bufferResourceCreateInfo))
+	if (!VulkanResource::createBufferResource(physicalDevice, device, scratchBufferResource.bufferResource, bufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -120,18 +119,18 @@ bool HelperRaytrace::createScratchBuffer(VkPhysicalDevice physicalDevice, VkDevi
 	return true;
 }
 
-void HelperRaytrace::destroyScratchBuffer(VkDevice device, ScratchBufferResource& scratchBufferResource)
+void VulkanRaytraceResource::destroyScratchBuffer(VkDevice device, ScratchBufferResource& scratchBufferResource)
 {
-	HelperVulkanResource::destroyBufferResource(device, scratchBufferResource.bufferResource);
+	VulkanResource::destroyBufferResource(device, scratchBufferResource.bufferResource);
 }
 
-void HelperRaytrace::destroyLevelResource(VkDevice device, LevelResource& levelResource)
+void VulkanRaytraceResource::destroyLevelResource(VkDevice device, LevelResource& levelResource)
 {
-	HelperRaytrace::destroyScratchBuffer(device, levelResource.scratchBufferResource);
-	HelperRaytrace::destroyAccelerationStructureResource(device, levelResource.accelerationStructureResource);
+	VulkanRaytraceResource::destroyScratchBuffer(device, levelResource.scratchBufferResource);
+	VulkanRaytraceResource::destroyAccelerationStructureResource(device, levelResource.accelerationStructureResource);
 }
 
-bool HelperRaytrace::buildAccelerationStructure(VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t infoCount, VkAccelerationStructureBuildGeometryInfoKHR* accelerationStructureBuildGeometryInfos, VkAccelerationStructureBuildOffsetInfoKHR** accelerationStructureBuildOffsetInfos, bool useHostCommand)
+bool VulkanRaytraceResource::buildAccelerationStructure(VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t infoCount, VkAccelerationStructureBuildGeometryInfoKHR* accelerationStructureBuildGeometryInfos, VkAccelerationStructureBuildOffsetInfoKHR** accelerationStructureBuildOffsetInfos, bool useHostCommand)
 {
 	VkResult result = VK_SUCCESS;
 
@@ -167,7 +166,7 @@ bool HelperRaytrace::buildAccelerationStructure(VkDevice device, VkQueue queue, 
 	return true;
 }
 
-bool HelperRaytrace::createBottomLevelResource(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, BottomLevelResource& bottomLevelResource, const BottomLevelResourceCreateInfo& bottomLevelResourceCreateInfo)
+bool VulkanRaytraceResource::createBottomLevelResource(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, BottomLevelResource& bottomLevelResource, const BottomLevelResourceCreateInfo& bottomLevelResourceCreateInfo)
 {
 	AccelerationStructureResourceCreateInfo accelerationStructureResourceCreateInfo = {};
 	accelerationStructureResourceCreateInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
@@ -183,7 +182,7 @@ bool HelperRaytrace::createBottomLevelResource(VkPhysicalDevice physicalDevice, 
 
 	accelerationStructureResourceCreateInfo.accelerationStructureCreateGeometryTypeInfos.push_back(accelerationStructureCreateGeometryTypeInfo);
 
-	if (!HelperRaytrace::createAccelerationStructureResource(physicalDevice, device, bottomLevelResource.levelResource.accelerationStructureResource, accelerationStructureResourceCreateInfo))
+	if (!VulkanRaytraceResource::createAccelerationStructureResource(physicalDevice, device, bottomLevelResource.levelResource.accelerationStructureResource, accelerationStructureResourceCreateInfo))
 	{
 		return false;
 	}
@@ -193,7 +192,7 @@ bool HelperRaytrace::createBottomLevelResource(VkPhysicalDevice physicalDevice, 
 	ScratchBufferResourceCreateInfo scratchBufferResourceCreateInfo = {};
 	scratchBufferResourceCreateInfo.accelerationStructure = bottomLevelResource.levelResource.accelerationStructureResource.accelerationStructure;
 
-	if (!HelperRaytrace::createScratchBuffer(physicalDevice, device, bottomLevelResource.levelResource.scratchBufferResource, scratchBufferResourceCreateInfo))
+	if (!VulkanRaytraceResource::createScratchBuffer(physicalDevice, device, bottomLevelResource.levelResource.scratchBufferResource, scratchBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -242,7 +241,7 @@ bool HelperRaytrace::createBottomLevelResource(VkPhysicalDevice physicalDevice, 
 
 	//
 
-	if (!HelperRaytrace::buildAccelerationStructure(device, queue, commandPool, 1, &accelerationStructureBuildGeometryInfo, accelerationStructureBuildOffsetInfos.data(), bottomLevelResourceCreateInfo.useHostCommand))
+	if (!VulkanRaytraceResource::buildAccelerationStructure(device, queue, commandPool, 1, &accelerationStructureBuildGeometryInfo, accelerationStructureBuildOffsetInfos.data(), bottomLevelResourceCreateInfo.useHostCommand))
 	{
 		return false;
 	}
@@ -250,12 +249,12 @@ bool HelperRaytrace::createBottomLevelResource(VkPhysicalDevice physicalDevice, 
 	return true;
 }
 
-void HelperRaytrace::destroyBottomLevelResource(VkDevice device, BottomLevelResource& bottomLevelResource)
+void VulkanRaytraceResource::destroyBottomLevelResource(VkDevice device, BottomLevelResource& bottomLevelResource)
 {
-	HelperRaytrace::destroyLevelResource(device, bottomLevelResource.levelResource);
+	VulkanRaytraceResource::destroyLevelResource(device, bottomLevelResource.levelResource);
 }
 
-bool HelperRaytrace::createTopLevelResource(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, TopLevelResource& topLevelResource, const TopLevelResourceCreateInfo& topLevelResourceCreateInfo)
+bool VulkanRaytraceResource::createTopLevelResource(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, TopLevelResource& topLevelResource, const TopLevelResourceCreateInfo& topLevelResourceCreateInfo)
 {
 	AccelerationStructureResourceCreateInfo accelerationStructureResourceCreateInfo = {};
 	accelerationStructureResourceCreateInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
@@ -268,7 +267,7 @@ bool HelperRaytrace::createTopLevelResource(VkPhysicalDevice physicalDevice, VkD
 
 	accelerationStructureResourceCreateInfo.accelerationStructureCreateGeometryTypeInfos.push_back(accelerationStructureCreateGeometryTypeInfo);
 
-	if (!HelperRaytrace::createAccelerationStructureResource(physicalDevice, device, topLevelResource.levelResource.accelerationStructureResource, accelerationStructureResourceCreateInfo))
+	if (!VulkanRaytraceResource::createAccelerationStructureResource(physicalDevice, device, topLevelResource.levelResource.accelerationStructureResource, accelerationStructureResourceCreateInfo))
 	{
 		return false;
 	}
@@ -278,7 +277,7 @@ bool HelperRaytrace::createTopLevelResource(VkPhysicalDevice physicalDevice, VkD
 	ScratchBufferResourceCreateInfo scratchBufferResourceCreateInfo = {};
 	scratchBufferResourceCreateInfo.accelerationStructure = topLevelResource.levelResource.accelerationStructureResource.accelerationStructure;
 
-	if (!HelperRaytrace::createScratchBuffer(physicalDevice, device, topLevelResource.levelResource.scratchBufferResource, scratchBufferResourceCreateInfo))
+	if (!VulkanRaytraceResource::createScratchBuffer(physicalDevice, device, topLevelResource.levelResource.scratchBufferResource, scratchBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -325,7 +324,7 @@ bool HelperRaytrace::createTopLevelResource(VkPhysicalDevice physicalDevice, VkD
 
 	//
 
-	if (!HelperRaytrace::buildAccelerationStructure(device, queue, commandPool, 1, &accelerationStructureBuildGeometryInfo, accelerationStructureBuildOffsetInfos.data(), topLevelResourceCreateInfo.useHostCommand))
+	if (!VulkanRaytraceResource::buildAccelerationStructure(device, queue, commandPool, 1, &accelerationStructureBuildGeometryInfo, accelerationStructureBuildOffsetInfos.data(), topLevelResourceCreateInfo.useHostCommand))
 	{
 		return false;
 	}
@@ -333,8 +332,8 @@ bool HelperRaytrace::createTopLevelResource(VkPhysicalDevice physicalDevice, VkD
 	return true;
 }
 
-void HelperRaytrace::destroyTopLevelResource(VkDevice device, TopLevelResource& topLevelResource)
+void VulkanRaytraceResource::destroyTopLevelResource(VkDevice device, TopLevelResource& topLevelResource)
 {
-	HelperRaytrace::destroyLevelResource(device, topLevelResource.levelResource);
+	VulkanRaytraceResource::destroyLevelResource(device, topLevelResource.levelResource);
 }
 
