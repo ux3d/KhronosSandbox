@@ -1,7 +1,7 @@
 #include "../HelperAccess.h"
 
-#include "HelperVulkanAccess.h"
 #include "ResourceManager.h"
+#include "HelperAccessResource.h"
 
 ResourceManager::ResourceManager()
 {
@@ -11,13 +11,57 @@ ResourceManager::~ResourceManager()
 {
 }
 
-bool ResourceManager::initBufferView(BufferView& bufferView, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
+BufferViewResource* ResourceManager::getBufferViewResource(const BufferView* bufferView)
 {
-	bufferViewResources.emplace(&bufferView, BufferViewResource());
+	auto result = bufferViewResources.find(bufferView);
+	if (result == bufferViewResources.end())
+	{
+		bufferViewResources[bufferView] = BufferViewResource();
+		return &bufferViewResources[bufferView];
+	}
+	return &result->second;
+}
 
-	//
-	//
+MaterialResource* ResourceManager::getMaterialResource(const Material* material)
+{
+	auto result = materialResources.find(material);
+	if (result == materialResources.end())
+	{
+		materialResources[material] = MaterialResource();
+		return &materialResources[material];
+	}
+	return &result->second;
+}
 
+PrimitiveResource* ResourceManager::getPrimitiveResource(const Primitive* primitive)
+{
+	auto result = primitiveResources.find(primitive);
+	if (result == primitiveResources.end())
+	{
+		primitiveResources[primitive] = PrimitiveResource();
+		return &primitiveResources[primitive];
+	}
+	return &result->second;
+}
+
+SceneResource* ResourceManager::getSceneResource(const Scene* scene)
+{
+	auto result = sceneResources.find(scene);
+	if (result == sceneResources.end())
+	{
+		sceneResources[scene] = SceneResource();
+		return &sceneResources[scene];
+	}
+	return &result->second;
+}
+
+GltfResource* ResourceManager::getGltfResource()
+{
+	return &gltfResource;
+}
+
+bool ResourceManager::initBufferView(const BufferView& bufferView, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
+{
 	VkBufferUsageFlags usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	if (bufferView.target == 34963) // ELEMENT_ARRAY_BUFFER
 	{
@@ -36,7 +80,7 @@ bool ResourceManager::initBufferView(BufferView& bufferView, const GLTF& glTF, V
 		vertexBufferResourceCreateInfo.bufferResourceCreateInfo.usage |= (VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 	}
 
-	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, bufferView.vertexBufferResource, vertexBufferResourceCreateInfo))
+	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, getBufferViewResource(&bufferView)->vertexBufferResource, vertexBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -46,11 +90,6 @@ bool ResourceManager::initBufferView(BufferView& bufferView, const GLTF& glTF, V
 
 bool ResourceManager::initMaterial(Material& material, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
 {
-	materialResources.emplace(&material, MaterialResource());
-
-	//
-	//
-
 	VkResult result = VK_SUCCESS;
 
 	//
@@ -138,11 +177,6 @@ bool ResourceManager::initMaterial(Material& material, const GLTF& glTF, VkPhysi
 
 bool ResourceManager::initPrimitive(Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
 {
-	primitiveResources.emplace(&primitive, PrimitiveResource());
-
-	//
-	//
-
 	VkResult result = VK_SUCCESS;
 
 	VkPipelineShaderStageCreateInfo pipelineShaderStageCreateInfo[2] = {};
@@ -288,7 +322,7 @@ bool ResourceManager::initPrimitive(Primitive& primitive, const GLTF& glTF, VkPh
 		VkBufferDeviceAddressInfo bufferDeviceAddressInfo = {};
 		bufferDeviceAddressInfo.sType  = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
 
-		bufferDeviceAddressInfo.buffer = HelperVulkanAccess::getBuffer(glTF.accessors[primitive.position]);
+		bufferDeviceAddressInfo.buffer = HelperAccessResource::getBuffer(*this, &glTF.accessors[primitive.position]);
 		VkDeviceAddress vertexBufferAddress = vkGetBufferDeviceAddress(device, &bufferDeviceAddressInfo);
 
 		uint32_t vertexCount = glTF.accessors[primitive.position].count;
@@ -304,7 +338,7 @@ bool ResourceManager::initPrimitive(Primitive& primitive, const GLTF& glTF, VkPh
 				indexType = VK_INDEX_TYPE_UINT32;
 			}
 
-			bufferDeviceAddressInfo.buffer = HelperVulkanAccess::getBuffer(glTF.accessors[primitive.indices]);
+			bufferDeviceAddressInfo.buffer = HelperAccessResource::getBuffer(*this, &glTF.accessors[primitive.indices]);
 
 			vertexIndexBufferAddress = vkGetBufferDeviceAddress(device, &bufferDeviceAddressInfo);
 
@@ -343,11 +377,6 @@ bool ResourceManager::initPrimitive(Primitive& primitive, const GLTF& glTF, VkPh
 
 bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
 {
-	sceneResources.emplace(&scene, SceneResource());
-
-	//
-	//
-
 	if (useRaytrace)
 	{
 		TopLevelResourceCreateInfo topLevelResourceCreateInfo = {};
@@ -427,7 +456,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = HelperVulkanAccess::getBuffer(glTF.accessors[currentPrimitive.indices]);
+						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, &glTF.accessors[currentPrimitive.indices]);
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.indices]);
 						currentDescriptorBufferInfo.range = HelperAccess::getRange(glTF.accessors[currentPrimitive.indices]);
 
@@ -438,7 +467,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = HelperVulkanAccess::getBuffer(glTF.accessors[currentPrimitive.position]);
+						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, &glTF.accessors[currentPrimitive.position]);
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.position]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.position]);
 
@@ -449,7 +478,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = HelperVulkanAccess::getBuffer(glTF.accessors[currentPrimitive.normal]);
+						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, &glTF.accessors[currentPrimitive.normal]);
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.normal]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.normal]);
 
@@ -460,7 +489,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = HelperVulkanAccess::getBuffer(glTF.accessors[currentPrimitive.tangent]);
+						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, &glTF.accessors[currentPrimitive.tangent]);
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.tangent]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.tangent]);
 
@@ -471,7 +500,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = HelperVulkanAccess::getBuffer(glTF.accessors[currentPrimitive.texCoord0]);
+						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, &glTF.accessors[currentPrimitive.texCoord0]);
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.texCoord0]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.texCoord0]);
 
@@ -1283,7 +1312,7 @@ void ResourceManager::terminate(GLTF& glTF, VkDevice device)
 
 	for (size_t i = 0; i < glTF.bufferViews.size(); i++)
 	{
-		VulkanResource::destroyVertexBufferResource(device, glTF.bufferViews[i].vertexBufferResource);
+		VulkanResource::destroyVertexBufferResource(device, getBufferViewResource(&glTF.bufferViews[i])->vertexBufferResource);
 	}
 	glTF.bufferViews.clear();
 

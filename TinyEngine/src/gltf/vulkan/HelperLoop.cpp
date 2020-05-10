@@ -2,13 +2,13 @@
 
 #include "../HelperAccess.h"
 
-#include "HelperVulkanAccess.h"
+#include "HelperAccessResource.h"
 
-bool HelperLoop::update(Mesh& mesh, GLTF& glTF, const glm::mat4& parentWorldMatrix)
+bool HelperLoop::update(ResourceManager& resourceManager, Mesh& mesh, GLTF& glTF, const glm::mat4& parentWorldMatrix)
 {
 	for (size_t i = 0; i < mesh.primitives.size(); i++)
 	{
-		if (!HelperLoop::update(mesh.primitives[i], glTF, parentWorldMatrix))
+		if (!HelperLoop::update(resourceManager, mesh.primitives[i], glTF, parentWorldMatrix))
 		{
 			return false;
 		}
@@ -17,15 +17,15 @@ bool HelperLoop::update(Mesh& mesh, GLTF& glTF, const glm::mat4& parentWorldMatr
 	return true;
 }
 
-void HelperLoop::draw(const Mesh& mesh, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
+void HelperLoop::draw(ResourceManager& resourceManager, const Mesh& mesh, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {
 	for (size_t i = 0; i < mesh.primitives.size(); i++)
 	{
-		HelperLoop::draw(mesh.primitives[i], glTF, commandBuffer, frameIndex);
+		HelperLoop::draw(resourceManager, mesh.primitives[i], glTF, commandBuffer, frameIndex);
 	}
 }
 
-bool HelperLoop::update(Node& node, GLTF& glTF, const glm::mat4& parentWorldMatrix)
+bool HelperLoop::update(ResourceManager& resourceManager, Node& node, GLTF& glTF, const glm::mat4& parentWorldMatrix)
 {
 	glm::mat4 matrixTranslation = glm::translate(node.translation);
 	glm::mat4 matrixRotation = glm::toMat4(node.rotation);
@@ -37,7 +37,7 @@ bool HelperLoop::update(Node& node, GLTF& glTF, const glm::mat4& parentWorldMatr
 
 	if (node.mesh >= 0)
 	{
-		if (!HelperLoop::update(glTF.meshes[node.mesh], glTF, node.worldMatrix))
+		if (!HelperLoop::update(resourceManager, glTF.meshes[node.mesh], glTF, node.worldMatrix))
 		{
 			return false;
 		}
@@ -45,7 +45,7 @@ bool HelperLoop::update(Node& node, GLTF& glTF, const glm::mat4& parentWorldMatr
 
 	for (size_t i = 0; i < node.children.size(); i++)
 	{
-		if (!HelperLoop::update(glTF.nodes[node.children[i]], glTF, node.worldMatrix))
+		if (!HelperLoop::update(resourceManager, glTF.nodes[node.children[i]], glTF, node.worldMatrix))
 		{
 			return false;
 		}
@@ -54,28 +54,28 @@ bool HelperLoop::update(Node& node, GLTF& glTF, const glm::mat4& parentWorldMatr
 	return true;
 }
 
-void HelperLoop::draw(const Node& node, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
+void HelperLoop::draw(ResourceManager& resourceManager, const Node& node, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {
 	if (node.mesh >= 0)
 	{
-		HelperLoop::draw(glTF.meshes[node.mesh], glTF, commandBuffer, frameIndex);
+		HelperLoop::draw(resourceManager, glTF.meshes[node.mesh], glTF, commandBuffer, frameIndex);
 	}
 
 	for (size_t i = 0; i < node.children.size(); i++)
 	{
-		HelperLoop::draw(glTF.nodes[node.children[i]], glTF, commandBuffer, frameIndex);
+		HelperLoop::draw(resourceManager, glTF.nodes[node.children[i]], glTF, commandBuffer, frameIndex);
 	}
 }
 
 
-bool HelperLoop::update(Primitive& primitive, GLTF& glTF, const glm::mat4& parentWorldMatrix)
+bool HelperLoop::update(ResourceManager& resourceManager, Primitive& primitive, GLTF& glTF, const glm::mat4& parentWorldMatrix)
 {
 	primitive.worldMatrix = parentWorldMatrix;
 
 	return true;
 }
 
-void HelperLoop::draw(const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
+void HelperLoop::draw(ResourceManager& resourceManager, const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitive.graphicsPipeline);
 
@@ -92,7 +92,7 @@ void HelperLoop::draw(const Primitive& primitive, const GLTF& glTF, VkCommandBuf
 			indexType = VK_INDEX_TYPE_UINT32;
 		}
 
-		vkCmdBindIndexBuffer(commandBuffer, HelperVulkanAccess::getBuffer(glTF.accessors[primitive.indices]), HelperAccess::getOffset(glTF.accessors[primitive.indices]), indexType);
+		vkCmdBindIndexBuffer(commandBuffer, HelperAccessResource::getBuffer(resourceManager, &glTF.accessors[primitive.indices]), HelperAccess::getOffset(glTF.accessors[primitive.indices]), indexType);
 	}
 
 	vkCmdBindVertexBuffers(commandBuffer, 0, primitive.attributesCount, primitive.vertexBuffers.data(), primitive.vertexBuffersOffsets.data());
@@ -107,11 +107,11 @@ void HelperLoop::draw(const Primitive& primitive, const GLTF& glTF, VkCommandBuf
 	}
 }
 
-bool HelperLoop::update(Scene& scene, GLTF& glTF, const glm::mat4& parentWorldMatrix)
+bool HelperLoop::update(ResourceManager& resourceManager, Scene& scene, GLTF& glTF, const glm::mat4& parentWorldMatrix)
 {
 	for (size_t i = 0; i < scene.nodes.size(); i++)
 	{
-		if (!HelperLoop::update(glTF.nodes[scene.nodes[i]], glTF, parentWorldMatrix))
+		if (!HelperLoop::update(resourceManager, glTF.nodes[scene.nodes[i]], glTF, parentWorldMatrix))
 		{
 			return false;
 		}
@@ -120,19 +120,19 @@ bool HelperLoop::update(Scene& scene, GLTF& glTF, const glm::mat4& parentWorldMa
 	return true;
 }
 
-void HelperLoop::draw(const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
+void HelperLoop::draw(ResourceManager& resourceManager, const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {
 	for (size_t i = 0; i < scene.nodes.size(); i++)
 	{
-		HelperLoop::draw(glTF.nodes[scene.nodes[i]], glTF, commandBuffer, frameIndex);
+		HelperLoop::draw(resourceManager, glTF.nodes[scene.nodes[i]], glTF, commandBuffer, frameIndex);
 	}
 }
 
-bool HelperLoop::update(GLTF& glTF, const glm::mat4& parentWorldMatrix)
+bool HelperLoop::update(ResourceManager& resourceManager, GLTF& glTF, const glm::mat4& parentWorldMatrix)
 {
 	if (glTF.defaultScene < glTF.scenes.size())
 	{
-		if (!HelperLoop::update(glTF.scenes[glTF.defaultScene], glTF, parentWorldMatrix))
+		if (!HelperLoop::update(resourceManager, glTF.scenes[glTF.defaultScene], glTF, parentWorldMatrix))
 		{
 			return false;
 		}
@@ -141,10 +141,10 @@ bool HelperLoop::update(GLTF& glTF, const glm::mat4& parentWorldMatrix)
 	return true;
 }
 
-void HelperLoop::draw(const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
+void HelperLoop::draw(ResourceManager& resourceManager, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {
 	if (glTF.defaultScene < glTF.scenes.size())
 	{
-		HelperLoop::draw(glTF.scenes[glTF.defaultScene], glTF, commandBuffer, frameIndex);
+		HelperLoop::draw(resourceManager, glTF.scenes[glTF.defaultScene], glTF, commandBuffer, frameIndex);
 	}
 }

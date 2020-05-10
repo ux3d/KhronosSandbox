@@ -18,10 +18,6 @@ public:
 	// Generic helper
 
 	Buffer* pBuffer = nullptr;
-
-	// Rasterize helper
-
-	VertexBufferResource vertexBufferResource = {};
 };
 
 #endif /* GLTF_BUFFERVIEW_H_ */

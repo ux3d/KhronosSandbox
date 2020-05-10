@@ -2,8 +2,8 @@
 
 #include "../../shader/HelperShader.h"
 #include "../HelperAccess.h"
+#include "HelperAccessResource.h"
 #include "HelperLoop.h"
-#include "HelperVulkanAccess.h"
 #include "ResourceManager.h"
 
 #define TINYGLTF_IMPLEMENTATION
@@ -17,15 +17,17 @@
 #include <tiny_gltf.h>
 
 HelperLoader::HelperLoader(uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView) :
-	width(width), height(height), physicalDevice(physicalDevice), device(device), queue(queue), commandPool(commandPool), renderPass(renderPass), samples(samples), imageView(imageView), model(), resourceManager(nullptr)
+	width(width), height(height), physicalDevice(physicalDevice), device(device), queue(queue), commandPool(commandPool), renderPass(renderPass), samples(samples), imageView(imageView), model()
 {
 }
 
-bool HelperLoader::initBuffers(GLTF& glTF)
+bool HelperLoader::initBuffers(ResourceManager& resourceManager, GLTF& glTF)
 {
+	glTF.buffers.resize(model.buffers.size());
+
 	for (size_t i = 0; i < model.buffers.size(); i++)
 	{
-		Buffer buffer;
+		Buffer& buffer = glTF.buffers[i];
 
 		buffer.uri = model.buffers[i].uri;
 
@@ -33,18 +35,18 @@ bool HelperLoader::initBuffers(GLTF& glTF)
 
 		buffer.binary.resize(buffer.byteLength);
 		memcpy(buffer.binary.data(), model.buffers[i].data.data(), buffer.byteLength);
-
-		glTF.buffers.push_back(buffer);
 	}
 
 	return true;
 }
 
-bool HelperLoader::initBufferViews(GLTF& glTF, bool useRaytrace)
+bool HelperLoader::initBufferViews(ResourceManager& resourceManager, GLTF& glTF, bool useRaytrace)
 {
+	glTF.bufferViews.resize(model.bufferViews.size());
+
 	for (size_t i = 0; i < model.bufferViews.size(); i++)
 	{
-		BufferView bufferView;
+		BufferView& bufferView = glTF.bufferViews[i];
 
 		if (model.bufferViews[i].buffer >= 0)
 		{
@@ -64,25 +66,22 @@ bool HelperLoader::initBufferViews(GLTF& glTF, bool useRaytrace)
 
 		//
 
-		if (!resourceManager->initBufferView(bufferView, glTF, physicalDevice, device, queue, commandPool, useRaytrace))
+		if (!resourceManager.initBufferView(bufferView, glTF, physicalDevice, device, queue, commandPool, useRaytrace))
 		{
 			return false;
 		}
-
-		//
-
-		glTF.bufferViews.push_back(bufferView);
 	}
 
 	return true;
 }
 
-bool HelperLoader::initAccessors(GLTF& glTF)
+bool HelperLoader::initAccessors(ResourceManager& resourceManager, GLTF& glTF)
 {
+	glTF.accessors.resize(model.accessors.size());
 
 	for (size_t i = 0; i < model.accessors.size(); i++)
 	{
-		Accessor accessor;
+		Accessor& accessor = glTF.accessors[i];
 
 		if (model.accessors[i].bufferView >= 0)
 		{
@@ -158,36 +157,36 @@ bool HelperLoader::initAccessors(GLTF& glTF)
 				accessor.typeCount = 16;
 			break;
 		}
-
-		glTF.accessors.push_back(accessor);
 	}
 
 	return true;
 }
 
-bool HelperLoader::initImages(GLTF& glTF, const std::string& path)
+bool HelperLoader::initImages(ResourceManager& resourceManager, GLTF& glTF, const std::string& path)
 {
+	glTF.images.resize(model.images.size());
+
 	for (size_t i = 0; i < model.images.size(); i++)
 	{
-		Image image;
+		Image& image = glTF.images[i];
 
 		image.uri = model.images[i].uri;
 		if (!ImageDataIO::open(image.imageDataResources, path + image.uri))
 		{
 			return false;
 		}
-
-		glTF.images.push_back(image);
 	}
 
 	return true;
 }
 
-bool HelperLoader::initSamplers(GLTF& glTF)
+bool HelperLoader::initSamplers(ResourceManager& resourceManager, GLTF& glTF)
 {
+	glTF.samplers.resize(model.samplers.size());
+
 	for (size_t i = 0; i < model.samplers.size(); i++)
 	{
-		Sampler sampler;
+		Sampler& sampler = glTF.samplers[i];
 
 		switch (model.samplers[i].magFilter)
 		{
@@ -251,18 +250,18 @@ bool HelperLoader::initSamplers(GLTF& glTF)
 				sampler.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 				break;
 		}
-
-		glTF.samplers.push_back(sampler);
 	}
 
 	return true;
 }
 
-bool HelperLoader::initTextures(GLTF& glTF)
+bool HelperLoader::initTextures(ResourceManager& resourceManager, GLTF& glTF)
 {
+	glTF.textures.resize(model.textures.size());
+
 	for (size_t i = 0; i < model.textures.size(); i++)
 	{
-		Texture texture;
+		Texture& texture = glTF.textures[i];
 
 		TextureResourceCreateInfo textureResourceCreateInfo = {};
 		textureResourceCreateInfo.imageDataResources = glTF.images[model.textures[i].source].imageDataResources;
@@ -283,18 +282,18 @@ bool HelperLoader::initTextures(GLTF& glTF)
 		{
 			return false;
 		}
-
-		glTF.textures.push_back(texture);
 	}
 
 	return true;
 }
 
-bool HelperLoader::initMaterials(GLTF& glTF)
+bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 {
+	glTF.materials.resize(model.materials.size());
+
 	for (size_t i = 0; i < model.materials.size(); i++)
 	{
-		Material material;
+		Material& material = glTF.materials[i];
 
 		uint32_t binding = 0;
 
@@ -599,7 +598,7 @@ bool HelperLoader::initMaterials(GLTF& glTF)
 
 		//
 
-		if (!resourceManager->initMaterial(material, glTF, physicalDevice, device, descriptorSetLayoutBindings))
+		if (!resourceManager.initMaterial(glTF.materials.back(), glTF, physicalDevice, device, descriptorSetLayoutBindings))
 		{
 			return false;
 		}
@@ -623,20 +622,16 @@ bool HelperLoader::initMaterials(GLTF& glTF)
 
 		uniformBuffer.doubleSided = material.doubleSided;
 
-		if (!VulkanResource::copyHostToDevice(device, material.uniformBufferResource.bufferResource, &uniformBuffer, sizeof(uniformBuffer)))
+		if (!VulkanResource::copyHostToDevice(device, glTF.materials.back().uniformBufferResource.bufferResource, &uniformBuffer, sizeof(uniformBuffer)))
 		{
 			return false;
 		}
-
-		//
-
-		glTF.materials.push_back(material);
 	}
 
 	return true;
 }
 
-bool HelperLoader::initMeshes(GLTF& glTF, bool useRaytrace)
+bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool useRaytrace)
 {
 	//
 	// Load the shader code.
@@ -894,7 +889,7 @@ bool HelperLoader::initMeshes(GLTF& glTF, bool useRaytrace)
 
 				//
 
-				primitive.vertexBuffers[attributesIndex] = HelperVulkanAccess::getBuffer(glTF.accessors[accessorIndex]);
+				primitive.vertexBuffers[attributesIndex] = HelperAccessResource::getBuffer(resourceManager, &glTF.accessors[accessorIndex]);
 				primitive.vertexBuffersOffsets[attributesIndex] = HelperAccess::getOffset(glTF.accessors[accessorIndex]);
 
 				//
@@ -911,6 +906,8 @@ bool HelperLoader::initMeshes(GLTF& glTF, bool useRaytrace)
 				return false;
 			}
 
+			mesh.primitives.push_back(primitive);
+
 			//
 
 			std::vector<uint32_t> vertexShaderCode;
@@ -925,24 +922,20 @@ bool HelperLoader::initMeshes(GLTF& glTF, bool useRaytrace)
 				return false;
 			}
 
-			if (!VulkanResource::createShaderModule(primitive.vertexShaderModule, device, vertexShaderCode))
+			if (!VulkanResource::createShaderModule(mesh.primitives.back().vertexShaderModule, device, vertexShaderCode))
 			{
 				return false;
 			}
 
-			if (!VulkanResource::createShaderModule(primitive.fragmentShaderModule, device, fragmentShaderCode))
+			if (!VulkanResource::createShaderModule(mesh.primitives.back().fragmentShaderModule, device, fragmentShaderCode))
 			{
 				return false;
 			}
 
-			if (!resourceManager->initPrimitive(primitive, glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &glTF.materials[primitive.material].descriptorSetLayout, cullMode, useRaytrace))
+			if (!resourceManager.initPrimitive(mesh.primitives.back(), glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &glTF.materials[primitive.material].descriptorSetLayout, cullMode, useRaytrace))
 			{
 				return false;
 			}
-
-			//
-
-			mesh.primitives.push_back(primitive);
 		}
 
 		glTF.meshes.push_back(mesh);
@@ -951,7 +944,7 @@ bool HelperLoader::initMeshes(GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool HelperLoader::initNodes(GLTF& glTF, bool useRaytrace)
+bool HelperLoader::initNodes(ResourceManager& resourceManager, GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < model.nodes.size(); i++)
 	{
@@ -998,7 +991,7 @@ bool HelperLoader::initNodes(GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool HelperLoader::initScenes(GLTF& glTF, bool useRaytrace)
+bool HelperLoader::initScenes(ResourceManager& resourceManager, GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < model.scenes.size(); i++)
 	{
@@ -1012,14 +1005,14 @@ bool HelperLoader::initScenes(GLTF& glTF, bool useRaytrace)
 		glTF.scenes.push_back(scene);
 	}
 
-	if (!HelperLoop::update(glTF, glm::mat4(1.0f)))
+	if (!HelperLoop::update(resourceManager, glTF, glm::mat4(1.0f)))
 	{
 		return false;
 	}
 
 	for (size_t i = 0; i < glTF.scenes.size(); i++)
 	{
-		if (!resourceManager->initScene(glTF.scenes[i], glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
+		if (!resourceManager.initScene(glTF.scenes[i], glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
 		{
 			return false;
 		}
@@ -1030,8 +1023,6 @@ bool HelperLoader::initScenes(GLTF& glTF, bool useRaytrace)
 
 bool HelperLoader::open(ResourceManager& resourceManager, GLTF& glTF, const std::string& filename, const std::string& environment, bool useRaytrace)
 {
-	this->resourceManager = &resourceManager;
-
 	// Diffuse
 
 	std::string diffuseFilename = environment + "/" + "diffuse.ktx2";
@@ -1103,70 +1094,70 @@ bool HelperLoader::open(ResourceManager& resourceManager, GLTF& glTF, const std:
 	// Images
 
 	std::string path = FileIO::getPath(filename);
-	if (!initImages(glTF, path))
+	if (!initImages(resourceManager, glTF, path))
 	{
 		return false;
 	}
 
 	// Samplers
 
-	if (!initSamplers(glTF))
+	if (!initSamplers(resourceManager, glTF))
 	{
 		return false;
 	}
 
 	// Textures
 
-	if (!initTextures(glTF))
+	if (!initTextures(resourceManager, glTF))
 	{
 		return false;
 	}
 
 	// Materials
 
-	if (!initMaterials(glTF))
+	if (!initMaterials(resourceManager, glTF))
 	{
 		return false;
 	}
 
 	// Buffers
 
-	if (!initBuffers(glTF))
+	if (!initBuffers(resourceManager, glTF))
 	{
 		return false;
 	}
 
 	// BufferViews
 
-	if (!initBufferViews(glTF, useRaytrace))
+	if (!initBufferViews(resourceManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Accessors
 
-	if (!initAccessors(glTF))
+	if (!initAccessors(resourceManager, glTF))
 	{
 		return false;
 	}
 
 	// Meshes
 
-	if (!initMeshes(glTF, useRaytrace))
+	if (!initMeshes(resourceManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Nodes
 
-	if (!initNodes(glTF, useRaytrace))
+	if (!initNodes(resourceManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Scenes
 
-	if (!initScenes(glTF, useRaytrace))
+	if (!initScenes(resourceManager, glTF, useRaytrace))
 	{
 		return false;
 	}

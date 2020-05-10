@@ -30,27 +30,25 @@ private:
 
 	tinygltf::Model model;
 
-	ResourceManager* resourceManager;
+	bool initBuffers(ResourceManager& resourceManager, GLTF& glTF);
 
-	bool initBuffers(GLTF& glTF);
+	bool initBufferViews(ResourceManager& resourceManager, GLTF& glTF, bool useRaytrace);
 
-	bool initBufferViews(GLTF& glTF, bool useRaytrace);
+	bool initAccessors(ResourceManager& resourceManager, GLTF& glTF);
 
-	bool initAccessors(GLTF& glTF);
+	bool initImages(ResourceManager& resourceManager, GLTF& glTF, const std::string& path);
 
-	bool initImages(GLTF& glTF, const std::string& path);
+	bool initSamplers(ResourceManager& resourceManager, GLTF& glTF);
 
-	bool initSamplers(GLTF& glTF);
+	bool initTextures(ResourceManager& resourceManager, GLTF& glTF);
 
-	bool initTextures(GLTF& glTF);
+	bool initMaterials(ResourceManager& resourceManager, GLTF& glTF);
 
-	bool initMaterials(GLTF& glTF);
+	bool initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool useRaytrace);
 
-	bool initMeshes(GLTF& glTF, bool useRaytrace);
+	bool initNodes(ResourceManager& resourceManager, GLTF& glTF, bool useRaytrace);
 
-	bool initNodes(GLTF& glTF, bool useRaytrace);
-
-	bool initScenes(GLTF& glTF, bool useRaytrace);
+	bool initScenes(ResourceManager& resourceManager, GLTF& glTF, bool useRaytrace);
 
 public:
 

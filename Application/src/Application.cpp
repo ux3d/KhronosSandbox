@@ -1,6 +1,6 @@
 #include "Application.h"
 
-#include "gltf/vulkan/HelperVulkanAccess.h"
+#include <gltf/vulkan/HelperAccessResource.h>
 #include "gltf/vulkan/HelperLoader.h"
 #include "gltf/vulkan/HelperLoop.h"
 
@@ -227,7 +227,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 		glTF.viewProjection.view = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		HelperLoop::draw(glTF, commandBuffers[frameIndex], frameIndex);
+		HelperLoop::draw(resourceManager, glTF, commandBuffers[frameIndex], frameIndex);
 
 		vkCmdEndRenderPass(commandBuffers[frameIndex]);
 	}

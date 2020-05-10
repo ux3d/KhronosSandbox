@@ -15,10 +15,10 @@ class ResourceManager {
 
 private:
 
-	std::map<BufferView*, BufferViewResource> bufferViewResources;
-	std::map<Material*, MaterialResource> materialResources;
-	std::map<Primitive*, PrimitiveResource> primitiveResources;
-	std::map<Scene*, SceneResource> sceneResources;
+	std::map<const BufferView*, BufferViewResource> bufferViewResources;
+	std::map<const Material*, MaterialResource> materialResources;
+	std::map<const Primitive*, PrimitiveResource> primitiveResources;
+	std::map<const Scene*, SceneResource> sceneResources;
 	GltfResource gltfResource;
 
 public:
@@ -27,7 +27,17 @@ public:
 
 	~ResourceManager();
 
-	bool initBufferView(BufferView& bufferView, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace = false);
+	//
+
+	BufferViewResource* getBufferViewResource(const BufferView* bufferView);
+	MaterialResource* getMaterialResource(const Material* material);
+	PrimitiveResource* getPrimitiveResource(const Primitive* primitive);
+	SceneResource* getSceneResource(const Scene* scene);
+	GltfResource* getGltfResource();
+
+	//
+
+	bool initBufferView(const BufferView& bufferView, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace = false);
 
 	bool initMaterial(Material& material, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings);
 
