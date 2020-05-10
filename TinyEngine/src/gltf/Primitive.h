@@ -25,6 +25,8 @@ public:
 	// Generic Helper
 
 	glm::mat4 worldMatrix;
+
+	uint32_t attributesCount = 0;
 };
 
 #endif /* GLTF_PRIMITIVE_H_ */

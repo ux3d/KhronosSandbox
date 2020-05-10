@@ -7,7 +7,6 @@ class PrimitiveResource {
 public:
 	// Rasterize helper
 
-	uint32_t attributesCount = 0;
 	std::vector<VkVertexInputBindingDescription> vertexInputBindingDescriptions;
 	std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
 	std::vector<VkBuffer> vertexBuffers;

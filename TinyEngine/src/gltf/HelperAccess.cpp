@@ -30,6 +30,11 @@ size_t HelperAccess::getRange(const Accessor& accessor)
 	return accessor.pBufferView->byteLength - accessor.byteOffset;
 }
 
+size_t HelperAccess::getStride(const Accessor& accessor)
+{
+	return accessor.typeCount * accessor.componentTypeSize;
+}
+
 const uint8_t* HelperAccess::accessData(const Image& image, uint32_t index)
 {
 	if (index >= image.imageDataResources.images.size())

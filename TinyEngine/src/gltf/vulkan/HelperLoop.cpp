@@ -101,7 +101,7 @@ void HelperLoop::draw(ResourceManager& resourceManager, const Primitive& primiti
 		vkCmdBindIndexBuffer(commandBuffer, HelperAccessResource::getBuffer(resourceManager, &glTF.accessors[primitive.indices]), HelperAccess::getOffset(glTF.accessors[primitive.indices]), indexType);
 	}
 
-	vkCmdBindVertexBuffers(commandBuffer, 0, primitiveResource->attributesCount, primitiveResource->vertexBuffers.data(), primitiveResource->vertexBuffersOffsets.data());
+	vkCmdBindVertexBuffers(commandBuffer, 0, primitive.attributesCount, primitiveResource->vertexBuffers.data(), primitiveResource->vertexBuffersOffsets.data());
 
 	if (primitive.indices >= 0)
 	{

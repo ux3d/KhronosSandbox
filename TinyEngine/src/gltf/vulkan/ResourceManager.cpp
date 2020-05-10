@@ -218,9 +218,9 @@ bool ResourceManager::initPrimitive(const Primitive& primitive, const GLTF& glTF
 
 	VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo = {};
 	pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = primitiveResource->attributesCount;
+	pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = primitive.attributesCount;
 	pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = primitiveResource->vertexInputBindingDescriptions.data();
-	pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = primitiveResource->attributesCount;
+	pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = primitive.attributesCount;
 	pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = primitiveResource->vertexInputAttributeDescriptions.data();
 
 	//
