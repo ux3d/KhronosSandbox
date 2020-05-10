@@ -11,7 +11,7 @@ public:
 
 	static std::string getExtension(const std::string& filename);
 
-	static bool openText(std::string& output, const std::string& filename);
+	static bool open(std::string& output, const std::string& filename);
 };
 
 #endif /* IO_FILEIO_H_ */

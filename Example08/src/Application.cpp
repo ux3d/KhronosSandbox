@@ -18,7 +18,7 @@ bool Application::applicationInit()
 	//
 
 	std::string vertexShaderSource = "";
-	if (!FileIO::openText(vertexShaderSource, "../Resources/shaders/triangle_ub.vert"))
+	if (!FileIO::open(vertexShaderSource, "../Resources/shaders/triangle_ub.vert"))
 	{
 		return false;
 	}
@@ -32,7 +32,7 @@ bool Application::applicationInit()
 	//
 
 	std::string fragmentShaderSource = "";
-	if (!FileIO::openText(fragmentShaderSource, "../Resources/shaders/triangle.frag"))
+	if (!FileIO::open(fragmentShaderSource, "../Resources/shaders/triangle.frag"))
 	{
 		return false;
 	}

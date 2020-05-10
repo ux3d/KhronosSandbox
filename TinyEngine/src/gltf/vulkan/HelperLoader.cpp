@@ -173,7 +173,7 @@ bool HelperLoader::initImages(GLTF& glTF, const std::string& path)
 		Image image;
 
 		image.uri = model.images[i].uri;
-		if (!ImageDataIO::openImageData(image.imageDataResources, path + image.uri))
+		if (!ImageDataIO::open(image.imageDataResources, path + image.uri))
 		{
 			return false;
 		}
@@ -638,13 +638,13 @@ bool HelperLoader::initMeshes(GLTF& glTF, bool useRaytrace)
 	//
 
 	std::string vertexShaderSource = "";
-	if (!FileIO::openText(vertexShaderSource, "../Resources/shaders/gltf.vert"))
+	if (!FileIO::open(vertexShaderSource, "../Resources/shaders/gltf.vert"))
 	{
 		return false;
 	}
 
 	std::string fragmentShaderSource = "";
-	if (!FileIO::openText(fragmentShaderSource, "../Resources/shaders/gltf.frag"))
+	if (!FileIO::open(fragmentShaderSource, "../Resources/shaders/gltf.frag"))
 	{
 		return false;
 	}
@@ -1033,7 +1033,7 @@ bool HelperLoader::open(GLTF& glTF, const std::string& filename, const std::stri
 	diffuseMap.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
 	diffuseMap.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
 
-	if(!ImageDataIO::openImageData(diffuseMap.imageDataResources, diffuseFilename))
+	if(!ImageDataIO::open(diffuseMap.imageDataResources, diffuseFilename))
 	{
 		return false;
 	}
@@ -1051,7 +1051,7 @@ bool HelperLoader::open(GLTF& glTF, const std::string& filename, const std::stri
 	specularMap.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
 	specularMap.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
-	if(!ImageDataIO::openImageData(specularMap.imageDataResources, specularFilename))
+	if(!ImageDataIO::open(specularMap.imageDataResources, specularFilename))
 	{
 		return false;
 	}
@@ -1071,7 +1071,7 @@ bool HelperLoader::open(GLTF& glTF, const std::string& filename, const std::stri
 	lutMap.samplerResourceCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 	lutMap.samplerResourceCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 
-	if(!ImageDataIO::openImageData(lutMap.imageDataResources, lutFilename))
+	if(!ImageDataIO::open(lutMap.imageDataResources, lutFilename))
 	{
 		return false;
 	}

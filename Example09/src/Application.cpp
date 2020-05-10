@@ -15,7 +15,7 @@ bool Application::applicationInit()
 {
 	TextureResourceCreateInfo textureResourceCreateInfo = {};
 
-	if (!ImageDataIO::openImageData(textureResourceCreateInfo.imageDataResources, "../Resources/images/desert.jpg"))
+	if (!ImageDataIO::open(textureResourceCreateInfo.imageDataResources, "../Resources/images/desert.jpg"))
 	{
 		return false;
 	}
@@ -35,7 +35,7 @@ bool Application::applicationInit()
 	//
 
 	std::string vertexShaderSource = "";
-	if (!FileIO::openText(vertexShaderSource, "../Resources/shaders/triangle_texture.vert"))
+	if (!FileIO::open(vertexShaderSource, "../Resources/shaders/triangle_texture.vert"))
 	{
 		return false;
 	}
@@ -49,7 +49,7 @@ bool Application::applicationInit()
 	//
 
 	std::string fragmentShaderSource = "";
-	if (!FileIO::openText(fragmentShaderSource, "../Resources/shaders/triangle_texture.frag"))
+	if (!FileIO::open(fragmentShaderSource, "../Resources/shaders/triangle_texture.frag"))
 	{
 		return false;
 	}

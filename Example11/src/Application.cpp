@@ -317,7 +317,7 @@ bool Application::applicationInit()
 
 
 	std::string rayGenShaderSource = "";
-	if (!FileIO::openText(rayGenShaderSource, "../Resources/shaders/raygen.rgen"))
+	if (!FileIO::open(rayGenShaderSource, "../Resources/shaders/raygen.rgen"))
 	{
 		return false;
 	}
@@ -336,7 +336,7 @@ bool Application::applicationInit()
 	//
 
 	std::string missShaderSource = "";
-	if (!FileIO::openText(missShaderSource, "../Resources/shaders/miss.rmiss"))
+	if (!FileIO::open(missShaderSource, "../Resources/shaders/miss.rmiss"))
 	{
 		return false;
 	}
@@ -355,7 +355,7 @@ bool Application::applicationInit()
 	//
 
 	std::string closestHitShaderSource = "";
-	if (!FileIO::openText(closestHitShaderSource, "../Resources/shaders/closesthit.rchit"))
+	if (!FileIO::open(closestHitShaderSource, "../Resources/shaders/closesthit.rchit"))
 	{
 		return false;
 	}

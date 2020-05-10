@@ -1,9 +1,8 @@
 #ifndef HELPERVULKANRESOURCE_H_
 #define HELPERVULKANRESOURCE_H_
 
-#include "../io/HelperImageDataResource.h"
-
 #include <vector>
+#include "../io/ImageDataResources.h"
 
 #define VK_ENABLE_BETA_EXTENSIONS
 #include "volk.h"

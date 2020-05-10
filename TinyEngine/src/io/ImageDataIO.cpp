@@ -12,7 +12,7 @@
 
 using namespace ux3d;
 
-bool ImageDataIO::openImageData(ImageDataResources& output, const std::string& filename, const uint32_t channels)
+bool ImageDataIO::open(ImageDataResources& output, const std::string& filename, const uint32_t channels)
 {
 	if (channels < 1 || channels > 4)
 	{

@@ -1032,7 +1032,7 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 		}
 
 		std::string rayGenShaderSource = "";
-		if (!FileIO::openText(rayGenShaderSource, "../Resources/shaders/gltf.rgen"))
+		if (!FileIO::open(rayGenShaderSource, "../Resources/shaders/gltf.rgen"))
 		{
 			return false;
 		}
@@ -1051,7 +1051,7 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 		//
 
 		std::string missShaderSource = "";
-		if (!FileIO::openText(missShaderSource, "../Resources/shaders/gltf.rmiss"))
+		if (!FileIO::open(missShaderSource, "../Resources/shaders/gltf.rmiss"))
 		{
 			return false;
 		}
@@ -1070,7 +1070,7 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 		//
 
 		std::string closestHitShaderSource = "";
-		if (!FileIO::openText(closestHitShaderSource, "../Resources/shaders/gltf.rchit"))
+		if (!FileIO::open(closestHitShaderSource, "../Resources/shaders/gltf.rchit"))
 		{
 			return false;
 		}

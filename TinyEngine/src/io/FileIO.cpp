@@ -33,7 +33,7 @@ std::string FileIO::getExtension(const std::string& filename)
 	return "";
 }
 
-bool FileIO::openText(std::string& output, const std::string& filename)
+bool FileIO::open(std::string& output, const std::string& filename)
 {
 	std::ifstream file(filename, std::ios::ate | std::ios::binary);
 	if (!file.is_open())

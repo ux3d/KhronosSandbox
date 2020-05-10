@@ -1,10 +1,10 @@
-#ifndef IO_HELPERIMAGEDATARESOURCE_H_
-#define IO_HELPERIMAGEDATARESOURCE_H_
+#ifndef IO_IMAGEDATARESOURCES_H_
+#define IO_IMAGEDATARESOURCES_H_
 
 #include <vector>
 #include <cstdint>
 
-#include "../common/Format.h"
+#include "../common/Enums.h"
 
 struct ImageDataResource {
 	std::vector<uint8_t> pixels;
@@ -22,4 +22,4 @@ struct ImageDataResources {
 	uint32_t faceCount = 1;
 };
 
-#endif /* IO_HELPERIMAGEDATARESOURCE_H_ */
+#endif /* IO_IMAGEDATARESOURCES_H_ */

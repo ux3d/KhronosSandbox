@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "Format.h"
+#include "Enums.h"
 
 enum DebugLevel {
 	TE_ERROR,
