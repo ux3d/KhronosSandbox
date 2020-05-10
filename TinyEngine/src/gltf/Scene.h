@@ -23,8 +23,6 @@ class Scene {
 public:
 	std::vector<int32_t> nodes;
 
-	// Rasterize helper
-
 	// Raytrace helper
 
 	std::vector<VkAccelerationStructureInstanceKHR> accelerationStructureInstances;

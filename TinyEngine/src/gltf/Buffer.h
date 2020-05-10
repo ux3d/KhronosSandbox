@@ -8,7 +8,7 @@ public:
 	std::string uri = "";
 	size_t byteLength = 1;
 
-	// Rasterize helper
+	// Generic helper
 
 	std::vector<uint8_t> binary;
 };

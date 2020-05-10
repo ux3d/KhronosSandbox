@@ -7,7 +7,7 @@ class Image {
 public:
 	std::string uri = "";
 
-	// Rasterize helper
+	// Generic helper
 
 	ImageDataResources imageDataResources = {};
 };

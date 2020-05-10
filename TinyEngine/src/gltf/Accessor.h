@@ -13,7 +13,7 @@ public:
 	int32_t componentType = -1;
 	int32_t type = -1;
 
-	// Rasterize helper
+	// Generic helper
 
 	size_t componentTypeSize = 0;
 	bool componentTypeSigned = false;

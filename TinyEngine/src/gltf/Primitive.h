@@ -22,6 +22,10 @@ public:
 
 	int32_t material = -1;
 
+	// Generic Helper
+
+	glm::mat4 worldMatrix;
+
 	// Rasterize helper
 
 	uint32_t attributesCount = 0;
@@ -35,8 +39,6 @@ public:
 
 	VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
 	VkPipeline graphicsPipeline = VK_NULL_HANDLE;
-
-	glm::mat4 worldMatrix;
 
 	// Raytrace helper
 

@@ -16,7 +16,7 @@ public:
 
 	int32_t mesh = -1;
 
-	// Rasterize helper
+	// Generic helper
 
 	glm::mat4 worldMatrix;
 };

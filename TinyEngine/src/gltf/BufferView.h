@@ -15,9 +15,11 @@ public:
 
 	int32_t target = -1;
 
-	// Rasterize helper
+	// Generic helper
 
 	Buffer* pBuffer = nullptr;
+
+	// Rasterize helper
 
 	VertexBufferResource vertexBufferResource = {};
 };
