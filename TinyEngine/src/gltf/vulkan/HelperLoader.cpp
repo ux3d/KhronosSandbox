@@ -192,63 +192,63 @@ bool HelperLoader::initSamplers(GLTF& glTF)
 		switch (model.samplers[i].magFilter)
 		{
 			case 9728: //NEAREST
-				sampler.samplerResourceCreateInfo.magFilter = VK_FILTER_NEAREST;
+				sampler.magFilter = VK_FILTER_NEAREST;
 				break;
 			case 9729: //LINEAR
-				sampler.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
+				sampler.magFilter = VK_FILTER_LINEAR;
 				break;
 		}
 
 		switch (model.samplers[i].minFilter)
 		{
 			case 9728: //NEAREST
-				sampler.samplerResourceCreateInfo.minFilter = VK_FILTER_NEAREST;
-				sampler.samplerResourceCreateInfo.maxLod = 0.25f;	// see Mapping of OpenGL to Vulkan filter modes
+				sampler.minFilter = VK_FILTER_NEAREST;
+				sampler.maxLod = 0.25f;	// see Mapping of OpenGL to Vulkan filter modes
 				 break;
 			case 9729: //LINEAR
-				sampler.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
-				sampler.samplerResourceCreateInfo.maxLod = 0.25f;
+				sampler.minFilter = VK_FILTER_LINEAR;
+				sampler.maxLod = 0.25f;
 				break;
 			case 9984: //NEAREST_MIPMAP_NEAREST
-				sampler.samplerResourceCreateInfo.minFilter = VK_FILTER_NEAREST;
-				sampler.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+				sampler.minFilter = VK_FILTER_NEAREST;
+				sampler.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
 				break;
 			case 9985: //LINEAR_MIPMAP_NEAREST
-				sampler.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
-				sampler.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+				sampler.minFilter = VK_FILTER_LINEAR;
+				sampler.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
 				break;
 			case 9986: //NEAREST_MIPMAP_LINEAR
-				sampler.samplerResourceCreateInfo.minFilter = VK_FILTER_NEAREST;
-				sampler.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+				sampler.minFilter = VK_FILTER_NEAREST;
+				sampler.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 				break;
 			case 9987: //LINEAR_MIPMAP_LINEAR
-				sampler.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
-				sampler.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+				sampler.minFilter = VK_FILTER_LINEAR;
+				sampler.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 				break;
 		}
 
 		switch (model.samplers[i].wrapS)
 		{
 			case 33071:	//CLAMP_TO_EDGE
-				sampler.samplerResourceCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+				sampler.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 				break;
 			case 33648:	//MIRRORED_REPEAT
-				sampler.samplerResourceCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+				sampler.addressModeU = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
 				break;
 			case 10497:	//REPEAT
-				sampler.samplerResourceCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+				sampler.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 				break;
 		}
 		switch (model.samplers[i].wrapT)
 		{
 			case 33071:	//CLAMP_TO_EDGE
-				sampler.samplerResourceCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+				sampler.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 				break;
 			case 33648:	//MIRRORED_REPEAT
-				sampler.samplerResourceCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+				sampler.addressModeV = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
 				break;
 			case 10497:	//REPEAT
-				sampler.samplerResourceCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+				sampler.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 				break;
 		}
 
@@ -270,7 +270,13 @@ bool HelperLoader::initTextures(GLTF& glTF)
 
 		if (model.textures[i].sampler >= 0)
 		{
-			textureResourceCreateInfo.samplerResourceCreateInfo = glTF.samplers[model.textures[i].sampler].samplerResourceCreateInfo;
+			textureResourceCreateInfo.samplerResourceCreateInfo.magFilter = glTF.samplers[model.textures[i].sampler].magFilter;
+			textureResourceCreateInfo.samplerResourceCreateInfo.minFilter = glTF.samplers[model.textures[i].sampler].minFilter;
+			textureResourceCreateInfo.samplerResourceCreateInfo.mipmapMode = glTF.samplers[model.textures[i].sampler].mipmapMode;
+			textureResourceCreateInfo.samplerResourceCreateInfo.addressModeU = glTF.samplers[model.textures[i].sampler].addressModeU;
+			textureResourceCreateInfo.samplerResourceCreateInfo.addressModeV = glTF.samplers[model.textures[i].sampler].addressModeV;
+			textureResourceCreateInfo.samplerResourceCreateInfo.minLod = glTF.samplers[model.textures[i].sampler].minLod;
+			textureResourceCreateInfo.samplerResourceCreateInfo.maxLod = glTF.samplers[model.textures[i].sampler].maxLod;
 		}
 
 		if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, texture.textureResource, textureResourceCreateInfo))
