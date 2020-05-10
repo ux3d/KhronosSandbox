@@ -1,12 +1,9 @@
 #ifndef TINYENGINE_H_
 #define TINYENGINE_H_
 
-#include "generic/FileIO.h"
-#include "generic/ImageDataIO.h"
-#include "generic/Logger.h"
-#include "generic/Math.h"
-
-#include "spir/Compiler.h"
+#include "io/FileIO.h"
+#include "io/ImageDataIO.h"
+#include "math/Math.h"
 
 #include "vulkan/HelperRaytrace.h"
 #include "vulkan/HelperVulkan.h"
@@ -15,6 +12,9 @@
 #include <cstddef>
 #include <optional>
 #include <vector>
+
+#include "common/Logger.h"
+#include "shader/Compiler.h"
 
 // Volk
 #define VK_ENABLE_BETA_EXTENSIONS
@@ -29,8 +29,8 @@
 #include <glm/gtx/matrix_decompose.hpp>
 
 // Dear ImGui
-#include "generic/imgui/imgui.h"
-#include "vulkan/imgui/imgui_impl_vulkan.h"
+#include "gui/imgui/imgui.h"
+#include "gui/imgui/vulkan/imgui_impl_vulkan.h"
 
 class TinyEngine
 {

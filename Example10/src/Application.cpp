@@ -1,9 +1,9 @@
 #include "Application.h"
 
-#include <vulkan/gltf/HelperVulkanAccess.h>
-#include "vulkan/gltf/HelperLoader.h"
-#include "vulkan/gltf/HelperLoop.h"
-#include "vulkan/gltf/HelperResource.h"
+#include "gltf/vulkan/HelperVulkanAccess.h"
+#include "gltf/vulkan/HelperLoader.h"
+#include "gltf/vulkan/HelperLoop.h"
+#include "gltf/vulkan/HelperResource.h"
 
 // Private
 

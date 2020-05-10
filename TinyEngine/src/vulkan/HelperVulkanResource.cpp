@@ -1,12 +1,11 @@
 #include "HelperVulkan.h"
 
-#include "../generic/Logger.h"
-
 #include <cmath>
 #include <cstring>
 
 #include <glm/glm.hpp>
 #include "HelperVulkanResource.h"
+#include "../common/Logger.h"
 
 bool HelperVulkanResource::copyHostToDevice(VkDevice device, BufferResource& bufferResource, const void* data, size_t size)
 {

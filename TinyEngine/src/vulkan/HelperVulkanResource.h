@@ -1,7 +1,7 @@
 #ifndef HELPERVULKANRESOURCE_H_
 #define HELPERVULKANRESOURCE_H_
 
-#include "../generic/HelperImageDataResource.h"
+#include "../io/HelperImageDataResource.h"
 
 #include <vector>
 

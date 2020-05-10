@@ -17,7 +17,7 @@
 // Only override if your GL version doesn't handle this GLSL version. Keep NULL if unsure!
 
 #pragma once
-#include "generic/imgui/imgui.h"      // IMGUI_IMPL_API
+#include "gui/imgui/imgui.h"      // IMGUI_IMPL_API
 
 struct GLFWwindow;
 
