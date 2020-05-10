@@ -1,8 +1,9 @@
 #include "Application.h"
 
-#include <gltf/vulkan/HelperAccessResource.h>
-#include "gltf/vulkan/HelperLoader.h"
+#include "gltf/vulkan/HelperAccessResource.h"
+#include "gltf/vulkan/HelperAllocateRessource.h"
 #include "gltf/vulkan/HelperLoop.h"
+#include "gltf/HelperLoad.h"
 
 // Private
 
@@ -25,9 +26,20 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	HelperLoader helperLoader(width, height, physicalDevice, device, queue, commandPool, renderPass, samples, raytraceImageViewResource.imageView);
+	HelperLoad helperLoad;
+	if(!helperLoad.open(glTF, filename))
+	{
+		return false;
+	}
 
-	if(!helperLoader.open(resourceManager, glTF, filename, environment, true))
+	if (!HelperLoop::update(resourceManager, glTF, glm::mat4(1.0f)))
+	{
+		return false;
+	}
+
+	HelperAllocateResource helperAllocateResource(width, height, physicalDevice, device, queue, commandPool, renderPass, samples, raytraceImageViewResource.imageView);
+
+	if(!helperAllocateResource.open(resourceManager, glTF, environment, true))
 	{
 		return false;
 	}
