@@ -63,8 +63,13 @@ bool HelperLoader::initBufferViews(ResourceManager& resourceManager, GLTF& glTF,
 		bufferView.byteStride = model.bufferViews[i].byteStride;
 
 		bufferView.target = model.bufferViews[i].target;
+	}
 
-		//
+	//
+
+	for (size_t i = 0; i < glTF.bufferViews.size(); i++)
+	{
+		BufferView& bufferView = glTF.bufferViews[i];
 
 		if (!resourceManager.initBufferView(bufferView, glTF, physicalDevice, device, queue, commandPool, useRaytrace))
 		{
@@ -265,8 +270,11 @@ bool HelperLoader::initTextures(ResourceManager& resourceManager, GLTF& glTF)
 
 		texture.source = model.textures[i].source;
 		texture.sampler = model.textures[i].sampler;
+	}
 
-		//
+	for (size_t i = 0; i < glTF.textures.size(); i++)
+	{
+		Texture& texture = glTF.textures[i];
 
 		TextureResourceCreateInfo textureResourceCreateInfo = {};
 		textureResourceCreateInfo.imageDataResources = glTF.images[texture.source].imageDataResources;
@@ -299,11 +307,6 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 	for (size_t i = 0; i < glTF.materials.size(); i++)
 	{
 		Material& material = glTF.materials[i];
-		MaterialResource* materialResource = resourceManager.getMaterialResource(&material);
-
-		uint32_t binding = 0;
-
-		std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
 
 		// Metallic Roughness
 		for (const auto& parameterValue : model.materials[i].values)
@@ -312,35 +315,6 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 			{
 				material.pbrMetallicRoughness.baseColorTexture.index = parameterValue.second.TextureIndex();
 				material.pbrMetallicRoughness.baseColorTexture.texCoord = parameterValue.second.TextureTexCoord();
-
-				//
-
-				TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.pbrMetallicRoughness.baseColorTexture.index]);
-
-				//
-
-				VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-				descriptorSetLayoutBinding.binding = binding;
-				descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				descriptorSetLayoutBinding.descriptorCount = 1;
-				descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-				descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-				VkDescriptorImageInfo descriptorImageInfo = {};
-				descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
-				descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
-				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-				//
-
-				materialResource->macros["BASECOLOR_TEXTURE"] = "";
-				materialResource->macros["BASECOLOR_BINDING"] = std::to_string(binding);
-				materialResource->macros["BASECOLOR_TEXCOORD"] = HelperShader::getTexCoord(material.pbrMetallicRoughness.baseColorTexture.texCoord);
-
-				//
-
-				binding++;
 			}
 
 			if (parameterValue.first == "baseColorFactor")
@@ -352,35 +326,6 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 			{
 				material.pbrMetallicRoughness.metallicRoughnessTexture.index = parameterValue.second.TextureIndex();
 				material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord = parameterValue.second.TextureTexCoord();
-
-				//
-
-				TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index]);
-
-				//
-
-				VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-				descriptorSetLayoutBinding.binding = binding;
-				descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				descriptorSetLayoutBinding.descriptorCount = 1;
-				descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-				descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-				VkDescriptorImageInfo descriptorImageInfo = {};
-				descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
-				descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
-				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-				//
-
-				materialResource->macros["METALLICROUGHNESS_TEXTURE"] = "";
-				materialResource->macros["METALLICROUGHNESS_BINDING"] = std::to_string(binding);
-				materialResource->macros["METALLICROUGHNESS_TEXCOORD"] = HelperShader::getTexCoord(material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord);
-
-				//
-
-				binding++;
 			}
 
 			if (parameterValue.first == "metallicFactor")
@@ -401,35 +346,6 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 			{
 				material.emissiveTexture.index = parameterValue.second.TextureIndex();
 				material.emissiveTexture.texCoord = parameterValue.second.TextureTexCoord();
-
-				//
-
-				TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.emissiveTexture.index]);
-
-				//
-
-				VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-				descriptorSetLayoutBinding.binding = binding;
-				descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				descriptorSetLayoutBinding.descriptorCount = 1;
-				descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-				descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-				VkDescriptorImageInfo descriptorImageInfo = {};
-				descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
-				descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
-				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-				//
-
-				materialResource->macros["EMISSIVE_TEXTURE"] = "";
-				materialResource->macros["EMISSIVE_BINDING"] = std::to_string(binding);
-				materialResource->macros["EMISSIVE_TEXCOORD"] = HelperShader::getTexCoord(material.emissiveTexture.texCoord);
-
-				//
-
-				binding++;
 			}
 
 			if (parameterValue.first == "emissiveFactor")
@@ -442,38 +358,6 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 				material.occlusionTexture.index = parameterValue.second.TextureIndex();
 				material.occlusionTexture.texCoord = parameterValue.second.TextureTexCoord();
 
-				//
-
-				TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.occlusionTexture.index]);
-
-				//
-
-				VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-				descriptorSetLayoutBinding.binding = binding;
-				descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				descriptorSetLayoutBinding.descriptorCount = 1;
-				descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-				descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-				VkDescriptorImageInfo descriptorImageInfo = {};
-				descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
-				descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
-				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-				//
-
-				materialResource->macros["OCCLUSION_TEXTURE"] = "";
-				materialResource->macros["OCCLUSION_BINDING"] = std::to_string(binding);
-				materialResource->macros["OCCLUSION_TEXCOORD"] = HelperShader::getTexCoord(material.occlusionTexture.texCoord);
-
-				//
-
-				binding++;
-
-				//
-				//
-
 				material.occlusionTexture.strength = parameterValue.second.TextureStrength();
 			}
 
@@ -481,38 +365,6 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 			{
 				material.normalTexture.index = parameterValue.second.TextureIndex();
 				material.normalTexture.texCoord = parameterValue.second.TextureTexCoord();
-
-				//
-
-				TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.normalTexture.index]);
-
-				//
-
-				VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-				descriptorSetLayoutBinding.binding = binding;
-				descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				descriptorSetLayoutBinding.descriptorCount = 1;
-				descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-				descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-				VkDescriptorImageInfo descriptorImageInfo = {};
-				descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
-				descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
-				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-				//
-
-				materialResource->macros["NORMAL_TEXTURE"] = "";
-				materialResource->macros["NORMAL_BINDING"] = std::to_string(binding);
-				materialResource->macros["NORMAL_TEXCOORD"] = HelperShader::getTexCoord(material.normalTexture.texCoord);
-
-				//
-
-				binding++;
-
-				//
-				//
 
 				material.normalTexture.scale = parameterValue.second.TextureScale();
 			}
@@ -535,13 +387,176 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 		material.alphaCutoff = model.materials[i].alphaCutoff;
 
 		material.doubleSided = model.materials[i].doubleSided;
+	}
+
+	//
+
+	for (size_t i = 0; i < glTF.materials.size(); i++)
+	{
+		Material& material = glTF.materials[i];
+		MaterialResource* materialResource = resourceManager.getMaterialResource(&material);
+
+		uint32_t binding = 0;
+
+		std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
+
+		// Metallic Roughness
+		if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
+		{
+			TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.pbrMetallicRoughness.baseColorTexture.index]);
+
+			//
+
+			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding.binding = binding;
+			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			descriptorSetLayoutBinding.descriptorCount = 1;
+			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+			VkDescriptorImageInfo descriptorImageInfo = {};
+			descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
+			descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
+			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
+
+			//
+
+			materialResource->macros["BASECOLOR_TEXTURE"] = "";
+			materialResource->macros["BASECOLOR_BINDING"] = std::to_string(binding);
+			materialResource->macros["BASECOLOR_TEXCOORD"] = HelperShader::getTexCoord(material.pbrMetallicRoughness.baseColorTexture.texCoord);
+
+			//
+
+			binding++;
+		}
+
+		if (material.pbrMetallicRoughness.metallicRoughnessTexture.index >= 0)
+		{
+			TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index]);
+
+			//
+
+			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding.binding = binding;
+			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			descriptorSetLayoutBinding.descriptorCount = 1;
+			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+			VkDescriptorImageInfo descriptorImageInfo = {};
+			descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
+			descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
+			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
+
+			//
+
+			materialResource->macros["METALLICROUGHNESS_TEXTURE"] = "";
+			materialResource->macros["METALLICROUGHNESS_BINDING"] = std::to_string(binding);
+			materialResource->macros["METALLICROUGHNESS_TEXCOORD"] = HelperShader::getTexCoord(material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord);
+
+			//
+
+			binding++;
+		}
+
+		// Base Material
+		if (material.emissiveTexture.index >= 0)
+		{
+			TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.emissiveTexture.index]);
+
+			//
+
+			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding.binding = binding;
+			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			descriptorSetLayoutBinding.descriptorCount = 1;
+			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+			VkDescriptorImageInfo descriptorImageInfo = {};
+			descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
+			descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
+			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
+
+			//
+
+			materialResource->macros["EMISSIVE_TEXTURE"] = "";
+			materialResource->macros["EMISSIVE_BINDING"] = std::to_string(binding);
+			materialResource->macros["EMISSIVE_TEXCOORD"] = HelperShader::getTexCoord(material.emissiveTexture.texCoord);
+
+			//
+
+			binding++;
+		}
+
+		if (material.occlusionTexture.index >= 0)
+		{
+			TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.occlusionTexture.index]);
+
+			//
+
+			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding.binding = binding;
+			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			descriptorSetLayoutBinding.descriptorCount = 1;
+			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+			VkDescriptorImageInfo descriptorImageInfo = {};
+			descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
+			descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
+			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
+
+			//
+
+			materialResource->macros["OCCLUSION_TEXTURE"] = "";
+			materialResource->macros["OCCLUSION_BINDING"] = std::to_string(binding);
+			materialResource->macros["OCCLUSION_TEXCOORD"] = HelperShader::getTexCoord(material.occlusionTexture.texCoord);
+
+			//
+
+			binding++;
+		}
+
+		if (material.normalTexture.index >= 0)
+		{
+			TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.normalTexture.index]);
+
+			//
+
+			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding.binding = binding;
+			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			descriptorSetLayoutBinding.descriptorCount = 1;
+			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+			VkDescriptorImageInfo descriptorImageInfo = {};
+			descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
+			descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
+			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
+
+			//
+
+			materialResource->macros["NORMAL_TEXTURE"] = "";
+			materialResource->macros["NORMAL_BINDING"] = std::to_string(binding);
+			materialResource->macros["NORMAL_TEXCOORD"] = HelperShader::getTexCoord(material.normalTexture.texCoord);
+
+			//
+
+			binding++;
+		}
 
 		//
 		//
 
 		GltfResource* gltfResource = resourceManager.getGltfResource();
 
-		//
 		//
 
 		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
@@ -644,6 +659,7 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 		uniformBuffer.roughnessFactor = material.pbrMetallicRoughness.roughnessFactor;
 
 		uniformBuffer.normalScale = material.normalTexture.scale;
+
 		uniformBuffer.occlusionStrength = material.occlusionTexture.strength;
 
 		uniformBuffer.emissiveFactor = material.emissiveFactor;
