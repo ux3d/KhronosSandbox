@@ -1,10 +1,9 @@
-#include "HelperLoop.h"
-
 #include "../HelperAccess.h"
 
 #include "HelperAccessResource.h"
+#include "HelperRasterize.h"
 
-void HelperLoop::draw(ResourceManager& resourceManager, const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
+void HelperRasterize::draw(ResourceManager& resourceManager, const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {
 	GltfResource* gltfResource = resourceManager.getGltfResource();
 
@@ -42,39 +41,39 @@ void HelperLoop::draw(ResourceManager& resourceManager, const Primitive& primiti
 	}
 }
 
-void HelperLoop::draw(ResourceManager& resourceManager, const Mesh& mesh, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
+void HelperRasterize::draw(ResourceManager& resourceManager, const Mesh& mesh, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {
 	for (size_t i = 0; i < mesh.primitives.size(); i++)
 	{
-		HelperLoop::draw(resourceManager, mesh.primitives[i], glTF, commandBuffer, frameIndex);
+		HelperRasterize::draw(resourceManager, mesh.primitives[i], glTF, commandBuffer, frameIndex);
 	}
 }
 
-void HelperLoop::draw(ResourceManager& resourceManager, const Node& node, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
+void HelperRasterize::draw(ResourceManager& resourceManager, const Node& node, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {
 	if (node.mesh >= 0)
 	{
-		HelperLoop::draw(resourceManager, glTF.meshes[node.mesh], glTF, commandBuffer, frameIndex);
+		HelperRasterize::draw(resourceManager, glTF.meshes[node.mesh], glTF, commandBuffer, frameIndex);
 	}
 
 	for (size_t i = 0; i < node.children.size(); i++)
 	{
-		HelperLoop::draw(resourceManager, glTF.nodes[node.children[i]], glTF, commandBuffer, frameIndex);
+		HelperRasterize::draw(resourceManager, glTF.nodes[node.children[i]], glTF, commandBuffer, frameIndex);
 	}
 }
 
-void HelperLoop::draw(ResourceManager& resourceManager, const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
+void HelperRasterize::draw(ResourceManager& resourceManager, const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {
 	for (size_t i = 0; i < scene.nodes.size(); i++)
 	{
-		HelperLoop::draw(resourceManager, glTF.nodes[scene.nodes[i]], glTF, commandBuffer, frameIndex);
+		HelperRasterize::draw(resourceManager, glTF.nodes[scene.nodes[i]], glTF, commandBuffer, frameIndex);
 	}
 }
 
-void HelperLoop::draw(ResourceManager& resourceManager, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
+void HelperRasterize::draw(ResourceManager& resourceManager, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {
 	if (glTF.defaultScene < glTF.scenes.size())
 	{
-		HelperLoop::draw(resourceManager, glTF.scenes[glTF.defaultScene], glTF, commandBuffer, frameIndex);
+		HelperRasterize::draw(resourceManager, glTF.scenes[glTF.defaultScene], glTF, commandBuffer, frameIndex);
 	}
 }

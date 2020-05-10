@@ -1,8 +1,9 @@
+#include "HelperAllocateRessource.h"
+
 #include "../../shader/HelperShader.h"
 #include "../HelperAccess.h"
+
 #include "HelperAccessResource.h"
-#include "HelperAllocateRessource.h"
-#include "HelperLoop.h"
 #include "ResourceManager.h"
 
 HelperAllocateResource::HelperAllocateResource(uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView) :
