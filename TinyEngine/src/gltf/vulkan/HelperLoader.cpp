@@ -688,7 +688,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 			primitiveResource->vertexBuffers.resize(attributesCount);
 			primitiveResource->vertexBuffersOffsets.resize(attributesCount);
 
-			uint32_t attributesIndex = 0;
+			uint32_t attributeIndex = 0;
 			primitiveResource->vertexInputBindingDescriptions.resize(attributesCount);
 			primitiveResource->vertexInputAttributeDescriptions.resize(attributesCount);
 
@@ -711,7 +711,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				if (attribute.first == "POSITION")
 				{
 					primitive.position = accessorIndex;
-					primitiveResource->positionLocation = attributesIndex;
+					primitiveResource->positionAttributeIndex = attributeIndex;
 
 					if (glTF.accessors[primitive.position].typeCount == 3)
 					{
@@ -731,7 +731,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "NORMAL")
 				{
 					primitive.normal = accessorIndex;
-					primitiveResource->normalLocation = attributesIndex;
+					primitiveResource->normalAttributeIndex = attributeIndex;
 
 					if (glTF.accessors[primitive.normal].typeCount == 3)
 					{
@@ -747,7 +747,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "TANGENT")
 				{
 					primitive.tangent = accessorIndex;
-					primitiveResource->tangentLocation = attributesIndex;
+					primitiveResource->tangentAttributeIndex = attributeIndex;
 
 					if (glTF.accessors[primitive.tangent].typeCount == 4)
 					{
@@ -763,7 +763,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "TEXCOORD_0")
 				{
 					primitive.texCoord0 = accessorIndex;
-					primitiveResource->texCoord0Location = attributesIndex;
+					primitiveResource->texCoord0AttributeIndex = attributeIndex;
 
 					if (glTF.accessors[primitive.texCoord0].typeCount == 2)
 					{
@@ -779,7 +779,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "TEXCOORD_1")
 				{
 					primitive.texCoord1 = accessorIndex;
-					primitiveResource->texCoord1Location = attributesIndex;
+					primitiveResource->texCoord1AttributeIndex = attributeIndex;
 
 					if (glTF.accessors[primitive.texCoord1].typeCount == 2)
 					{
@@ -795,7 +795,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "COLOR_0")
 				{
 					primitive.color0 = accessorIndex;
-					primitiveResource->color0Location = attributesIndex;
+					primitiveResource->color0AttributeIndex = attributeIndex;
 
 					if (glTF.accessors[primitive.color0].typeCount == 4)
 					{
@@ -815,7 +815,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "JOINTS_0")
 				{
 					primitive.joints0 = accessorIndex;
-					primitiveResource->joints0Location = attributesIndex;
+					primitiveResource->joints0AttributeIndex = attributeIndex;
 
 					if (glTF.accessors[primitive.joints0].typeCount == 4)
 					{
@@ -831,7 +831,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "JOINTS_1")
 				{
 					primitive.joints1 = accessorIndex;
-					primitiveResource->joints1Location = attributesIndex;
+					primitiveResource->joints1AttributeIndex = attributeIndex;
 
 					if (glTF.accessors[primitive.joints1].typeCount == 4)
 					{
@@ -847,7 +847,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "WEIGHTS_0")
 				{
 					primitive.weights0 = accessorIndex;
-					primitiveResource->weights0Location = attributesIndex;
+					primitiveResource->weights0AttributeIndex = attributeIndex;
 
 					if (glTF.accessors[primitive.weights0].typeCount == 4)
 					{
@@ -863,7 +863,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "WEIGHTS_1")
 				{
 					primitive.weights1 = accessorIndex;
-					primitiveResource->weights1Location = attributesIndex;
+					primitiveResource->weights1AttributeIndex = attributeIndex;
 
 					if (glTF.accessors[primitive.weights1].typeCount == 4)
 					{
@@ -885,28 +885,28 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 
 				//
 
-				primitiveResource->vertexInputBindingDescriptions[attributesIndex].binding = binding;
-				primitiveResource->vertexInputBindingDescriptions[attributesIndex].stride = stride;
-				primitiveResource->vertexInputBindingDescriptions[attributesIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+				primitiveResource->vertexInputBindingDescriptions[attributeIndex].binding = binding;
+				primitiveResource->vertexInputBindingDescriptions[attributeIndex].stride = stride;
+				primitiveResource->vertexInputBindingDescriptions[attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-				primitiveResource->vertexInputAttributeDescriptions[attributesIndex].binding = binding;
-				primitiveResource->vertexInputAttributeDescriptions[attributesIndex].location = location;
-				primitiveResource->vertexInputAttributeDescriptions[attributesIndex].format = format;
-				primitiveResource->vertexInputAttributeDescriptions[attributesIndex].offset = 0;
-
-				//
-
-				primitiveResource->vertexBuffers[attributesIndex] = HelperAccessResource::getBuffer(resourceManager, &glTF.accessors[accessorIndex]);
-				primitiveResource->vertexBuffersOffsets[attributesIndex] = HelperAccess::getOffset(glTF.accessors[accessorIndex]);
+				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].binding = binding;
+				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].location = location;
+				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].format = format;
+				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].offset = 0;
 
 				//
 
-				attributesIndex++;
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(resourceManager, &glTF.accessors[accessorIndex]);
+				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(glTF.accessors[accessorIndex]);
+
+				//
+
+				attributeIndex++;
 				location++;
 				binding++;
 			}
 
-			primitiveResource->attributesCount = attributesIndex;
+			primitiveResource->attributesCount = attributeIndex;
 
 			if (primitive.position < 0)
 			{

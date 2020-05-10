@@ -441,19 +441,19 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 					primitiveInformation.componentTypeSize = glTF.accessors[currentPrimitive.indices].componentTypeSize;
 					primitiveInformation.worldMatrix = node.worldMatrix;
 
-					if (currentPrimitiveResource->normalLocation >= 0)
+					if (currentPrimitiveResource->normalAttributeIndex >= 0)
 					{
 						primitiveInformation.normalInstanceID = normalInstanceID;
 
 						normalInstanceID++;
 					}
-					if (currentPrimitiveResource->tangentLocation >= 0)
+					if (currentPrimitiveResource->tangentAttributeIndex >= 0)
 					{
 						primitiveInformation.tangentInstanceID = tangentInstanceID;
 
 						tangentInstanceID++;
 					}
-					if (currentPrimitiveResource->texCoord0Location >= 0)
+					if (currentPrimitiveResource->texCoord0AttributeIndex >= 0)
 					{
 						primitiveInformation.texCoord0InstanceID = texCoord0InstanceID;
 
@@ -479,7 +479,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 						descriptorBufferInfoIndices.push_back(currentDescriptorBufferInfo);
 					}
 
-					if (currentPrimitiveResource->positionLocation >= 0)
+					if (currentPrimitiveResource->positionAttributeIndex >= 0)
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
@@ -490,7 +490,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 						descriptorBufferInfoPosition.push_back(currentDescriptorBufferInfo);
 					}
 
-					if (currentPrimitiveResource->normalLocation >= 0)
+					if (currentPrimitiveResource->normalAttributeIndex >= 0)
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
@@ -501,7 +501,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 						descriptorBufferInfoNormal.push_back(currentDescriptorBufferInfo);
 					}
 
-					if (currentPrimitiveResource->tangentLocation >= 0)
+					if (currentPrimitiveResource->tangentAttributeIndex >= 0)
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
@@ -512,7 +512,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 						descriptorBufferInfoTangent.push_back(currentDescriptorBufferInfo);
 					}
 
-					if (currentPrimitiveResource->texCoord0Location >= 0)
+					if (currentPrimitiveResource->texCoord0AttributeIndex >= 0)
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
