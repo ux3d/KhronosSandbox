@@ -62,6 +62,10 @@ GltfResource* ResourceManager::getGltfResource()
 
 bool ResourceManager::initBufferView(const BufferView& bufferView, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
 {
+	BufferViewResource* bufferViewResource = getBufferViewResource(&bufferView);
+
+	//
+
 	VkBufferUsageFlags usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	if (bufferView.target == 34963) // ELEMENT_ARRAY_BUFFER
 	{
@@ -80,7 +84,7 @@ bool ResourceManager::initBufferView(const BufferView& bufferView, const GLTF& g
 		vertexBufferResourceCreateInfo.bufferResourceCreateInfo.usage |= (VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 	}
 
-	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, getBufferViewResource(&bufferView)->vertexBufferResource, vertexBufferResourceCreateInfo))
+	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, bufferViewResource->vertexBufferResource, vertexBufferResourceCreateInfo))
 	{
 		return false;
 	}
@@ -88,8 +92,12 @@ bool ResourceManager::initBufferView(const BufferView& bufferView, const GLTF& g
 	return true;
 }
 
-bool ResourceManager::initMaterial(Material& material, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
+bool ResourceManager::initMaterial(const Material& material, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
 {
+	MaterialResource* materialResource = getMaterialResource(&material);
+
+	//
+
 	VkResult result = VK_SUCCESS;
 
 	//
@@ -99,7 +107,7 @@ bool ResourceManager::initMaterial(Material& material, const GLTF& glTF, VkPhysi
 	descriptorSetLayoutCreateInfo.bindingCount = descriptorSetLayoutBindings.size();
 	descriptorSetLayoutCreateInfo.pBindings = descriptorSetLayoutBindings.data();
 
-	result = vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &material.descriptorSetLayout);
+	result = vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &materialResource->descriptorSetLayout);
 	if (result != VK_SUCCESS)
 	{
 		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
@@ -118,7 +126,7 @@ bool ResourceManager::initMaterial(Material& material, const GLTF& glTF, VkPhysi
 	descriptorPoolCreateInfo.pPoolSizes = descriptorPoolSizes.data();
 	descriptorPoolCreateInfo.maxSets = 1;
 
-	result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &material.descriptorPool);
+	result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &materialResource->descriptorPool);
 	if (result != VK_SUCCESS)
 	{
 		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
@@ -128,11 +136,11 @@ bool ResourceManager::initMaterial(Material& material, const GLTF& glTF, VkPhysi
 
 	VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = {};
 	descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	descriptorSetAllocateInfo.descriptorPool = material.descriptorPool;
+	descriptorSetAllocateInfo.descriptorPool = materialResource->descriptorPool;
 	descriptorSetAllocateInfo.descriptorSetCount = 1;
-	descriptorSetAllocateInfo.pSetLayouts = &material.descriptorSetLayout;
+	descriptorSetAllocateInfo.pSetLayouts = &materialResource->descriptorSetLayout;
 
-	result = vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &material.descriptorSet);
+	result = vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &materialResource->descriptorSet);
 	if (result != VK_SUCCESS)
 	{
 		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
@@ -140,7 +148,7 @@ bool ResourceManager::initMaterial(Material& material, const GLTF& glTF, VkPhysi
 		return false;
 	}
 
-	uint32_t descriptorImageInfosSize = material.descriptorImageInfos.size();
+	uint32_t descriptorImageInfosSize = materialResource->descriptorImageInfos.size();
 	uint32_t descriptorBufferInfosSize = 1;
 
 	std::vector<VkWriteDescriptorSet> writeDescriptorSets(descriptorImageInfosSize + descriptorBufferInfosSize);
@@ -148,23 +156,23 @@ bool ResourceManager::initMaterial(Material& material, const GLTF& glTF, VkPhysi
 	for (size_t k = 0; k < descriptorImageInfosSize; k++)
 	{
 		writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		writeDescriptorSets[k].dstSet = material.descriptorSet;
+		writeDescriptorSets[k].dstSet = materialResource->descriptorSet;
 		writeDescriptorSets[k].dstBinding = k;
 		writeDescriptorSets[k].dstArrayElement = 0;
 		writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		writeDescriptorSets[k].descriptorCount = 1;
-		writeDescriptorSets[k].pImageInfo = &material.descriptorImageInfos[k];
+		writeDescriptorSets[k].pImageInfo = &materialResource->descriptorImageInfos[k];
 	}
 
 	for (size_t k = descriptorImageInfosSize; k < descriptorImageInfosSize + descriptorBufferInfosSize; k++)
 	{
 		writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		writeDescriptorSets[k].dstSet = material.descriptorSet;
+		writeDescriptorSets[k].dstSet = materialResource->descriptorSet;
 		writeDescriptorSets[k].dstBinding = k;
 		writeDescriptorSets[k].dstArrayElement = 0;
 		writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		writeDescriptorSets[k].descriptorCount = 1;
-		writeDescriptorSets[k].pBufferInfo = &material.descriptorBufferInfo;
+		writeDescriptorSets[k].pBufferInfo = &materialResource->descriptorBufferInfo;
 
 		// No more at this point of time.
 		break;
@@ -1291,22 +1299,24 @@ void ResourceManager::terminate(GLTF& glTF, VkDevice device)
 
 	for (size_t i = 0; i < glTF.materials.size(); i++)
 	{
+		MaterialResource* materialResource = getMaterialResource(&glTF.materials[i]);
+
 		// Descriptor sets do not have to be freed, as managed by pool.
-		glTF.materials[i].descriptorSet = VK_NULL_HANDLE;
+		materialResource->descriptorSet = VK_NULL_HANDLE;
 
-		if (glTF.materials[i].descriptorPool != VK_NULL_HANDLE)
+		if (materialResource->descriptorPool != VK_NULL_HANDLE)
 		{
-			vkDestroyDescriptorPool(device, glTF.materials[i].descriptorPool, nullptr);
-			glTF.materials[i].descriptorPool = VK_NULL_HANDLE;
+			vkDestroyDescriptorPool(device, materialResource->descriptorPool, nullptr);
+			materialResource->descriptorPool = VK_NULL_HANDLE;
 		}
 
-		if (glTF.materials[i].descriptorSetLayout != VK_NULL_HANDLE)
+		if (materialResource->descriptorSetLayout != VK_NULL_HANDLE)
 		{
-			vkDestroyDescriptorSetLayout(device, glTF.materials[i].descriptorSetLayout, nullptr);
-			glTF.materials[i].descriptorSetLayout = VK_NULL_HANDLE;
+			vkDestroyDescriptorSetLayout(device, materialResource->descriptorSetLayout, nullptr);
+			materialResource->descriptorSetLayout = VK_NULL_HANDLE;
 		}
 
-		VulkanResource::destroyUniformBufferResource(device, glTF.materials[i].uniformBufferResource);
+		VulkanResource::destroyUniformBufferResource(device, materialResource->uniformBufferResource);
 	}
 	glTF.materials.clear();
 

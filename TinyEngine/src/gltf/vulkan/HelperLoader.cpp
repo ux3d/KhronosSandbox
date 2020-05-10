@@ -294,6 +294,7 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 	for (size_t i = 0; i < model.materials.size(); i++)
 	{
 		Material& material = glTF.materials[i];
+		MaterialResource* materialResource = resourceManager.getMaterialResource(&glTF.materials[i]);
 
 		uint32_t binding = 0;
 
@@ -320,13 +321,13 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 				descriptorImageInfo.sampler = glTF.textures[material.pbrMetallicRoughness.baseColorTexture.index].textureResource.samplerResource.sampler;
 				descriptorImageInfo.imageView = glTF.textures[material.pbrMetallicRoughness.baseColorTexture.index].textureResource.imageViewResource.imageView;
 				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				material.descriptorImageInfos.push_back(descriptorImageInfo);
+				materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
 				//
 
-				material.macros["BASECOLOR_TEXTURE"] = "";
-				material.macros["BASECOLOR_BINDING"] = std::to_string(binding);
-				material.macros["BASECOLOR_TEXCOORD"] = HelperShader::getTexCoord(material.pbrMetallicRoughness.baseColorTexture.texCoord);
+				materialResource->macros["BASECOLOR_TEXTURE"] = "";
+				materialResource->macros["BASECOLOR_BINDING"] = std::to_string(binding);
+				materialResource->macros["BASECOLOR_TEXCOORD"] = HelperShader::getTexCoord(material.pbrMetallicRoughness.baseColorTexture.texCoord);
 
 				//
 
@@ -356,13 +357,13 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 				descriptorImageInfo.sampler = glTF.textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index].textureResource.samplerResource.sampler;
 				descriptorImageInfo.imageView = glTF.textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index].textureResource.imageViewResource.imageView;
 				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				material.descriptorImageInfos.push_back(descriptorImageInfo);
+				materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
 				//
 
-				material.macros["METALLICROUGHNESS_TEXTURE"] = "";
-				material.macros["METALLICROUGHNESS_BINDING"] = std::to_string(binding);
-				material.macros["METALLICROUGHNESS_TEXCOORD"] = HelperShader::getTexCoord(material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord);
+				materialResource->macros["METALLICROUGHNESS_TEXTURE"] = "";
+				materialResource->macros["METALLICROUGHNESS_BINDING"] = std::to_string(binding);
+				materialResource->macros["METALLICROUGHNESS_TEXCOORD"] = HelperShader::getTexCoord(material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord);
 
 				//
 
@@ -401,13 +402,13 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 				descriptorImageInfo.sampler = glTF.textures[material.emissiveTexture.index].textureResource.samplerResource.sampler;
 				descriptorImageInfo.imageView = glTF.textures[material.emissiveTexture.index].textureResource.imageViewResource.imageView;
 				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				material.descriptorImageInfos.push_back(descriptorImageInfo);
+				materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
 				//
 
-				material.macros["EMISSIVE_TEXTURE"] = "";
-				material.macros["EMISSIVE_BINDING"] = std::to_string(binding);
-				material.macros["EMISSIVE_TEXCOORD"] = HelperShader::getTexCoord(material.emissiveTexture.texCoord);
+				materialResource->macros["EMISSIVE_TEXTURE"] = "";
+				materialResource->macros["EMISSIVE_BINDING"] = std::to_string(binding);
+				materialResource->macros["EMISSIVE_TEXCOORD"] = HelperShader::getTexCoord(material.emissiveTexture.texCoord);
 
 				//
 
@@ -437,13 +438,13 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 				descriptorImageInfo.sampler = glTF.textures[material.occlusionTexture.index].textureResource.samplerResource.sampler;
 				descriptorImageInfo.imageView = glTF.textures[material.occlusionTexture.index].textureResource.imageViewResource.imageView;
 				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				material.descriptorImageInfos.push_back(descriptorImageInfo);
+				materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
 				//
 
-				material.macros["OCCLUSION_TEXTURE"] = "";
-				material.macros["OCCLUSION_BINDING"] = std::to_string(binding);
-				material.macros["OCCLUSION_TEXCOORD"] = HelperShader::getTexCoord(material.occlusionTexture.texCoord);
+				materialResource->macros["OCCLUSION_TEXTURE"] = "";
+				materialResource->macros["OCCLUSION_BINDING"] = std::to_string(binding);
+				materialResource->macros["OCCLUSION_TEXCOORD"] = HelperShader::getTexCoord(material.occlusionTexture.texCoord);
 
 				//
 
@@ -473,13 +474,13 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 				descriptorImageInfo.sampler = glTF.textures[material.normalTexture.index].textureResource.samplerResource.sampler;
 				descriptorImageInfo.imageView = glTF.textures[material.normalTexture.index].textureResource.imageViewResource.imageView;
 				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				material.descriptorImageInfos.push_back(descriptorImageInfo);
+				materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
 				//
 
-				material.macros["NORMAL_TEXTURE"] = "";
-				material.macros["NORMAL_BINDING"] = std::to_string(binding);
-				material.macros["NORMAL_TEXCOORD"] = HelperShader::getTexCoord(material.normalTexture.texCoord);
+				materialResource->macros["NORMAL_TEXTURE"] = "";
+				materialResource->macros["NORMAL_BINDING"] = std::to_string(binding);
+				materialResource->macros["NORMAL_TEXCOORD"] = HelperShader::getTexCoord(material.normalTexture.texCoord);
 
 				//
 
@@ -524,9 +525,9 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 		descriptorImageInfo.sampler = glTF.diffuse.samplerResource.sampler;
 		descriptorImageInfo.imageView = glTF.diffuse.imageViewResource.imageView;
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		material.descriptorImageInfos.push_back(descriptorImageInfo);
+		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
-		material.macros["DIFFUSE_BINDING"] = std::to_string(binding);
+		materialResource->macros["DIFFUSE_BINDING"] = std::to_string(binding);
 
 		binding++;
 
@@ -543,9 +544,9 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 		descriptorImageInfo.sampler = glTF.specular.samplerResource.sampler;
 		descriptorImageInfo.imageView = glTF.specular.imageViewResource.imageView;
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		material.descriptorImageInfos.push_back(descriptorImageInfo);
+		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
-		material.macros["SPECULAR_BINDING"] = std::to_string(binding);
+		materialResource->macros["SPECULAR_BINDING"] = std::to_string(binding);
 
 		binding++;
 
@@ -562,9 +563,9 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 		descriptorImageInfo.sampler = glTF.lut.samplerResource.sampler;
 		descriptorImageInfo.imageView = glTF.lut.imageViewResource.imageView;
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		material.descriptorImageInfos.push_back(descriptorImageInfo);
+		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
-		material.macros["LUT_BINDING"] = std::to_string(binding);
+		materialResource->macros["LUT_BINDING"] = std::to_string(binding);
 
 		binding++;
 
@@ -576,7 +577,7 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 		uniformBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(MaterialUniformBuffer);
 		uniformBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 
-		if (!VulkanResource::createUniformBufferResource(physicalDevice, device, material.uniformBufferResource, uniformBufferResourceCreateInfo))
+		if (!VulkanResource::createUniformBufferResource(physicalDevice, device, materialResource->uniformBufferResource, uniformBufferResourceCreateInfo))
 		{
 			return false;
 		}
@@ -588,11 +589,11 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
-		material.descriptorBufferInfo.buffer = material.uniformBufferResource.bufferResource.buffer;
-		material.descriptorBufferInfo.offset = 0;
-		material.descriptorBufferInfo.range = sizeof(MaterialUniformBuffer);
+		materialResource->descriptorBufferInfo.buffer = materialResource->uniformBufferResource.bufferResource.buffer;
+		materialResource->descriptorBufferInfo.offset = 0;
+		materialResource->descriptorBufferInfo.range = sizeof(MaterialUniformBuffer);
 
-		material.macros["UNIFORMBUFFER_BINDING"] = std::to_string(binding);
+		materialResource->macros["UNIFORMBUFFER_BINDING"] = std::to_string(binding);
 
 		binding++;
 
@@ -622,7 +623,7 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 
 		uniformBuffer.doubleSided = material.doubleSided;
 
-		if (!VulkanResource::copyHostToDevice(device, glTF.materials.back().uniformBufferResource.bufferResource, &uniformBuffer, sizeof(uniformBuffer)))
+		if (!VulkanResource::copyHostToDevice(device, materialResource->uniformBufferResource.bufferResource, &uniformBuffer, sizeof(uniformBuffer)))
 		{
 			return false;
 		}
@@ -669,7 +670,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 			{
 				primitive.material = model.meshes[i].primitives[k].material;
 
-				macros = glTF.materials[primitive.material].macros;
+				macros = resourceManager.getMaterialResource(&glTF.materials[primitive.material])->macros;
 
 				if (glTF.materials[primitive.material].doubleSided)
 				{
@@ -932,7 +933,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				return false;
 			}
 
-			if (!resourceManager.initPrimitive(mesh.primitives.back(), glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &glTF.materials[primitive.material].descriptorSetLayout, cullMode, useRaytrace))
+			if (!resourceManager.initPrimitive(mesh.primitives.back(), glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &resourceManager.getMaterialResource(&glTF.materials[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
 			{
 				return false;
 			}
