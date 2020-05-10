@@ -93,7 +93,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 void Application::applicationTerminate()
 {
-	resourceManager.terminate(glTF, device);
+	resourceManager.terminate(device);
 }
 
 // Public

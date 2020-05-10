@@ -47,7 +47,7 @@ public:
 
 	bool initScene(const Scene& scene, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace = false);
 
-	void terminate(GLTF& glTF, VkDevice device);
+	void terminate(VkDevice device);
 
 };
 

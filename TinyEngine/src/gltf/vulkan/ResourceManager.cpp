@@ -1290,154 +1290,142 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 	return true;
 }
 
-void ResourceManager::terminate(GLTF& glTF, VkDevice device)
+void ResourceManager::terminate(VkDevice device)
 {
-	for (size_t i = 0; i < glTF.meshes.size(); i++)
+	for (auto it : primitiveResources)
 	{
-		for (size_t k = 0; k < glTF.meshes[i].primitives.size(); k++)
+		PrimitiveResource& primitiveResource = it.second;
+
+		if (primitiveResource.graphicsPipeline != VK_NULL_HANDLE)
 		{
-			PrimitiveResource* primitiveResource = getPrimitiveResource(&glTF.meshes[i].primitives[k]);
-
-			if (primitiveResource->graphicsPipeline != VK_NULL_HANDLE)
-			{
-				vkDestroyPipeline(device, primitiveResource->graphicsPipeline, nullptr);
-				primitiveResource->graphicsPipeline = VK_NULL_HANDLE;
-			}
-
-			if (primitiveResource->pipelineLayout != VK_NULL_HANDLE)
-			{
-				vkDestroyPipelineLayout(device, primitiveResource->pipelineLayout, nullptr);
-				primitiveResource->pipelineLayout = VK_NULL_HANDLE;
-			}
-
-			if (primitiveResource->vertexShaderModule != VK_NULL_HANDLE)
-			{
-				vkDestroyShaderModule(device, primitiveResource->vertexShaderModule, nullptr);
-				primitiveResource->vertexShaderModule = VK_NULL_HANDLE;
-			}
-
-			if (primitiveResource->fragmentShaderModule != VK_NULL_HANDLE)
-			{
-				vkDestroyShaderModule(device, primitiveResource->fragmentShaderModule, nullptr);
-				primitiveResource->fragmentShaderModule = VK_NULL_HANDLE;
-			}
-
-			//
-
-			VulkanRaytraceResource::destroyBottomLevelResource(device, primitiveResource->bottomLevelResource);
+			vkDestroyPipeline(device, primitiveResource.graphicsPipeline, nullptr);
+			primitiveResource.graphicsPipeline = VK_NULL_HANDLE;
 		}
-		glTF.meshes[i].primitives.clear();
-	}
-	glTF.meshes.clear();
 
-	for (size_t i = 0; i < glTF.materials.size(); i++)
+		if (primitiveResource.pipelineLayout != VK_NULL_HANDLE)
+		{
+			vkDestroyPipelineLayout(device, primitiveResource.pipelineLayout, nullptr);
+			primitiveResource.pipelineLayout = VK_NULL_HANDLE;
+		}
+
+		if (primitiveResource.vertexShaderModule != VK_NULL_HANDLE)
+		{
+			vkDestroyShaderModule(device, primitiveResource.vertexShaderModule, nullptr);
+			primitiveResource.vertexShaderModule = VK_NULL_HANDLE;
+		}
+
+		if (primitiveResource.fragmentShaderModule != VK_NULL_HANDLE)
+		{
+			vkDestroyShaderModule(device, primitiveResource.fragmentShaderModule, nullptr);
+			primitiveResource.fragmentShaderModule = VK_NULL_HANDLE;
+		}
+
+		//
+
+		VulkanRaytraceResource::destroyBottomLevelResource(device, primitiveResource.bottomLevelResource);
+	}
+	primitiveResources.clear();
+
+	for (auto it : materialResources)
 	{
-		MaterialResource* materialResource = getMaterialResource(&glTF.materials[i]);
+		MaterialResource& materialResource = it.second;
 
 		// Descriptor sets do not have to be freed, as managed by pool.
-		materialResource->descriptorSet = VK_NULL_HANDLE;
+		materialResource.descriptorSet = VK_NULL_HANDLE;
 
-		if (materialResource->descriptorPool != VK_NULL_HANDLE)
+		if (materialResource.descriptorPool != VK_NULL_HANDLE)
 		{
-			vkDestroyDescriptorPool(device, materialResource->descriptorPool, nullptr);
-			materialResource->descriptorPool = VK_NULL_HANDLE;
+			vkDestroyDescriptorPool(device, materialResource.descriptorPool, nullptr);
+			materialResource.descriptorPool = VK_NULL_HANDLE;
 		}
 
-		if (materialResource->descriptorSetLayout != VK_NULL_HANDLE)
+		if (materialResource.descriptorSetLayout != VK_NULL_HANDLE)
 		{
-			vkDestroyDescriptorSetLayout(device, materialResource->descriptorSetLayout, nullptr);
-			materialResource->descriptorSetLayout = VK_NULL_HANDLE;
+			vkDestroyDescriptorSetLayout(device, materialResource.descriptorSetLayout, nullptr);
+			materialResource.descriptorSetLayout = VK_NULL_HANDLE;
 		}
 
-		VulkanResource::destroyUniformBufferResource(device, materialResource->uniformBufferResource);
+		VulkanResource::destroyUniformBufferResource(device, materialResource.uniformBufferResource);
 	}
-	glTF.materials.clear();
-
-	for (size_t i = 0; i < glTF.bufferViews.size(); i++)
-	{
-		VulkanResource::destroyVertexBufferResource(device, getBufferViewResource(&glTF.bufferViews[i])->vertexBufferResource);
-	}
-	glTF.bufferViews.clear();
-
-	for (size_t i = 0; i < glTF.textures.size(); i++)
-	{
-		TextureResource* textureResource = getTextureResource(&glTF.textures[i]);
-
-		VulkanResource::destroyTextureResource(device, *textureResource);
-	}
-	glTF.textures.clear();
-
-	for (size_t i = 0; i < glTF.scenes.size(); i++)
-	{
-		SceneResource* sceneResource = getSceneResource(&glTF.scenes[i]);
-
-		VulkanResource::destroyStorageBufferResource(device, sceneResource->instanceResourcesStorageBufferResource);
-		VulkanResource::destroyStorageBufferResource(device, sceneResource->materialStorageBufferResource);
-
-		VulkanRaytraceResource::destroyTopLevelResource(device, sceneResource->topLevelResource);
-		VulkanResource::destroyBufferResource(device, sceneResource->accelerationStructureInstanceBuffer);
-
-		VulkanResource::destroyBufferResource(device, sceneResource->shaderBindingBufferResource);
-
-		sceneResource->accelerationStructureInstances.clear();
-
-		if (sceneResource->raytracePipeline != VK_NULL_HANDLE)
-		{
-			vkDestroyPipeline(device, sceneResource->raytracePipeline, nullptr);
-			sceneResource->raytracePipeline = VK_NULL_HANDLE;
-		}
-
-		if (sceneResource->rayGenShaderModule != VK_NULL_HANDLE)
-		{
-			vkDestroyShaderModule(device, sceneResource->rayGenShaderModule, nullptr);
-			sceneResource->rayGenShaderModule = VK_NULL_HANDLE;
-		}
-
-		if (sceneResource->missShaderModule != VK_NULL_HANDLE)
-		{
-			vkDestroyShaderModule(device, sceneResource->missShaderModule, nullptr);
-			sceneResource->missShaderModule = VK_NULL_HANDLE;
-		}
-
-		if (sceneResource->closestHitShaderModule != VK_NULL_HANDLE)
-		{
-			vkDestroyShaderModule(device, sceneResource->closestHitShaderModule, nullptr);
-			sceneResource->closestHitShaderModule = VK_NULL_HANDLE;
-		}
-
-		if (sceneResource->raytracePipelineLayout != VK_NULL_HANDLE)
-		{
-			vkDestroyPipelineLayout(device, sceneResource->raytracePipelineLayout, nullptr);
-			sceneResource->raytracePipelineLayout = VK_NULL_HANDLE;
-		}
-
-		sceneResource->raytraceDescriptorSet = VK_NULL_HANDLE;
-
-		if (sceneResource->raytraceDescriptorPool != VK_NULL_HANDLE)
-		{
-			vkDestroyDescriptorPool(device, sceneResource->raytraceDescriptorPool, nullptr);
-			sceneResource->raytraceDescriptorPool = VK_NULL_HANDLE;
-		}
-
-		if (sceneResource->raytraceDescriptorSetLayout != VK_NULL_HANDLE)
-		{
-			vkDestroyDescriptorSetLayout(device, sceneResource->raytraceDescriptorSetLayout, nullptr);
-			sceneResource->raytraceDescriptorSetLayout = VK_NULL_HANDLE;
-		}
-	}
-	glTF.scenes.clear();
-
-	GltfResource* gltfResource = getGltfResource();
-
-	VulkanResource::destroyTextureResource(device, gltfResource->diffuse);
-	VulkanResource::destroyTextureResource(device, gltfResource->specular);
-	VulkanResource::destroyTextureResource(device, gltfResource->lut);
-
-	//
-	//
-
-	bufferViewResources.clear();
 	materialResources.clear();
-	primitiveResources.clear();
+
+	for (auto it : bufferViewResources)
+	{
+		BufferViewResource& bufferViewResource = it.second;
+
+		VulkanResource::destroyVertexBufferResource(device, bufferViewResource.vertexBufferResource);
+	}
+	bufferViewResources.clear();
+
+	for (auto it : textureResources)
+	{
+		TextureResource& textureResource = it.second;
+
+		VulkanResource::destroyTextureResource(device, textureResource);
+	}
+	textureResources.clear();
+
+	for (auto it : sceneResources)
+	{
+		SceneResource& sceneResource = it.second;
+
+		VulkanResource::destroyStorageBufferResource(device, sceneResource.instanceResourcesStorageBufferResource);
+		VulkanResource::destroyStorageBufferResource(device, sceneResource.materialStorageBufferResource);
+
+		VulkanRaytraceResource::destroyTopLevelResource(device, sceneResource.topLevelResource);
+		VulkanResource::destroyBufferResource(device, sceneResource.accelerationStructureInstanceBuffer);
+
+		VulkanResource::destroyBufferResource(device, sceneResource.shaderBindingBufferResource);
+
+		sceneResource.accelerationStructureInstances.clear();
+
+		if (sceneResource.raytracePipeline != VK_NULL_HANDLE)
+		{
+			vkDestroyPipeline(device, sceneResource.raytracePipeline, nullptr);
+			sceneResource.raytracePipeline = VK_NULL_HANDLE;
+		}
+
+		if (sceneResource.rayGenShaderModule != VK_NULL_HANDLE)
+		{
+			vkDestroyShaderModule(device, sceneResource.rayGenShaderModule, nullptr);
+			sceneResource.rayGenShaderModule = VK_NULL_HANDLE;
+		}
+
+		if (sceneResource.missShaderModule != VK_NULL_HANDLE)
+		{
+			vkDestroyShaderModule(device, sceneResource.missShaderModule, nullptr);
+			sceneResource.missShaderModule = VK_NULL_HANDLE;
+		}
+
+		if (sceneResource.closestHitShaderModule != VK_NULL_HANDLE)
+		{
+			vkDestroyShaderModule(device, sceneResource.closestHitShaderModule, nullptr);
+			sceneResource.closestHitShaderModule = VK_NULL_HANDLE;
+		}
+
+		if (sceneResource.raytracePipelineLayout != VK_NULL_HANDLE)
+		{
+			vkDestroyPipelineLayout(device, sceneResource.raytracePipelineLayout, nullptr);
+			sceneResource.raytracePipelineLayout = VK_NULL_HANDLE;
+		}
+
+		sceneResource.raytraceDescriptorSet = VK_NULL_HANDLE;
+
+		if (sceneResource.raytraceDescriptorPool != VK_NULL_HANDLE)
+		{
+			vkDestroyDescriptorPool(device, sceneResource.raytraceDescriptorPool, nullptr);
+			sceneResource.raytraceDescriptorPool = VK_NULL_HANDLE;
+		}
+
+		if (sceneResource.raytraceDescriptorSetLayout != VK_NULL_HANDLE)
+		{
+			vkDestroyDescriptorSetLayout(device, sceneResource.raytraceDescriptorSetLayout, nullptr);
+			sceneResource.raytraceDescriptorSetLayout = VK_NULL_HANDLE;
+		}
+	}
 	sceneResources.clear();
+
+	VulkanResource::destroyTextureResource(device, gltfResource.diffuse);
+	VulkanResource::destroyTextureResource(device, gltfResource.specular);
+	VulkanResource::destroyTextureResource(device, gltfResource.lut);
 }

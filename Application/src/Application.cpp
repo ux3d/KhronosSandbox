@@ -281,7 +281,7 @@ void Application::applicationTerminate()
 {
 	VulkanResource::destroyImageViewResource(device, raytraceImageViewResource);
 
-	resourceManager.terminate(glTF, device);
+	resourceManager.terminate(device);
 }
 
 // Public

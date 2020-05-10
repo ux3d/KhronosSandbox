@@ -43,7 +43,7 @@ public:
 
 	HelperAllocateResource(uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView = VK_NULL_HANDLE);
 
-	bool allocate(ResourceManager& resourceManager, GLTF& glTF, const std::string& diffuseFilename, bool useRaytrace = false);
+	bool allocate(ResourceManager& resourceManager, const GLTF& glTF, const std::string& diffuseFilename, bool useRaytrace = false);
 
 };
 

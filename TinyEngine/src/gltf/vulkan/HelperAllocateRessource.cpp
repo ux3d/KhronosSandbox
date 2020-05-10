@@ -930,7 +930,7 @@ bool HelperAllocateResource::initScenes(ResourceManager& resourceManager, const 
 	return true;
 }
 
-bool HelperAllocateResource::allocate(ResourceManager& resourceManager, GLTF& glTF, const std::string& environment, bool useRaytrace)
+bool HelperAllocateResource::allocate(ResourceManager& resourceManager, const GLTF& glTF, const std::string& environment, bool useRaytrace)
 {
 	GltfResource* gltfResource = resourceManager.getGltfResource();
 
@@ -989,6 +989,9 @@ bool HelperAllocateResource::allocate(ResourceManager& resourceManager, GLTF& gl
 	{
 		return false;
 	}
+
+	//
+	//
 
 	// Images
 
