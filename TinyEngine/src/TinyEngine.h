@@ -54,6 +54,7 @@ private:
 	bool createCommandResources();
 	bool createSynchronizationResources();
 	bool createImgui();
+	bool createConfiguration();
 
 protected:
 	std::string title = "";
@@ -71,6 +72,7 @@ protected:
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
 	VkSurfaceKHR surface = VK_NULL_HANDLE;
+	uint32_t minImageCount = 0;
 	VkSurfaceFormatKHR surfaceFormat = {};
 	VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
 
@@ -81,6 +83,7 @@ protected:
 	VkSwapchainKHR swapchain = VK_NULL_HANDLE;
 	std::vector<VkImage> swapchainImages;
 	std::vector<VkImageView> swapchainImageViews;
+	uint32_t frameIndex = 0;
 
 	ImageViewResource msaa;
 
@@ -107,6 +110,8 @@ protected:
 	bool useImgui = false;
 	VkRenderPass imguiRenderPass = VK_NULL_HANDLE;
 	VkDescriptorPool imguiDescriptorPool = VK_NULL_HANDLE;
+
+	bool inResize = false;
 
 	virtual bool applicationInit() = 0;
 	virtual bool applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime) = 0;

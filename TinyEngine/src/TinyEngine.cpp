@@ -7,6 +7,11 @@
 
 bool TinyEngine::createInstance()
 {
+	if (inResize)
+	{
+		return true;
+	}
+
 	VkResult result = VK_SUCCESS;
 
 	//
@@ -69,6 +74,11 @@ bool TinyEngine::createInstance()
 
 bool TinyEngine::choosePhysicalDevice()
 {
+	if (inResize)
+	{
+		return true;
+	}
+
 	VkResult result = VK_SUCCESS;
 
 	uint32_t physicalDeviceCount = 0;
@@ -159,6 +169,11 @@ bool TinyEngine::choosePhysicalDevice()
 
 bool TinyEngine::createSurface()
 {
+	if (inResize)
+	{
+		return true;
+	}
+
 	VkResult result = VK_SUCCESS;
 
 	VkSurfaceCapabilitiesKHR surfaceCapabilities = {};
@@ -182,7 +197,7 @@ bool TinyEngine::createSurface()
 	{
 		return false;
 	}
-	swapchainImages.resize(imageCount, VK_NULL_HANDLE);
+	minImageCount = imageCount;
 
 	uint32_t surfaceFormatCount = 0;
 	result = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &surfaceFormatCount, nullptr);
@@ -255,6 +270,11 @@ bool TinyEngine::createSurface()
 
 bool TinyEngine::createDevice()
 {
+	if (inResize)
+	{
+		return true;
+	}
+
 	VkResult result = VK_SUCCESS;
 
 	uint32_t queueFamilyPropertyCount = 0;
@@ -381,7 +401,7 @@ bool TinyEngine::createSwapchain()
 	VkSwapchainCreateInfoKHR swapchainCreateInfo = {};
 	swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	swapchainCreateInfo.surface = surface;
-	swapchainCreateInfo.minImageCount = swapchainImages.size();
+	swapchainCreateInfo.minImageCount = minImageCount;
 	swapchainCreateInfo.imageFormat = surfaceFormat.format;
 	swapchainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
 	swapchainCreateInfo.imageExtent = {width, height};
@@ -408,6 +428,7 @@ bool TinyEngine::createSwapchain()
 
 		return false;
 	}
+	swapchainImages.resize(minImageCount, VK_NULL_HANDLE);
 	if (swapchainImageCount != swapchainImages.size())
 	{
 		return false;
@@ -442,6 +463,8 @@ bool TinyEngine::createSwapchain()
 			return false;
 		}
 	}
+
+	frameIndex = 0;
 
 	return true;
 }
@@ -660,6 +683,11 @@ bool TinyEngine::createFramebuffer()
 
 bool TinyEngine::createCommandResources()
 {
+	if (inResize)
+	{
+		return true;
+	}
+
 	VkResult result = VK_SUCCESS;
 
 	VkCommandPoolCreateInfo commandPoolCreateInfo = {};
@@ -696,6 +724,11 @@ bool TinyEngine::createCommandResources()
 
 bool TinyEngine::createSynchronizationResources()
 {
+	if (inResize)
+	{
+		return true;
+	}
+
 	VkResult result = VK_SUCCESS;
 
 	imageAvailableSemaphores.resize(swapchainImages.size(), VK_NULL_HANDLE);
@@ -814,6 +847,37 @@ bool TinyEngine::createImgui()
 	return true;
 }
 
+bool TinyEngine::createConfiguration()
+{
+	if (inResize)
+	{
+		return true;
+	}
+
+	vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
+	vkGetPhysicalDeviceFeatures(physicalDevice, &physicalDeviceFeatures);
+
+	if (major >= 1 || (major == 1 && minor >= 1))
+	{
+		physicalDeviceProperties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+		physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+
+		if (hasEnabledDeviceExtensionName(VK_KHR_RAY_TRACING_EXTENSION_NAME))
+		{
+			physicalDeviceRayTracingProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_KHR;
+			physicalDeviceRayTracingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_FEATURES_KHR;
+
+			physicalDeviceProperties2.pNext = &physicalDeviceRayTracingProperties;
+			physicalDeviceFeatures2.pNext = &physicalDeviceRayTracingFeatures;
+		}
+
+		vkGetPhysicalDeviceProperties2(physicalDevice, &physicalDeviceProperties2);
+		vkGetPhysicalDeviceFeatures2(physicalDevice, &physicalDeviceFeatures2);
+	}
+
+	return true;
+}
+
 // Public
 
 TinyEngine::TinyEngine()
@@ -910,25 +974,9 @@ bool TinyEngine::init(VkSurfaceKHR surface, uint32_t width, uint32_t height)
 		return false;
 	}
 
-	vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
-	vkGetPhysicalDeviceFeatures(physicalDevice, &physicalDeviceFeatures);
-
-	if (major >= 1 || (major == 1 && minor >= 1))
+	if (!createConfiguration())
 	{
-		physicalDeviceProperties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
-		physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-
-		if (hasEnabledDeviceExtensionName(VK_KHR_RAY_TRACING_EXTENSION_NAME))
-		{
-			physicalDeviceRayTracingProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_KHR;
-			physicalDeviceRayTracingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_FEATURES_KHR;
-
-			physicalDeviceProperties2.pNext = &physicalDeviceRayTracingProperties;
-			physicalDeviceFeatures2.pNext = &physicalDeviceRayTracingFeatures;
-		}
-
-		vkGetPhysicalDeviceProperties2(physicalDevice, &physicalDeviceProperties2);
-		vkGetPhysicalDeviceFeatures2(physicalDevice, &physicalDeviceFeatures2);
+		return false;
 	}
 
 	return applicationInit();
@@ -953,8 +1001,6 @@ bool TinyEngine::update()
 	//
 
 	VkResult result = VK_SUCCESS;
-
-	static uint32_t frameIndex = 0;
 
 	result = vkWaitForFences(device, 1, &queueSubmitFences[frameIndex], VK_TRUE, UINT64_MAX);
 	if (result != VK_SUCCESS)
@@ -1136,47 +1182,50 @@ bool TinyEngine::terminate()
 
 	applicationTerminate();
 
-	physicalDeviceProperties = {};
-	physicalDeviceProperties2 = {};
-	physicalDeviceRayTracingProperties = {};
-
-	physicalDeviceFeatures = {};
-	physicalDeviceFeatures2 = {};
-	physicalDeviceRayTracingFeatures = {};
-
-	for (const VkFence& currentFence : queueSubmitFences)
+	if (!inResize)
 	{
-		if (currentFence != VK_NULL_HANDLE)
+		physicalDeviceProperties = {};
+		physicalDeviceProperties2 = {};
+		physicalDeviceRayTracingProperties = {};
+
+		physicalDeviceFeatures = {};
+		physicalDeviceFeatures2 = {};
+		physicalDeviceRayTracingFeatures = {};
+
+		for (const VkFence& currentFence : queueSubmitFences)
 		{
-			 vkDestroyFence(device, currentFence, nullptr);
+			if (currentFence != VK_NULL_HANDLE)
+			{
+				 vkDestroyFence(device, currentFence, nullptr);
+			}
 		}
-	}
-	queueSubmitFences.clear();
+		queueSubmitFences.clear();
 
-	for (const VkSemaphore& currentSemaphore : imageAvailableSemaphores)
-	{
-		if (currentSemaphore != VK_NULL_HANDLE)
+		for (const VkSemaphore& currentSemaphore : imageAvailableSemaphores)
 		{
-			 vkDestroySemaphore(device, currentSemaphore, nullptr);
+			if (currentSemaphore != VK_NULL_HANDLE)
+			{
+				 vkDestroySemaphore(device, currentSemaphore, nullptr);
+			}
 		}
-	}
-	imageAvailableSemaphores.clear();
+		imageAvailableSemaphores.clear();
 
-	for (const VkSemaphore& currentSemaphore : renderFinishedSemaphores)
-	{
-		if (currentSemaphore != VK_NULL_HANDLE)
+		for (const VkSemaphore& currentSemaphore : renderFinishedSemaphores)
 		{
-			 vkDestroySemaphore(device, currentSemaphore, nullptr);
+			if (currentSemaphore != VK_NULL_HANDLE)
+			{
+				 vkDestroySemaphore(device, currentSemaphore, nullptr);
+			}
 		}
-	}
-	renderFinishedSemaphores.clear();
+		renderFinishedSemaphores.clear();
 
-	commandBuffers.clear();
+		commandBuffers.clear();
 
-	if (commandPool != VK_NULL_HANDLE)
-	{
-		vkDestroyCommandPool(device, commandPool, nullptr);
-		commandPool = VK_NULL_HANDLE;
+		if (commandPool != VK_NULL_HANDLE)
+		{
+			vkDestroyCommandPool(device, commandPool, nullptr);
+			commandPool = VK_NULL_HANDLE;
+		}
 	}
 
 	for (const VkFramebuffer& currentFramebuffer : framebuffers)
@@ -1223,35 +1272,40 @@ bool TinyEngine::terminate()
 		vkDestroySwapchainKHR(device, swapchain, nullptr);
 		swapchain = VK_NULL_HANDLE;
 	}
+	frameIndex = 0;
 
-	queue = VK_NULL_HANDLE;
-	queueFamilyIndex.reset();
-
-	if (device)
+	if (!inResize)
 	{
-		vkDestroyDevice(device, nullptr);
-		device = VK_NULL_HANDLE;
+		queue = VK_NULL_HANDLE;
+		queueFamilyIndex.reset();
+
+		if (device)
+		{
+			vkDestroyDevice(device, nullptr);
+			device = VK_NULL_HANDLE;
+		}
+
+		surfaceFormat = {};
+		presentMode = VK_PRESENT_MODE_FIFO_KHR;
+		minImageCount = 0;
+
+		if (surface)
+		{
+			vkDestroySurfaceKHR(instance, surface, nullptr);
+			surface = nullptr;
+		}
+
+		physicalDevice = VK_NULL_HANDLE;
+
+		if (instance)
+		{
+			vkDestroyInstance(instance, nullptr);
+			instance = VK_NULL_HANDLE;
+		}
+
+		width = 0;
+		height = 0;
 	}
-
-	surfaceFormat = {};
-	presentMode = VK_PRESENT_MODE_FIFO_KHR;
-
-	if (surface)
-	{
-		vkDestroySurfaceKHR(instance, surface, nullptr);
-		surface = nullptr;
-	}
-
-	physicalDevice = VK_NULL_HANDLE;
-
-	if (instance)
-	{
-		vkDestroyInstance(instance, nullptr);
-		instance = VK_NULL_HANDLE;
-	}
-
-	width = 0;
-	height = 0;
 
 	return true;
 }
