@@ -2,6 +2,7 @@
 #define APPLICATION_H_
 
 #include "gltf/GLTF.h"
+#include "gltf/vulkan/ResourceManager.h"
 #include "TinyEngine.h"
 
 
@@ -9,6 +10,7 @@ class Application: public TinyEngine
 {
 private:
 
+	ResourceManager resourceManager;
 	GLTF glTF;
 
 	std::string filename = "";

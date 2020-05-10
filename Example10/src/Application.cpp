@@ -3,7 +3,6 @@
 #include "gltf/vulkan/HelperVulkanAccess.h"
 #include "gltf/vulkan/HelperLoader.h"
 #include "gltf/vulkan/HelperLoop.h"
-#include "gltf/vulkan/HelperResource.h"
 
 // Private
 
@@ -11,7 +10,7 @@ bool Application::applicationInit()
 {
 	HelperLoader helperLoader(width, height, physicalDevice, device, queue, commandPool, renderPass, samples);
 
-	if(!helperLoader.open(glTF, filename, environment))
+	if(!helperLoader.open(resourceManager, glTF, filename, environment))
 	{
 		return false;
 	}
@@ -79,7 +78,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 void Application::applicationTerminate()
 {
-	HelperResource::terminate(glTF, device);
+	resourceManager.terminate(glTF, device);
 }
 
 // Public

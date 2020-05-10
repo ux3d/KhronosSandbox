@@ -1,10 +1,17 @@
-#include "HelperResource.h"
-
 #include "../HelperAccess.h"
 
 #include "HelperVulkanAccess.h"
+#include "ResourceManager.h"
 
-bool HelperResource::initBufferView(BufferView& bufferView, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
+ResourceManager::ResourceManager()
+{
+}
+
+ResourceManager::~ResourceManager()
+{
+}
+
+bool ResourceManager::initBufferView(BufferView& bufferView, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
 {
 	VkBufferUsageFlags usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	if (bufferView.target == 34963) // ELEMENT_ARRAY_BUFFER
@@ -32,7 +39,7 @@ bool HelperResource::initBufferView(BufferView& bufferView, const GLTF& glTF, Vk
 	return true;
 }
 
-bool HelperResource::initMaterial(Material& material, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
+bool ResourceManager::initMaterial(Material& material, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
 {
 	VkResult result = VK_SUCCESS;
 
@@ -119,7 +126,7 @@ bool HelperResource::initMaterial(Material& material, const GLTF& glTF, VkPhysic
 	return true;
 }
 
-bool HelperResource::initPrimitive(Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
+bool ResourceManager::initPrimitive(Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
 {
 	VkResult result = VK_SUCCESS;
 
@@ -319,7 +326,7 @@ bool HelperResource::initPrimitive(Primitive& primitive, const GLTF& glTF, VkPhy
 	return true;
 }
 
-bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
+bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
 {
 	if (useRaytrace)
 	{
@@ -1195,7 +1202,7 @@ bool HelperResource::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice 
 	return true;
 }
 
-void HelperResource::terminate(GLTF& glTF, VkDevice device)
+void ResourceManager::terminate(GLTF& glTF, VkDevice device)
 {
 	for (size_t i = 0; i < glTF.meshes.size(); i++)
 	{

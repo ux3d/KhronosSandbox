@@ -3,7 +3,6 @@
 #include "gltf/vulkan/HelperVulkanAccess.h"
 #include "gltf/vulkan/HelperLoader.h"
 #include "gltf/vulkan/HelperLoop.h"
-#include "gltf/vulkan/HelperResource.h"
 
 // Private
 
@@ -28,7 +27,7 @@ bool Application::applicationInit()
 
 	HelperLoader helperLoader(width, height, physicalDevice, device, queue, commandPool, renderPass, samples, raytraceImageViewResource.imageView);
 
-	if(!helperLoader.open(glTF, filename, environment, true))
+	if(!helperLoader.open(resourceManager, glTF, filename, environment, true))
 	{
 		return false;
 	}
@@ -261,7 +260,7 @@ void Application::applicationTerminate()
 {
 	VulkanResource::destroyImageViewResource(device, raytraceImageViewResource);
 
-	HelperResource::terminate(glTF, device);
+	resourceManager.terminate(glTF, device);
 }
 
 // Public

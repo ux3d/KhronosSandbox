@@ -3,6 +3,8 @@
 
 #include "../GLTF.h"
 
+#include "ResourceManager.h"
+
 #define TINYGLTF_NO_EXTERNAL_IMAGE
 #define TINYGLTF_NO_STB_IMAGE
 #define TINYGLTF_NO_STB_IMAGE_WRITE
@@ -28,6 +30,8 @@ private:
 
 	tinygltf::Model model;
 
+	ResourceManager* resourceManager;
+
 	bool initBuffers(GLTF& glTF);
 
 	bool initBufferViews(GLTF& glTF, bool useRaytrace);
@@ -52,7 +56,7 @@ public:
 
 	HelperLoader(uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView = VK_NULL_HANDLE);
 
-	bool open(GLTF& glTF, const std::string& filename, const std::string& diffuseFilename, bool useRaytrace = false);
+	bool open(ResourceManager& resourceManager, GLTF& glTF, const std::string& filename, const std::string& diffuseFilename, bool useRaytrace = false);
 
 };
 

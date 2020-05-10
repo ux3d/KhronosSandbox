@@ -3,8 +3,8 @@
 #include "../../shader/HelperShader.h"
 #include "../HelperAccess.h"
 #include "HelperLoop.h"
-#include "HelperResource.h"
 #include "HelperVulkanAccess.h"
+#include "ResourceManager.h"
 
 #define TINYGLTF_IMPLEMENTATION
 #define TINYGLTF_NO_EXTERNAL_IMAGE
@@ -17,7 +17,7 @@
 #include <tiny_gltf.h>
 
 HelperLoader::HelperLoader(uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView) :
-	width(width), height(height), physicalDevice(physicalDevice), device(device), queue(queue), commandPool(commandPool), renderPass(renderPass), samples(samples), imageView(imageView)
+	width(width), height(height), physicalDevice(physicalDevice), device(device), queue(queue), commandPool(commandPool), renderPass(renderPass), samples(samples), imageView(imageView), model(), resourceManager(nullptr)
 {
 }
 
@@ -64,7 +64,7 @@ bool HelperLoader::initBufferViews(GLTF& glTF, bool useRaytrace)
 
 		//
 
-		if (!HelperResource::initBufferView(bufferView, glTF, physicalDevice, device, queue, commandPool, useRaytrace))
+		if (!resourceManager->initBufferView(bufferView, glTF, physicalDevice, device, queue, commandPool, useRaytrace))
 		{
 			return false;
 		}
@@ -599,7 +599,7 @@ bool HelperLoader::initMaterials(GLTF& glTF)
 
 		//
 
-		if (!HelperResource::initMaterial(material, glTF, physicalDevice, device, descriptorSetLayoutBindings))
+		if (!resourceManager->initMaterial(material, glTF, physicalDevice, device, descriptorSetLayoutBindings))
 		{
 			return false;
 		}
@@ -935,7 +935,7 @@ bool HelperLoader::initMeshes(GLTF& glTF, bool useRaytrace)
 				return false;
 			}
 
-			if (!HelperResource::initPrimitive(primitive, glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &glTF.materials[primitive.material].descriptorSetLayout, cullMode, useRaytrace))
+			if (!resourceManager->initPrimitive(primitive, glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &glTF.materials[primitive.material].descriptorSetLayout, cullMode, useRaytrace))
 			{
 				return false;
 			}
@@ -1019,7 +1019,7 @@ bool HelperLoader::initScenes(GLTF& glTF, bool useRaytrace)
 
 	for (size_t i = 0; i < glTF.scenes.size(); i++)
 	{
-		if (!HelperResource::initScene(glTF.scenes[i], glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
+		if (!resourceManager->initScene(glTF.scenes[i], glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
 		{
 			return false;
 		}
@@ -1028,8 +1028,10 @@ bool HelperLoader::initScenes(GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool HelperLoader::open(GLTF& glTF, const std::string& filename, const std::string& environment, bool useRaytrace)
+bool HelperLoader::open(ResourceManager& resourceManager, GLTF& glTF, const std::string& filename, const std::string& environment, bool useRaytrace)
 {
+	this->resourceManager = &resourceManager;
+
 	// Diffuse
 
 	std::string diffuseFilename = environment + "/" + "diffuse.ktx2";
