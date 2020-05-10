@@ -3,6 +3,124 @@
 #include "ResourceManager.h"
 #include "HelperAccessResource.h"
 
+void ResourceManager::terminate(BufferViewResource& bufferViewResource, VkDevice device)
+{
+	VulkanResource::destroyVertexBufferResource(device, bufferViewResource.vertexBufferResource);
+}
+
+void ResourceManager::terminate(TextureResource& textureResource, VkDevice device)
+{
+	VulkanResource::destroyTextureResource(device, textureResource);
+}
+
+void ResourceManager::terminate(MaterialResource& materialResource, VkDevice device)
+{
+	// Descriptor sets do not have to be freed, as managed by pool.
+	materialResource.descriptorSet = VK_NULL_HANDLE;
+
+	if (materialResource.descriptorPool != VK_NULL_HANDLE)
+	{
+		vkDestroyDescriptorPool(device, materialResource.descriptorPool, nullptr);
+		materialResource.descriptorPool = VK_NULL_HANDLE;
+	}
+
+	if (materialResource.descriptorSetLayout != VK_NULL_HANDLE)
+	{
+		vkDestroyDescriptorSetLayout(device, materialResource.descriptorSetLayout, nullptr);
+		materialResource.descriptorSetLayout = VK_NULL_HANDLE;
+	}
+
+	VulkanResource::destroyUniformBufferResource(device, materialResource.uniformBufferResource);
+}
+
+void ResourceManager::terminate(PrimitiveResource& primitiveResource, VkDevice device)
+{
+	if (primitiveResource.graphicsPipeline != VK_NULL_HANDLE)
+	{
+		vkDestroyPipeline(device, primitiveResource.graphicsPipeline, nullptr);
+		primitiveResource.graphicsPipeline = VK_NULL_HANDLE;
+	}
+
+	if (primitiveResource.pipelineLayout != VK_NULL_HANDLE)
+	{
+		vkDestroyPipelineLayout(device, primitiveResource.pipelineLayout, nullptr);
+		primitiveResource.pipelineLayout = VK_NULL_HANDLE;
+	}
+
+	if (primitiveResource.vertexShaderModule != VK_NULL_HANDLE)
+	{
+		vkDestroyShaderModule(device, primitiveResource.vertexShaderModule, nullptr);
+		primitiveResource.vertexShaderModule = VK_NULL_HANDLE;
+	}
+
+	if (primitiveResource.fragmentShaderModule != VK_NULL_HANDLE)
+	{
+		vkDestroyShaderModule(device, primitiveResource.fragmentShaderModule, nullptr);
+		primitiveResource.fragmentShaderModule = VK_NULL_HANDLE;
+	}
+
+	//
+
+	VulkanRaytraceResource::destroyBottomLevelResource(device, primitiveResource.bottomLevelResource);
+}
+
+void ResourceManager::terminate(SceneResource& sceneResource, VkDevice device)
+{
+	VulkanResource::destroyStorageBufferResource(device, sceneResource.instanceResourcesStorageBufferResource);
+	VulkanResource::destroyStorageBufferResource(device, sceneResource.materialStorageBufferResource);
+
+	VulkanRaytraceResource::destroyTopLevelResource(device, sceneResource.topLevelResource);
+	VulkanResource::destroyBufferResource(device, sceneResource.accelerationStructureInstanceBuffer);
+
+	VulkanResource::destroyBufferResource(device, sceneResource.shaderBindingBufferResource);
+
+	sceneResource.accelerationStructureInstances.clear();
+
+	if (sceneResource.raytracePipeline != VK_NULL_HANDLE)
+	{
+		vkDestroyPipeline(device, sceneResource.raytracePipeline, nullptr);
+		sceneResource.raytracePipeline = VK_NULL_HANDLE;
+	}
+
+	if (sceneResource.rayGenShaderModule != VK_NULL_HANDLE)
+	{
+		vkDestroyShaderModule(device, sceneResource.rayGenShaderModule, nullptr);
+		sceneResource.rayGenShaderModule = VK_NULL_HANDLE;
+	}
+
+	if (sceneResource.missShaderModule != VK_NULL_HANDLE)
+	{
+		vkDestroyShaderModule(device, sceneResource.missShaderModule, nullptr);
+		sceneResource.missShaderModule = VK_NULL_HANDLE;
+	}
+
+	if (sceneResource.closestHitShaderModule != VK_NULL_HANDLE)
+	{
+		vkDestroyShaderModule(device, sceneResource.closestHitShaderModule, nullptr);
+		sceneResource.closestHitShaderModule = VK_NULL_HANDLE;
+	}
+
+	if (sceneResource.raytracePipelineLayout != VK_NULL_HANDLE)
+	{
+		vkDestroyPipelineLayout(device, sceneResource.raytracePipelineLayout, nullptr);
+		sceneResource.raytracePipelineLayout = VK_NULL_HANDLE;
+	}
+
+	sceneResource.raytraceDescriptorSet = VK_NULL_HANDLE;
+
+	if (sceneResource.raytraceDescriptorPool != VK_NULL_HANDLE)
+	{
+		vkDestroyDescriptorPool(device, sceneResource.raytraceDescriptorPool, nullptr);
+		sceneResource.raytraceDescriptorPool = VK_NULL_HANDLE;
+	}
+
+	if (sceneResource.raytraceDescriptorSetLayout != VK_NULL_HANDLE)
+	{
+		vkDestroyDescriptorSetLayout(device, sceneResource.raytraceDescriptorSetLayout, nullptr);
+		sceneResource.raytraceDescriptorSetLayout = VK_NULL_HANDLE;
+	}
+}
+
 ResourceManager::ResourceManager()
 {
 }
@@ -75,6 +193,11 @@ bool ResourceManager::initBufferView(const BufferView& bufferView, const GLTF& g
 {
 	BufferViewResource* bufferViewResource = getBufferViewResource(&bufferView);
 
+	if (!bufferViewResource)
+	{
+		return false;
+	}
+
 	//
 
 	VkBufferUsageFlags usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
@@ -103,9 +226,27 @@ bool ResourceManager::initBufferView(const BufferView& bufferView, const GLTF& g
 	return true;
 }
 
+bool ResourceManager::resetBufferView(const BufferView& bufferView, VkDevice device)
+{
+	BufferViewResource* bufferViewResource = getBufferViewResource(&bufferView);
+
+	if (!bufferViewResource)
+	{
+		return false;
+	}
+	terminate(*bufferViewResource, device);
+
+	return true;
+}
+
 bool ResourceManager::initMaterial(const Material& material, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
 {
 	MaterialResource* materialResource = getMaterialResource(&material);
+
+	if (!materialResource)
+	{
+		return false;
+	}
 
 	//
 
@@ -194,9 +335,27 @@ bool ResourceManager::initMaterial(const Material& material, const GLTF& glTF, V
 	return true;
 }
 
+bool ResourceManager::resetMaterial(const Material& material, VkDevice device)
+{
+	MaterialResource* materialResource = getMaterialResource(&material);
+
+	if (!materialResource)
+	{
+		return false;
+	}
+	terminate(*materialResource, device);
+
+	return true;
+}
+
 bool ResourceManager::initPrimitive(const Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
 {
 	PrimitiveResource* primitiveResource = getPrimitiveResource(&primitive);
+
+	if (!primitiveResource)
+	{
+		return false;
+	}
 
 	//
 
@@ -398,9 +557,27 @@ bool ResourceManager::initPrimitive(const Primitive& primitive, const GLTF& glTF
 	return true;
 }
 
+bool ResourceManager::resetPrimitive(const Primitive& primitive, VkDevice device)
+{
+	PrimitiveResource* primitiveResource = getPrimitiveResource(&primitive);
+
+	if (!primitiveResource)
+	{
+		return false;
+	}
+	terminate(*primitiveResource, device);
+
+	return true;
+}
+
 bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
 {
 	SceneResource* sceneResource = getSceneResource(&scene);
+
+	if (!sceneResource)
+	{
+		return false;
+	}
 
 	//
 
@@ -1290,138 +1467,48 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 	return true;
 }
 
+bool ResourceManager::resetScene(const Scene& scene, VkDevice device)
+{
+	SceneResource* sceneResource = getSceneResource(&scene);
+
+	if (!sceneResource)
+	{
+		return false;
+	}
+	terminate(*sceneResource, device);
+
+	return true;
+}
+
 void ResourceManager::terminate(VkDevice device)
 {
 	for (auto it : primitiveResources)
 	{
-		PrimitiveResource& primitiveResource = it.second;
-
-		if (primitiveResource.graphicsPipeline != VK_NULL_HANDLE)
-		{
-			vkDestroyPipeline(device, primitiveResource.graphicsPipeline, nullptr);
-			primitiveResource.graphicsPipeline = VK_NULL_HANDLE;
-		}
-
-		if (primitiveResource.pipelineLayout != VK_NULL_HANDLE)
-		{
-			vkDestroyPipelineLayout(device, primitiveResource.pipelineLayout, nullptr);
-			primitiveResource.pipelineLayout = VK_NULL_HANDLE;
-		}
-
-		if (primitiveResource.vertexShaderModule != VK_NULL_HANDLE)
-		{
-			vkDestroyShaderModule(device, primitiveResource.vertexShaderModule, nullptr);
-			primitiveResource.vertexShaderModule = VK_NULL_HANDLE;
-		}
-
-		if (primitiveResource.fragmentShaderModule != VK_NULL_HANDLE)
-		{
-			vkDestroyShaderModule(device, primitiveResource.fragmentShaderModule, nullptr);
-			primitiveResource.fragmentShaderModule = VK_NULL_HANDLE;
-		}
-
-		//
-
-		VulkanRaytraceResource::destroyBottomLevelResource(device, primitiveResource.bottomLevelResource);
+		terminate(it.second, device);
 	}
 	primitiveResources.clear();
 
 	for (auto it : materialResources)
 	{
-		MaterialResource& materialResource = it.second;
-
-		// Descriptor sets do not have to be freed, as managed by pool.
-		materialResource.descriptorSet = VK_NULL_HANDLE;
-
-		if (materialResource.descriptorPool != VK_NULL_HANDLE)
-		{
-			vkDestroyDescriptorPool(device, materialResource.descriptorPool, nullptr);
-			materialResource.descriptorPool = VK_NULL_HANDLE;
-		}
-
-		if (materialResource.descriptorSetLayout != VK_NULL_HANDLE)
-		{
-			vkDestroyDescriptorSetLayout(device, materialResource.descriptorSetLayout, nullptr);
-			materialResource.descriptorSetLayout = VK_NULL_HANDLE;
-		}
-
-		VulkanResource::destroyUniformBufferResource(device, materialResource.uniformBufferResource);
+		terminate(it.second, device);
 	}
 	materialResources.clear();
 
 	for (auto it : bufferViewResources)
 	{
-		BufferViewResource& bufferViewResource = it.second;
-
-		VulkanResource::destroyVertexBufferResource(device, bufferViewResource.vertexBufferResource);
+		terminate(it.second, device);
 	}
 	bufferViewResources.clear();
 
 	for (auto it : textureResources)
 	{
-		TextureResource& textureResource = it.second;
-
-		VulkanResource::destroyTextureResource(device, textureResource);
+		terminate(it.second, device);
 	}
 	textureResources.clear();
 
 	for (auto it : sceneResources)
 	{
-		SceneResource& sceneResource = it.second;
-
-		VulkanResource::destroyStorageBufferResource(device, sceneResource.instanceResourcesStorageBufferResource);
-		VulkanResource::destroyStorageBufferResource(device, sceneResource.materialStorageBufferResource);
-
-		VulkanRaytraceResource::destroyTopLevelResource(device, sceneResource.topLevelResource);
-		VulkanResource::destroyBufferResource(device, sceneResource.accelerationStructureInstanceBuffer);
-
-		VulkanResource::destroyBufferResource(device, sceneResource.shaderBindingBufferResource);
-
-		sceneResource.accelerationStructureInstances.clear();
-
-		if (sceneResource.raytracePipeline != VK_NULL_HANDLE)
-		{
-			vkDestroyPipeline(device, sceneResource.raytracePipeline, nullptr);
-			sceneResource.raytracePipeline = VK_NULL_HANDLE;
-		}
-
-		if (sceneResource.rayGenShaderModule != VK_NULL_HANDLE)
-		{
-			vkDestroyShaderModule(device, sceneResource.rayGenShaderModule, nullptr);
-			sceneResource.rayGenShaderModule = VK_NULL_HANDLE;
-		}
-
-		if (sceneResource.missShaderModule != VK_NULL_HANDLE)
-		{
-			vkDestroyShaderModule(device, sceneResource.missShaderModule, nullptr);
-			sceneResource.missShaderModule = VK_NULL_HANDLE;
-		}
-
-		if (sceneResource.closestHitShaderModule != VK_NULL_HANDLE)
-		{
-			vkDestroyShaderModule(device, sceneResource.closestHitShaderModule, nullptr);
-			sceneResource.closestHitShaderModule = VK_NULL_HANDLE;
-		}
-
-		if (sceneResource.raytracePipelineLayout != VK_NULL_HANDLE)
-		{
-			vkDestroyPipelineLayout(device, sceneResource.raytracePipelineLayout, nullptr);
-			sceneResource.raytracePipelineLayout = VK_NULL_HANDLE;
-		}
-
-		sceneResource.raytraceDescriptorSet = VK_NULL_HANDLE;
-
-		if (sceneResource.raytraceDescriptorPool != VK_NULL_HANDLE)
-		{
-			vkDestroyDescriptorPool(device, sceneResource.raytraceDescriptorPool, nullptr);
-			sceneResource.raytraceDescriptorPool = VK_NULL_HANDLE;
-		}
-
-		if (sceneResource.raytraceDescriptorSetLayout != VK_NULL_HANDLE)
-		{
-			vkDestroyDescriptorSetLayout(device, sceneResource.raytraceDescriptorSetLayout, nullptr);
-			sceneResource.raytraceDescriptorSetLayout = VK_NULL_HANDLE;
-		}
+		terminate(it.second, device);
 	}
 	sceneResources.clear();
 

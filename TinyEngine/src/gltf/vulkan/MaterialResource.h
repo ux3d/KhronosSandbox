@@ -10,12 +10,12 @@ public:
 
 	VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
 	VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
-	VkDescriptorSet descriptorSet;
+	VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
 
 	std::vector<VkDescriptorImageInfo> descriptorImageInfos;
 	VkDescriptorBufferInfo descriptorBufferInfo = {};
 
-	UniformBufferResource uniformBufferResource;
+	UniformBufferResource uniformBufferResource = {};
 
 	std::map<std::string, std::string> macros;
 

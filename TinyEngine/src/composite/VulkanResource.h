@@ -48,7 +48,7 @@ struct DeviceBufferResourceCreateInfo {
 };
 
 struct DeviceBufferResource {
-	BufferResource bufferResource;
+	BufferResource bufferResource = {};
 };
 
 struct VertexBufferResourceCreateInfo : DeviceBufferResourceCreateInfo {
