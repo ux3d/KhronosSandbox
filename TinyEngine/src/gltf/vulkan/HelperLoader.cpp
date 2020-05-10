@@ -263,19 +263,24 @@ bool HelperLoader::initTextures(ResourceManager& resourceManager, GLTF& glTF)
 	{
 		Texture& texture = glTF.textures[i];
 
+		texture.source = model.textures[i].source;
+		texture.sampler = model.textures[i].sampler;
+
+		//
+
 		TextureResourceCreateInfo textureResourceCreateInfo = {};
-		textureResourceCreateInfo.imageDataResources = glTF.images[model.textures[i].source].imageDataResources;
+		textureResourceCreateInfo.imageDataResources = glTF.images[texture.source].imageDataResources;
 		textureResourceCreateInfo.mipMap = true;
 
-		if (model.textures[i].sampler >= 0)
+		if (texture.sampler >= 0)
 		{
-			textureResourceCreateInfo.samplerResourceCreateInfo.magFilter = glTF.samplers[model.textures[i].sampler].magFilter;
-			textureResourceCreateInfo.samplerResourceCreateInfo.minFilter = glTF.samplers[model.textures[i].sampler].minFilter;
-			textureResourceCreateInfo.samplerResourceCreateInfo.mipmapMode = glTF.samplers[model.textures[i].sampler].mipmapMode;
-			textureResourceCreateInfo.samplerResourceCreateInfo.addressModeU = glTF.samplers[model.textures[i].sampler].addressModeU;
-			textureResourceCreateInfo.samplerResourceCreateInfo.addressModeV = glTF.samplers[model.textures[i].sampler].addressModeV;
-			textureResourceCreateInfo.samplerResourceCreateInfo.minLod = glTF.samplers[model.textures[i].sampler].minLod;
-			textureResourceCreateInfo.samplerResourceCreateInfo.maxLod = glTF.samplers[model.textures[i].sampler].maxLod;
+			textureResourceCreateInfo.samplerResourceCreateInfo.magFilter = glTF.samplers[texture.sampler].magFilter;
+			textureResourceCreateInfo.samplerResourceCreateInfo.minFilter = glTF.samplers[texture.sampler].minFilter;
+			textureResourceCreateInfo.samplerResourceCreateInfo.mipmapMode = glTF.samplers[texture.sampler].mipmapMode;
+			textureResourceCreateInfo.samplerResourceCreateInfo.addressModeU = glTF.samplers[texture.sampler].addressModeU;
+			textureResourceCreateInfo.samplerResourceCreateInfo.addressModeV = glTF.samplers[texture.sampler].addressModeV;
+			textureResourceCreateInfo.samplerResourceCreateInfo.minLod = glTF.samplers[texture.sampler].minLod;
+			textureResourceCreateInfo.samplerResourceCreateInfo.maxLod = glTF.samplers[texture.sampler].maxLod;
 		}
 
 		if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, *resourceManager.getTextureResource(&texture), textureResourceCreateInfo))
@@ -974,9 +979,11 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 
 bool HelperLoader::initNodes(ResourceManager& resourceManager, GLTF& glTF, bool useRaytrace)
 {
+	glTF.nodes.resize(model.nodes.size());
+
 	for (size_t i = 0; i < model.nodes.size(); i++)
 	{
-		Node node;
+		Node& node = glTF.nodes[i];
 
 		if (model.nodes[i].translation.size())
 		{
@@ -1012,8 +1019,6 @@ bool HelperLoader::initNodes(ResourceManager& resourceManager, GLTF& glTF, bool 
 		{
 			node.children.push_back(model.nodes[i].children[k]);
 		}
-
-		glTF.nodes.push_back(node);
 	}
 
 	return true;
@@ -1021,16 +1026,16 @@ bool HelperLoader::initNodes(ResourceManager& resourceManager, GLTF& glTF, bool 
 
 bool HelperLoader::initScenes(ResourceManager& resourceManager, GLTF& glTF, bool useRaytrace)
 {
+	glTF.scenes.resize(model.scenes.size());
+
 	for (size_t i = 0; i < model.scenes.size(); i++)
 	{
-		Scene scene;
+		Scene& scene = glTF.scenes[i];
 
 		for (size_t k = 0; k < model.scenes[i].nodes.size(); k++)
 		{
 			scene.nodes.push_back(model.scenes[i].nodes[k]);
 		}
-
-		glTF.scenes.push_back(scene);
 	}
 
 	if (!HelperLoop::update(resourceManager, glTF, glm::mat4(1.0f)))
