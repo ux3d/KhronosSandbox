@@ -3,7 +3,23 @@
 
 #include "../GLTF.h"
 
+#include "BufferViewResource.h"
+#include "MaterialResource.h"
+#include "PrimitiveResource.h"
+#include "SceneResource.h"
+#include "GltfResource.h"
+
+#include <map>
+
 class ResourceManager {
+
+private:
+
+	std::map<BufferView*, BufferViewResource> bufferViewResources;
+	std::map<Material*, MaterialResource> materialResources;
+	std::map<Primitive*, PrimitiveResource> primitiveResources;
+	std::map<Scene*, SceneResource> sceneResources;
+	GltfResource gltfResource;
 
 public:
 

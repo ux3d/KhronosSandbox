@@ -13,6 +13,11 @@ ResourceManager::~ResourceManager()
 
 bool ResourceManager::initBufferView(BufferView& bufferView, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
 {
+	bufferViewResources.emplace(&bufferView, BufferViewResource());
+
+	//
+	//
+
 	VkBufferUsageFlags usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	if (bufferView.target == 34963) // ELEMENT_ARRAY_BUFFER
 	{
@@ -41,6 +46,11 @@ bool ResourceManager::initBufferView(BufferView& bufferView, const GLTF& glTF, V
 
 bool ResourceManager::initMaterial(Material& material, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
 {
+	materialResources.emplace(&material, MaterialResource());
+
+	//
+	//
+
 	VkResult result = VK_SUCCESS;
 
 	//
@@ -128,6 +138,11 @@ bool ResourceManager::initMaterial(Material& material, const GLTF& glTF, VkPhysi
 
 bool ResourceManager::initPrimitive(Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
 {
+	primitiveResources.emplace(&primitive, PrimitiveResource());
+
+	//
+	//
+
 	VkResult result = VK_SUCCESS;
 
 	VkPipelineShaderStageCreateInfo pipelineShaderStageCreateInfo[2] = {};
@@ -328,6 +343,11 @@ bool ResourceManager::initPrimitive(Primitive& primitive, const GLTF& glTF, VkPh
 
 bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
 {
+	sceneResources.emplace(&scene, SceneResource());
+
+	//
+	//
+
 	if (useRaytrace)
 	{
 		TopLevelResourceCreateInfo topLevelResourceCreateInfo = {};
@@ -1334,4 +1354,12 @@ void ResourceManager::terminate(GLTF& glTF, VkDevice device)
 	VulkanResource::destroyTextureResource(device, glTF.diffuse);
 	VulkanResource::destroyTextureResource(device, glTF.specular);
 	VulkanResource::destroyTextureResource(device, glTF.lut);
+
+	//
+	//
+
+	bufferViewResources.clear();
+	materialResources.clear();
+	primitiveResources.clear();
+	sceneResources.clear();
 }
