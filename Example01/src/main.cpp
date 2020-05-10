@@ -25,7 +25,6 @@ int main()
 	}
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	window = glfwCreateWindow(APP_WIDTH, APP_HEIGHT, application.getTitle(), NULL, NULL);
 	if (!window)
 	{
@@ -59,10 +58,26 @@ int main()
 		return -1;
 	}
 
+	int lastWidth = APP_WIDTH;
+	int lastHeight = APP_HEIGHT;
 	while (!glfwWindowShouldClose(window))
 	{
 		if (!glfwGetWindowAttrib(window, GLFW_ICONIFIED))
 		{
+			int width;
+			int height;
+			glfwGetWindowSize(window, &width, &height);
+			if (width != lastWidth || height != lastHeight)
+			{
+				if (!application.resize(width, height))
+				{
+					break;
+				}
+
+				lastWidth = width;
+				lastHeight = height;
+			}
+
 			if (!application.update())
 			{
 				break;
