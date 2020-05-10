@@ -4,6 +4,7 @@
 #include "gltf/vulkan/HelperAllocateRessource.h"
 #include "gltf/vulkan/HelperLoop.h"
 #include "gltf/HelperLoad.h"
+#include "gltf/HelperUpdate.h"
 
 // Private
 
@@ -15,7 +16,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	if (!HelperLoop::update(resourceManager, glTF, glm::mat4(1.0f)))
+	if (!HelperUpdate::update(glTF, glm::mat4(1.0f)))
 	{
 		return false;
 	}

@@ -4,77 +4,6 @@
 
 #include "HelperAccessResource.h"
 
-bool HelperLoop::update(ResourceManager& resourceManager, Mesh& mesh, GLTF& glTF, const glm::mat4& parentWorldMatrix)
-{
-	for (size_t i = 0; i < mesh.primitives.size(); i++)
-	{
-		if (!HelperLoop::update(resourceManager, mesh.primitives[i], glTF, parentWorldMatrix))
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
-void HelperLoop::draw(ResourceManager& resourceManager, const Mesh& mesh, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
-{
-	for (size_t i = 0; i < mesh.primitives.size(); i++)
-	{
-		HelperLoop::draw(resourceManager, mesh.primitives[i], glTF, commandBuffer, frameIndex);
-	}
-}
-
-bool HelperLoop::update(ResourceManager& resourceManager, Node& node, GLTF& glTF, const glm::mat4& parentWorldMatrix)
-{
-	glm::mat4 matrixTranslation = glm::translate(node.translation);
-	glm::mat4 matrixRotation = glm::toMat4(node.rotation);
-	glm::mat4 matrixScale = glm::scale(node.scale);
-
-	node.matrix = matrixTranslation * matrixRotation * matrixScale;
-
-	node.worldMatrix = parentWorldMatrix * node.matrix;
-
-	if (node.mesh >= 0)
-	{
-		if (!HelperLoop::update(resourceManager, glTF.meshes[node.mesh], glTF, node.worldMatrix))
-		{
-			return false;
-		}
-	}
-
-	for (size_t i = 0; i < node.children.size(); i++)
-	{
-		if (!HelperLoop::update(resourceManager, glTF.nodes[node.children[i]], glTF, node.worldMatrix))
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
-void HelperLoop::draw(ResourceManager& resourceManager, const Node& node, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
-{
-	if (node.mesh >= 0)
-	{
-		HelperLoop::draw(resourceManager, glTF.meshes[node.mesh], glTF, commandBuffer, frameIndex);
-	}
-
-	for (size_t i = 0; i < node.children.size(); i++)
-	{
-		HelperLoop::draw(resourceManager, glTF.nodes[node.children[i]], glTF, commandBuffer, frameIndex);
-	}
-}
-
-
-bool HelperLoop::update(ResourceManager& resourceManager, Primitive& primitive, GLTF& glTF, const glm::mat4& parentWorldMatrix)
-{
-	primitive.worldMatrix = parentWorldMatrix;
-
-	return true;
-}
-
 void HelperLoop::draw(ResourceManager& resourceManager, const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {
 	GltfResource* gltfResource = resourceManager.getGltfResource();
@@ -113,17 +42,25 @@ void HelperLoop::draw(ResourceManager& resourceManager, const Primitive& primiti
 	}
 }
 
-bool HelperLoop::update(ResourceManager& resourceManager, Scene& scene, GLTF& glTF, const glm::mat4& parentWorldMatrix)
+void HelperLoop::draw(ResourceManager& resourceManager, const Mesh& mesh, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {
-	for (size_t i = 0; i < scene.nodes.size(); i++)
+	for (size_t i = 0; i < mesh.primitives.size(); i++)
 	{
-		if (!HelperLoop::update(resourceManager, glTF.nodes[scene.nodes[i]], glTF, parentWorldMatrix))
-		{
-			return false;
-		}
+		HelperLoop::draw(resourceManager, mesh.primitives[i], glTF, commandBuffer, frameIndex);
+	}
+}
+
+void HelperLoop::draw(ResourceManager& resourceManager, const Node& node, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
+{
+	if (node.mesh >= 0)
+	{
+		HelperLoop::draw(resourceManager, glTF.meshes[node.mesh], glTF, commandBuffer, frameIndex);
 	}
 
-	return true;
+	for (size_t i = 0; i < node.children.size(); i++)
+	{
+		HelperLoop::draw(resourceManager, glTF.nodes[node.children[i]], glTF, commandBuffer, frameIndex);
+	}
 }
 
 void HelperLoop::draw(ResourceManager& resourceManager, const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
@@ -132,19 +69,6 @@ void HelperLoop::draw(ResourceManager& resourceManager, const Scene& scene, cons
 	{
 		HelperLoop::draw(resourceManager, glTF.nodes[scene.nodes[i]], glTF, commandBuffer, frameIndex);
 	}
-}
-
-bool HelperLoop::update(ResourceManager& resourceManager, GLTF& glTF, const glm::mat4& parentWorldMatrix)
-{
-	if (glTF.defaultScene < glTF.scenes.size())
-	{
-		if (!HelperLoop::update(resourceManager, glTF.scenes[glTF.defaultScene], glTF, parentWorldMatrix))
-		{
-			return false;
-		}
-	}
-
-	return true;
 }
 
 void HelperLoop::draw(ResourceManager& resourceManager, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
