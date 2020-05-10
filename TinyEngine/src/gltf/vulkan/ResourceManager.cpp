@@ -22,6 +22,17 @@ BufferViewResource* ResourceManager::getBufferViewResource(const BufferView* buf
 	return &result->second;
 }
 
+TextureResource* ResourceManager::getTextureResource(const Texture* texture)
+{
+	auto result = textureResources.find(texture);
+	if (result == textureResources.end())
+	{
+		textureResources[texture] = TextureResource();
+		return &textureResources[texture];
+	}
+	return &result->second;
+}
+
 MaterialResource* ResourceManager::getMaterialResource(const Material* material)
 {
 	auto result = materialResources.find(material);
@@ -625,10 +636,12 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		std::vector<VkDescriptorImageInfo> descriptorImageInfoTextures;
 		for (const Texture& currentTexture : glTF.textures)
 		{
+			TextureResource* currentTextureResource = getTextureResource(&currentTexture);
+
 			VkDescriptorImageInfo descriptorImageInfo = {};
 
-			descriptorImageInfo.sampler = currentTexture.textureResource.samplerResource.sampler;
-			descriptorImageInfo.imageView = currentTexture.textureResource.imageViewResource.imageView;
+			descriptorImageInfo.sampler = currentTextureResource->samplerResource.sampler;
+			descriptorImageInfo.imageView = currentTextureResource->imageViewResource.imageView;
 			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 			descriptorImageInfoTextures.push_back(descriptorImageInfo);
@@ -1342,7 +1355,9 @@ void ResourceManager::terminate(GLTF& glTF, VkDevice device)
 
 	for (size_t i = 0; i < glTF.textures.size(); i++)
 	{
-		VulkanResource::destroyTextureResource(device, glTF.textures[i].textureResource);
+		TextureResource* textureResource = getTextureResource(&glTF.textures[i]);
+
+		VulkanResource::destroyTextureResource(device, *textureResource);
 	}
 	glTF.textures.clear();
 

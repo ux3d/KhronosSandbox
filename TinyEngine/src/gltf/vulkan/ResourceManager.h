@@ -16,6 +16,7 @@ class ResourceManager {
 private:
 
 	std::map<const BufferView*, BufferViewResource> bufferViewResources;
+	std::map<const Texture*, TextureResource> textureResources;
 	std::map<const Material*, MaterialResource> materialResources;
 	std::map<const Primitive*, PrimitiveResource> primitiveResources;
 	std::map<const Scene*, SceneResource> sceneResources;
@@ -30,6 +31,7 @@ public:
 	//
 
 	BufferViewResource* getBufferViewResource(const BufferView* bufferView);
+	TextureResource* getTextureResource(const Texture* texture);
 	MaterialResource* getMaterialResource(const Material* material);
 	PrimitiveResource* getPrimitiveResource(const Primitive* primitive);
 	SceneResource* getSceneResource(const Scene* scene);

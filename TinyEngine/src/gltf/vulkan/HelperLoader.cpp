@@ -278,7 +278,7 @@ bool HelperLoader::initTextures(ResourceManager& resourceManager, GLTF& glTF)
 			textureResourceCreateInfo.samplerResourceCreateInfo.maxLod = glTF.samplers[model.textures[i].sampler].maxLod;
 		}
 
-		if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, texture.textureResource, textureResourceCreateInfo))
+		if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, *resourceManager.getTextureResource(&texture), textureResourceCreateInfo))
 		{
 			return false;
 		}
@@ -310,6 +310,10 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 
 				//
 
+				TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.pbrMetallicRoughness.baseColorTexture.index]);
+
+				//
+
 				VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
 				descriptorSetLayoutBinding.binding = binding;
 				descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -318,8 +322,8 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 				descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 				VkDescriptorImageInfo descriptorImageInfo = {};
-				descriptorImageInfo.sampler = glTF.textures[material.pbrMetallicRoughness.baseColorTexture.index].textureResource.samplerResource.sampler;
-				descriptorImageInfo.imageView = glTF.textures[material.pbrMetallicRoughness.baseColorTexture.index].textureResource.imageViewResource.imageView;
+				descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
+				descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
 				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 				materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
@@ -346,6 +350,10 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 
 				//
 
+				TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index]);
+
+				//
+
 				VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
 				descriptorSetLayoutBinding.binding = binding;
 				descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -354,8 +362,8 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 				descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 				VkDescriptorImageInfo descriptorImageInfo = {};
-				descriptorImageInfo.sampler = glTF.textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index].textureResource.samplerResource.sampler;
-				descriptorImageInfo.imageView = glTF.textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index].textureResource.imageViewResource.imageView;
+				descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
+				descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
 				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 				materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
@@ -391,6 +399,10 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 
 				//
 
+				TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.emissiveTexture.index]);
+
+				//
+
 				VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
 				descriptorSetLayoutBinding.binding = binding;
 				descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -399,8 +411,8 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 				descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 				VkDescriptorImageInfo descriptorImageInfo = {};
-				descriptorImageInfo.sampler = glTF.textures[material.emissiveTexture.index].textureResource.samplerResource.sampler;
-				descriptorImageInfo.imageView = glTF.textures[material.emissiveTexture.index].textureResource.imageViewResource.imageView;
+				descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
+				descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
 				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 				materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
@@ -427,6 +439,10 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 
 				//
 
+				TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.occlusionTexture.index]);
+
+				//
+
 				VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
 				descriptorSetLayoutBinding.binding = binding;
 				descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -435,8 +451,8 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 				descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 				VkDescriptorImageInfo descriptorImageInfo = {};
-				descriptorImageInfo.sampler = glTF.textures[material.occlusionTexture.index].textureResource.samplerResource.sampler;
-				descriptorImageInfo.imageView = glTF.textures[material.occlusionTexture.index].textureResource.imageViewResource.imageView;
+				descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
+				descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
 				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 				materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
@@ -463,6 +479,10 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 
 				//
 
+				TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.normalTexture.index]);
+
+				//
+
 				VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
 				descriptorSetLayoutBinding.binding = binding;
 				descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -471,8 +491,8 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 				descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 				VkDescriptorImageInfo descriptorImageInfo = {};
-				descriptorImageInfo.sampler = glTF.textures[material.normalTexture.index].textureResource.samplerResource.sampler;
-				descriptorImageInfo.imageView = glTF.textures[material.normalTexture.index].textureResource.imageViewResource.imageView;
+				descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
+				descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
 				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 				materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 

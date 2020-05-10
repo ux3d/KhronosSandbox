@@ -7,10 +7,6 @@ class Texture {
 public:
 	int32_t source = -1;
 	int32_t sampler = -1;
-
-	// Rasterize helper
-
-	TextureResource textureResource = {};
 };
 
 #endif /* GLTF_TEXTURE_H_ */
