@@ -19,3 +19,33 @@ VkBuffer HelperAccessResource::getBuffer(ResourceManager& resourceManager, const
 
 	return HelperAccessResource::getBuffer(resourceManager, accessor->pBufferView);
 }
+
+VkImage HelperAccessResource::getImage(ResourceManager& resourceManager, const Texture* texture)
+{
+	if (texture == nullptr)
+	{
+		return VK_NULL_HANDLE;
+	}
+
+	return resourceManager.getTextureResource(texture)->imageViewResource.image;
+}
+
+VkImageView HelperAccessResource::getImageView(ResourceManager& resourceManager, const Texture* texture)
+{
+	if (texture == nullptr)
+	{
+		return VK_NULL_HANDLE;
+	}
+
+	return resourceManager.getTextureResource(texture)->imageViewResource.imageView;
+}
+
+VkSampler HelperAccessResource::getSampler(ResourceManager& resourceManager, const Texture* texture)
+{
+	if (texture == nullptr)
+	{
+		return VK_NULL_HANDLE;
+	}
+
+	return resourceManager.getTextureResource(texture)->samplerResource.sampler;
+}
