@@ -38,8 +38,7 @@ bool Application::applicationInit()
 	}
 
 	HelperAllocateResource helperAllocateResource(width, height, physicalDevice, device, queue, commandPool, renderPass, samples, raytraceImageViewResource.imageView);
-
-	if(!helperAllocateResource.open(resourceManager, glTF, environment, true))
+	if(!helperAllocateResource.allocate(resourceManager, glTF, environment, true))
 	{
 		return false;
 	}

@@ -21,8 +21,7 @@ bool Application::applicationInit()
 	}
 
 	HelperAllocateResource helperAllocateResource(width, height, physicalDevice, device, queue, commandPool, renderPass, samples);
-
-	if(!helperAllocateResource.open(resourceManager, glTF, environment))
+	if(!helperAllocateResource.allocate(resourceManager, glTF, environment))
 	{
 		return false;
 	}
