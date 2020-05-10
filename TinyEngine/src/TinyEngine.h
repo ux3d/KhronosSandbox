@@ -127,6 +127,7 @@ public:
 	bool prepare();
 
 	bool init(VkSurfaceKHR surface, uint32_t width, uint32_t height);
+	bool resize(uint32_t width, uint32_t height);
 	bool update();
 	bool terminate();
 

@@ -982,6 +982,31 @@ bool TinyEngine::init(VkSurfaceKHR surface, uint32_t width, uint32_t height)
 	return applicationInit();
 }
 
+bool TinyEngine::resize(uint32_t width, uint32_t height)
+{
+	inResize = true;
+
+	if (!terminate())
+	{
+		// Switch back to clean up later everything.
+		inResize = false;
+
+		return false;
+	}
+
+	if (!init(surface, width, height))
+	{
+		// Switch back to clean up later everything.
+		inResize = false;
+
+		return false;
+	}
+
+	inResize = false;
+
+	return true;
+}
+
 bool TinyEngine::update()
 {
 	static std::optional<double> firstTime;
