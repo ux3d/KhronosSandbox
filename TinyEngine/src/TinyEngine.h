@@ -6,9 +6,9 @@
 #include "io/ImageDataIO.h"
 #include "math/Projection.h"
 #include "shader/Compiler.h"
-#include "vulkan/HelperRaytrace.h"
 #include "vulkan/HelperVulkan.h"
-#include "vulkan/HelperVulkanResource.h"
+#include "composite/HelperRaytrace.h"
+#include "composite/HelperVulkanResource.h"
 
 #include <cstddef>
 #include <optional>

@@ -1,5 +1,5 @@
-#ifndef HELPERVULKANRESOURCE_H_
-#define HELPERVULKANRESOURCE_H_
+#ifndef COMPOSITE_HELPERVULKANRESOURCE_H_
+#define COMPOSITE_HELPERVULKANRESOURCE_H_
 
 #include <vector>
 #include "../io/ImageDataResources.h"
@@ -150,4 +150,4 @@ public:
 
 };
 
-#endif /* HELPERVULKANRESOURCE_H_ */
+#endif /* COMPOSITE_HELPERVULKANRESOURCE_H_ */

@@ -1,7 +1,8 @@
-#ifndef HELPERRAYTRACE_H_
-#define HELPERRAYTRACE_H_
+#ifndef COMPOSITE_HELPERRAYTRACE_H_
+#define COMPOSITE_HELPERRAYTRACE_H_
 
 #include <vector>
+
 #include "HelperVulkanResource.h"
 
 #define VK_ENABLE_BETA_EXTENSIONS
@@ -87,4 +88,4 @@ public:
 
 };
 
-#endif /* HELPERRAYTRACE_H_ */
+#endif /* COMPOSITE_HELPERRAYTRACE_H_ */

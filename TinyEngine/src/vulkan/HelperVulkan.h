@@ -1,5 +1,5 @@
-#ifndef HELPERVULKAN_H_
-#define HELPERVULKAN_H_
+#ifndef VULKAN_HELPERVULKAN_H_
+#define VULKAN_HELPERVULKAN_H_
 
 #include <vector>
 
@@ -30,4 +30,4 @@ public:
 
 };
 
-#endif /* HELPERVULKAN_H_ */
+#endif /* VULKAN_HELPERVULKAN_H_ */
