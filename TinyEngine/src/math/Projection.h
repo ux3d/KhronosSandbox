@@ -1,5 +1,5 @@
-#ifndef MATH_H_
-#define MATH_H_
+#ifndef MATH_PROJECTION_H_
+#define MATH_PROJECTION_H_
 
 #define GLM_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
@@ -8,7 +8,8 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
-class Math {
+class Projection
+{
 public:
 
 	static glm::mat4 ortho(float left, float right, float bottom, float top, float nearVal, float farVal);
@@ -17,4 +18,4 @@ public:
 
 };
 
-#endif /* MATH_H_ */
+#endif /* MATH_PROJECTION_H_ */

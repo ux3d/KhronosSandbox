@@ -1,8 +1,7 @@
 #include "HelperLoader.h"
 
+#include "../../shader/HelperShader.h"
 #include "../HelperAccess.h"
-#include "../../shader/HelperCompiler.h"
-
 #include "HelperLoop.h"
 #include "HelperResource.h"
 #include "HelperVulkanAccess.h"
@@ -322,7 +321,7 @@ bool HelperLoader::initMaterials(GLTF& glTF)
 
 				material.macros["BASECOLOR_TEXTURE"] = "";
 				material.macros["BASECOLOR_BINDING"] = std::to_string(binding);
-				material.macros["BASECOLOR_TEXCOORD"] = HelperCompiler::getTexCoord(material.pbrMetallicRoughness.baseColorTexture.texCoord);
+				material.macros["BASECOLOR_TEXCOORD"] = HelperShader::getTexCoord(material.pbrMetallicRoughness.baseColorTexture.texCoord);
 
 				//
 
@@ -358,7 +357,7 @@ bool HelperLoader::initMaterials(GLTF& glTF)
 
 				material.macros["METALLICROUGHNESS_TEXTURE"] = "";
 				material.macros["METALLICROUGHNESS_BINDING"] = std::to_string(binding);
-				material.macros["METALLICROUGHNESS_TEXCOORD"] = HelperCompiler::getTexCoord(material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord);
+				material.macros["METALLICROUGHNESS_TEXCOORD"] = HelperShader::getTexCoord(material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord);
 
 				//
 
@@ -403,7 +402,7 @@ bool HelperLoader::initMaterials(GLTF& glTF)
 
 				material.macros["EMISSIVE_TEXTURE"] = "";
 				material.macros["EMISSIVE_BINDING"] = std::to_string(binding);
-				material.macros["EMISSIVE_TEXCOORD"] = HelperCompiler::getTexCoord(material.emissiveTexture.texCoord);
+				material.macros["EMISSIVE_TEXCOORD"] = HelperShader::getTexCoord(material.emissiveTexture.texCoord);
 
 				//
 
@@ -439,7 +438,7 @@ bool HelperLoader::initMaterials(GLTF& glTF)
 
 				material.macros["OCCLUSION_TEXTURE"] = "";
 				material.macros["OCCLUSION_BINDING"] = std::to_string(binding);
-				material.macros["OCCLUSION_TEXCOORD"] = HelperCompiler::getTexCoord(material.occlusionTexture.texCoord);
+				material.macros["OCCLUSION_TEXCOORD"] = HelperShader::getTexCoord(material.occlusionTexture.texCoord);
 
 				//
 
@@ -475,7 +474,7 @@ bool HelperLoader::initMaterials(GLTF& glTF)
 
 				material.macros["NORMAL_TEXTURE"] = "";
 				material.macros["NORMAL_BINDING"] = std::to_string(binding);
-				material.macros["NORMAL_TEXCOORD"] = HelperCompiler::getTexCoord(material.normalTexture.texCoord);
+				material.macros["NORMAL_TEXCOORD"] = HelperShader::getTexCoord(material.normalTexture.texCoord);
 
 				//
 

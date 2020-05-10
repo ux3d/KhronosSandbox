@@ -1,7 +1,7 @@
-#ifndef RANDOM_H_
-#define RANDOM_H_
+#ifndef MATH_RANDOM_H_
+#define MATH_RANDOM_H_
 
-#include "Math.h"
+#include "Projection.h"
 
 class Random {
 
@@ -17,4 +17,4 @@ public:
 
 };
 
-#endif /* RANDOM_H_ */
+#endif /* MATH_RANDOM_H_ */

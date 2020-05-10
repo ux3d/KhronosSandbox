@@ -1,10 +1,11 @@
 #ifndef TINYENGINE_H_
 #define TINYENGINE_H_
 
+#include "common/Logger.h"
 #include "io/FileIO.h"
 #include "io/ImageDataIO.h"
-#include "math/Math.h"
-
+#include "math/Projection.h"
+#include "shader/Compiler.h"
 #include "vulkan/HelperRaytrace.h"
 #include "vulkan/HelperVulkan.h"
 #include "vulkan/HelperVulkanResource.h"
@@ -12,9 +13,6 @@
 #include <cstddef>
 #include <optional>
 #include <vector>
-
-#include "common/Logger.h"
-#include "shader/Compiler.h"
 
 // Volk
 #define VK_ENABLE_BETA_EXTENSIONS

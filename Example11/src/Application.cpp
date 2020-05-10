@@ -166,7 +166,7 @@ bool Application::applicationInit()
 	//
 
 	UniformData uniformData = {};
-	uniformData.inverseProjection = glm::inverse(Math::perspective(60.0f, (float)width / (float)height, 0.1f, 100.0f));
+	uniformData.inverseProjection = glm::inverse(Projection::perspective(60.0f, (float)width / (float)height, 0.1f, 100.0f));
 	uniformData.inverseView = glm::inverse(glm::lookAt(glm::vec3(0.0f, 0.0f, 2.5f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
 	UniformBufferResourceCreateInfo uniformBufferResourceCreateInfo = {};

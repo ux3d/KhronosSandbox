@@ -1,7 +1,7 @@
-#ifndef SAMPLE_H_
-#define SAMPLE_H_
+#ifndef MATH_SAMPLE_H_
+#define MATH_SAMPLE_H_
 
-#include "Math.h"
+#include "Projection.h"
 
 // https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 class Spherical {
@@ -51,4 +51,4 @@ public:
 
 };
 
-#endif /* SAMPLE_H_ */
+#endif /* MATH_SAMPLE_H_ */

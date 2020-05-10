@@ -63,7 +63,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	vkCmdBeginRenderPass(commandBuffers[frameIndex], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	glTF.viewProjection.projection = Math::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f);
+	glTF.viewProjection.projection = Projection::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f);
 
 	glm::mat3 orbitMatrix = glm::rotate(rotY, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(rotX, glm::vec3(1.0f, 0.0f, 0.0f));
 	glm::vec3 orbitEye = orbitMatrix * glm::vec3(0.0f, 0.0f, eyeObjectDistance);

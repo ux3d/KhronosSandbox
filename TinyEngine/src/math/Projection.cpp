@@ -1,6 +1,6 @@
-#include "Math.h"
+#include "Projection.h"
 
-glm::mat4 Math::ortho(float left, float right, float bottom, float top, float nearVal, float farVal)
+glm::mat4 Projection::ortho(float left, float right, float bottom, float top, float nearVal, float farVal)
 {
     glm::mat4 result;
 
@@ -30,7 +30,7 @@ glm::mat4 Math::ortho(float left, float right, float bottom, float top, float ne
     return result;
 }
 
-glm::mat4 Math::perspective(float fovy, float aspect, float zNear, float zFar)
+glm::mat4 Projection::perspective(float fovy, float aspect, float zNear, float zFar)
 {
     float xmin, xmax, ymin, ymax;
 
@@ -42,7 +42,7 @@ glm::mat4 Math::perspective(float fovy, float aspect, float zNear, float zFar)
     return frustum(xmin, xmax, ymin, ymax, zNear, zFar);
 }
 
-glm::mat4 Math::frustum(float left, float right, float bottom, float top, float nearVal, float farVal)
+glm::mat4 Projection::frustum(float left, float right, float bottom, float top, float nearVal, float farVal)
 {
     glm::mat4 result;
 
