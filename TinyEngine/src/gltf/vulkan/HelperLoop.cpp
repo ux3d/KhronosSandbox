@@ -77,12 +77,14 @@ bool HelperLoop::update(ResourceManager& resourceManager, Primitive& primitive, 
 
 void HelperLoop::draw(ResourceManager& resourceManager, const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitive.graphicsPipeline);
+	PrimitiveResource* primitiveResource = resourceManager.getPrimitiveResource(&primitive);
 
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitive.pipelineLayout, 0, 1, &resourceManager.getMaterialResource(&glTF.materials[primitive.material])->descriptorSet, 0, nullptr);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->graphicsPipeline);
 
-	vkCmdPushConstants(commandBuffer, primitive.pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(glTF.viewProjection), &glTF.viewProjection);
-	vkCmdPushConstants(commandBuffer, primitive.pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(glTF.viewProjection), sizeof(primitive.worldMatrix), &primitive.worldMatrix);
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->pipelineLayout, 0, 1, &resourceManager.getMaterialResource(&glTF.materials[primitive.material])->descriptorSet, 0, nullptr);
+
+	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(glTF.viewProjection), &glTF.viewProjection);
+	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(glTF.viewProjection), sizeof(primitive.worldMatrix), &primitive.worldMatrix);
 
 	if (primitive.indices >= 0)
 	{
@@ -95,7 +97,7 @@ void HelperLoop::draw(ResourceManager& resourceManager, const Primitive& primiti
 		vkCmdBindIndexBuffer(commandBuffer, HelperAccessResource::getBuffer(resourceManager, &glTF.accessors[primitive.indices]), HelperAccess::getOffset(glTF.accessors[primitive.indices]), indexType);
 	}
 
-	vkCmdBindVertexBuffers(commandBuffer, 0, primitive.attributesCount, primitive.vertexBuffers.data(), primitive.vertexBuffersOffsets.data());
+	vkCmdBindVertexBuffers(commandBuffer, 0, primitiveResource->attributesCount, primitiveResource->vertexBuffers.data(), primitiveResource->vertexBuffersOffsets.data());
 
 	if (primitive.indices >= 0)
 	{

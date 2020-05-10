@@ -650,13 +650,19 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 		return false;
 	}
 
+	glTF.meshes.resize(model.meshes.size());
+
 	for (size_t i = 0; i < model.meshes.size(); i++)
 	{
-		Mesh mesh;
+		Mesh& mesh = glTF.meshes[i];
+
+		mesh.primitives.resize(model.meshes[i].primitives.size());
 
 		for (size_t k = 0; k < model.meshes[i].primitives.size(); k++)
 		{
-			Primitive primitive;
+			Primitive& primitive = mesh.primitives[k];
+
+			PrimitiveResource* primitiveResource = resourceManager.getPrimitiveResource(&primitive);
 
 			std::map<std::string, std::string> macros;
 
@@ -679,12 +685,12 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 			}
 
 			uint32_t attributesCount = model.meshes[i].primitives[k].attributes.size();
-			primitive.vertexBuffers.resize(attributesCount);
-			primitive.vertexBuffersOffsets.resize(attributesCount);
+			primitiveResource->vertexBuffers.resize(attributesCount);
+			primitiveResource->vertexBuffersOffsets.resize(attributesCount);
 
 			uint32_t attributesIndex = 0;
-			primitive.vertexInputBindingDescriptions.resize(attributesCount);
-			primitive.vertexInputAttributeDescriptions.resize(attributesCount);
+			primitiveResource->vertexInputBindingDescriptions.resize(attributesCount);
+			primitiveResource->vertexInputAttributeDescriptions.resize(attributesCount);
 
 			uint32_t location = 0;
 			uint32_t binding = 0;
@@ -705,7 +711,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				if (attribute.first == "POSITION")
 				{
 					primitive.position = accessorIndex;
-					primitive.positionLocation = attributesIndex;
+					primitiveResource->positionLocation = attributesIndex;
 
 					if (glTF.accessors[primitive.position].typeCount == 3)
 					{
@@ -725,7 +731,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "NORMAL")
 				{
 					primitive.normal = accessorIndex;
-					primitive.normalLocation = attributesIndex;
+					primitiveResource->normalLocation = attributesIndex;
 
 					if (glTF.accessors[primitive.normal].typeCount == 3)
 					{
@@ -741,7 +747,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "TANGENT")
 				{
 					primitive.tangent = accessorIndex;
-					primitive.tangentLocation = attributesIndex;
+					primitiveResource->tangentLocation = attributesIndex;
 
 					if (glTF.accessors[primitive.tangent].typeCount == 4)
 					{
@@ -757,7 +763,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "TEXCOORD_0")
 				{
 					primitive.texCoord0 = accessorIndex;
-					primitive.texCoord0Location = attributesIndex;
+					primitiveResource->texCoord0Location = attributesIndex;
 
 					if (glTF.accessors[primitive.texCoord0].typeCount == 2)
 					{
@@ -773,7 +779,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "TEXCOORD_1")
 				{
 					primitive.texCoord1 = accessorIndex;
-					primitive.texCoord1Location = attributesIndex;
+					primitiveResource->texCoord1Location = attributesIndex;
 
 					if (glTF.accessors[primitive.texCoord1].typeCount == 2)
 					{
@@ -789,7 +795,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "COLOR_0")
 				{
 					primitive.color0 = accessorIndex;
-					primitive.color0Location = attributesIndex;
+					primitiveResource->color0Location = attributesIndex;
 
 					if (glTF.accessors[primitive.color0].typeCount == 4)
 					{
@@ -809,7 +815,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "JOINTS_0")
 				{
 					primitive.joints0 = accessorIndex;
-					primitive.joints0Location = attributesIndex;
+					primitiveResource->joints0Location = attributesIndex;
 
 					if (glTF.accessors[primitive.joints0].typeCount == 4)
 					{
@@ -825,7 +831,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "JOINTS_1")
 				{
 					primitive.joints1 = accessorIndex;
-					primitive.joints1Location = attributesIndex;
+					primitiveResource->joints1Location = attributesIndex;
 
 					if (glTF.accessors[primitive.joints1].typeCount == 4)
 					{
@@ -841,7 +847,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "WEIGHTS_0")
 				{
 					primitive.weights0 = accessorIndex;
-					primitive.weights0Location = attributesIndex;
+					primitiveResource->weights0Location = attributesIndex;
 
 					if (glTF.accessors[primitive.weights0].typeCount == 4)
 					{
@@ -857,7 +863,7 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				else if (attribute.first == "WEIGHTS_1")
 				{
 					primitive.weights1 = accessorIndex;
-					primitive.weights1Location = attributesIndex;
+					primitiveResource->weights1Location = attributesIndex;
 
 					if (glTF.accessors[primitive.weights1].typeCount == 4)
 					{
@@ -879,19 +885,19 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 
 				//
 
-				primitive.vertexInputBindingDescriptions[attributesIndex].binding = binding;
-				primitive.vertexInputBindingDescriptions[attributesIndex].stride = stride;
-				primitive.vertexInputBindingDescriptions[attributesIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+				primitiveResource->vertexInputBindingDescriptions[attributesIndex].binding = binding;
+				primitiveResource->vertexInputBindingDescriptions[attributesIndex].stride = stride;
+				primitiveResource->vertexInputBindingDescriptions[attributesIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-				primitive.vertexInputAttributeDescriptions[attributesIndex].binding = binding;
-				primitive.vertexInputAttributeDescriptions[attributesIndex].location = location;
-				primitive.vertexInputAttributeDescriptions[attributesIndex].format = format;
-				primitive.vertexInputAttributeDescriptions[attributesIndex].offset = 0;
+				primitiveResource->vertexInputAttributeDescriptions[attributesIndex].binding = binding;
+				primitiveResource->vertexInputAttributeDescriptions[attributesIndex].location = location;
+				primitiveResource->vertexInputAttributeDescriptions[attributesIndex].format = format;
+				primitiveResource->vertexInputAttributeDescriptions[attributesIndex].offset = 0;
 
 				//
 
-				primitive.vertexBuffers[attributesIndex] = HelperAccessResource::getBuffer(resourceManager, &glTF.accessors[accessorIndex]);
-				primitive.vertexBuffersOffsets[attributesIndex] = HelperAccess::getOffset(glTF.accessors[accessorIndex]);
+				primitiveResource->vertexBuffers[attributesIndex] = HelperAccessResource::getBuffer(resourceManager, &glTF.accessors[accessorIndex]);
+				primitiveResource->vertexBuffersOffsets[attributesIndex] = HelperAccess::getOffset(glTF.accessors[accessorIndex]);
 
 				//
 
@@ -900,14 +906,12 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				binding++;
 			}
 
-			primitive.attributesCount = attributesIndex;
+			primitiveResource->attributesCount = attributesIndex;
 
 			if (primitive.position < 0)
 			{
 				return false;
 			}
-
-			mesh.primitives.push_back(primitive);
 
 			//
 
@@ -923,23 +927,21 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 				return false;
 			}
 
-			if (!VulkanResource::createShaderModule(mesh.primitives.back().vertexShaderModule, device, vertexShaderCode))
+			if (!VulkanResource::createShaderModule(primitiveResource->vertexShaderModule, device, vertexShaderCode))
 			{
 				return false;
 			}
 
-			if (!VulkanResource::createShaderModule(mesh.primitives.back().fragmentShaderModule, device, fragmentShaderCode))
+			if (!VulkanResource::createShaderModule(primitiveResource->fragmentShaderModule, device, fragmentShaderCode))
 			{
 				return false;
 			}
 
-			if (!resourceManager.initPrimitive(mesh.primitives.back(), glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &resourceManager.getMaterialResource(&glTF.materials[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
+			if (!resourceManager.initPrimitive(primitive, glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &resourceManager.getMaterialResource(&glTF.materials[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
 			{
 				return false;
 			}
 		}
-
-		glTF.meshes.push_back(mesh);
 	}
 
 	return true;

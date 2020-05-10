@@ -183,30 +183,34 @@ bool ResourceManager::initMaterial(const Material& material, const GLTF& glTF, V
 	return true;
 }
 
-bool ResourceManager::initPrimitive(Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
+bool ResourceManager::initPrimitive(const Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
 {
+	PrimitiveResource* primitiveResource = getPrimitiveResource(&primitive);
+
+	//
+
 	VkResult result = VK_SUCCESS;
 
 	VkPipelineShaderStageCreateInfo pipelineShaderStageCreateInfo[2] = {};
 
 	pipelineShaderStageCreateInfo[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	pipelineShaderStageCreateInfo[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-	pipelineShaderStageCreateInfo[0].module = primitive.vertexShaderModule;
+	pipelineShaderStageCreateInfo[0].module = primitiveResource->vertexShaderModule;
 	pipelineShaderStageCreateInfo[0].pName = "main";
 
 	pipelineShaderStageCreateInfo[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	pipelineShaderStageCreateInfo[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	pipelineShaderStageCreateInfo[1].module = primitive.fragmentShaderModule;
+	pipelineShaderStageCreateInfo[1].module = primitiveResource->fragmentShaderModule;
 	pipelineShaderStageCreateInfo[1].pName = "main";
 
 	//
 
 	VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo = {};
 	pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = primitive.attributesCount;
-	pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = primitive.vertexInputBindingDescriptions.data();
-	pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = primitive.attributesCount;
-	pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = primitive.vertexInputAttributeDescriptions.data();
+	pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = primitiveResource->attributesCount;
+	pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = primitiveResource->vertexInputBindingDescriptions.data();
+	pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = primitiveResource->attributesCount;
+	pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = primitiveResource->vertexInputAttributeDescriptions.data();
 
 	//
 
@@ -289,7 +293,7 @@ bool ResourceManager::initPrimitive(Primitive& primitive, const GLTF& glTF, VkPh
 	pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
 	pipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;
 
-	result = vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &primitive.pipelineLayout);
+	result = vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &primitiveResource->pipelineLayout);
 	if (result != VK_SUCCESS)
 	{
 		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
@@ -310,10 +314,10 @@ bool ResourceManager::initPrimitive(Primitive& primitive, const GLTF& glTF, VkPh
 	graphicsPipelineCreateInfo.pMultisampleState = &pipelineMultisampleStateCreateInfo;
 	graphicsPipelineCreateInfo.pDepthStencilState = &pipelineDepthStencilStateCreateInfo;
 	graphicsPipelineCreateInfo.pColorBlendState = &pipelineColorBlendStateCreateInfo;
-	graphicsPipelineCreateInfo.layout = primitive.pipelineLayout;
+	graphicsPipelineCreateInfo.layout = primitiveResource->pipelineLayout;
 	graphicsPipelineCreateInfo.renderPass = renderPass;
 
-	result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &primitive.graphicsPipeline);
+	result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &primitiveResource->graphicsPipeline);
 	if (result != VK_SUCCESS)
 	{
 		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
@@ -374,7 +378,7 @@ bool ResourceManager::initPrimitive(Primitive& primitive, const GLTF& glTF, VkPh
 		bottomLevelResourceCreateInfo.primitiveCount = primitiveCount;
 		bottomLevelResourceCreateInfo.useHostCommand = false;
 
-		if (!VulkanRaytraceResource::createBottomLevelResource(physicalDevice, device, queue, commandPool, primitive.bottomLevelResource, bottomLevelResourceCreateInfo))
+		if (!VulkanRaytraceResource::createBottomLevelResource(physicalDevice, device, queue, commandPool, primitiveResource->bottomLevelResource, bottomLevelResourceCreateInfo))
 		{
 			return false;
 		}
@@ -415,7 +419,11 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 
 				for (const Primitive& currentPrimitive : glTF.meshes[node.mesh].primitives)
 				{
-					accelerationStructureDeviceAddressInfo.accelerationStructure = currentPrimitive.bottomLevelResource.levelResource.accelerationStructureResource.accelerationStructure;
+					PrimitiveResource* currentPrimitiveResource = getPrimitiveResource(&currentPrimitive);
+
+					//
+
+					accelerationStructureDeviceAddressInfo.accelerationStructure = currentPrimitiveResource->bottomLevelResource.levelResource.accelerationStructureResource.accelerationStructure;
 					VkDeviceAddress bottomDeviceAddress = vkGetAccelerationStructureDeviceAddressKHR(device, &accelerationStructureDeviceAddressInfo);
 
 					VkAccelerationStructureInstanceKHR accelerationStructureInstance = {};
@@ -433,19 +441,19 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 					primitiveInformation.componentTypeSize = glTF.accessors[currentPrimitive.indices].componentTypeSize;
 					primitiveInformation.worldMatrix = node.worldMatrix;
 
-					if (currentPrimitive.normalLocation >= 0)
+					if (currentPrimitiveResource->normalLocation >= 0)
 					{
 						primitiveInformation.normalInstanceID = normalInstanceID;
 
 						normalInstanceID++;
 					}
-					if (currentPrimitive.tangentLocation >= 0)
+					if (currentPrimitiveResource->tangentLocation >= 0)
 					{
 						primitiveInformation.tangentInstanceID = tangentInstanceID;
 
 						tangentInstanceID++;
 					}
-					if (currentPrimitive.texCoord0Location >= 0)
+					if (currentPrimitiveResource->texCoord0Location >= 0)
 					{
 						primitiveInformation.texCoord0InstanceID = texCoord0InstanceID;
 
@@ -471,7 +479,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 						descriptorBufferInfoIndices.push_back(currentDescriptorBufferInfo);
 					}
 
-					if (currentPrimitive.positionLocation >= 0)
+					if (currentPrimitiveResource->positionLocation >= 0)
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
@@ -482,7 +490,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 						descriptorBufferInfoPosition.push_back(currentDescriptorBufferInfo);
 					}
 
-					if (currentPrimitive.normalLocation >= 0)
+					if (currentPrimitiveResource->normalLocation >= 0)
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
@@ -493,7 +501,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 						descriptorBufferInfoNormal.push_back(currentDescriptorBufferInfo);
 					}
 
-					if (currentPrimitive.tangentLocation >= 0)
+					if (currentPrimitiveResource->tangentLocation >= 0)
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
@@ -504,7 +512,7 @@ bool ResourceManager::initScene(Scene& scene, const GLTF& glTF, VkPhysicalDevice
 						descriptorBufferInfoTangent.push_back(currentDescriptorBufferInfo);
 					}
 
-					if (currentPrimitive.texCoord0Location >= 0)
+					if (currentPrimitiveResource->texCoord0Location >= 0)
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
@@ -1265,33 +1273,35 @@ void ResourceManager::terminate(GLTF& glTF, VkDevice device)
 	{
 		for (size_t k = 0; k < glTF.meshes[i].primitives.size(); k++)
 		{
-			if (glTF.meshes[i].primitives[k].graphicsPipeline != VK_NULL_HANDLE)
+			PrimitiveResource* primitiveResource = getPrimitiveResource(&glTF.meshes[i].primitives[k]);
+
+			if (primitiveResource->graphicsPipeline != VK_NULL_HANDLE)
 			{
-				vkDestroyPipeline(device, glTF.meshes[i].primitives[k].graphicsPipeline, nullptr);
-				glTF.meshes[i].primitives[k].graphicsPipeline = VK_NULL_HANDLE;
+				vkDestroyPipeline(device, primitiveResource->graphicsPipeline, nullptr);
+				primitiveResource->graphicsPipeline = VK_NULL_HANDLE;
 			}
 
-			if (glTF.meshes[i].primitives[k].pipelineLayout != VK_NULL_HANDLE)
+			if (primitiveResource->pipelineLayout != VK_NULL_HANDLE)
 			{
-				vkDestroyPipelineLayout(device, glTF.meshes[i].primitives[k].pipelineLayout, nullptr);
-				glTF.meshes[i].primitives[k].pipelineLayout = VK_NULL_HANDLE;
+				vkDestroyPipelineLayout(device, primitiveResource->pipelineLayout, nullptr);
+				primitiveResource->pipelineLayout = VK_NULL_HANDLE;
 			}
 
-			if (glTF.meshes[i].primitives[k].vertexShaderModule != VK_NULL_HANDLE)
+			if (primitiveResource->vertexShaderModule != VK_NULL_HANDLE)
 			{
-				vkDestroyShaderModule(device, glTF.meshes[i].primitives[k].vertexShaderModule, nullptr);
-				glTF.meshes[i].primitives[k].vertexShaderModule = VK_NULL_HANDLE;
+				vkDestroyShaderModule(device, primitiveResource->vertexShaderModule, nullptr);
+				primitiveResource->vertexShaderModule = VK_NULL_HANDLE;
 			}
 
-			if (glTF.meshes[i].primitives[k].fragmentShaderModule != VK_NULL_HANDLE)
+			if (primitiveResource->fragmentShaderModule != VK_NULL_HANDLE)
 			{
-				vkDestroyShaderModule(device, glTF.meshes[i].primitives[k].fragmentShaderModule, nullptr);
-				glTF.meshes[i].primitives[k].fragmentShaderModule = VK_NULL_HANDLE;
+				vkDestroyShaderModule(device, primitiveResource->fragmentShaderModule, nullptr);
+				primitiveResource->fragmentShaderModule = VK_NULL_HANDLE;
 			}
 
 			//
 
-			VulkanRaytraceResource::destroyBottomLevelResource(device, glTF.meshes[i].primitives[k].bottomLevelResource);
+			VulkanRaytraceResource::destroyBottomLevelResource(device, primitiveResource->bottomLevelResource);
 		}
 		glTF.meshes[i].primitives.clear();
 	}
