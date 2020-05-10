@@ -451,7 +451,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 
 					sceneResource->accelerationStructureInstances.push_back(accelerationStructureInstance);
 
-					InstanceResource primitiveInformation = {};
+					PrimitiveInstanceResource primitiveInformation = {};
 					primitiveInformation.materialIndex = currentPrimitive.material;
 					primitiveInformation.componentTypeSize = glTF.accessors[currentPrimitive.indices].componentTypeSize;
 					primitiveInformation.worldMatrix = node.worldMatrix;
@@ -580,7 +580,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		//
 
 		StorageBufferResourceCreateInfo storageBufferResourceCreateInfo = {};
-		storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(InstanceResource) * sceneResource->instanceResources.size();
+		storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(PrimitiveInstanceResource) * sceneResource->instanceResources.size();
 		storageBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 		storageBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 		storageBufferResourceCreateInfo.data = sceneResource->instanceResources.data();
@@ -917,7 +917,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		VkDescriptorBufferInfo descriptorBufferInfo2 = {};
 		descriptorBufferInfo2.buffer = sceneResource->instanceResourcesStorageBufferResource.bufferResource.buffer;
 		descriptorBufferInfo2.offset = 0;
-		descriptorBufferInfo2.range = sizeof(InstanceResource) * sceneResource->instanceResources.size();
+		descriptorBufferInfo2.range = sizeof(PrimitiveInstanceResource) * sceneResource->instanceResources.size();
 
 		VkDescriptorImageInfo descriptorImageInfoDiffuse = {};
 		descriptorImageInfoDiffuse.sampler = glTF.diffuse.samplerResource.sampler;

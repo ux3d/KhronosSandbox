@@ -3,6 +3,20 @@
 
 #include "../../TinyEngine.h"
 
+struct PrimitiveInstanceResource {
+	glm::mat4 worldMatrix;
+	int32_t materialIndex = -1;
+	int32_t componentTypeSize = -1;
+
+	int32_t normalInstanceID = -1;
+	int32_t tangentInstanceID = -1;
+	int32_t texCoord0InstanceID = -1;
+
+	//
+
+	int32_t padding[3];
+};
+
 class SceneResource {
 public:
 	// Raytrace helper
@@ -11,7 +25,7 @@ public:
 	BufferResource accelerationStructureInstanceBuffer = {};
 	TopLevelResource topLevelResource = {};
 
-	std::vector<InstanceResource> instanceResources;
+	std::vector<PrimitiveInstanceResource> instanceResources;
 	StorageBufferResource instanceResourcesStorageBufferResource;
 
 	StorageBufferResource materialStorageBufferResource;
