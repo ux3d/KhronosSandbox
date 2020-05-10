@@ -20,6 +20,10 @@ bool Application::applicationInit()
 
 bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime)
 {
+	GltfResource* gltfResource = resourceManager.getGltfResource();
+
+	//
+
 	VkClearColorValue resolveClearColorValue = {};
 	resolveClearColorValue.float32[0] = 0.0f;
 	resolveClearColorValue.float32[1] = 0.0f;
@@ -62,12 +66,12 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	vkCmdBeginRenderPass(commandBuffers[frameIndex], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	glTF.viewProjection.projection = Projection::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f);
+	gltfResource->viewProjection.projection = Projection::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f);
 
 	glm::mat3 orbitMatrix = glm::rotate(rotY, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(rotX, glm::vec3(1.0f, 0.0f, 0.0f));
 	glm::vec3 orbitEye = orbitMatrix * glm::vec3(0.0f, 0.0f, eyeObjectDistance);
 
-	glTF.viewProjection.view = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	gltfResource->viewProjection.view = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	HelperLoop::draw(resourceManager, glTF, commandBuffers[frameIndex], frameIndex);
 

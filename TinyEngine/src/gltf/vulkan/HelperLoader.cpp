@@ -534,6 +534,11 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 		//
 		//
 
+		GltfResource* gltfResource = resourceManager.getGltfResource();
+
+		//
+		//
+
 		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
 		descriptorSetLayoutBinding.binding = binding;
 		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -542,8 +547,8 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 		VkDescriptorImageInfo descriptorImageInfo = {};
-		descriptorImageInfo.sampler = glTF.diffuse.samplerResource.sampler;
-		descriptorImageInfo.imageView = glTF.diffuse.imageViewResource.imageView;
+		descriptorImageInfo.sampler = gltfResource->diffuse.samplerResource.sampler;
+		descriptorImageInfo.imageView = gltfResource->diffuse.imageViewResource.imageView;
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
@@ -561,8 +566,8 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 		descriptorImageInfo = {};
-		descriptorImageInfo.sampler = glTF.specular.samplerResource.sampler;
-		descriptorImageInfo.imageView = glTF.specular.imageViewResource.imageView;
+		descriptorImageInfo.sampler = gltfResource->specular.samplerResource.sampler;
+		descriptorImageInfo.imageView = gltfResource->specular.imageViewResource.imageView;
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
@@ -580,8 +585,8 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 		descriptorImageInfo = {};
-		descriptorImageInfo.sampler = glTF.lut.samplerResource.sampler;
-		descriptorImageInfo.imageView = glTF.lut.imageViewResource.imageView;
+		descriptorImageInfo.sampler = gltfResource->lut.samplerResource.sampler;
+		descriptorImageInfo.imageView = gltfResource->lut.imageViewResource.imageView;
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
@@ -1046,6 +1051,8 @@ bool HelperLoader::initScenes(ResourceManager& resourceManager, GLTF& glTF, bool
 
 bool HelperLoader::open(ResourceManager& resourceManager, GLTF& glTF, const std::string& filename, const std::string& environment, bool useRaytrace)
 {
+	GltfResource* gltfResource = resourceManager.getGltfResource();
+
 	// Diffuse
 
 	std::string diffuseFilename = environment + "/" + "diffuse.ktx2";
@@ -1059,7 +1066,7 @@ bool HelperLoader::open(ResourceManager& resourceManager, GLTF& glTF, const std:
 		return false;
 	}
 
-	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, glTF.diffuse, diffuseMap))
+	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, gltfResource->diffuse, diffuseMap))
 	{
 		return false;
 	}
@@ -1077,7 +1084,7 @@ bool HelperLoader::open(ResourceManager& resourceManager, GLTF& glTF, const std:
 		return false;
 	}
 
-	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, glTF.specular, specularMap))
+	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, gltfResource->specular, specularMap))
 	{
 		return false;
 	}
@@ -1097,7 +1104,7 @@ bool HelperLoader::open(ResourceManager& resourceManager, GLTF& glTF, const std:
 		return false;
 	}
 
-	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, glTF.lut, lutMap))
+	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, gltfResource->lut, lutMap))
 	{
 		return false;
 	}

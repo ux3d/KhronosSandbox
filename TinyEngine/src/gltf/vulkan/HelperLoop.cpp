@@ -77,14 +77,18 @@ bool HelperLoop::update(ResourceManager& resourceManager, Primitive& primitive, 
 
 void HelperLoop::draw(ResourceManager& resourceManager, const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {
+	GltfResource* gltfResource = resourceManager.getGltfResource();
+
+	//
+
 	PrimitiveResource* primitiveResource = resourceManager.getPrimitiveResource(&primitive);
 
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->graphicsPipeline);
 
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->pipelineLayout, 0, 1, &resourceManager.getMaterialResource(&glTF.materials[primitive.material])->descriptorSet, 0, nullptr);
 
-	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(glTF.viewProjection), &glTF.viewProjection);
-	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(glTF.viewProjection), sizeof(primitive.worldMatrix), &primitive.worldMatrix);
+	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(gltfResource->viewProjection), &gltfResource->viewProjection);
+	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(gltfResource->viewProjection), sizeof(primitive.worldMatrix), &primitive.worldMatrix);
 
 	if (primitive.indices >= 0)
 	{

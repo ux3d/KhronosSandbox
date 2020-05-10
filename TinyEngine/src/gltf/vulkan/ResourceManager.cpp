@@ -899,6 +899,12 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		//
 		//
 
+		GltfResource* gltfResource = getGltfResource();
+
+		//
+		//
+		//
+
 		VkWriteDescriptorSetAccelerationStructureKHR writeDescriptorSetAccelerationStructure = {};
 		writeDescriptorSetAccelerationStructure.sType                      = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
 		writeDescriptorSetAccelerationStructure.accelerationStructureCount = 1;
@@ -920,18 +926,18 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		descriptorBufferInfo2.range = sizeof(PrimitiveInstanceResource) * sceneResource->instanceResources.size();
 
 		VkDescriptorImageInfo descriptorImageInfoDiffuse = {};
-		descriptorImageInfoDiffuse.sampler = glTF.diffuse.samplerResource.sampler;
-		descriptorImageInfoDiffuse.imageView = glTF.diffuse.imageViewResource.imageView;
+		descriptorImageInfoDiffuse.sampler = gltfResource->diffuse.samplerResource.sampler;
+		descriptorImageInfoDiffuse.imageView = gltfResource->diffuse.imageViewResource.imageView;
 		descriptorImageInfoDiffuse.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		VkDescriptorImageInfo descriptorImageInfoSpecular = {};
-		descriptorImageInfoSpecular.sampler = glTF.specular.samplerResource.sampler;
-		descriptorImageInfoSpecular.imageView = glTF.specular.imageViewResource.imageView;
+		descriptorImageInfoSpecular.sampler = gltfResource->specular.samplerResource.sampler;
+		descriptorImageInfoSpecular.imageView = gltfResource->specular.imageViewResource.imageView;
 		descriptorImageInfoSpecular.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		VkDescriptorImageInfo descriptorImageInfoLut = {};
-		descriptorImageInfoLut.sampler = glTF.lut.samplerResource.sampler;
-		descriptorImageInfoLut.imageView = glTF.lut.imageViewResource.imageView;
+		descriptorImageInfoLut.sampler = gltfResource->lut.samplerResource.sampler;
+		descriptorImageInfoLut.imageView = gltfResource->lut.imageViewResource.imageView;
 		descriptorImageInfoLut.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		std::vector<VkWriteDescriptorSet> writeDescriptorSets;
@@ -1421,9 +1427,11 @@ void ResourceManager::terminate(GLTF& glTF, VkDevice device)
 	}
 	glTF.scenes.clear();
 
-	VulkanResource::destroyTextureResource(device, glTF.diffuse);
-	VulkanResource::destroyTextureResource(device, glTF.specular);
-	VulkanResource::destroyTextureResource(device, glTF.lut);
+	GltfResource* gltfResource = getGltfResource();
+
+	VulkanResource::destroyTextureResource(device, gltfResource->diffuse);
+	VulkanResource::destroyTextureResource(device, gltfResource->specular);
+	VulkanResource::destroyTextureResource(device, gltfResource->lut);
 
 	//
 	//
