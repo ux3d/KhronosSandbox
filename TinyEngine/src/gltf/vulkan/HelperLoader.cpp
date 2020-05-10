@@ -44,13 +44,13 @@ bool HelperLoader::initBufferViews(ResourceManager& resourceManager, GLTF& glTF,
 {
 	glTF.bufferViews.resize(model.bufferViews.size());
 
-	for (size_t i = 0; i < model.bufferViews.size(); i++)
+	for (size_t i = 0; i < glTF.bufferViews.size(); i++)
 	{
 		BufferView& bufferView = glTF.bufferViews[i];
 
-		if (model.bufferViews[i].buffer >= 0)
+		bufferView.buffer = model.bufferViews[i].buffer;
+		if (bufferView.buffer >= 0)
 		{
-			bufferView.buffer = model.bufferViews[i].buffer;
 			bufferView.pBuffer = &glTF.buffers[bufferView.buffer];
 		}
 		else
@@ -79,13 +79,13 @@ bool HelperLoader::initAccessors(ResourceManager& resourceManager, GLTF& glTF)
 {
 	glTF.accessors.resize(model.accessors.size());
 
-	for (size_t i = 0; i < model.accessors.size(); i++)
+	for (size_t i = 0; i < glTF.accessors.size(); i++)
 	{
 		Accessor& accessor = glTF.accessors[i];
 
-		if (model.accessors[i].bufferView >= 0)
+		accessor.bufferView = model.accessors[i].bufferView;
+		if (accessor.bufferView >= 0)
 		{
-			accessor.bufferView = model.accessors[i].bufferView;
 			accessor.pBufferView = &glTF.bufferViews[accessor.bufferView];
 		}
 		else
@@ -166,7 +166,7 @@ bool HelperLoader::initImages(ResourceManager& resourceManager, GLTF& glTF, cons
 {
 	glTF.images.resize(model.images.size());
 
-	for (size_t i = 0; i < model.images.size(); i++)
+	for (size_t i = 0; i < glTF.images.size(); i++)
 	{
 		Image& image = glTF.images[i];
 
@@ -184,7 +184,7 @@ bool HelperLoader::initSamplers(ResourceManager& resourceManager, GLTF& glTF)
 {
 	glTF.samplers.resize(model.samplers.size());
 
-	for (size_t i = 0; i < model.samplers.size(); i++)
+	for (size_t i = 0; i < glTF.samplers.size(); i++)
 	{
 		Sampler& sampler = glTF.samplers[i];
 
@@ -259,7 +259,7 @@ bool HelperLoader::initTextures(ResourceManager& resourceManager, GLTF& glTF)
 {
 	glTF.textures.resize(model.textures.size());
 
-	for (size_t i = 0; i < model.textures.size(); i++)
+	for (size_t i = 0; i < glTF.textures.size(); i++)
 	{
 		Texture& texture = glTF.textures[i];
 
@@ -296,10 +296,10 @@ bool HelperLoader::initMaterials(ResourceManager& resourceManager, GLTF& glTF)
 {
 	glTF.materials.resize(model.materials.size());
 
-	for (size_t i = 0; i < model.materials.size(); i++)
+	for (size_t i = 0; i < glTF.materials.size(); i++)
 	{
 		Material& material = glTF.materials[i];
-		MaterialResource* materialResource = resourceManager.getMaterialResource(&glTF.materials[i]);
+		MaterialResource* materialResource = resourceManager.getMaterialResource(&material);
 
 		uint32_t binding = 0;
 
@@ -682,13 +682,13 @@ bool HelperLoader::initMeshes(ResourceManager& resourceManager, GLTF& glTF, bool
 
 	glTF.meshes.resize(model.meshes.size());
 
-	for (size_t i = 0; i < model.meshes.size(); i++)
+	for (size_t i = 0; i < glTF.meshes.size(); i++)
 	{
 		Mesh& mesh = glTF.meshes[i];
 
 		mesh.primitives.resize(model.meshes[i].primitives.size());
 
-		for (size_t k = 0; k < model.meshes[i].primitives.size(); k++)
+		for (size_t k = 0; k < mesh.primitives.size(); k++)
 		{
 			Primitive& primitive = mesh.primitives[k];
 
@@ -981,7 +981,7 @@ bool HelperLoader::initNodes(ResourceManager& resourceManager, GLTF& glTF, bool 
 {
 	glTF.nodes.resize(model.nodes.size());
 
-	for (size_t i = 0; i < model.nodes.size(); i++)
+	for (size_t i = 0; i < glTF.nodes.size(); i++)
 	{
 		Node& node = glTF.nodes[i];
 
@@ -1028,7 +1028,7 @@ bool HelperLoader::initScenes(ResourceManager& resourceManager, GLTF& glTF, bool
 {
 	glTF.scenes.resize(model.scenes.size());
 
-	for (size_t i = 0; i < model.scenes.size(); i++)
+	for (size_t i = 0; i < glTF.scenes.size(); i++)
 	{
 		Scene& scene = glTF.scenes[i];
 
