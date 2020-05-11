@@ -13,7 +13,7 @@ public:
 	BufferResource accelerationStructureInstanceBuffer = {};
 	TopLevelResource topLevelResource = {};
 
-	std::vector<PrimitiveInstanceResource> instanceResources;
+	std::vector<RaytracePrimitiveUniformBuffer> instanceResources;
 	StorageBufferResource instanceResourcesStorageBufferResource;
 
 	StorageBufferResource materialStorageBufferResource;

@@ -41,7 +41,7 @@ struct MaterialUniformBuffer {
 	bool doubleSided = false;
 };
 
-struct MaterialUniformBufferRaytrace {
+struct RaytraceMaterialUniformBuffer {
 	MaterialUniformBuffer materialUniformBuffer;
 
 	int32_t baseColorTexture = -1;
@@ -59,7 +59,7 @@ struct MaterialUniformBufferRaytrace {
 };
 
 
-struct PrimitiveInstanceResource {
+struct RaytracePrimitiveUniformBuffer {
 	glm::mat4 worldMatrix;
 	int32_t materialIndex = -1;
 	int32_t componentTypeSize = -1;
@@ -85,7 +85,7 @@ public:
 
 	// Raytrace helper
 
-	RaytraceUniformPushConstant pushConstant = {};
+	RaytraceUniformPushConstant raytrace = {};
 };
 
 #endif /* GLTF_GLTFRESOURCE_H_ */

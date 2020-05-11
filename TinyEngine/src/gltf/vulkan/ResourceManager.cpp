@@ -628,7 +628,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 
 					sceneResource->accelerationStructureInstances.push_back(accelerationStructureInstance);
 
-					PrimitiveInstanceResource primitiveInformation = {};
+					RaytracePrimitiveUniformBuffer primitiveInformation = {};
 					primitiveInformation.materialIndex = currentPrimitive.material;
 					primitiveInformation.componentTypeSize = glTF.accessors[currentPrimitive.indices].componentTypeSize;
 					primitiveInformation.worldMatrix = node.worldMatrix;
@@ -757,7 +757,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		//
 
 		StorageBufferResourceCreateInfo storageBufferResourceCreateInfo = {};
-		storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(PrimitiveInstanceResource) * sceneResource->instanceResources.size();
+		storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(RaytracePrimitiveUniformBuffer) * sceneResource->instanceResources.size();
 		storageBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 		storageBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 		storageBufferResourceCreateInfo.data = sceneResource->instanceResources.data();
@@ -771,10 +771,10 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		// Gather material resources.
 		//
 
-		std::vector<MaterialUniformBufferRaytrace> materialBuffers;
+		std::vector<RaytraceMaterialUniformBuffer> materialBuffers;
 		for (const Material& currentMatrial : glTF.materials)
 		{
-			MaterialUniformBufferRaytrace uniformBufferRaytrace = {};
+			RaytraceMaterialUniformBuffer uniformBufferRaytrace = {};
 
 			uniformBufferRaytrace.materialUniformBuffer.baseColorFactor = currentMatrial.pbrMetallicRoughness.baseColorFactor;
 			uniformBufferRaytrace.materialUniformBuffer.metallicFactor = currentMatrial.pbrMetallicRoughness.metallicFactor;
@@ -796,7 +796,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		}
 
 		storageBufferResourceCreateInfo = {};
-		storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(MaterialUniformBufferRaytrace) * glTF.materials.size();
+		storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(RaytraceMaterialUniformBuffer) * glTF.materials.size();
 		storageBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 		storageBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 		storageBufferResourceCreateInfo.data = materialBuffers.data();
@@ -1095,12 +1095,12 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		VkDescriptorBufferInfo descriptorBufferInfo = {};
 		descriptorBufferInfo.buffer = sceneResource->materialStorageBufferResource.bufferResource.buffer;
 		descriptorBufferInfo.offset = 0;
-		descriptorBufferInfo.range = sizeof(MaterialUniformBufferRaytrace) * glTF.materials.size();
+		descriptorBufferInfo.range = sizeof(RaytraceMaterialUniformBuffer) * glTF.materials.size();
 
 		VkDescriptorBufferInfo descriptorBufferInfo2 = {};
 		descriptorBufferInfo2.buffer = sceneResource->instanceResourcesStorageBufferResource.bufferResource.buffer;
 		descriptorBufferInfo2.offset = 0;
-		descriptorBufferInfo2.range = sizeof(PrimitiveInstanceResource) * sceneResource->instanceResources.size();
+		descriptorBufferInfo2.range = sizeof(RaytracePrimitiveUniformBuffer) * sceneResource->instanceResources.size();
 
 		VkDescriptorImageInfo descriptorImageInfoDiffuse = {};
 		descriptorImageInfoDiffuse.sampler = gltfResource->diffuse.samplerResource.sampler;

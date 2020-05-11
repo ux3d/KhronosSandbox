@@ -122,17 +122,17 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 		GltfResource* gltfResource = resourceManager.getGltfResource();
 
-		gltfResource->pushConstant.inverseViewProjection.inverseProjection = glm::inverse(Projection::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f));
+		gltfResource->raytrace.inverseViewProjection.inverseProjection = glm::inverse(Projection::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f));
 
 		glm::mat3 orbitMatrix = glm::rotate(rotY, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(rotX, glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::vec3 orbitEye = orbitMatrix * glm::vec3(0.0f, 0.0f, eyeObjectDistance);
 
-		gltfResource->pushConstant.inverseViewProjection.inverseView = glm::inverse(glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-		gltfResource->pushConstant.maxDepth = maxDepth;
-		gltfResource->pushConstant.specularSamples = specularSamples;
-		gltfResource->pushConstant.diffuseSamples = diffuseSamples;
+		gltfResource->raytrace.inverseViewProjection.inverseView = glm::inverse(glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+		gltfResource->raytrace.maxDepth = maxDepth;
+		gltfResource->raytrace.specularSamples = specularSamples;
+		gltfResource->raytrace.diffuseSamples = diffuseSamples;
 
-		vkCmdPushConstants(commandBuffers[frameIndex], defaultSceneResource->raytracePipelineLayout, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, 0, sizeof(gltfResource->pushConstant), &gltfResource->pushConstant);
+		vkCmdPushConstants(commandBuffers[frameIndex], defaultSceneResource->raytracePipelineLayout, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, 0, sizeof(gltfResource->raytrace), &gltfResource->raytrace);
 
 		VkStridedBufferRegionKHR rayGenStridedBufferRegion = {};
 		rayGenStridedBufferRegion.buffer = defaultSceneResource->shaderBindingBufferResource.buffer;
