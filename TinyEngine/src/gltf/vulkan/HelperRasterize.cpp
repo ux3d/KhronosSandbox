@@ -26,7 +26,7 @@ void HelperRasterize::draw(ResourceManager& resourceManager, const Primitive& pr
 			indexType = VK_INDEX_TYPE_UINT32;
 		}
 
-		vkCmdBindIndexBuffer(commandBuffer, HelperAccessResource::getBuffer(resourceManager, &glTF.accessors[primitive.indices]), HelperAccess::getOffset(glTF.accessors[primitive.indices]), indexType);
+		vkCmdBindIndexBuffer(commandBuffer, HelperAccessResource::getBuffer(resourceManager, glTF.accessors[primitive.indices]), HelperAccess::getOffset(glTF.accessors[primitive.indices]), indexType);
 	}
 
 	vkCmdBindVertexBuffers(commandBuffer, 0, primitive.attributesCount, primitiveResource->vertexBuffers.data(), primitiveResource->vertexBuffersOffsets.data());

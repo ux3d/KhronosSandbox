@@ -1,51 +1,31 @@
 #include "HelperAccessResource.h"
 
-VkBuffer HelperAccessResource::getBuffer(ResourceManager& resourceManager, const BufferView* bufferView)
+VkBuffer HelperAccessResource::getBuffer(ResourceManager& resourceManager, const BufferView& bufferView)
 {
-	if (bufferView == nullptr)
-	{
-		return VK_NULL_HANDLE;
-	}
-
-	return resourceManager.getBufferViewResource(bufferView)->vertexBufferResource.bufferResource.buffer;
+	return resourceManager.getBufferViewResource(&bufferView)->vertexBufferResource.bufferResource.buffer;
 }
 
-VkBuffer HelperAccessResource::getBuffer(ResourceManager& resourceManager, const Accessor* accessor)
+VkBuffer HelperAccessResource::getBuffer(ResourceManager& resourceManager, const Accessor& accessor)
 {
-	if (accessor == nullptr)
+	if (accessor.pBufferView == nullptr)
 	{
 		return VK_NULL_HANDLE;
 	}
 
-	return HelperAccessResource::getBuffer(resourceManager, accessor->pBufferView);
+	return HelperAccessResource::getBuffer(resourceManager, *accessor.pBufferView);
 }
 
-VkImage HelperAccessResource::getImage(ResourceManager& resourceManager, const Texture* texture)
+VkImage HelperAccessResource::getImage(ResourceManager& resourceManager, const Texture& texture)
 {
-	if (texture == nullptr)
-	{
-		return VK_NULL_HANDLE;
-	}
-
-	return resourceManager.getTextureResource(texture)->imageViewResource.image;
+	return resourceManager.getTextureResource(&texture)->imageViewResource.image;
 }
 
-VkImageView HelperAccessResource::getImageView(ResourceManager& resourceManager, const Texture* texture)
+VkImageView HelperAccessResource::getImageView(ResourceManager& resourceManager, const Texture& texture)
 {
-	if (texture == nullptr)
-	{
-		return VK_NULL_HANDLE;
-	}
-
-	return resourceManager.getTextureResource(texture)->imageViewResource.imageView;
+	return resourceManager.getTextureResource(&texture)->imageViewResource.imageView;
 }
 
-VkSampler HelperAccessResource::getSampler(ResourceManager& resourceManager, const Texture* texture)
+VkSampler HelperAccessResource::getSampler(ResourceManager& resourceManager, const Texture& texture)
 {
-	if (texture == nullptr)
-	{
-		return VK_NULL_HANDLE;
-	}
-
-	return resourceManager.getTextureResource(texture)->samplerResource.sampler;
+	return resourceManager.getTextureResource(&texture)->samplerResource.sampler;
 }

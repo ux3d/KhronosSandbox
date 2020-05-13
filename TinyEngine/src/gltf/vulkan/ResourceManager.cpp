@@ -505,7 +505,7 @@ bool ResourceManager::initPrimitive(const Primitive& primitive, const GLTF& glTF
 		VkBufferDeviceAddressInfo bufferDeviceAddressInfo = {};
 		bufferDeviceAddressInfo.sType  = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
 
-		bufferDeviceAddressInfo.buffer = HelperAccessResource::getBuffer(*this, &glTF.accessors[primitive.position]);
+		bufferDeviceAddressInfo.buffer = HelperAccessResource::getBuffer(*this, glTF.accessors[primitive.position]);
 		VkDeviceAddress vertexBufferAddress = vkGetBufferDeviceAddress(device, &bufferDeviceAddressInfo);
 
 		uint32_t vertexCount = glTF.accessors[primitive.position].count;
@@ -521,7 +521,7 @@ bool ResourceManager::initPrimitive(const Primitive& primitive, const GLTF& glTF
 				indexType = VK_INDEX_TYPE_UINT32;
 			}
 
-			bufferDeviceAddressInfo.buffer = HelperAccessResource::getBuffer(*this, &glTF.accessors[primitive.indices]);
+			bufferDeviceAddressInfo.buffer = HelperAccessResource::getBuffer(*this, glTF.accessors[primitive.indices]);
 
 			vertexIndexBufferAddress = vkGetBufferDeviceAddress(device, &bufferDeviceAddressInfo);
 
@@ -665,7 +665,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, &glTF.accessors[currentPrimitive.indices]);
+						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, glTF.accessors[currentPrimitive.indices]);
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.indices]);
 						currentDescriptorBufferInfo.range = HelperAccess::getRange(glTF.accessors[currentPrimitive.indices]);
 
@@ -676,7 +676,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, &glTF.accessors[currentPrimitive.position]);
+						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, glTF.accessors[currentPrimitive.position]);
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.position]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.position]);
 
@@ -687,7 +687,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, &glTF.accessors[currentPrimitive.normal]);
+						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, glTF.accessors[currentPrimitive.normal]);
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.normal]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.normal]);
 
@@ -698,7 +698,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, &glTF.accessors[currentPrimitive.tangent]);
+						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, glTF.accessors[currentPrimitive.tangent]);
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.tangent]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.tangent]);
 
@@ -709,7 +709,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, &glTF.accessors[currentPrimitive.texCoord0]);
+						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, glTF.accessors[currentPrimitive.texCoord0]);
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.texCoord0]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.texCoord0]);
 
