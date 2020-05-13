@@ -73,6 +73,7 @@ void ResourceManager::terminate(SceneResource& sceneResource, VkDevice device)
 	VulkanResource::destroyBufferResource(device, sceneResource.accelerationStructureInstanceBuffer);
 
 	VulkanResource::destroyBufferResource(device, sceneResource.shaderBindingBufferResource);
+	sceneResource.size = 0;
 
 	sceneResource.accelerationStructureInstances.clear();
 
@@ -1447,6 +1448,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		{
 			return false;
 		}
+		sceneResource->size = physicalDeviceRayTracingProperties.shaderGroupHandleSize;
 
 		std::vector<uint8_t> rayTracingShaderGroupHandles(bufferResourceCreateInfo.size);
 

@@ -3,7 +3,6 @@
 
 #include "../../TinyEngine.h"
 
-
 struct ViewProjectionUniformPushConstant {
 	glm::mat4 projection = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
@@ -57,7 +56,6 @@ struct RaytraceMaterialUniformBuffer {
 
 	int32_t padding;
 };
-
 
 struct RaytracePrimitiveUniformBuffer {
 	glm::mat4 worldMatrix;

@@ -1,6 +1,7 @@
 #include "Application.h"
 
-#include <gltf/vulkan/HelperRasterize.h>
+#include "gltf/vulkan/HelperRasterize.h"
+#include "gltf/vulkan/HelperRaytrace.h"
 #include "gltf/vulkan/HelperAccessResource.h"
 #include "gltf/vulkan/HelperAllocateRessource.h"
 #include "gltf/HelperLoad.h"
@@ -85,10 +86,6 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	if (raytrace)
 	{
-		SceneResource* defaultSceneResource = resourceManager.getSceneResource(&glTF.scenes[glTF.defaultScene]);
-
-		//
-
 		VkImageMemoryBarrier imageMemoryBarrier[2] = {};
 
 		imageMemoryBarrier[0].sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -132,29 +129,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 		gltfResource->raytrace.specularSamples = specularSamples;
 		gltfResource->raytrace.diffuseSamples = diffuseSamples;
 
-		vkCmdPushConstants(commandBuffers[frameIndex], defaultSceneResource->raytracePipelineLayout, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, 0, sizeof(gltfResource->raytrace), &gltfResource->raytrace);
-
-		VkStridedBufferRegionKHR rayGenStridedBufferRegion = {};
-		rayGenStridedBufferRegion.buffer = defaultSceneResource->shaderBindingBufferResource.buffer;
-		rayGenStridedBufferRegion.offset = physicalDeviceRayTracingProperties.shaderGroupHandleSize * 0;
-		rayGenStridedBufferRegion.size   = physicalDeviceRayTracingProperties.shaderGroupHandleSize;
-
-		VkStridedBufferRegionKHR missStridedBufferRegion = {};
-		missStridedBufferRegion.buffer = defaultSceneResource->shaderBindingBufferResource.buffer;
-		missStridedBufferRegion.offset = physicalDeviceRayTracingProperties.shaderGroupHandleSize * 1;
-		missStridedBufferRegion.size   = physicalDeviceRayTracingProperties.shaderGroupHandleSize;
-
-		VkStridedBufferRegionKHR closestHitStridedBufferRegion = {};
-		closestHitStridedBufferRegion.buffer = defaultSceneResource->shaderBindingBufferResource.buffer;
-		closestHitStridedBufferRegion.offset = physicalDeviceRayTracingProperties.shaderGroupHandleSize * 2;
-		closestHitStridedBufferRegion.size   = physicalDeviceRayTracingProperties.shaderGroupHandleSize;
-
-		VkStridedBufferRegionKHR callableStridedBufferRegion = {};
-
-		vkCmdBindPipeline(commandBuffers[frameIndex], VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, defaultSceneResource->raytracePipeline);
-		vkCmdBindDescriptorSets(commandBuffers[frameIndex], VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, defaultSceneResource->raytracePipelineLayout, 0, 1, &defaultSceneResource->raytraceDescriptorSet, 0, 0);
-
-		vkCmdTraceRaysKHR(commandBuffers[frameIndex], &rayGenStridedBufferRegion, &missStridedBufferRegion, &closestHitStridedBufferRegion, &callableStridedBufferRegion, width, height, 1);
+		HelperRaytrace::draw(resourceManager, glTF, commandBuffers[frameIndex], frameIndex, width, height);
 
 		//
 		// Prepare to to copy raytraced image.

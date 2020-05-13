@@ -31,6 +31,7 @@ public:
 	VkPipeline raytracePipeline = VK_NULL_HANDLE;
 
 	BufferResource shaderBindingBufferResource = {};
+	VkDeviceSize size = 0;
 };
 
 #endif /* GLTF_SCENERESOURCE_H_ */
