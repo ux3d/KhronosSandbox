@@ -3,6 +3,14 @@
 
 #include <vector>
 
+#include "../math/Math.h"
+
+#include "Buffer.h"
+
+#include "BufferView.h"
+
+#include "Accessor.h"
+
 #include "Image.h"
 
 #include "Sampler.h"
@@ -11,15 +19,9 @@
 
 #include "TextureInfo.h"
 
-#include "PbrMetallicRoughness.h"
-
 #include "Material.h"
 
-#include "Buffer.h"
-
-#include "BufferView.h"
-
-#include "Accessor.h"
+#include "PbrMetallicRoughness.h"
 
 #include "Primitive.h"
 

@@ -1,5 +1,7 @@
 #include "ResourceManager.h"
 
+#include "../shader/Shader.h"
+
 #include "HelperAccessResource.h"
 
 void ResourceManager::terminate(BufferViewResource& bufferViewResource, VkDevice device)

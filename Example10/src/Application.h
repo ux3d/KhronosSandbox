@@ -1,9 +1,9 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
-#include "gltf/GLTF.h"
-#include "render/Render.h"
 #include "TinyEngine.h"
+
+#include "render/Render.h"
 
 class Application: public TinyEngine
 {

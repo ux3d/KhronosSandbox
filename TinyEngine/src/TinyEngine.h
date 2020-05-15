@@ -6,15 +6,17 @@
 
 #include "common/Common.h"
 
-#include "composite/Composite.h"
+#include "math/Math.h"
 
 #include "gui/Gui.h"
 
 #include "io/IO.h"
 
-#include "math/Math.h"
-
 #include "shader/Shader.h"
+
+#include "composite/Composite.h"
+
+#include "gltf/GLTF.h"
 
 class TinyEngine
 {
