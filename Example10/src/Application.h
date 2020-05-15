@@ -3,8 +3,6 @@
 
 #include "TinyEngine.h"
 
-#include "render/Render.h"
-
 class Application: public TinyEngine
 {
 private:

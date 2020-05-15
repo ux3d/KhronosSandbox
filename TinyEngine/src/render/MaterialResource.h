@@ -1,7 +1,11 @@
 #ifndef RENDER_MATERIALRESOURCE_H_
 #define RENDER_MATERIALRESOURCE_H_
 
-#include "../gltf/GLTF.h"
+#include <map>
+#include <string>
+#include <vector>
+
+#include "../composite/Composite.h"
 
 class MaterialResource {
 public:

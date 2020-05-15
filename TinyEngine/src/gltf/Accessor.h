@@ -1,7 +1,7 @@
 #ifndef GLTF_ACCESSOR_H_
 #define GLTF_ACCESSOR_H_
 
-#include "../TinyEngine.h"
+#include <cstdint>
 
 #include "BufferView.h"
 

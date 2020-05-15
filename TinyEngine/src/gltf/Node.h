@@ -1,7 +1,9 @@
 #ifndef GLTF_NODE_H_
 #define GLTF_NODE_H_
 
-#include "../TinyEngine.h"
+#include <vector>
+
+#include "../math/Math.h"
 
 class GLTF;
 

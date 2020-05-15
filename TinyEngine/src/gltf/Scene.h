@@ -1,7 +1,7 @@
 #ifndef GLTF_SCENE_H_
 #define GLTF_SCENE_H_
 
-#include "../TinyEngine.h"
+#include <vector>
 
 class Scene {
 public:

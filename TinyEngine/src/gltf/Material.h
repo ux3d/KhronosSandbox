@@ -1,7 +1,7 @@
 #ifndef GLTF_MATERIAL_H_
 #define GLTF_MATERIAL_H_
 
-#include "../TinyEngine.h"
+#include "../math/Math.h"
 
 #include "PbrMetallicRoughness.h"
 

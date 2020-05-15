@@ -3,8 +3,6 @@
 
 #include "TinyEngine.h"
 
-#include "render/Render.h"
-
 #include "imgui/imgui_impl_glfw.h"
 
 class Application: public TinyEngine

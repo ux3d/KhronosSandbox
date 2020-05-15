@@ -1,7 +1,7 @@
-#ifndef RENDER__BUFFERVIEWRESOURCE_H_
-#define RENDER__BUFFERVIEWRESOURCE_H_
+#ifndef RENDER_BUFFERVIEWRESOURCE_H_
+#define RENDER_BUFFERVIEWRESOURCE_H_
 
-#include "../gltf/GLTF.h"
+#include "../composite/Composite.h"
 
 class BufferViewResource {
 public:
@@ -10,4 +10,4 @@ public:
 	VertexBufferResource vertexBufferResource = {};
 };
 
-#endif /* RENDER__BUFFERVIEWRESOURCE_H_ */
+#endif /* RENDER_BUFFERVIEWRESOURCE_H_ */

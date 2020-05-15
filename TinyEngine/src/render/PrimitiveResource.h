@@ -1,7 +1,9 @@
 #ifndef RENDER_PRIMITIVERESOURCE_H_
 #define RENDER_PRIMITIVERESOURCE_H_
 
-#include "../gltf/GLTF.h"
+#include <vector>
+
+#include "../composite/Composite.h"
 
 class PrimitiveResource {
 public:

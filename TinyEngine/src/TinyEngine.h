@@ -18,6 +18,8 @@
 
 #include "gltf/GLTF.h"
 
+#include "render/Render.h"
+
 class TinyEngine
 {
 private:

@@ -1,7 +1,7 @@
 #ifndef GLTF_MESH_H_
 #define GLTF_MESH_H_
 
-#include "../TinyEngine.h"
+#include <vector>
 
 #include "Primitive.h"
 

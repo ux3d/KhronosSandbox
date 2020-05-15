@@ -3,6 +3,8 @@
 
 #include <map>
 
+#include "../composite/Composite.h"
+
 #include "../gltf/GLTF.h"
 
 #include "BufferViewResource.h"

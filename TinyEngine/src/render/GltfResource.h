@@ -1,7 +1,9 @@
-#ifndef RENDER__GLTFRESOURCE_H_
-#define RENDER__GLTFRESOURCE_H_
+#ifndef RENDER_GLTFRESOURCE_H_
+#define RENDER_GLTFRESOURCE_H_
 
-#include "../gltf/GLTF.h"
+#include "../composite/Composite.h"
+
+#include "../math/Math.h"
 
 struct ViewProjectionUniformPushConstant {
 	glm::mat4 projection = glm::mat4(1.0f);
@@ -86,4 +88,4 @@ public:
 	RaytraceUniformPushConstant raytrace = {};
 };
 
-#endif /* RENDER__GLTFRESOURCE_H_ */
+#endif /* RENDER_GLTFRESOURCE_H_ */

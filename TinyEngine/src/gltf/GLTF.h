@@ -3,8 +3,6 @@
 
 #include <vector>
 
-#include "../math/Math.h"
-
 #include "Buffer.h"
 
 #include "BufferView.h"

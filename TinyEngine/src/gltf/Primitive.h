@@ -1,9 +1,7 @@
 #ifndef GLTF_PRIMITIVE_H_
 #define GLTF_PRIMITIVE_H_
 
-#include "../TinyEngine.h"
-
-class GLTF;
+#include "../math/Math.h"
 
 class Primitive {
 public:
