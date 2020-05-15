@@ -11,9 +11,7 @@
 #include <glm/gtx/matrix_decompose.hpp>
 
 #include "Projection.h"
-
 #include "Random.h"
-
 #include "Sample.h"
 
 #endif /* MATH_MATH_H_ */

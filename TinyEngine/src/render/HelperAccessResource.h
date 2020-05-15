@@ -2,7 +2,6 @@
 #define RENDER_HELPERACCESSRESOURCE_H_
 
 #include "../common/Common.h"
-
 #include "../gltf/GLTF.h"
 
 #include "ResourceManager.h"

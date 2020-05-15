@@ -1,8 +1,9 @@
 #ifndef RENDER_HELPERRAYTRACE_H_
 #define RENDER_HELPERRAYTRACE_H_
 
-#include "../common/Common.h"
+#include <cstdint>
 
+#include "../common/Common.h"
 #include "../gltf/GLTF.h"
 
 #include "ResourceManager.h"

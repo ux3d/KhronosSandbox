@@ -1,6 +1,8 @@
 #ifndef RENDER_HELPERRASTERIZE_H_
 #define RENDER_HELPERRASTERIZE_H_
 
+#include <cstdint>
+
 #include "../gltf/GLTF.h"
 
 #include "ResourceManager.h"

@@ -1,6 +1,7 @@
 #ifndef RENDER_PRIMITIVERESOURCE_H_
 #define RENDER_PRIMITIVERESOURCE_H_
 
+#include <cstdint>
 #include <vector>
 
 #include "../composite/Composite.h"

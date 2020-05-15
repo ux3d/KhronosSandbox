@@ -1,10 +1,10 @@
 #ifndef RENDER_RESOURCEMANAGER_H_
 #define RENDER_RESOURCEMANAGER_H_
 
+#include <cstdint>
 #include <map>
 
 #include "../composite/Composite.h"
-
 #include "../gltf/GLTF.h"
 
 #include "BufferViewResource.h"

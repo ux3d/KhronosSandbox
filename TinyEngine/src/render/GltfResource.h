@@ -1,8 +1,9 @@
 #ifndef RENDER_GLTFRESOURCE_H_
 #define RENDER_GLTFRESOURCE_H_
 
-#include "../composite/Composite.h"
+#include <cstdint>
 
+#include "../composite/Composite.h"
 #include "../math/Math.h"
 
 struct ViewProjectionUniformPushConstant {
