@@ -6,12 +6,16 @@ This R&D project is a playground to evaluate raytracing vs. pathtracing vs. rast
 
 Evaluation
 - [x] TinyEngine
-  - [ ] Resize/maximize
+  - [x] Resize/maximize
 - [x] glTF rasterize
 - [x] glTF raytrace
   - [ ] Shadows
   - [ ] Transparency
 - [x] glTF pathtrace
+
+## TinyEngine architecture
+
+![Components](Architecture/components.png)
 
 ## How to build?
 - [Vulkan SDK 1.2.135.0 or later](https://vulkan.lunarg.com/sdk/home)
