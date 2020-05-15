@@ -3,8 +3,7 @@
 
 #include "../common/Common.h"
 
-class Sampler {
-public:
+struct Sampler {
     VkFilter                magFilter = VK_FILTER_LINEAR;
     VkFilter                minFilter = VK_FILTER_LINEAR;
     VkSamplerMipmapMode     mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;

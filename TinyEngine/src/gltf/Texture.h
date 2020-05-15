@@ -3,8 +3,7 @@
 
 #include <cstdint>
 
-class Texture {
-public:
+struct Texture {
 	int32_t source = -1;
 	int32_t sampler = -1;
 };

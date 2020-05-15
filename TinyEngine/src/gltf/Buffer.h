@@ -4,8 +4,7 @@
 #include <string>
 #include <vector>
 
-class Buffer {
-public:
+struct Buffer {
 	std::string uri = "";
 	size_t byteLength = 1;
 

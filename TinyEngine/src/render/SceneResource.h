@@ -7,8 +7,7 @@
 
 #include "GltfResource.h"
 
-class SceneResource {
-public:
+struct SceneResource {
 	// Raytrace helper
 
 	std::vector<VkAccelerationStructureInstanceKHR> accelerationStructureInstances;

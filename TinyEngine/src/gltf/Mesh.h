@@ -5,8 +5,7 @@
 
 #include "Primitive.h"
 
-class Mesh {
-public:
+struct Mesh {
 	std::vector<Primitive> primitives;
 };
 

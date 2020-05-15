@@ -74,8 +74,7 @@ struct RaytracePrimitiveUniformBuffer {
 	int32_t padding[3];
 };
 
-class GltfResource {
-public:
+struct GltfResource {
 	// Rasterize helper
 
 	ViewProjectionUniformPushConstant viewProjection = {};

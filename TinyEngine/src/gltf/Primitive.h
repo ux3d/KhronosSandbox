@@ -5,8 +5,7 @@
 
 #include "../math/Math.h"
 
-class Primitive {
-public:
+struct Primitive {
 	int32_t position = -1;
 	int32_t normal = -1;
 	int32_t tangent = -1;

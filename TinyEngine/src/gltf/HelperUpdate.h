@@ -5,6 +5,8 @@
 
 #include "GLTF.h"
 
+struct GLTF;
+
 class HelperUpdate {
 public:
 

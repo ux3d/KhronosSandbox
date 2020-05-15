@@ -3,8 +3,7 @@
 
 #include "../composite/Composite.h"
 
-class BufferViewResource {
-public:
+struct BufferViewResource {
 	// Rasterize helper
 
 	VertexBufferResource vertexBufferResource = {};

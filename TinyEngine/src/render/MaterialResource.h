@@ -7,9 +7,7 @@
 
 #include "../composite/Composite.h"
 
-class MaterialResource {
-public:
-
+struct MaterialResource {
 	// Rasterize helper
 
 	VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;

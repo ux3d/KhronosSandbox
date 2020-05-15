@@ -5,8 +5,7 @@
 
 #include "../io/IO.h"
 
-class Image {
-public:
+struct Image {
 	std::string uri = "";
 
 	// Generic helper

@@ -5,8 +5,7 @@
 
 #include "TextureInfo.h"
 
-class PbrMetallicRoughness {
-public:
+struct PbrMetallicRoughness {
 	glm::vec4 baseColorFactor = glm::vec4(1.0f);
 	TextureInfo baseColorTexture;
 

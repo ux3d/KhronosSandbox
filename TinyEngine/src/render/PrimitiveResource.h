@@ -6,8 +6,7 @@
 
 #include "../composite/Composite.h"
 
-class PrimitiveResource {
-public:
+struct PrimitiveResource {
 	// Rasterize helper
 
 	std::vector<VkVertexInputBindingDescription> vertexInputBindingDescriptions;

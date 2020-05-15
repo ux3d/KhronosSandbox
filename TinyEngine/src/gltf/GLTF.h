@@ -20,8 +20,7 @@
 #include "HelperLoad.h"
 #include "HelperUpdate.h"
 
-class GLTF {
-public:
+struct GLTF {
 	std::vector<Image> images;
 	std::vector<Sampler> samplers;
 	std::vector<Texture> textures;

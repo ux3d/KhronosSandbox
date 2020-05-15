@@ -4,8 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-class Scene {
-public:
+struct Scene {
 	std::vector<int32_t> nodes;
 };
 

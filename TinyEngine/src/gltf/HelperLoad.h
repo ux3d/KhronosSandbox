@@ -14,6 +14,8 @@
 
 #include "GLTF.h"
 
+struct GLTF;
+
 class HelperLoad {
 
 private:

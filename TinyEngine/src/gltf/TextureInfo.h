@@ -3,19 +3,16 @@
 
 #include <cstdint>
 
-class TextureInfo {
-public:
+struct TextureInfo {
 	int32_t 	index = -1;
 	uint32_t	texCoord = 0;
 };
 
-class NormalTextureInfo : public TextureInfo {
-public:
+struct NormalTextureInfo : public TextureInfo {
 	float scale = 1.0f;
 };
 
-class OcclusionTextureInfo : public TextureInfo {
-public:
+struct OcclusionTextureInfo : public TextureInfo {
 	float strength = 1.0f;
 };
 

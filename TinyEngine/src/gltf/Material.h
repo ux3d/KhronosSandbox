@@ -7,8 +7,7 @@
 
 #include "PbrMetallicRoughness.h"
 
-class Material {
-public:
+struct Material {
 	PbrMetallicRoughness pbrMetallicRoughness;
 
 	NormalTextureInfo normalTexture;

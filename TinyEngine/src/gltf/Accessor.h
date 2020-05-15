@@ -5,8 +5,7 @@
 
 #include "BufferView.h"
 
-class Accessor {
-public:
+struct Accessor {
 	int32_t bufferView = -1;
 	size_t byteOffset = 0;
 	size_t count = 1;

@@ -5,8 +5,7 @@
 
 #include "Buffer.h"
 
-class BufferView {
-public:
+struct BufferView {
 	int32_t buffer = -1;
 
 	size_t byteOffset = 0;
