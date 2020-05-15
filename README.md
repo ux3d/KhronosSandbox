@@ -37,7 +37,7 @@ Evaluation
 
 ## Used tools
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
-- [Gestaltor - A glTF editor](https://gestaltor.io/)
+- [Gestaltor - Visual glTF editor](https://gestaltor.io/)
 - [MSYS2](https://www.msys2.org/) on Windows  
   Execute `pacman -S mingw-w64-x86_64-gcc` to install MinGW64
 
