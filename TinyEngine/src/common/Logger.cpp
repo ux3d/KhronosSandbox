@@ -5,16 +5,16 @@
 #include <cstring>
 #include <map>
 
-const char* Logger::getFilename(const char* fileName)
+const char* Logger::reduceFileMacro(const char* fileMacro)
 {
-	return strrchr(fileName, '/') ? strrchr(fileName, '/') + 1 : (strrchr(fileName, '\\') ? strrchr(fileName, '\\') + 1 : fileName);
+	return strrchr(fileMacro, '/') ? strrchr(fileMacro, '/') + 1 : (strrchr(fileMacro, '\\') ? strrchr(fileMacro, '\\') + 1 : fileMacro);
 }
 
-const std::vector<std::string> Logger::LOG_STRINGS = {"ERROR", "WARNING", "INFO", "DEBUG"};
+const std::vector<const char*> Logger::LOG_STRINGS = {"ERROR", "WARNING", "INFO", "DEBUG"};
 
 DebugLevel Logger::debugLevel = TE_INFO;
 
-void Logger::print(DebugLevel debugLevel, const char* fileName, uint32_t lineNumber, VkResult result)
+void Logger::print(DebugLevel debugLevel, const char* fileMacro, uint32_t lineMacro, VkResult result)
 {
 	static std::map<int32_t, const char *> resultToString = {
 		{  0, "VK_SUCCESS"},
@@ -58,7 +58,7 @@ void Logger::print(DebugLevel debugLevel, const char* fileName, uint32_t lineNum
 		{  1000297000, "VK_ERROR_PIPELINE_COMPILE_REQUIRED_EXT"}
 	};
 
-	print(debugLevel, fileName, lineNumber, "VkResult = %s\n", resultToString[static_cast<int32_t>(result)]);
+	print(debugLevel, fileMacro, lineMacro, "VkResult = %s\n", resultToString[static_cast<int32_t>(result)]);
 }
 
 void Logger::print(DebugLevel debugLevel, const char* fileName, uint32_t lineNumber, const char* format, ...)
@@ -76,11 +76,11 @@ void Logger::print(DebugLevel debugLevel, const char* fileName, uint32_t lineNum
 
 	if (debugLevel == TE_DEBUG)
 	{
-		printf("Log [%s] in '%s' at %u: %s\n", Logger::LOG_STRINGS[debugLevel].c_str(), getFilename(fileName), lineNumber, buffer);
+		printf("Log [%s] in '%s' at %u: %s\n", Logger::LOG_STRINGS[debugLevel], reduceFileMacro(fileName), lineNumber, buffer);
 	}
 	else
 	{
-		printf("Log [%s]: %s\n", Logger::LOG_STRINGS[debugLevel].c_str(), buffer);
+		printf("Log [%s]: %s\n", Logger::LOG_STRINGS[debugLevel], buffer);
 	}
 
 	va_end(argList);

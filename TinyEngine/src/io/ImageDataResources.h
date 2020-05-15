@@ -2,9 +2,8 @@
 #define IO_IMAGEDATARESOURCES_H_
 
 #include <vector>
-#include <cstdint>
 
-#include "../common/Enums.h"
+#include "../common/Common.h"
 
 struct ImageDataResource {
 	std::vector<uint8_t> pixels;

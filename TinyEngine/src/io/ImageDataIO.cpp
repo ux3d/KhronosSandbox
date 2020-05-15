@@ -1,5 +1,6 @@
-#include "FileIO.h"
 #include "ImageDataIO.h"
+
+#include <cstdio>
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ONLY_JPEG
@@ -7,8 +8,10 @@
 #include <stb_image.h>
 
 #include "slimktx2.h"
-#include "DefaultFileIOCallback.h"
 #include "DefaultAllocationCallback.h"
+#include "DefaultFileIOCallback.h"
+
+#include "FileIO.h"
 
 using namespace ux3d;
 

@@ -1,34 +1,22 @@
 #ifndef TINYENGINE_H_
 #define TINYENGINE_H_
 
-#include "common/Logger.h"
 #include "composite/VulkanRaytraceResource.h"
 #include "composite/VulkanResource.h"
-#include "io/FileIO.h"
-#include "io/ImageDataIO.h"
-#include "math/Projection.h"
-#include "shader/Compiler.h"
 #include "vulkan/HelperVulkan.h"
 
-#include <cstddef>
 #include <optional>
 #include <vector>
 
-// Volk
-#define VK_ENABLE_BETA_EXTENSIONS
-#include "volk.h"
+#include "common/Common.h"
 
-// glm
-#define GLM_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
+#include "gui/Gui.h"
 
-// Dear ImGui
-#include "gui/imgui/imgui.h"
-#include "gui/imgui/vulkan/imgui_impl_vulkan.h"
+#include "io/IO.h"
+
+#include "math/Math.h"
+
+#include "shader/Shader.h"
 
 class TinyEngine
 {

@@ -1,10 +1,9 @@
 #ifndef COMMON_LOGGER_H_
 #define COMMON_LOGGER_H_
 
-#include <string>
 #include <vector>
 
-#include "Enums.h"
+#include "Common.h"
 
 enum DebugLevel {
 	TE_ERROR,
@@ -17,17 +16,17 @@ class Logger
 {
 private:
 
-	static const std::vector<std::string> LOG_STRINGS;
+	static const std::vector<const char *> LOG_STRINGS;
 
-	static const char* getFilename(const char* fileName);
+	static const char* reduceFileMacro(const char* fileMacro);
 
 public:
 
 	static DebugLevel debugLevel;
 
-	static void print(DebugLevel debugLevel, const char* fileName, uint32_t lineNumber, VkResult result);
+	static void print(DebugLevel debugLevel, const char* fileMacro, uint32_t lineMacro, VkResult result);
 
-	static void print(DebugLevel debugLevel, const char* fileName, uint32_t lineNumber, const char* format, ...);
+	static void print(DebugLevel debugLevel, const char* fileMacro, uint32_t lineMacro, const char* format, ...);
 
 };
 

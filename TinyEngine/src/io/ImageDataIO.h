@@ -2,6 +2,7 @@
 #define IO_IMAGEDATAIO_H_
 
 #include <string>
+
 #include "ImageDataResources.h"
 
 class ImageDataIO

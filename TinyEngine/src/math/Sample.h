@@ -1,7 +1,7 @@
 #ifndef MATH_SAMPLE_H_
 #define MATH_SAMPLE_H_
 
-#include "Projection.h"
+#include "Math.h"
 
 // https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 class Spherical {
