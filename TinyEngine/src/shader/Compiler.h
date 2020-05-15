@@ -1,6 +1,7 @@
 #ifndef SHADER_COMPILER_H_
 #define SHADER_COMPILER_H_
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <vector>

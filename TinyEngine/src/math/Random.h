@@ -1,6 +1,8 @@
 #ifndef MATH_RANDOM_H_
 #define MATH_RANDOM_H_
 
+#include <cstdint>
+
 #include "Math.h"
 
 class Random {

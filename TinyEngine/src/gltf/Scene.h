@@ -1,6 +1,7 @@
 #ifndef GLTF_SCENE_H_
 #define GLTF_SCENE_H_
 
+#include <cstdint>
 #include <vector>
 
 class Scene {

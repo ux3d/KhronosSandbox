@@ -1,6 +1,7 @@
 #ifndef GLTF_NODE_H_
 #define GLTF_NODE_H_
 
+#include <cstdint>
 #include <vector>
 
 #include "../math/Math.h"

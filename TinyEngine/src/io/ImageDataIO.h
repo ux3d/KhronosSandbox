@@ -1,6 +1,7 @@
 #ifndef IO_IMAGEDATAIO_H_
 #define IO_IMAGEDATAIO_H_
 
+#include <cstdint>
 #include <string>
 
 #include "ImageDataResources.h"

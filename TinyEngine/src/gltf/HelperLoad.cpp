@@ -1,5 +1,7 @@
 #include "HelperLoad.h"
 
+#include <cstdint>
+
 #define TINYGLTF_IMPLEMENTATION
 #define TINYGLTF_NO_EXTERNAL_IMAGE
 #define TINYGLTF_NO_STB_IMAGE

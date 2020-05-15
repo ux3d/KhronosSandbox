@@ -1,6 +1,8 @@
 #ifndef GLTF_TEXTURE_H_
 #define GLTF_TEXTURE_H_
 
+#include <cstdint>
+
 class Texture {
 public:
 	int32_t source = -1;

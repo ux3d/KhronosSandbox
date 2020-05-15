@@ -1,6 +1,7 @@
 #ifndef SHADER_HELPERSHADER_H_
 #define SHADER_HELPERSHADER_H_
 
+#include <cstdint>
 #include <string>
 
 class HelperShader

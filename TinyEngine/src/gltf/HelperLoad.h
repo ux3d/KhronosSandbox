@@ -1,6 +1,8 @@
 #ifndef GLTF_HELPERLOAD_H_
 #define GLTF_HELPERLOAD_H_
 
+#include <string>
+
 #define TINYGLTF_NO_EXTERNAL_IMAGE
 #define TINYGLTF_NO_STB_IMAGE
 #define TINYGLTF_NO_STB_IMAGE_WRITE

@@ -1,6 +1,8 @@
 #ifndef GLTF_BUFFERVIEW_H_
 #define GLTF_BUFFERVIEW_H_
 
+#include <cstdint>
+
 #include "Buffer.h"
 
 class BufferView {

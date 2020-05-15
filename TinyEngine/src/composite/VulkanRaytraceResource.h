@@ -1,6 +1,9 @@
 #ifndef COMPOSITE_VULKANRAYTRACERESOURCE_H_
 #define COMPOSITE_VULKANRAYTRACERESOURCE_H_
 
+#include <cstdint>
+#include <vector>
+
 #include "VulkanResource.h"
 
 struct AccelerationStructureResourceCreateInfo {

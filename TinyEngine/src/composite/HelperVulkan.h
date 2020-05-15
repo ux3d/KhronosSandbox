@@ -1,6 +1,7 @@
 #ifndef VULKAN_HELPERVULKAN_H_
 #define VULKAN_HELPERVULKAN_H_
 
+#include <cstdint>
 #include <vector>
 
 #include "../common/Common.h"

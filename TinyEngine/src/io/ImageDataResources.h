@@ -1,6 +1,7 @@
 #ifndef IO_IMAGEDATARESOURCES_H_
 #define IO_IMAGEDATARESOURCES_H_
 
+#include <cstdint>
 #include <vector>
 
 #include "../common/Common.h"

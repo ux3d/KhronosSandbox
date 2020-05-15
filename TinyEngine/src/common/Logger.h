@@ -1,6 +1,7 @@
 #ifndef COMMON_LOGGER_H_
 #define COMMON_LOGGER_H_
 
+#include <cstdint>
 #include <vector>
 
 #include "Common.h"

@@ -1,6 +1,8 @@
 #ifndef GLTF_HELPERACCESS_H_
 #define GLTF_HELPERACCESS_H_
 
+#include <cstdint>
+
 #include "GLTF.h"
 
 class HelperAccess {

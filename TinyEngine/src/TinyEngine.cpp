@@ -1,7 +1,6 @@
 #include "TinyEngine.h"
 
 #include <chrono>
-#include <cstring>
 
 // Private
 

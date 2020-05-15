@@ -1,10 +1,10 @@
 #ifndef COMPOSITE_VULKANRESOURCE_H_
 #define COMPOSITE_VULKANRESOURCE_H_
 
+#include <cstdint>
 #include <vector>
 
 #include "../common/Common.h"
-
 #include "../io/IO.h"
 
 struct BufferResourceCreateInfo {

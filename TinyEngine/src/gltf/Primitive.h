@@ -1,6 +1,8 @@
 #ifndef GLTF_PRIMITIVE_H_
 #define GLTF_PRIMITIVE_H_
 
+#include <cstdint>
+
 #include "../math/Math.h"
 
 class Primitive {

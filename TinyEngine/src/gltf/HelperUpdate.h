@@ -1,6 +1,8 @@
 #ifndef GLTF_HELPERUPDATE_H_
 #define GLTF_HELPERUPDATE_H_
 
+#include "../math/Math.h"
+
 #include "GLTF.h"
 
 class HelperUpdate {

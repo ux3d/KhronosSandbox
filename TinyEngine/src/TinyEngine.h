@@ -1,7 +1,9 @@
 #ifndef TINYENGINE_H_
 #define TINYENGINE_H_
 
+#include <cstdint>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "common/Common.h"

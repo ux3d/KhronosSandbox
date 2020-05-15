@@ -1,6 +1,8 @@
 #ifndef GLTF_MATERIAL_H_
 #define GLTF_MATERIAL_H_
 
+#include <cstdint>
+
 #include "../math/Math.h"
 
 #include "PbrMetallicRoughness.h"

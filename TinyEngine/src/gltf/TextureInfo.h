@@ -1,6 +1,8 @@
 #ifndef GLTF_TEXTUREINFO_H_
 #define GLTF_TEXTUREINFO_H_
 
+#include <cstdint>
+
 class TextureInfo {
 public:
 	int32_t 	index = -1;
