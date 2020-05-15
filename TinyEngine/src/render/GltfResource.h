@@ -1,7 +1,7 @@
-#ifndef GLTF_GLTFRESOURCE_H_
-#define GLTF_GLTFRESOURCE_H_
+#ifndef RENDER__GLTFRESOURCE_H_
+#define RENDER__GLTFRESOURCE_H_
 
-#include "../../TinyEngine.h"
+#include "../gltf/GLTF.h"
 
 struct ViewProjectionUniformPushConstant {
 	glm::mat4 projection = glm::mat4(1.0f);
@@ -86,4 +86,4 @@ public:
 	RaytraceUniformPushConstant raytrace = {};
 };
 
-#endif /* GLTF_GLTFRESOURCE_H_ */
+#endif /* RENDER__GLTFRESOURCE_H_ */

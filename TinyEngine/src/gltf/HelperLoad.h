@@ -1,8 +1,6 @@
 #ifndef GLTF_HELPERLOAD_H_
 #define GLTF_HELPERLOAD_H_
 
-#include "GLTF.h"
-
 #define TINYGLTF_NO_EXTERNAL_IMAGE
 #define TINYGLTF_NO_STB_IMAGE
 #define TINYGLTF_NO_STB_IMAGE_WRITE
@@ -11,6 +9,8 @@
 #define TINYGLTF_NOEXCEPTION
 #define JSON_NOEXCEPTION
 #include <tiny_gltf.h>
+
+#include "GLTF.h"
 
 class HelperLoad {
 

@@ -1,12 +1,7 @@
 #ifndef COMPOSITE_VULKANRAYTRACERESOURCE_H_
 #define COMPOSITE_VULKANRAYTRACERESOURCE_H_
 
-#include <vector>
-
 #include "VulkanResource.h"
-
-#define VK_ENABLE_BETA_EXTENSIONS
-#include "volk.h"
 
 struct AccelerationStructureResourceCreateInfo {
 	VkAccelerationStructureTypeKHR type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;

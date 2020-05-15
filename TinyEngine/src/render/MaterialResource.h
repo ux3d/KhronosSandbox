@@ -1,7 +1,7 @@
-#ifndef GLTF_MATERIALRESOURCE_H_
-#define GLTF_MATERIALRESOURCE_H_
+#ifndef RENDER_MATERIALRESOURCE_H_
+#define RENDER_MATERIALRESOURCE_H_
 
-#include "../../TinyEngine.h"
+#include "../gltf/GLTF.h"
 
 class MaterialResource {
 public:
@@ -21,4 +21,4 @@ public:
 
 };
 
-#endif /* GLTF_MATERIALRESOURCE_H_ */
+#endif /* RENDER_MATERIALRESOURCE_H_ */

@@ -1,7 +1,6 @@
-#include "../common/Logger.h"
-#include "../vulkan/HelperVulkan.h"
 #include "VulkanRaytraceResource.h"
 
+#include "HelperVulkan.h"
 
 bool VulkanRaytraceResource::createAccelerationStructureResource(VkPhysicalDevice physicalDevice, VkDevice device, AccelerationStructureResource& accelerationStructureResource, const AccelerationStructureResourceCreateInfo& accelerationStructureResourceCreateInfo)
 {

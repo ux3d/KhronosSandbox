@@ -1,7 +1,7 @@
-#ifndef GLTF_PRIMITIVERESOURCE_H_
-#define GLTF_PRIMITIVERESOURCE_H_
+#ifndef RENDER_PRIMITIVERESOURCE_H_
+#define RENDER_PRIMITIVERESOURCE_H_
 
-#include "../../TinyEngine.h"
+#include "../gltf/GLTF.h"
 
 class PrimitiveResource {
 public:
@@ -34,4 +34,4 @@ public:
 	int32_t weights1AttributeIndex = -1;
 };
 
-#endif /* GLTF_PRIMITIVERESOURCE_H_ */
+#endif /* RENDER_PRIMITIVERESOURCE_H_ */

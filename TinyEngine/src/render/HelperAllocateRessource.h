@@ -1,7 +1,7 @@
-#ifndef GLTF_HELPERALLOCATERESSOURCE_H_
-#define GLTF_HELPERALLOCATERESSOURCE_H_
+#ifndef RENDER_HELPERALLOCATERESSOURCE_H_
+#define RENDER_HELPERALLOCATERESSOURCE_H_
 
-#include "../GLTF.h"
+#include "../gltf/GLTF.h"
 
 #include "ResourceManager.h"
 
@@ -47,4 +47,4 @@ public:
 
 };
 
-#endif /* GLTF_HELPERALLOCATERESSOURCE_H_ */
+#endif /* RENDER_HELPERALLOCATERESSOURCE_H_ */

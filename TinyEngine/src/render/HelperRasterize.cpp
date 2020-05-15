@@ -1,7 +1,6 @@
-#include "../HelperAccess.h"
+#include "HelperRasterize.h"
 
 #include "HelperAccessResource.h"
-#include "HelperRasterize.h"
 
 void HelperRasterize::draw(ResourceManager& resourceManager, const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {

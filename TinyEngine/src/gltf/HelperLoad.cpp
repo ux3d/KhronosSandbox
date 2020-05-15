@@ -1,7 +1,5 @@
 #include "HelperLoad.h"
 
-#include "HelperAccess.h"
-
 #define TINYGLTF_IMPLEMENTATION
 #define TINYGLTF_NO_EXTERNAL_IMAGE
 #define TINYGLTF_NO_STB_IMAGE
@@ -11,6 +9,8 @@
 #define TINYGLTF_NOEXCEPTION
 #define JSON_NOEXCEPTION
 #include <tiny_gltf.h>
+
+#include "HelperAccess.h"
 
 HelperLoad::HelperLoad() :
 	model()

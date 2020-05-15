@@ -1,6 +1,5 @@
-#include "../HelperAccess.h"
-
 #include "ResourceManager.h"
+
 #include "HelperAccessResource.h"
 
 void ResourceManager::terminate(BufferViewResource& bufferViewResource, VkDevice device)

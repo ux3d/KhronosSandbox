@@ -1,7 +1,7 @@
-#ifndef GLTF_HELPERRAYTRACE_H_
-#define GLTF_HELPERRAYTRACE_H_
+#ifndef RENDER_HELPERRAYTRACE_H_
+#define RENDER_HELPERRAYTRACE_H_
 
-#include "../GLTF.h"
+#include "../gltf/GLTF.h"
 
 #include "ResourceManager.h"
 
@@ -14,4 +14,4 @@ public:
 
 };
 
-#endif /* GLTF_VULKAN_HELPERRAYTRACE_H_ */
+#endif /* RENDER_HELPERRAYTRACE_H_ */

@@ -1,7 +1,7 @@
-#ifndef GLTF_SCENERESOURCE_H_
-#define GLTF_SCENERESOURCE_H_
+#ifndef RENDER_SCENERESOURCE_H_
+#define RENDER_SCENERESOURCE_H_
 
-#include "../../TinyEngine.h"
+#include "../gltf/GLTF.h"
 
 #include "GltfResource.h"
 
@@ -34,4 +34,4 @@ public:
 	VkDeviceSize size = 0;
 };
 
-#endif /* GLTF_SCENERESOURCE_H_ */
+#endif /* RENDER_SCENERESOURCE_H_ */

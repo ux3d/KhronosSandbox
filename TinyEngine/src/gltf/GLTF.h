@@ -1,7 +1,7 @@
 #ifndef GLTF_GLTF_H_
 #define GLTF_GLTF_H_
 
-#include "../TinyEngine.h"
+#include <vector>
 
 #include "Image.h"
 
@@ -28,6 +28,12 @@
 #include "Node.h"
 
 #include "Scene.h"
+
+#include "HelperAccess.h"
+
+#include "HelperLoad.h"
+
+#include "HelperUpdate.h"
 
 class GLTF {
 public:

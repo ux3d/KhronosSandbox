@@ -1,10 +1,6 @@
 #include "HelperVulkan.h"
 
-#include <cmath>
-#include <cstring>
-
-#include <glm/glm.hpp>
-#include "../common/Logger.h"
+#include "../math/Math.h"
 
 bool HelperVulkan::isDepthStencilFormat(VkFormat format)
 {

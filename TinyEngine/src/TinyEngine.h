@@ -1,14 +1,12 @@
 #ifndef TINYENGINE_H_
 #define TINYENGINE_H_
 
-#include "composite/VulkanRaytraceResource.h"
-#include "composite/VulkanResource.h"
-#include "vulkan/HelperVulkan.h"
-
 #include <optional>
 #include <vector>
 
 #include "common/Common.h"
+
+#include "composite/Composite.h"
 
 #include "gui/Gui.h"
 

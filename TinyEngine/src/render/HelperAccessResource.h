@@ -1,8 +1,7 @@
-#ifndef GLTF_HELPERACCESSRESOURCE_H_
-#define GLTF_HELPERACCESSRESOURCE_H_
+#ifndef RENDER_HELPERACCESSRESOURCE_H_
+#define RENDER_HELPERACCESSRESOURCE_H_
 
-#include "../BufferView.h"
-#include "../Accessor.h"
+#include "../gltf/GLTF.h"
 
 #include "ResourceManager.h"
 
@@ -19,4 +18,4 @@ public:
 	static VkSampler getSampler(ResourceManager& resourceManager, const Texture& texture);
 };
 
-#endif /* GLTF_HELPERVULKANACCESSRESOURCE_H_ */
+#endif /* RENDER_HELPERACCESSRESOURCE_H_ */

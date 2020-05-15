@@ -1,11 +1,8 @@
-#include <cmath>
-#include <cstring>
-
-#include <glm/glm.hpp>
-
-#include "../common/Logger.h"
-#include "../vulkan/HelperVulkan.h"
 #include "VulkanResource.h"
+
+#include "../math/Math.h"
+
+#include "HelperVulkan.h"
 
 bool VulkanResource::copyHostToDevice(VkDevice device, BufferResource& bufferResource, const void* data, size_t size)
 {

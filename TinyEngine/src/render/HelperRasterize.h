@@ -1,7 +1,7 @@
-#ifndef GLTF_HELPERRASTERIZE_H_
-#define GLTF_HELPERRASTERIZE_H_
+#ifndef RENDER_HELPERRASTERIZE_H_
+#define RENDER_HELPERRASTERIZE_H_
 
-#include "../GLTF.h"
+#include "../gltf/GLTF.h"
 
 #include "ResourceManager.h"
 
@@ -19,4 +19,4 @@ public:
 	static void draw(ResourceManager& resourceManager, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex);
 };
 
-#endif /* GLTF_HELPERRASTERIZE_H_ */
+#endif /* RENDER_HELPERRASTERIZE_H_ */

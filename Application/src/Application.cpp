@@ -1,12 +1,5 @@
 #include "Application.h"
 
-#include "gltf/vulkan/HelperRasterize.h"
-#include "gltf/vulkan/HelperRaytrace.h"
-#include "gltf/vulkan/HelperAccessResource.h"
-#include "gltf/vulkan/HelperAllocateRessource.h"
-#include "gltf/HelperLoad.h"
-#include "gltf/HelperUpdate.h"
-
 // Private
 
 bool Application::applicationInit()

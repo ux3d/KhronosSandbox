@@ -2,10 +2,10 @@
 #define COMPOSITE_VULKANRESOURCE_H_
 
 #include <vector>
-#include "../io/ImageDataResources.h"
 
-#define VK_ENABLE_BETA_EXTENSIONS
-#include "volk.h"
+#include "../common/Common.h"
+
+#include "../io/IO.h"
 
 struct BufferResourceCreateInfo {
     VkDeviceSize           size = 0;

@@ -1,15 +1,15 @@
-#ifndef GLTF_RESOURCEMANAGER_H_
-#define GLTF_RESOURCEMANAGER_H_
+#ifndef RENDER_RESOURCEMANAGER_H_
+#define RENDER_RESOURCEMANAGER_H_
 
-#include "../GLTF.h"
+#include <map>
+
+#include "../gltf/GLTF.h"
 
 #include "BufferViewResource.h"
 #include "MaterialResource.h"
 #include "PrimitiveResource.h"
 #include "SceneResource.h"
 #include "GltfResource.h"
-
-#include <map>
 
 class ResourceManager {
 
@@ -61,4 +61,4 @@ public:
 
 };
 
-#endif /* GLTF_RESOURCEMANAGER_H_ */
+#endif /* RENDER_RESOURCEMANAGER_H_ */

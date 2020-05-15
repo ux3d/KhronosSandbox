@@ -3,8 +3,7 @@
 
 #include <vector>
 
-#define VK_ENABLE_BETA_EXTENSIONS
-#include "volk.h"
+#include "../common/Common.h"
 
 class HelperVulkan
 {
