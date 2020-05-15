@@ -33,7 +33,7 @@ Evaluation
 
 ## Tested platforms
 - Windows 10 (64bit)
-- Ubuntu 19.10 (64bit)
+- Ubuntu 20.04 LTS (64bit)
 
 ## Used tools
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
