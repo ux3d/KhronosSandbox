@@ -14,6 +14,7 @@
 #include "Projection.h"
 #include "Random.h"
 #include "Sample.h"
+#include "Sphere.h"
 #include "SphericalCoordinate.h"
 
 #endif /* MATH_MATH_H_ */

@@ -3,6 +3,8 @@
 
 #include "Math.h"
 
+class Sphere;
+
 class Plane
 {
 private:
@@ -23,8 +25,14 @@ public:
 
 	float distance(const glm::vec4& point) const;
 
+	float distance(const Plane& plane) const;
+
+	float distance(const Sphere& sphere) const;
+
 	Plane operator* (const glm::mat4& matrix) const;
 
 };
+
+Plane operator* (const glm::mat4& matrix, const Plane& plane);
 
 #endif /* MATH_PLANE_H_ */
