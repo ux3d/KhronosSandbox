@@ -13,5 +13,6 @@
 #include "Projection.h"
 #include "Random.h"
 #include "Sample.h"
+#include "SphericalCoordinate.h"
 
 #endif /* MATH_MATH_H_ */

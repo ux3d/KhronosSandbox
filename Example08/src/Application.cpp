@@ -90,7 +90,7 @@ bool Application::applicationInit()
 	result = vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &descriptorSetLayout);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -108,7 +108,7 @@ bool Application::applicationInit()
 	result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &descriptorPool);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -125,7 +125,7 @@ bool Application::applicationInit()
 		result = vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &descriptorSets[i]);
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
@@ -284,7 +284,7 @@ bool Application::applicationInit()
 	result = vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -307,7 +307,7 @@ bool Application::applicationInit()
 	result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &graphicsPipeline);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}

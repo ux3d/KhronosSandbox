@@ -264,7 +264,7 @@ bool ResourceManager::initMaterial(const Material& material, const GLTF& glTF, V
 	result = vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &materialResource->descriptorSetLayout);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -283,7 +283,7 @@ bool ResourceManager::initMaterial(const Material& material, const GLTF& glTF, V
 	result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &materialResource->descriptorPool);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -297,7 +297,7 @@ bool ResourceManager::initMaterial(const Material& material, const GLTF& glTF, V
 	result = vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &materialResource->descriptorSet);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -468,7 +468,7 @@ bool ResourceManager::initPrimitive(const Primitive& primitive, const GLTF& glTF
 	result = vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &primitiveResource->pipelineLayout);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -492,7 +492,7 @@ bool ResourceManager::initPrimitive(const Primitive& primitive, const GLTF& glTF
 	result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &primitiveResource->graphicsPipeline);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -962,7 +962,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		VkResult result = vkCreateDescriptorSetLayout(device, &raytraceDescriptorSetLayoutCreateInfo, nullptr, &sceneResource->raytraceDescriptorSetLayout);
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
@@ -1055,7 +1055,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		result = vkCreateDescriptorPool(device, &raytraceDescriptorPoolCreateInfo, nullptr, &sceneResource->raytraceDescriptorPool);
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
@@ -1069,7 +1069,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		result = vkAllocateDescriptorSets(device, &raytraceDescriptorSetAllocateInfo, &sceneResource->raytraceDescriptorSet);
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
@@ -1259,7 +1259,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		result = vkCreatePipelineLayout(device, &raytracePipelineLayoutCreateInfo, nullptr, &sceneResource->raytracePipelineLayout);
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
@@ -1423,7 +1423,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		result = vkCreateRayTracingPipelinesKHR(device, VK_NULL_HANDLE, 1, &rayTracingPipelineCreateInfo, nullptr, &sceneResource->raytracePipeline);
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
@@ -1456,7 +1456,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		result = vkGetRayTracingShaderGroupHandlesKHR(device, sceneResource->raytracePipeline, 0, rayTracingShaderGroupCreateInfos.size(), rayTracingShaderGroupHandles.size(), rayTracingShaderGroupHandles.data());
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}

@@ -169,7 +169,7 @@ bool Application::applicationInit()
 	result = vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -192,7 +192,7 @@ bool Application::applicationInit()
 	result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &graphicsPipeline);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}

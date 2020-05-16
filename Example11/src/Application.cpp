@@ -211,7 +211,7 @@ bool Application::applicationInit()
 	result = vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &descriptorSetLayout);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -233,7 +233,7 @@ bool Application::applicationInit()
 	result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &descriptorPool);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -247,7 +247,7 @@ bool Application::applicationInit()
 	result = vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &descriptorSet);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -304,7 +304,7 @@ bool Application::applicationInit()
 	result = vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -434,7 +434,7 @@ bool Application::applicationInit()
 	result = vkCreateRayTracingPipelinesKHR(device, VK_NULL_HANDLE, 1, &rayTracingPipelineCreateInfo, nullptr, &pipeline);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -458,7 +458,7 @@ bool Application::applicationInit()
 	result = vkGetRayTracingShaderGroupHandlesKHR(device, pipeline, 0, rayTracingShaderGroupCreateInfos.size(), rayTracingShaderGroupHandles.size(), rayTracingShaderGroupHandles.data());
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}

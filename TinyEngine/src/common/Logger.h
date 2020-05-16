@@ -7,10 +7,10 @@
 #include "Common.h"
 
 enum DebugLevel {
-	TE_ERROR,
-	TE_WARNING,
-	TE_INFO,
-	TE_DEBUG
+	TinyEnigne_ERROR,
+	TinyEnigne_WARNING,
+	TinyEnigne_INFO,
+	TinyEnigne_DEBUG
 };
 
 class Logger

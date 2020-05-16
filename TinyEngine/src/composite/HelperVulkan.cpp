@@ -156,7 +156,7 @@ bool HelperVulkan::beginOneTimeSubmitCommand(VkDevice device, VkCommandPool comm
 	result = vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, &commandBuffer);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -168,7 +168,7 @@ bool HelperVulkan::beginOneTimeSubmitCommand(VkDevice device, VkCommandPool comm
 	result = vkBeginCommandBuffer(commandBuffer, &commandBufferBeginInfo);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 
@@ -185,7 +185,7 @@ bool HelperVulkan::endOneTimeSubmitCommand(VkDevice device, VkQueue queue, VkCom
 	result = vkEndCommandBuffer(commandBuffer);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 
@@ -200,7 +200,7 @@ bool HelperVulkan::endOneTimeSubmitCommand(VkDevice device, VkQueue queue, VkCom
 	result = vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 
@@ -210,7 +210,7 @@ bool HelperVulkan::endOneTimeSubmitCommand(VkDevice device, VkQueue queue, VkCom
 	result = vkQueueWaitIdle(queue);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 
 		vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 

@@ -44,7 +44,7 @@ int main()
 	VkResult result = glfwCreateWindowSurface(application.getInstance(), window, nullptr, &surface);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TE_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
 		application.terminate();
 		glfwDestroyWindow(window);
 		glfwTerminate();
