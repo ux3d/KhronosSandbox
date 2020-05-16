@@ -1,5 +1,7 @@
 #include "VulkanResource.h"
 
+#include <cstring>
+
 #include "../math/Math.h"
 
 #include "HelperVulkan.h"
