@@ -164,7 +164,7 @@ bg=cyan</panel_attributes>
     <id>UMLGeneric</id>
     <coordinates>
       <x>720</x>
-      <y>930</y>
+      <y>750</y>
       <w>300</w>
       <h>90</h>
     </coordinates>
@@ -270,10 +270,10 @@ gui</panel_attributes>
       <x>855</x>
       <y>465</y>
       <w>45</w>
-      <h>495</h>
+      <h>315</h>
     </coordinates>
     <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>10.0;310.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;190.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -477,16 +477,5 @@ bg=gray</panel_attributes>
     </coordinates>
     <panel_attributes>lt=&lt;.</panel_attributes>
     <additional_attributes>10.0;70.0;10.0;50.0;330.0;50.0;330.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>255</x>
-      <y>825</y>
-      <w>525</w>
-      <h>135</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>330.0;70.0;330.0;30.0;10.0;30.0;10.0;10.0</additional_attributes>
   </element>
 </diagram>
