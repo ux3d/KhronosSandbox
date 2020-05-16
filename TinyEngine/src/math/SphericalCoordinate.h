@@ -10,7 +10,6 @@ private:
 	float phi = 0.0f;
 	float rho = 1.0f;
 public:
-	SphericalCoordinate();
 	SphericalCoordinate(float theta, float phi, float rho = 1.0f);
 	SphericalCoordinate(const glm::vec3& cartesian);
 	~SphericalCoordinate();

@@ -2,11 +2,6 @@
 
 // https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 
-SphericalCoordinate::SphericalCoordinate() :
-	theta(0.0f), phi(0.0f), rho(1.0f)
-{
-}
-
 SphericalCoordinate::SphericalCoordinate(float theta, float phi, float rho) :
 	theta(theta), phi(phi), rho(rho)
 {
