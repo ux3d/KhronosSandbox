@@ -415,11 +415,11 @@ render</panel_attributes>
     <coordinates>
       <x>2055</x>
       <y>105</y>
-      <w>285</w>
+      <w>165</w>
       <h>315</h>
     </coordinates>
     <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>170.0;190.0;170.0;30.0;10.0;30.0;10.0;10.0</additional_attributes>
+    <additional_attributes>90.0;190.0;90.0;30.0;10.0;30.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLGeneric</id>
