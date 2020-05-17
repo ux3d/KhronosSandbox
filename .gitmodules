@@ -1,0 +1,22 @@
+[submodule "tinygltf"]
+	path = Third-Party/tinygltf
+	url = https://github.com/syoyo/tinygltf.git
+	branch = master
+[submodule "Third-Party/tinygltf"]
+	path = Third-Party/tinygltf
+	url = https://github.com/syoyo/tinygltf.git
+[submodule "Third-Party/glfw"]
+	path = Third-Party/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "Third-Party/glm"]
+	path = Third-Party/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "Third-Party/slimktx2"]
+	path = Third-Party/slimktx2
+	url = https://github.com/ux3d/slimktx2.git
+[submodule "Third-Party/volk"]
+	path = Third-Party/volk
+	url = https://github.com/zeux/volk
+[submodule "Third-Party/stb"]
+	path = Third-Party/stb
+	url = https://github.com/nothings/stb.git
