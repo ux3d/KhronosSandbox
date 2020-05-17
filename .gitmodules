@@ -23,3 +23,6 @@
 [submodule "Third-Party/shaderc"]
 	path = Third-Party/shaderc
 	url = https://github.com/google/shaderc.git
+[submodule "Third-Party/imgui"]
+	path = Third-Party/imgui
+	url = https://github.com/ocornut/imgui
