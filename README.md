@@ -48,15 +48,15 @@ Evaluation
 ## Used libraries
 - [glTF Sample Viewer](https://github.com/KhronosGroup/glTF-Sample-Viewer)
 - [GLFW](https://github.com/glfw/glfw)
-- [glm](https://github.com/g-truc/glm)  
+- [glm](https://github.com/g-truc/glm)
+- [Shaderc](https://github.com/google/shaderc)  
 - [Slim KTX2](https://github.com/ux3d/slimktx2)
 - [stb](https://github.com/nothings/stb)    
 - [tiny glTF](https://github.com/syoyo/tinygltf)  
-   - [json](https://github.com/nlohmann/json)
    - stb
 - [volk](https://github.com/zeux/volk)  
 - [Vulkan SDK](https://vulkan.lunarg.com/)
-   - [Shaderc](https://github.com/google/shaderc)
+   - Shaderc
 
 ## Limitiations by purpose
 - Vulkan  
