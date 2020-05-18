@@ -63,7 +63,7 @@
                                 								
                                 <option id="gnu.cpp.compiler.option.dialect.flags.398765280" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="" valueType="string"/>
                                 								
-                                <option id="gnu.cpp.compiler.option.warnings.pedantic.1009119647" superClass="gnu.cpp.compiler.option.warnings.pedantic" value="true" valueType="boolean"/>
+                                <option id="gnu.cpp.compiler.option.warnings.pedantic.1009119647" name="Pedantic (-pedantic)" superClass="gnu.cpp.compiler.option.warnings.pedantic" useByScannerDiscovery="false" value="true" valueType="boolean"/>
                                 								
                                 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.924392526" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
                                 							
@@ -197,7 +197,7 @@
                                 								
                                 <option id="gnu.cpp.compiler.option.dialect.flags.1165436632" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="" valueType="string"/>
                                 								
-                                <option id="gnu.cpp.compiler.option.warnings.pedantic.841409175" superClass="gnu.cpp.compiler.option.warnings.pedantic" value="true" valueType="boolean"/>
+                                <option id="gnu.cpp.compiler.option.warnings.pedantic.841409175" name="Pedantic (-pedantic)" superClass="gnu.cpp.compiler.option.warnings.pedantic" useByScannerDiscovery="false" value="true" valueType="boolean"/>
                                 								
                                 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.2011530444" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
                                 							
@@ -327,7 +327,7 @@
                                 								
                                 <option id="gnu.cpp.compiler.option.dialect.std.2032116431" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++17" valueType="enumerated"/>
                                 								
-                                <option id="gnu.cpp.compiler.option.warnings.pedantic.1756386331" superClass="gnu.cpp.compiler.option.warnings.pedantic" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.cpp.compiler.option.warnings.pedantic.1756386331" name="Pedantic (-pedantic)" superClass="gnu.cpp.compiler.option.warnings.pedantic" useByScannerDiscovery="false" value="true" valueType="boolean"/>
                                 								
                                 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1623814928" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
                                 							
@@ -357,7 +357,9 @@
                                     									
                                     <listOptionValue builtIn="false" value="shaderc_combined"/>
                                     									
-                                    <listOptionValue builtIn="false" value="glfw"/>
+                                    <listOptionValue builtIn="false" value="glfw3"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="X11"/>
                                     									
                                     <listOptionValue builtIn="false" value="pthread"/>
                                     									
@@ -463,7 +465,7 @@
                                 								
                                 <option id="gnu.cpp.compiler.option.dialect.std.669959068" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++17" valueType="enumerated"/>
                                 								
-                                <option id="gnu.cpp.compiler.option.warnings.pedantic.987614735" superClass="gnu.cpp.compiler.option.warnings.pedantic" value="true" valueType="boolean"/>
+                                <option id="gnu.cpp.compiler.option.warnings.pedantic.987614735" name="Pedantic (-pedantic)" superClass="gnu.cpp.compiler.option.warnings.pedantic" useByScannerDiscovery="false" value="true" valueType="boolean"/>
                                 								
                                 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.2063603144" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
                                 							
@@ -483,7 +485,7 @@
                             							
                             <tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.1064966170" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
                                 								
-                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.426913055" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.426913055" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
                                     									
                                     <listOptionValue builtIn="false" value="TinyEngine"/>
                                     									
@@ -493,7 +495,9 @@
                                     									
                                     <listOptionValue builtIn="false" value="shaderc_combined"/>
                                     									
-                                    <listOptionValue builtIn="false" value="glfw"/>
+                                    <listOptionValue builtIn="false" value="glfw3"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="X11"/>
                                     									
                                     <listOptionValue builtIn="false" value="pthread"/>
                                     									
