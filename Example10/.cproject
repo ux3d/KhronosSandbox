@@ -53,7 +53,12 @@
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/src}&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Third-Party/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glfw/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glm}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/slimktx2/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${env_var:VULKAN_SDK}/include&quot;"/>
                                     								
@@ -187,7 +192,12 @@
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/src}&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Third-Party/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glfw/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glm}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/slimktx2/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${env_var:VULKAN_SDK}/include&quot;"/>
                                     								
@@ -315,7 +325,12 @@
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/src}&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Third-Party/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glfw/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glm}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/slimktx2/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${env_var:VULKAN_SDK}/include&quot;"/>
                                     								
@@ -455,7 +470,12 @@
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/src}&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Third-Party/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glfw/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glm}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/slimktx2/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${env_var:VULKAN_SDK}/include&quot;"/>
                                     								
