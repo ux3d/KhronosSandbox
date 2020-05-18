@@ -89,7 +89,7 @@
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Debug_Windows}&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Third-Party/windows/lib}&quot;"/>
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/lib/windows/gcc}&quot;"/>
                                     								
                                 </option>
                                 								
@@ -223,7 +223,7 @@
                                     									
                                     <listOptionValue builtIn="false" value="${workspace_loc:/TinyEngine/Release_Windows}"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Third-Party/windows/lib}&quot;"/>
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/lib/windows/gcc}&quot;"/>
                                     								
                                 </option>
                                 								
@@ -369,7 +369,7 @@
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Debug_Linux}&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Third-Party/linux/lib}&quot;"/>
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/lib/linux/gcc}&quot;"/>
                                     								
                                 </option>
                                 								
@@ -505,7 +505,7 @@
                                     									
                                     <listOptionValue builtIn="false" value="${workspace_loc:/TinyEngine/Release_Linux}"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Third-Party/linux/lib}&quot;"/>
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/lib/linux/gcc}&quot;"/>
                                     								
                                 </option>
                                 								

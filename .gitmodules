@@ -1,28 +1,24 @@
-[submodule "tinygltf"]
-	path = Third-Party/tinygltf
+[submodule "Third-Party/GitHub/tinygltf"]
+	path = Third-Party/GitHub/tinygltf
 	url = https://github.com/syoyo/tinygltf.git
-	branch = master
-[submodule "Third-Party/tinygltf"]
-	path = Third-Party/tinygltf
-	url = https://github.com/syoyo/tinygltf.git
-[submodule "Third-Party/glfw"]
-	path = Third-Party/glfw
+[submodule "Third-Party/GitHub/glfw"]
+	path = Third-Party/GitHub/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "Third-Party/glm"]
-	path = Third-Party/glm
+[submodule "Third-Party/GitHub/glm"]
+	path = Third-Party/GitHub/glm
 	url = https://github.com/g-truc/glm.git
-[submodule "Third-Party/slimktx2"]
-	path = Third-Party/slimktx2
+[submodule "Third-Party/GitHub/slimktx2"]
+	path = Third-Party/GitHub/slimktx2
 	url = https://github.com/ux3d/slimktx2.git
-[submodule "Third-Party/volk"]
-	path = Third-Party/volk
+[submodule "Third-Party/GitHub/volk"]
+	path = Third-Party/GitHub/volk
 	url = https://github.com/zeux/volk
-[submodule "Third-Party/stb"]
-	path = Third-Party/stb
+[submodule "Third-Party/GitHub/stb"]
+	path = Third-Party/GitHub/stb
 	url = https://github.com/nothings/stb.git
-[submodule "Third-Party/shaderc"]
-	path = Third-Party/shaderc
+[submodule "Third-Party/GitHub/shaderc"]
+	path = Third-Party/GitHub/shaderc
 	url = https://github.com/google/shaderc.git
-[submodule "Third-Party/imgui"]
-	path = Third-Party/imgui
+[submodule "Third-Party/GitHub/imgui"]
+	path = Third-Party/GitHub/imgui
 	url = https://github.com/ocornut/imgui

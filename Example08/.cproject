@@ -44,7 +44,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug.1131931836" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.2012687219" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Debug_Windows}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Third-Party/windows/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/lib/windows/gcc}&quot;"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.541261206" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
 									<listOptionValue builtIn="false" value="TinyEngine"/>
@@ -111,7 +111,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.release.407662398" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.release">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.785611814" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
 									<listOptionValue builtIn="false" value="${workspace_loc:/TinyEngine/Release_Windows}"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Third-Party/windows/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/lib/windows/gcc}&quot;"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.1272197508" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
 									<listOptionValue builtIn="false" value="TinyEngine"/>
@@ -184,7 +184,7 @@
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.530114139" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Debug_Linux}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Third-Party/linux/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/lib/linux/gcc}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1451913878" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -252,7 +252,7 @@
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.1325874207" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="${workspace_loc:/TinyEngine/Release_Linux}"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Third-Party/linux/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/lib/linux/gcc}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.190258687" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
