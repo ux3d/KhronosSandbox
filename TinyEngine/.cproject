@@ -30,12 +30,13 @@
 								<option id="gnu.cpp.compiler.mingw.exe.debug.option.optimization.level.1199392168" name="Optimization Level" superClass="gnu.cpp.compiler.mingw.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.mingw.exe.debug.option.debugging.level.1536473451" name="Debug Level" superClass="gnu.cpp.compiler.mingw.exe.debug.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.31654345" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glfw/include}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glm}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/slimktx2/include}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/src/gui/imgui}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glfw/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glm}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/slimktx2/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${env_var:VULKAN_SDK}/include&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.806184164" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++17" valueType="enumerated"/>
@@ -100,12 +101,13 @@
 								<option id="gnu.cpp.compiler.mingw.exe.release.option.optimization.level.573170858" name="Optimization Level" superClass="gnu.cpp.compiler.mingw.exe.release.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option defaultValue="gnu.cpp.compiler.debugging.level.none" id="gnu.cpp.compiler.mingw.exe.release.option.debugging.level.1195302197" name="Debug Level" superClass="gnu.cpp.compiler.mingw.exe.release.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.275041858" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glfw/include}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glm}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/slimktx2/include}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/src/gui/imgui}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glfw/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glm}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/slimktx2/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${env_var:VULKAN_SDK}/include&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.712102086" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++17" valueType="enumerated"/>
@@ -163,12 +165,13 @@
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.309318039" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.80253246" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.1728822856" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glfw/include}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glm}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/slimktx2/include}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/src/gui/imgui}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glfw/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glm}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/slimktx2/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${env_var:VULKAN_SDK}/include&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.optimization.level.228859252" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
@@ -223,12 +226,13 @@
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1630861926" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.2043899892" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.1527087837" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glfw/include}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glm}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/slimktx2/include}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/src/gui/imgui}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glfw/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/glm}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/slimktx2/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${env_var:VULKAN_SDK}/include&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.optimization.level.502422672" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
@@ -261,21 +265,6 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="TinyEngine.cdt.managedbuild.target.gnu.mingw.exe.1043212587" name="Executable" projectType="cdt.managedbuild.target.gnu.mingw.exe"/>
 	</storageModule>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.release.1408195865;cdt.managedbuild.config.gnu.mingw.exe.release.1408195865.;cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release.883007991;cdt.managedbuild.tool.gnu.c.compiler.input.402434981">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1441853804;cdt.managedbuild.config.gnu.mingw.exe.debug.1441853804.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.debug.360662765;cdt.managedbuild.tool.gnu.cpp.compiler.input.924392526">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.release.1408195865;cdt.managedbuild.config.gnu.mingw.exe.release.1408195865.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.release.285504737;cdt.managedbuild.tool.gnu.cpp.compiler.input.2011530444">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1441853804;cdt.managedbuild.config.gnu.mingw.exe.debug.1441853804.;cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug.1649413367;cdt.managedbuild.tool.gnu.c.compiler.input.945027722">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Debug_Windows">
@@ -289,4 +278,19 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.release.1408195865;cdt.managedbuild.config.gnu.mingw.exe.release.1408195865.;cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release.883007991;cdt.managedbuild.tool.gnu.c.compiler.input.402434981">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1441853804;cdt.managedbuild.config.gnu.mingw.exe.debug.1441853804.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.debug.360662765;cdt.managedbuild.tool.gnu.cpp.compiler.input.924392526">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1441853804;cdt.managedbuild.config.gnu.mingw.exe.debug.1441853804.;cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug.1649413367;cdt.managedbuild.tool.gnu.c.compiler.input.945027722">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.release.1408195865;cdt.managedbuild.config.gnu.mingw.exe.release.1408195865.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.release.285504737;cdt.managedbuild.tool.gnu.cpp.compiler.input.2011530444">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+	</storageModule>
 </cproject>
