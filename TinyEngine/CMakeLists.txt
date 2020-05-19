@@ -20,6 +20,6 @@ target_include_directories(TinyEngine PRIVATE
 	${PROJECT_SOURCE_DIR}/../Third-Party/GitHub/stb
 	${PROJECT_SOURCE_DIR}/../Third-Party/GitHub/tinygltf
 	${PROJECT_SOURCE_DIR}/../Third-Party/GitHub/volk
-	$ENV{VULKAN_SDK}/Include
+	$ENV{VULKAN_SDK}/include
 	${PROJECT_SOURCE_DIR}/src/gui/imgui
 )
