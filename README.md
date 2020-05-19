@@ -1,17 +1,9 @@
-# glTF 2.0 raytrace vs. pathtrace vs. rasterize using Vulkan
+# TinyEngine for glTF 2.0 raytracing and rasterizing using Vulkan
 
-This R&D project is a playground to evaluate raytracing vs. pathtracing vs. rasterizing glTF 2.0 with it's Metallic-Roughness material model.  
+This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a sandbox to evaluate raytracing vs. rasterizing [glTF 2.0](https://github.com/KhronosGroup/glTF/tree/master/specification/2.0) using [Vulkan](https://www.khronos.org/vulkan/) with it's Metallic-Roughness material model.  
+The TinyEngine requires Vulkan 1.2 and several extensions for raytracing. However, the TinyEngine can also be setup for Vulkan 1.0 and 1.1.
 
 ![Screenshot DamagedHelmet](screenshot.jpg)
-
-Evaluation
-- [x] TinyEngine
-  - [x] Resize/maximize
-- [x] glTF rasterize
-- [x] glTF raytrace
-  - [ ] Shadows
-  - [ ] Transparency
-- [x] glTF pathtrace
 
 ## TinyEngine architecture
 
@@ -19,7 +11,7 @@ Evaluation
 
 ## How to build?
 - [Vulkan SDK 1.2.135.0 or later](https://vulkan.lunarg.com/sdk/home)
-- [NVIDIA Vulkan 1.2 Developer Beta Driver or later](https://developer.nvidia.com/vulkan-driver)
+- [NVIDIA Vulkan 1.2 Developer Beta Driver or later for raytracing](https://developer.nvidia.com/vulkan-driver)
    - NVIDIA GPU capable for raytracing
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
    - GCC for Linux
@@ -62,11 +54,11 @@ Evaluation
 ## Limitiations by purpose
 - Vulkan  
   - During minimize, the update loop is stopped.
-  - Helper methods for initalization are not optimal and causing a stall on the GPU. Again, this is done for Vulkan code simplicity.
+  - Helper methods for initalization are not optimal and causing a stall on the GPU. This is done for Vulkan code simplicity.
 - Tooling
   - gcc
   - C++17
-  - 64bit
+  - 64bit only
 
 ## References
 - [NVIDIA DesignWorks Samples](https://github.com/nvpro-samples/)
