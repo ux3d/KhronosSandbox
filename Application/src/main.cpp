@@ -115,8 +115,8 @@ int main(int argc, char **argv)
 					yposLast = ypos;
 				}
 
-				application.orbitY(xpos - xposLast);
-				application.orbitX(ypos - yposLast);
+				application.orbitY(static_cast<float>(xpos - xposLast));
+				application.orbitX(static_cast<float>(ypos - yposLast));
 
 				xposLast = xpos;
 				yposLast = ypos;
@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 					yposLast = ypos;
 				}
 
-				application.zoom(ypos - yposLast);
+				application.zoom(static_cast<float>(ypos - yposLast));
 
 				xposLast = xpos;
 				yposLast = ypos;

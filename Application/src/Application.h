@@ -19,7 +19,7 @@ private:
 	float rotY = 0.0f;
 	float rotX = 0.0f;
 
-	float zoomSpeed = 0.05;
+	float zoomSpeed = 0.05f;
 
 	//
 
