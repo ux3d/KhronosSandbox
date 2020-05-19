@@ -31,7 +31,7 @@ struct GLTF {
 	std::vector<Mesh> meshes;
 	std::vector<Node> nodes;
 	std::vector<Scene> scenes;
-	size_t defaultScene = 0;
+	uint32_t defaultScene = 0;
 };
 
 #endif /* GLTF_GLTF_H_ */

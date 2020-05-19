@@ -8,9 +8,9 @@
 struct BufferView {
 	int32_t buffer = -1;
 
-	size_t byteOffset = 0;
-	size_t byteLength = 1;
-	size_t byteStride = 4;
+	uint32_t byteOffset = 0;
+	uint32_t byteLength = 1;
+	uint32_t byteStride = 4;
 
 	int32_t target = -1;
 

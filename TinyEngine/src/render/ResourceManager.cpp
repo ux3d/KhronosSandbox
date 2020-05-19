@@ -258,7 +258,7 @@ bool ResourceManager::initMaterial(const Material& material, const GLTF& glTF, V
 
 	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = {};
 	descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	descriptorSetLayoutCreateInfo.bindingCount = descriptorSetLayoutBindings.size();
+	descriptorSetLayoutCreateInfo.bindingCount = static_cast<uint32_t>(descriptorSetLayoutBindings.size());
 	descriptorSetLayoutCreateInfo.pBindings = descriptorSetLayoutBindings.data();
 
 	result = vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &materialResource->descriptorSetLayout);
@@ -276,7 +276,7 @@ bool ResourceManager::initMaterial(const Material& material, const GLTF& glTF, V
 
 	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
 	descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	descriptorPoolCreateInfo.poolSizeCount = descriptorSetLayoutBindings.size();
+	descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(descriptorSetLayoutBindings.size());
 	descriptorPoolCreateInfo.pPoolSizes = descriptorPoolSizes.data();
 	descriptorPoolCreateInfo.maxSets = 1;
 
@@ -302,12 +302,12 @@ bool ResourceManager::initMaterial(const Material& material, const GLTF& glTF, V
 		return false;
 	}
 
-	uint32_t descriptorImageInfosSize = materialResource->descriptorImageInfos.size();
+	uint32_t descriptorImageInfosSize = static_cast<uint32_t>(materialResource->descriptorImageInfos.size());
 	uint32_t descriptorBufferInfosSize = 1;
 
 	std::vector<VkWriteDescriptorSet> writeDescriptorSets(descriptorImageInfosSize + descriptorBufferInfosSize);
 
-	for (size_t k = 0; k < descriptorImageInfosSize; k++)
+	for (uint32_t k = 0; k < descriptorImageInfosSize; k++)
 	{
 		writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		writeDescriptorSets[k].dstSet = materialResource->descriptorSet;
@@ -318,7 +318,7 @@ bool ResourceManager::initMaterial(const Material& material, const GLTF& glTF, V
 		writeDescriptorSets[k].pImageInfo = &materialResource->descriptorImageInfos[k];
 	}
 
-	for (size_t k = descriptorImageInfosSize; k < descriptorImageInfosSize + descriptorBufferInfosSize; k++)
+	for (uint32_t k = descriptorImageInfosSize; k < descriptorImageInfosSize + descriptorBufferInfosSize; k++)
 	{
 		writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		writeDescriptorSets[k].dstSet = materialResource->descriptorSet;
@@ -745,7 +745,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		//
 
 		topLevelResourceCreateInfo.deviceAddress = deviceAddress;
-		topLevelResourceCreateInfo.primitiveCount = sceneResource->accelerationStructureInstances.size();
+		topLevelResourceCreateInfo.primitiveCount = static_cast<uint32_t>(sceneResource->accelerationStructureInstances.size());
 
 		topLevelResourceCreateInfo.useHostCommand = false;
 
@@ -891,7 +891,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 			raytraceDescriptorSetLayoutBinding = {};
 			raytraceDescriptorSetLayoutBinding.binding         = texturesBinding;
 			raytraceDescriptorSetLayoutBinding.descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			raytraceDescriptorSetLayoutBinding.descriptorCount = descriptorImageInfoTextures.size();
+			raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(descriptorImageInfoTextures.size());
 			raytraceDescriptorSetLayoutBinding.stageFlags      = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
 			raytraceDescriptorSetLayoutBindings.push_back(raytraceDescriptorSetLayoutBinding);
 		}
@@ -913,14 +913,14 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		raytraceDescriptorSetLayoutBinding = {};
 		raytraceDescriptorSetLayoutBinding.binding         = indicesBinding;
 		raytraceDescriptorSetLayoutBinding.descriptorType  = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		raytraceDescriptorSetLayoutBinding.descriptorCount = descriptorBufferInfoIndices.size();
+		raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoIndices.size());
 		raytraceDescriptorSetLayoutBinding.stageFlags      = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
 		raytraceDescriptorSetLayoutBindings.push_back(raytraceDescriptorSetLayoutBinding);
 
 		raytraceDescriptorSetLayoutBinding = {};
 		raytraceDescriptorSetLayoutBinding.binding         = positionBinding;
 		raytraceDescriptorSetLayoutBinding.descriptorType  = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		raytraceDescriptorSetLayoutBinding.descriptorCount = descriptorBufferInfoPosition.size();
+		raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoPosition.size());
 		raytraceDescriptorSetLayoutBinding.stageFlags      = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
 		raytraceDescriptorSetLayoutBindings.push_back(raytraceDescriptorSetLayoutBinding);
 
@@ -929,7 +929,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 			raytraceDescriptorSetLayoutBinding = {};
 			raytraceDescriptorSetLayoutBinding.binding         = normalBinding;
 			raytraceDescriptorSetLayoutBinding.descriptorType  = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			raytraceDescriptorSetLayoutBinding.descriptorCount = descriptorBufferInfoNormal.size();
+			raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoNormal.size());
 			raytraceDescriptorSetLayoutBinding.stageFlags      = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
 			raytraceDescriptorSetLayoutBindings.push_back(raytraceDescriptorSetLayoutBinding);
 		}
@@ -939,7 +939,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 			raytraceDescriptorSetLayoutBinding = {};
 			raytraceDescriptorSetLayoutBinding.binding         = tangentBinding;
 			raytraceDescriptorSetLayoutBinding.descriptorType  = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			raytraceDescriptorSetLayoutBinding.descriptorCount = descriptorBufferInfoTangent.size();
+			raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoTangent.size());
 			raytraceDescriptorSetLayoutBinding.stageFlags      = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
 			raytraceDescriptorSetLayoutBindings.push_back(raytraceDescriptorSetLayoutBinding);
 		}
@@ -949,14 +949,14 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 			raytraceDescriptorSetLayoutBinding = {};
 			raytraceDescriptorSetLayoutBinding.binding         = texCoord0Binding;
 			raytraceDescriptorSetLayoutBinding.descriptorType  = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			raytraceDescriptorSetLayoutBinding.descriptorCount = descriptorBufferInfoTexCoord0.size();
+			raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoTexCoord0.size());
 			raytraceDescriptorSetLayoutBinding.stageFlags      = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
 			raytraceDescriptorSetLayoutBindings.push_back(raytraceDescriptorSetLayoutBinding);
 		}
 
 		VkDescriptorSetLayoutCreateInfo raytraceDescriptorSetLayoutCreateInfo = {};
 		raytraceDescriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		raytraceDescriptorSetLayoutCreateInfo.bindingCount = raytraceDescriptorSetLayoutBindings.size();
+		raytraceDescriptorSetLayoutCreateInfo.bindingCount = static_cast<uint32_t>(raytraceDescriptorSetLayoutBindings.size());
 		raytraceDescriptorSetLayoutCreateInfo.pBindings = raytraceDescriptorSetLayoutBindings.data();
 
 		VkResult result = vkCreateDescriptorSetLayout(device, &raytraceDescriptorSetLayoutCreateInfo, nullptr, &sceneResource->raytraceDescriptorSetLayout);
@@ -998,7 +998,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		{
 			raytraceDescriptorPoolSize = {};
 			raytraceDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			raytraceDescriptorPoolSize.descriptorCount = descriptorImageInfoTextures.size();
+			raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(descriptorImageInfoTextures.size());
 			raytraceDescriptorPoolSizes.push_back(raytraceDescriptorPoolSize);
 		}
 
@@ -1014,19 +1014,19 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 
 		raytraceDescriptorPoolSize = {};
 		raytraceDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		raytraceDescriptorPoolSize.descriptorCount = descriptorBufferInfoIndices.size();
+		raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoIndices.size());
 		raytraceDescriptorPoolSizes.push_back(raytraceDescriptorPoolSize);
 
 		raytraceDescriptorPoolSize = {};
 		raytraceDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		raytraceDescriptorPoolSize.descriptorCount = descriptorBufferInfoPosition.size();
+		raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoPosition.size());
 		raytraceDescriptorPoolSizes.push_back(raytraceDescriptorPoolSize);
 
 		if (descriptorBufferInfoNormal.size() > 0)
 		{
 			raytraceDescriptorPoolSize = {};
 			raytraceDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			raytraceDescriptorPoolSize.descriptorCount = descriptorBufferInfoNormal.size();
+			raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoNormal.size());
 			raytraceDescriptorPoolSizes.push_back(raytraceDescriptorPoolSize);
 		}
 
@@ -1034,7 +1034,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		{
 			raytraceDescriptorPoolSize = {};
 			raytraceDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			raytraceDescriptorPoolSize.descriptorCount = descriptorBufferInfoTangent.size();
+			raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoTangent.size());
 			raytraceDescriptorPoolSizes.push_back(raytraceDescriptorPoolSize);
 		}
 
@@ -1042,13 +1042,13 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		{
 			raytraceDescriptorPoolSize = {};
 			raytraceDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			raytraceDescriptorPoolSize.descriptorCount = descriptorBufferInfoTexCoord0.size();
+			raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoTexCoord0.size());
 			raytraceDescriptorPoolSizes.push_back(raytraceDescriptorPoolSize);
 		}
 
 		VkDescriptorPoolCreateInfo raytraceDescriptorPoolCreateInfo = {};
 		raytraceDescriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		raytraceDescriptorPoolCreateInfo.poolSizeCount = raytraceDescriptorPoolSizes.size();
+		raytraceDescriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(raytraceDescriptorPoolSizes.size());
 		raytraceDescriptorPoolCreateInfo.pPoolSizes = raytraceDescriptorPoolSizes.data();
 		raytraceDescriptorPoolCreateInfo.maxSets = 1;
 
@@ -1168,7 +1168,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 			writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 			writeDescriptorSet.dstBinding = texturesBinding;
 			writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			writeDescriptorSet.descriptorCount = descriptorImageInfoTextures.size();
+			writeDescriptorSet.descriptorCount = static_cast<uint32_t>(descriptorImageInfoTextures.size());
 			writeDescriptorSet.pImageInfo = descriptorImageInfoTextures.data();
 			writeDescriptorSets.push_back(writeDescriptorSet);
 		}
@@ -1193,7 +1193,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 		writeDescriptorSet.dstBinding = indicesBinding;
 		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		writeDescriptorSet.descriptorCount = descriptorBufferInfoIndices.size();
+		writeDescriptorSet.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoIndices.size());
 		writeDescriptorSet.pBufferInfo = descriptorBufferInfoIndices.data();
 		writeDescriptorSets.push_back(writeDescriptorSet);
 
@@ -1201,7 +1201,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 		writeDescriptorSet.dstBinding = positionBinding;
 		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		writeDescriptorSet.descriptorCount = descriptorBufferInfoPosition.size();
+		writeDescriptorSet.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoPosition.size());
 		writeDescriptorSet.pBufferInfo = descriptorBufferInfoPosition.data();
 		writeDescriptorSets.push_back(writeDescriptorSet);
 
@@ -1211,7 +1211,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 			writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 			writeDescriptorSet.dstBinding = normalBinding;
 			writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			writeDescriptorSet.descriptorCount = descriptorBufferInfoNormal.size();
+			writeDescriptorSet.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoNormal.size());
 			writeDescriptorSet.pBufferInfo = descriptorBufferInfoNormal.data();
 			writeDescriptorSets.push_back(writeDescriptorSet);
 		}
@@ -1222,7 +1222,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 			writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 			writeDescriptorSet.dstBinding = tangentBinding;
 			writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			writeDescriptorSet.descriptorCount = descriptorBufferInfoTangent.size();
+			writeDescriptorSet.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoTangent.size());
 			writeDescriptorSet.pBufferInfo = descriptorBufferInfoTangent.data();
 			writeDescriptorSets.push_back(writeDescriptorSet);
 		}
@@ -1233,12 +1233,12 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 			writeDescriptorSet.dstSet = sceneResource->raytraceDescriptorSet;
 			writeDescriptorSet.dstBinding = texCoord0Binding;
 			writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			writeDescriptorSet.descriptorCount = descriptorBufferInfoTexCoord0.size();
+			writeDescriptorSet.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoTexCoord0.size());
 			writeDescriptorSet.pBufferInfo = descriptorBufferInfoTexCoord0.data();
 			writeDescriptorSets.push_back(writeDescriptorSet);
 		}
 
-		vkUpdateDescriptorSets(device, writeDescriptorSets.size(), writeDescriptorSets.data(), 0, nullptr);
+		vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 
 		//
 		// Creating ray tracing raytracePipeline.
@@ -1412,9 +1412,9 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 
 		VkRayTracingPipelineCreateInfoKHR rayTracingPipelineCreateInfo = {};
 		rayTracingPipelineCreateInfo.sType             = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR;
-		rayTracingPipelineCreateInfo.stageCount        = raytracePipelineShaderStageCreateInfos.size();
+		rayTracingPipelineCreateInfo.stageCount        = static_cast<uint32_t>(raytracePipelineShaderStageCreateInfos.size());
 		rayTracingPipelineCreateInfo.pStages           = raytracePipelineShaderStageCreateInfos.data();
-		rayTracingPipelineCreateInfo.groupCount        = rayTracingShaderGroupCreateInfos.size();
+		rayTracingPipelineCreateInfo.groupCount        = static_cast<uint32_t>(rayTracingShaderGroupCreateInfos.size());
 		rayTracingPipelineCreateInfo.pGroups           = rayTracingShaderGroupCreateInfos.data();
 		rayTracingPipelineCreateInfo.maxRecursionDepth = 2;
 		rayTracingPipelineCreateInfo.layout            = sceneResource->raytracePipelineLayout;
@@ -1453,7 +1453,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 
 		std::vector<uint8_t> rayTracingShaderGroupHandles(bufferResourceCreateInfo.size);
 
-		result = vkGetRayTracingShaderGroupHandlesKHR(device, sceneResource->raytracePipeline, 0, rayTracingShaderGroupCreateInfos.size(), rayTracingShaderGroupHandles.size(), rayTracingShaderGroupHandles.data());
+		result = vkGetRayTracingShaderGroupHandlesKHR(device, sceneResource->raytracePipeline, 0, static_cast<uint32_t>(rayTracingShaderGroupCreateInfos.size()), rayTracingShaderGroupHandles.size(), rayTracingShaderGroupHandles.data());
 		if (result != VK_SUCCESS)
 		{
 			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);

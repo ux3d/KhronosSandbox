@@ -29,7 +29,7 @@ bool HelperLoad::initBuffers(GLTF& glTF)
 
 		buffer.uri = model.buffers[i].uri;
 
-		buffer.byteLength = model.buffers[i].data.size();
+		buffer.byteLength = static_cast<uint32_t>(model.buffers[i].data.size());
 
 		buffer.binary.resize(buffer.byteLength);
 		memcpy(buffer.binary.data(), model.buffers[i].data.data(), buffer.byteLength);
@@ -56,9 +56,9 @@ bool HelperLoad::initBufferViews(GLTF& glTF)
 			return false;
 		}
 
-		bufferView.byteOffset = model.bufferViews[i].byteOffset;
-		bufferView.byteLength = model.bufferViews[i].byteLength;
-		bufferView.byteStride = model.bufferViews[i].byteStride;
+		bufferView.byteOffset = static_cast<uint32_t>(model.bufferViews[i].byteOffset);
+		bufferView.byteLength = static_cast<uint32_t>(model.bufferViews[i].byteLength);
+		bufferView.byteStride = static_cast<uint32_t>(model.bufferViews[i].byteStride);
 
 		bufferView.target = model.bufferViews[i].target;
 	}
@@ -84,9 +84,9 @@ bool HelperLoad::initAccessors(GLTF& glTF)
 			return false;
 		}
 
-		accessor.byteOffset = model.accessors[i].byteOffset;
+		accessor.byteOffset = static_cast<uint32_t>(model.accessors[i].byteOffset);
 
-		accessor.count = model.accessors[i].count;
+		accessor.count = static_cast<uint32_t>(model.accessors[i].count);
 
 		accessor.componentType = model.accessors[i].componentType;
 		switch (accessor.componentType)
@@ -291,12 +291,12 @@ bool HelperLoad::initMaterials(GLTF& glTF)
 
 			if (parameterValue.first == "metallicFactor")
 			{
-				material.pbrMetallicRoughness.metallicFactor = parameterValue.second.Factor();
+				material.pbrMetallicRoughness.metallicFactor = static_cast<float>(parameterValue.second.Factor());
 			}
 
 			if (parameterValue.first == "roughnessFactor")
 			{
-				material.pbrMetallicRoughness.roughnessFactor = parameterValue.second.Factor();
+				material.pbrMetallicRoughness.roughnessFactor = static_cast<float>(parameterValue.second.Factor());
 			}
 		}
 
@@ -319,7 +319,7 @@ bool HelperLoad::initMaterials(GLTF& glTF)
 				material.occlusionTexture.index = parameterValue.second.TextureIndex();
 				material.occlusionTexture.texCoord = parameterValue.second.TextureTexCoord();
 
-				material.occlusionTexture.strength = parameterValue.second.TextureStrength();
+				material.occlusionTexture.strength = static_cast<float>(parameterValue.second.TextureStrength());
 			}
 
 			if (parameterValue.first == "normalTexture")
@@ -327,7 +327,7 @@ bool HelperLoad::initMaterials(GLTF& glTF)
 				material.normalTexture.index = parameterValue.second.TextureIndex();
 				material.normalTexture.texCoord = parameterValue.second.TextureTexCoord();
 
-				material.normalTexture.scale = parameterValue.second.TextureScale();
+				material.normalTexture.scale = static_cast<float>(parameterValue.second.TextureScale());
 			}
 
 		}
@@ -345,7 +345,7 @@ bool HelperLoad::initMaterials(GLTF& glTF)
 			material.alphaMode = 2;
 		}
 
-		material.alphaCutoff = model.materials[i].alphaCutoff;
+		material.alphaCutoff = static_cast<float>(model.materials[i].alphaCutoff);
 
 		material.doubleSided = model.materials[i].doubleSided;
 	}
@@ -370,7 +370,7 @@ bool HelperLoad::initMeshes(GLTF& glTF)
 			primitive.indices = model.meshes[i].primitives[k].indices;
 			primitive.material = model.meshes[i].primitives[k].material;
 
-			primitive.attributesCount = model.meshes[i].primitives[k].attributes.size();
+			primitive.attributesCount = static_cast<uint32_t>(model.meshes[i].primitives[k].attributes.size());
 
 			for (const auto& attribute : model.meshes[i].primitives[k].attributes)
 			{
@@ -452,7 +452,7 @@ bool HelperLoad::initNodes(GLTF& glTF)
 		}
 		if (model.nodes[i].rotation.size())
 		{
-			node.rotation = glm::quat(model.nodes[i].rotation[3], model.nodes[i].rotation[0], model.nodes[i].rotation[1], model.nodes[i].rotation[2]);
+			node.rotation = glm::quat((float)model.nodes[i].rotation[3], (float)model.nodes[i].rotation[0], (float)model.nodes[i].rotation[1], (float)model.nodes[i].rotation[2]);
 		}
 		if (model.nodes[i].matrix.size())
 		{

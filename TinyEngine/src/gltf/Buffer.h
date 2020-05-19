@@ -6,7 +6,7 @@
 
 struct Buffer {
 	std::string uri = "";
-	size_t byteLength = 1;
+	uint32_t byteLength = 1;
 
 	// Generic helper
 

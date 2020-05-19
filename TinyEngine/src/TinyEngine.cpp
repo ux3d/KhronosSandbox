@@ -36,9 +36,9 @@ bool TinyEngine::createInstance()
 	VkInstanceCreateInfo instanceCreateInfo = {};
 	instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	instanceCreateInfo.pApplicationInfo = &applicationInfo;
-	instanceCreateInfo.enabledLayerCount = enabledInstanceLayerNames.size();
+	instanceCreateInfo.enabledLayerCount = static_cast<uint32_t>(enabledInstanceLayerNames.size());
 	instanceCreateInfo.ppEnabledLayerNames = enabledInstanceLayerNames.data();
-	instanceCreateInfo.enabledExtensionCount = enabledInstanceExtensionNames.size();
+	instanceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(enabledInstanceExtensionNames.size());
 	instanceCreateInfo.ppEnabledExtensionNames = enabledInstanceExtensionNames.data();
 
 	//
@@ -316,7 +316,7 @@ bool TinyEngine::createDevice()
 	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	deviceCreateInfo.queueCreateInfoCount = 1;
 	deviceCreateInfo.pQueueCreateInfos = &deviceQueueCreateInfo;
-	deviceCreateInfo.enabledExtensionCount = enabledDeviceExtensionNames.size();
+	deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(enabledDeviceExtensionNames.size());
 	deviceCreateInfo.ppEnabledExtensionNames = enabledDeviceExtensionNames.data();
 
 	VkPhysicalDeviceFeatures physicalDeviceFeatures = {};
@@ -708,7 +708,7 @@ bool TinyEngine::createCommandResources()
 	commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	commandBufferAllocateInfo.commandPool = commandPool;
 	commandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	commandBufferAllocateInfo.commandBufferCount = commandBuffers.size();
+	commandBufferAllocateInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
 
 	result = vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, commandBuffers.data());
 	if (result != VK_SUCCESS)
@@ -821,7 +821,7 @@ bool TinyEngine::createImgui()
 	initInfo.Queue = queue;
 	initInfo.DescriptorPool = imguiDescriptorPool;
 	initInfo.MinImageCount = 2;
-	initInfo.ImageCount = swapchainImageViews.size();
+	initInfo.ImageCount = static_cast<uint32_t>(swapchainImageViews.size());
 	if (!ImGui_ImplVulkan_Init(&initInfo, renderPass))
 	{
 		return false;

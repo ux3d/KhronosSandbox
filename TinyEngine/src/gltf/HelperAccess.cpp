@@ -10,7 +10,7 @@ const uint8_t* HelperAccess::accessData(const BufferView& bufferView)
 	return HelperAccess::accessData(*bufferView.pBuffer) + bufferView.byteOffset;
 }
 
-size_t HelperAccess::getOffset(const BufferView& bufferView)
+uint32_t HelperAccess::getOffset(const BufferView& bufferView)
 {
 	return bufferView.byteOffset;
 }
@@ -20,17 +20,17 @@ const uint8_t* HelperAccess::accessData(const Accessor& accessor)
 	return HelperAccess::accessData(*accessor.pBufferView) + accessor.byteOffset;
 }
 
-size_t HelperAccess::getOffset(const Accessor& accessor)
+uint32_t HelperAccess::getOffset(const Accessor& accessor)
 {
 	return accessor.byteOffset;
 }
 
-size_t HelperAccess::getRange(const Accessor& accessor)
+uint32_t HelperAccess::getRange(const Accessor& accessor)
 {
 	return accessor.pBufferView->byteLength - accessor.byteOffset;
 }
 
-size_t HelperAccess::getStride(const Accessor& accessor)
+uint32_t HelperAccess::getStride(const Accessor& accessor)
 {
 	return accessor.typeCount * accessor.componentTypeSize;
 }

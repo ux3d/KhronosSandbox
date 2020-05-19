@@ -10,7 +10,7 @@ bool VulkanRaytraceResource::createAccelerationStructureResource(VkPhysicalDevic
 	accelerationStructureCreateInfo.sType            = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
 	accelerationStructureCreateInfo.type             = accelerationStructureResourceCreateInfo.type;
 	accelerationStructureCreateInfo.flags            = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
-	accelerationStructureCreateInfo.maxGeometryCount = accelerationStructureResourceCreateInfo.accelerationStructureCreateGeometryTypeInfos.size();
+	accelerationStructureCreateInfo.maxGeometryCount = static_cast<uint32_t>(accelerationStructureResourceCreateInfo.accelerationStructureCreateGeometryTypeInfos.size());
 	accelerationStructureCreateInfo.pGeometryInfos   = accelerationStructureResourceCreateInfo.accelerationStructureCreateGeometryTypeInfos.data();
 
 	result = vkCreateAccelerationStructureKHR(device, &accelerationStructureCreateInfo, nullptr, &accelerationStructureResource.accelerationStructure);
@@ -223,7 +223,7 @@ bool VulkanRaytraceResource::createBottomLevelResource(VkPhysicalDevice physical
 	accelerationStructureBuildGeometryInfo.type                      = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
 	accelerationStructureBuildGeometryInfo.flags                     = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
 	accelerationStructureBuildGeometryInfo.dstAccelerationStructure  = bottomLevelResource.levelResource.accelerationStructureResource.accelerationStructure;
-	accelerationStructureBuildGeometryInfo.geometryCount             = accelerationStructureGeometries.size();
+	accelerationStructureBuildGeometryInfo.geometryCount             = static_cast<uint32_t>(accelerationStructureGeometries.size());
 	accelerationStructureBuildGeometryInfo.ppGeometries              = accelerationStructureGeometries.data();
 	accelerationStructureBuildGeometryInfo.scratchData.deviceAddress = scratchBufferAddress;
 
@@ -308,7 +308,7 @@ bool VulkanRaytraceResource::createTopLevelResource(VkPhysicalDevice physicalDev
 	accelerationStructureBuildGeometryInfo.srcAccelerationStructure  = VK_NULL_HANDLE;
 	accelerationStructureBuildGeometryInfo.dstAccelerationStructure  = topLevelResource.levelResource.accelerationStructureResource.accelerationStructure;
 	accelerationStructureBuildGeometryInfo.geometryArrayOfPointers   = VK_FALSE;
-	accelerationStructureBuildGeometryInfo.geometryCount             = accelerationStructureGeometries.size();
+	accelerationStructureBuildGeometryInfo.geometryCount             = static_cast<uint32_t>(accelerationStructureGeometries.size());
 	accelerationStructureBuildGeometryInfo.ppGeometries              = accelerationStructureGeometries.data();
 	accelerationStructureBuildGeometryInfo.scratchData.deviceAddress = scratchBufferAddress;
 
