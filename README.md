@@ -16,6 +16,10 @@ The TinyEngine requires Vulkan 1.2 and several extensions for raytracing. Howeve
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
    - GCC for Linux
    - [MinGW64](https://www.msys2.org/) for Windows 
+- [Microsoft Visual C++ 2017](https://visualstudio.microsoft.com/de/vs/older-downloads/)
+   - Use [CMake](https://cmake.org/) to generate the project files.
+
+### Build steps for Eclipse
 
 1. Import the projects into Eclipse.
 2. Select `Windows` or `Linux` build - either as `Release` or `Debug` build.
@@ -28,8 +32,10 @@ The TinyEngine requires Vulkan 1.2 and several extensions for raytracing. Howeve
 - Ubuntu 20.04 LTS (64bit)
 
 ## Used tools
+- [CMake](https://cmake.org/)
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
 - [Gestaltor - Visual glTF editor](https://gestaltor.io/)
+- [Microsoft Visual C++ 2017](https://visualstudio.microsoft.com/de/vs/older-downloads/)
 - [MSYS2](https://www.msys2.org/) on Windows  
   Execute `pacman -S mingw-w64-x86_64-gcc` to install MinGW64
 
@@ -56,7 +62,8 @@ The TinyEngine requires Vulkan 1.2 and several extensions for raytracing. Howeve
   - During minimize, the update loop is stopped.
   - Helper methods for initalization are not optimal and causing a stall on the GPU. This is done for Vulkan code simplicity.
 - Tooling
-  - gcc
+  - gcc (Windows and Linux)
+  - CMake (MSVC only)
   - C++17
   - 64bit only
 
