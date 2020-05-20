@@ -4,14 +4,14 @@ project(Application)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(MSVC)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MT")
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}) 
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}) 
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}) 
 endif()
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}) 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}) 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR})
 
 file(GLOB_RECURSE src_files ${PROJECT_SOURCE_DIR}/src/*.cpp ${PROJECT_SOURCE_DIR}/src/*.h)
 
@@ -31,17 +31,22 @@ target_include_directories(Application PRIVATE
 )
 
 set(lib_files "")
-
-if(MSVC)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_link_directories(Application PRIVATE ${PROJECT_SOURCE_DIR}/../Third-Party/lib/windows/msvc ${PROJECT_SOURCE_DIR}/../TinyEngine/build/${CMAKE_BUILD_TYPE})
 	set(lib_files Msvcrt)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	if(UNIX)
+		target_link_directories(Application PRIVATE ${PROJECT_SOURCE_DIR}/../Third-Party/lib/linux/gcc ${PROJECT_SOURCE_DIR}/../TinyEngine/build)
+	else()
+		target_link_directories(Application PRIVATE ${PROJECT_SOURCE_DIR}/../Third-Party/lib/windows/gcc ${PROJECT_SOURCE_DIR}/../TinyEngine/build)
+	endif()
 endif()
 
 target_link_libraries(Application PRIVATE
+	TinyEngine
 	glfw3
 	slimktx2
 	volk
 	shaderc_combined
-	TinyEngine
 	${lib_files}
 )
