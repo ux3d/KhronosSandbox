@@ -15,6 +15,19 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR})
 
 file(GLOB_RECURSE src_files ${PROJECT_SOURCE_DIR}/src/*.cpp ${PROJECT_SOURCE_DIR}/src/*.h)
 
+set(lib_files "")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    link_directories(${PROJECT_SOURCE_DIR}/../Third-Party/lib/windows/msvc ${PROJECT_SOURCE_DIR}/../TinyEngine/build/${CMAKE_BUILD_TYPE})
+    set(lib_files Msvcrt)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	if(UNIX)
+		link_directories(${PROJECT_SOURCE_DIR}/../Third-Party/lib/linux/gcc ${PROJECT_SOURCE_DIR}/../TinyEngine/build)
+		set(lib_files X11 pthread dl)
+	else()
+		link_directories(${PROJECT_SOURCE_DIR}/../Third-Party/lib/windows/gcc ${PROJECT_SOURCE_DIR}/../TinyEngine/build)
+	endif()
+endif()
+
 add_executable(Example11 ${src_files})
 
 target_include_directories(Example11 PRIVATE
@@ -29,18 +42,6 @@ target_include_directories(Example11 PRIVATE
 	${PROJECT_SOURCE_DIR}/../TinyEngine/src
 	${PROJECT_SOURCE_DIR}/../TinyEngine/src/gui/imgui
 )
-
-set(lib_files "")
-if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    target_link_directories(Example11 PRIVATE ${PROJECT_SOURCE_DIR}/../Third-Party/lib/windows/msvc ${PROJECT_SOURCE_DIR}/../TinyEngine/build/${CMAKE_BUILD_TYPE})
-	set(lib_files Msvcrt)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-	if(UNIX)
-		target_link_directories(Example11 PRIVATE ${PROJECT_SOURCE_DIR}/../Third-Party/lib/linux/gcc ${PROJECT_SOURCE_DIR}/../TinyEngine/build)
-	else()
-		target_link_directories(Example11 PRIVATE ${PROJECT_SOURCE_DIR}/../Third-Party/lib/windows/gcc ${PROJECT_SOURCE_DIR}/../TinyEngine/build)
-	endif()
-endif()
 
 target_link_libraries(Example11 PRIVATE
 	TinyEngine
