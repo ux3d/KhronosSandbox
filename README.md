@@ -18,6 +18,7 @@ The TinyEngine requires Vulkan 1.2 and several extensions for raytracing. Howeve
    - [MinGW64](https://www.msys2.org/) for Windows 
 - [Microsoft Visual C++ 2017](https://visualstudio.microsoft.com/de/vs/older-downloads/)
    - Use [CMake](https://cmake.org/) to generate the project files.
+   - Use [Ninja](https://ninja-build.org/) to build for Windows using gcc from command line.
 
 ### Build steps for Eclipse
 
@@ -33,6 +34,7 @@ The TinyEngine requires Vulkan 1.2 and several extensions for raytracing. Howeve
 
 ## Used tools
 - [CMake](https://cmake.org/)
+  - [Ninja](https://ninja-build.org/)
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
 - [Gestaltor - Visual glTF editor](https://gestaltor.io/)
 - [Microsoft Visual C++ 2017](https://visualstudio.microsoft.com/de/vs/older-downloads/)
@@ -63,7 +65,8 @@ The TinyEngine requires Vulkan 1.2 and several extensions for raytracing. Howeve
   - Helper methods for initalization are not optimal and causing a stall on the GPU. This is done for Vulkan code simplicity.
 - Tooling
   - gcc (Windows and Linux)
-  - CMake (MSVC only)
+  - MSVC (Windows)
+  - CMake (Tested MSVC, make and ninja)
   - C++17
   - 64bit only
 
