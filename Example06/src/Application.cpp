@@ -103,7 +103,7 @@ bool Application::applicationInit()
 	descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	descriptorPoolCreateInfo.poolSizeCount = 1;
 	descriptorPoolCreateInfo.pPoolSizes = &descriptorPoolSize;
-	descriptorPoolCreateInfo.maxSets = commandBuffers.size();
+	descriptorPoolCreateInfo.maxSets = static_cast<uint32_t>(commandBuffers.size());
 
 	result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &descriptorPool);
 	if (result != VK_SUCCESS)
@@ -298,7 +298,7 @@ bool Application::applicationInit()
 
 bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime)
 {
-	float scale = (sinf(2.0f * glm::pi<float>() * totalTime) + 1.0f) * 0.25 + 0.5f; // In one second between 0.5 and 1.0
+	float scale = (sinf(2.0f * glm::pi<float>() * static_cast<float>(totalTime)) + 1.0f) * 0.25f + 0.5f; // In one second between 0.5 and 1.0
 
 	//
 

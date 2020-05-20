@@ -423,9 +423,9 @@ bool Application::applicationInit()
 
 	VkRayTracingPipelineCreateInfoKHR rayTracingPipelineCreateInfo = {};
 	rayTracingPipelineCreateInfo.sType             = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR;
-	rayTracingPipelineCreateInfo.stageCount        = pipelineShaderStageCreateInfos.size();
+	rayTracingPipelineCreateInfo.stageCount        = static_cast<uint32_t>(pipelineShaderStageCreateInfos.size());
 	rayTracingPipelineCreateInfo.pStages           = pipelineShaderStageCreateInfos.data();
-	rayTracingPipelineCreateInfo.groupCount        = rayTracingShaderGroupCreateInfos.size();
+	rayTracingPipelineCreateInfo.groupCount        = static_cast<uint32_t>(rayTracingShaderGroupCreateInfos.size());
 	rayTracingPipelineCreateInfo.pGroups           = rayTracingShaderGroupCreateInfos.data();
 	rayTracingPipelineCreateInfo.maxRecursionDepth = 1;
 	rayTracingPipelineCreateInfo.layout            = pipelineLayout;
@@ -455,7 +455,7 @@ bool Application::applicationInit()
 
 	std::vector<uint8_t> rayTracingShaderGroupHandles(bufferResourceCreateInfo.size);
 
-	result = vkGetRayTracingShaderGroupHandlesKHR(device, pipeline, 0, rayTracingShaderGroupCreateInfos.size(), rayTracingShaderGroupHandles.size(), rayTracingShaderGroupHandles.data());
+	result = vkGetRayTracingShaderGroupHandlesKHR(device, pipeline, 0, static_cast<uint32_t>(rayTracingShaderGroupCreateInfos.size()), static_cast<uint32_t>(rayTracingShaderGroupHandles.size()), rayTracingShaderGroupHandles.data());
 	if (result != VK_SUCCESS)
 	{
 		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);

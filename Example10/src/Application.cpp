@@ -67,7 +67,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	renderPassBeginInfo.renderArea.offset.x = 0;
 	renderPassBeginInfo.renderArea.offset.y = 0;
 	renderPassBeginInfo.renderArea.extent = {width, height};
-	renderPassBeginInfo.clearValueCount = clearValues.size();
+	renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 	renderPassBeginInfo.pClearValues = clearValues.data();
 
 	vkCmdBeginRenderPass(commandBuffers[frameIndex], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
@@ -117,7 +117,7 @@ void Application::orbitX(float orbit)
 
 void Application::zoom(float zoom)
 {
-	eyeObjectDistance += zoom * 0.05;
+	eyeObjectDistance += zoom * 0.05f;
 
 	eyeObjectDistance = glm::clamp(eyeObjectDistance, 0.001f, 1000.0f);
 }
