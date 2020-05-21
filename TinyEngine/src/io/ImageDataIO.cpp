@@ -12,6 +12,7 @@
 #include "DefaultFileIOCallback.h"
 
 #include "FileIO.h"
+#include "HelperFile.h"
 
 using namespace ux3d;
 
@@ -22,7 +23,7 @@ bool ImageDataIO::open(ImageDataResources& output, const std::string& filename, 
 		return false;
 	}
 
-	if (FileIO::getExtension(filename) == "ktx2")
+	if (HelperFile::getExtension(filename) == "ktx2")
 	{
 		slimktx2::DefaultFileIOCallback defaultFileIOCallback;
 		slimktx2::DefaultAllocationCallback defaultAllocationCallback;
@@ -88,14 +89,20 @@ bool ImageDataIO::open(ImageDataResources& output, const std::string& filename, 
 
 		return true;
 	}
-	else if (FileIO::getExtension(filename) == "png" || FileIO::getExtension(filename) == "jpg" || FileIO::getExtension(filename) == "jpeg")
+	else if (HelperFile::getExtension(filename) == "png" || HelperFile::getExtension(filename) == "jpg" || HelperFile::getExtension(filename) == "jpeg")
 	{
+		std::string binary = "";
+		if (!FileIO::open(binary, filename))
+		{
+			return false;
+		}
+
 		int x = 0;
 		int y = 0;
 		int comp = 0;
 		int req_comp = static_cast<int>(channels);
 
-		uint8_t* tempData = static_cast<uint8_t*>(stbi_load(filename.c_str(), &x, &y, &comp, req_comp));
+		uint8_t* tempData = static_cast<uint8_t*>(stbi_load_from_memory((const stbi_uc*)binary.data(), binary.length(), &x, &y, &comp, req_comp));
 		if (!tempData)
 		{
 			return false;

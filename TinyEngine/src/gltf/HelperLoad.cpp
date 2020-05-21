@@ -514,7 +514,7 @@ bool HelperLoad::open(GLTF& glTF, const std::string& filename)
 
 	// Images
 
-	std::string path = FileIO::getPath(filename);
+	std::string path = HelperFile::getPath(filename);
 	if (!initImages(glTF, path))
 	{
 		return false;
