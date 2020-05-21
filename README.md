@@ -17,8 +17,11 @@ The TinyEngine requires Vulkan 1.2 and several extensions for raytracing. Howeve
    - GCC for Linux
    - [MinGW64](https://www.msys2.org/) for Windows 
 - [Microsoft Visual C++ 2017](https://visualstudio.microsoft.com/de/vs/older-downloads/)
-   - Use [CMake](https://cmake.org/) to generate the project files.
-   - Use [Ninja](https://ninja-build.org/) to build for Windows using gcc from command line.
+   - Use [CMake](https://cmake.org/) to generate the project files
+- Use [Ninja](https://ninja-build.org/) to build using [MinGW64](https://www.msys2.org/) for Windows from command line
+  - Use [CMake](https://cmake.org/) to generate the project files
+- Use `make` to build using `gcc` for Linux from command line
+  - Use [CMake](https://cmake.org/) to generate the project files
 
 ### Build steps for Eclipse
 
@@ -34,12 +37,12 @@ The TinyEngine requires Vulkan 1.2 and several extensions for raytracing. Howeve
 
 ## Used tools
 - [CMake](https://cmake.org/)
-  - [Ninja](https://ninja-build.org/)
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
 - [Gestaltor - Visual glTF editor](https://gestaltor.io/)
 - [Microsoft Visual C++ 2017](https://visualstudio.microsoft.com/de/vs/older-downloads/)
 - [MSYS2](https://www.msys2.org/) on Windows  
   Execute `pacman -S mingw-w64-x86_64-gcc` to install MinGW64
+- [Ninja](https://ninja-build.org/)
 
 ## Used assets
 - [glTF 2.0 Sample Models](https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0)
@@ -54,7 +57,6 @@ The TinyEngine requires Vulkan 1.2 and several extensions for raytracing. Howeve
 - [Slim KTX2](https://github.com/ux3d/slimktx2)
 - [stb](https://github.com/nothings/stb)    
 - [tiny glTF](https://github.com/syoyo/tinygltf)  
-   - stb
 - [volk](https://github.com/zeux/volk)  
 - [Vulkan SDK](https://vulkan.lunarg.com/)
    - Shaderc
