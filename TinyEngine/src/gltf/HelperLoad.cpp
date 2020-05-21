@@ -602,11 +602,11 @@ bool HelperLoad::open(GLTF& glTF, const std::string& filename)
 	bool status = false;
 	if (HelperFile::getExtension(filename) == "gltf")
 	{
-		status = tinyGLTF.LoadASCIIFromString(&model, &err, &warn, output.c_str(), output.length(), path);
+		status = tinyGLTF.LoadASCIIFromString(&model, &err, &warn, output.c_str(), static_cast<uint32_t>(output.length()), path);
 	}
 	else if (HelperFile::getExtension(filename) == "glb")
 	{
-		status = tinyGLTF.LoadBinaryFromMemory(&model, &err, &warn, (const unsigned char*)output.c_str(), output.length(), path);
+		status = tinyGLTF.LoadBinaryFromMemory(&model, &err, &warn, (const unsigned char*)output.c_str(), static_cast<uint32_t>(output.length()), path);
 	}
 
 	if (!status)

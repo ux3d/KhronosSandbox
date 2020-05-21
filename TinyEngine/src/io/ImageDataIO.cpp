@@ -94,7 +94,7 @@ bool ImageDataIO::open(ImageDataResources& output, const uint8_t* data, size_t l
 		int comp = 0;
 		int req_comp = static_cast<int>(channels);
 
-		uint8_t* tempData = static_cast<uint8_t*>(stbi_load_from_memory((const stbi_uc*)data, length, &x, &y, &comp, req_comp));
+		uint8_t* tempData = static_cast<uint8_t*>(stbi_load_from_memory((const stbi_uc*)data, (int)length, &x, &y, &comp, req_comp));
 		if (!tempData)
 		{
 			return false;
