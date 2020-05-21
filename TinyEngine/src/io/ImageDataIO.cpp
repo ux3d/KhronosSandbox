@@ -16,22 +16,20 @@
 
 using namespace ux3d;
 
-bool ImageDataIO::open(ImageDataResources& output, const std::string& filename, const uint32_t channels)
+bool ImageDataIO::open(ImageDataResources& output, const uint8_t* data, size_t length, uint32_t channels)
 {
-	if (channels < 1 || channels > 4)
+	static uint8_t KTX2Identifier[12] = {
+	  0xAB, 0x4B, 0x54, 0x58, 0x20, 0x32, 0x30, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A
+	};
+
+	if (!data || length < 12)
 	{
 		return false;
 	}
 
-	std::string binary = "";
-	if (!FileIO::open(binary, filename))
+	if (memcmp(data, KTX2Identifier, 12) == 0)
 	{
-		return false;
-	}
-
-	if (HelperFile::getExtension(filename) == "ktx2")
-	{
-		slimktx2::DefaultMemoryStream defaultMemoryStream((const uint8_t*)binary.data(), binary.length());
+		slimktx2::DefaultMemoryStream defaultMemoryStream(data, length);
 
 		slimktx2::DefaultMemoryStreamCallback defaultMemoryStreamCallback;
 		slimktx2::DefaultAllocationCallback defaultAllocationCallback;
@@ -89,14 +87,14 @@ bool ImageDataIO::open(ImageDataResources& output, const std::string& filename, 
 
 		return true;
 	}
-	else if (HelperFile::getExtension(filename) == "png" || HelperFile::getExtension(filename) == "jpg" || HelperFile::getExtension(filename) == "jpeg")
+	else
 	{
 		int x = 0;
 		int y = 0;
 		int comp = 0;
 		int req_comp = static_cast<int>(channels);
 
-		uint8_t* tempData = static_cast<uint8_t*>(stbi_load_from_memory((const stbi_uc*)binary.data(), binary.length(), &x, &y, &comp, req_comp));
+		uint8_t* tempData = static_cast<uint8_t*>(stbi_load_from_memory((const stbi_uc*)data, length, &x, &y, &comp, req_comp));
 		if (!tempData)
 		{
 			return false;
@@ -125,6 +123,31 @@ bool ImageDataIO::open(ImageDataResources& output, const std::string& filename, 
 		free(tempData);
 
 		return true;
+	}
+
+	return false;
+}
+
+bool ImageDataIO::open(ImageDataResources& output, const std::string& filename, uint32_t channels)
+{
+	if (channels < 1 || channels > 4)
+	{
+		return false;
+	}
+
+	std::string binary = "";
+	if (!FileIO::open(binary, filename))
+	{
+		return false;
+	}
+
+	if (HelperFile::getExtension(filename) == "ktx2")
+	{
+		return open(output, (const uint8_t*)binary.data(), binary.length(), channels);
+	}
+	else if (HelperFile::getExtension(filename) == "png" || HelperFile::getExtension(filename) == "jpg" || HelperFile::getExtension(filename) == "jpeg")
+	{
+		return open(output, (const uint8_t*)binary.data(), binary.length(), channels);
 	}
 
 	return false;

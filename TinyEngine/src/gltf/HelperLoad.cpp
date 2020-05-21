@@ -14,6 +14,42 @@
 
 #include "HelperAccess.h"
 
+static bool LoadImageData(tinygltf::Image *image, const int image_idx, std::string *err,
+                   std::string *warn, int req_width, int req_height,
+                   const unsigned char *bytes, int size, void *user_data) {
+	ImageDataResources imageDataResources;
+
+	// Defaulting to 4 channels.
+	if (!ImageDataIO::open(imageDataResources, bytes, size))
+	{
+		return false;
+	}
+
+	if (imageDataResources.faceCount != 1 || imageDataResources.mipLevels != 1 || imageDataResources.images.size() != 1)
+	{
+		return false;
+	}
+
+	ImageDataResource& imageDataResource = imageDataResources.images[0];
+
+	if (imageDataResource.pixels.size() != imageDataResource.width * imageDataResource.height * 4)
+	{
+		return false;
+	}
+
+	image->width = (int)imageDataResource.width;
+	image->height = (int)imageDataResource.height;
+	image->component = 4;
+	image->bits = 8;
+	image->pixel_type = 8;
+
+	image->image.resize(imageDataResource.pixels.size());
+	memcpy(image->image.data(), imageDataResource.pixels.data(), imageDataResource.pixels.size());
+
+	return true;
+}
+
+
 HelperLoad::HelperLoad() :
 	model()
 {
@@ -162,9 +198,25 @@ bool HelperLoad::initImages(GLTF& glTF, const std::string& path)
 		Image& image = glTF.images[i];
 
 		image.uri = model.images[i].uri;
-		if (!ImageDataIO::open(image.imageDataResources, path + image.uri))
+
+		if (model.images[i].image.size() > 0)
 		{
-			return false;
+			image.imageDataResources.faceCount = 1;
+			image.imageDataResources.mipLevels = 1;
+			image.imageDataResources.images.resize(1);
+
+			image.imageDataResources.images[0].width = static_cast<uint32_t>(model.images[i].width);
+			image.imageDataResources.images[0].height = static_cast<uint32_t>(model.images[i].height);
+			image.imageDataResources.images[0].format = VK_FORMAT_R8G8B8A8_UNORM;
+			image.imageDataResources.images[0].pixels.resize(model.images[i].image.size());
+			memcpy(image.imageDataResources.images[0].pixels.data(), model.images[i].image.data(), model.images[i].image.size());
+		}
+		else
+		{
+			if (!ImageDataIO::open(image.imageDataResources, path + image.uri))
+			{
+				return false;
+			}
 		}
 	}
 
@@ -514,8 +566,18 @@ bool HelperLoad::open(GLTF& glTF, const std::string& filename)
 	std::string warn = "";
 
 	tinygltf::TinyGLTF tinyGLTF;
+	tinyGLTF.SetImageLoader(::LoadImageData, nullptr);
 
-	bool status = tinyGLTF.LoadASCIIFromString(&model, &err, &warn, output.c_str(), output.length(), path);
+	bool status = false;
+	if (HelperFile::getExtension(filename) == "gltf")
+	{
+		status = tinyGLTF.LoadASCIIFromString(&model, &err, &warn, output.c_str(), output.length(), path);
+	}
+	else if (HelperFile::getExtension(filename) == "glb")
+	{
+		status = tinyGLTF.LoadBinaryFromMemory(&model, &err, &warn, (const unsigned char*)output.c_str(), output.length(), path);
+	}
+
 	if (!status)
 	{
 		return false;
