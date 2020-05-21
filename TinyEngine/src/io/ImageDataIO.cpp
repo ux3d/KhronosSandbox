@@ -9,7 +9,7 @@
 
 #include "slimktx2.h"
 #include "DefaultAllocationCallback.h"
-#include "DefaultFileIOCallback.h"
+#include "DefaultMemoryStreamCallback.h"
 
 #include "FileIO.h"
 #include "HelperFile.h"
@@ -23,34 +23,34 @@ bool ImageDataIO::open(ImageDataResources& output, const std::string& filename, 
 		return false;
 	}
 
+	std::string binary = "";
+	if (!FileIO::open(binary, filename))
+	{
+		return false;
+	}
+
 	if (HelperFile::getExtension(filename) == "ktx2")
 	{
-		slimktx2::DefaultFileIOCallback defaultFileIOCallback;
+		slimktx2::DefaultMemoryStream defaultMemoryStream((const uint8_t*)binary.data(), binary.length());
+
+		slimktx2::DefaultMemoryStreamCallback defaultMemoryStreamCallback;
 		slimktx2::DefaultAllocationCallback defaultAllocationCallback;
-		slimktx2::Callbacks callbacks = defaultFileIOCallback.getCallback();
+		slimktx2::Callbacks callbacks = defaultMemoryStreamCallback.getCallback();
 		callbacks.allocate = defaultAllocationCallback.getCallback().allocate;
 		callbacks.deallocate = defaultAllocationCallback.getCallback().deallocate;
 
 		slimktx2::SlimKTX2 slimKTX2(callbacks);
 
-		FILE* file = fopen(filename.c_str(), "rb");
-		if (!file)
+		if (slimKTX2.parse((ux3d::slimktx2::IOHandle)&defaultMemoryStream) != slimktx2::Result::Success)
 		{
 			return false;
 		}
-
-		if (slimKTX2.parse((ux3d::slimktx2::IOHandle)file) != slimktx2::Result::Success)
-		{
-			fclose(file);
-
-			return false;
-		}
-		fclose(file);
 
 		if (slimktx2::isPacked(slimKTX2.getHeader().vkFormat) || slimktx2::isCompressed(slimKTX2.getHeader().vkFormat))
 		{
 			return false;
 		}
+
 		VkFormat format = (VkFormat)slimKTX2.getHeader().vkFormat;
 		uint32_t pixelSize = slimktx2::getPixelSize(slimKTX2.getHeader().vkFormat);
 		uint32_t width = slimKTX2.getHeader().pixelWidth;
@@ -91,12 +91,6 @@ bool ImageDataIO::open(ImageDataResources& output, const std::string& filename, 
 	}
 	else if (HelperFile::getExtension(filename) == "png" || HelperFile::getExtension(filename) == "jpg" || HelperFile::getExtension(filename) == "jpeg")
 	{
-		std::string binary = "";
-		if (!FileIO::open(binary, filename))
-		{
-			return false;
-		}
-
 		int x = 0;
 		int y = 0;
 		int comp = 0;
