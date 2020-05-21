@@ -500,13 +500,22 @@ bool HelperLoad::initScenes(GLTF& glTF)
 
 bool HelperLoad::open(GLTF& glTF, const std::string& filename)
 {
+	std::string output = "";
+	if (!FileIO::open(output, filename))
+	{
+		return false;
+	}
+
+	std::string path = HelperFile::getPath(filename);
+
 	// Load glTF
 
 	std::string err = "";
 	std::string warn = "";
 
 	tinygltf::TinyGLTF tinyGLTF;
-	bool status = tinyGLTF.LoadASCIIFromFile(&model, &err, &warn, filename);
+
+	bool status = tinyGLTF.LoadASCIIFromString(&model, &err, &warn, output.c_str(), output.length(), path);
 	if (!status)
 	{
 		return false;
@@ -514,7 +523,6 @@ bool HelperLoad::open(GLTF& glTF, const std::string& filename)
 
 	// Images
 
-	std::string path = HelperFile::getPath(filename);
 	if (!initImages(glTF, path))
 	{
 		return false;
