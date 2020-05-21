@@ -14,9 +14,7 @@
 
 #include "HelperAccess.h"
 
-static bool LoadImageData(tinygltf::Image *image, const int image_idx, std::string *err,
-                   std::string *warn, int req_width, int req_height,
-                   const unsigned char *bytes, int size, void *user_data) {
+static bool LoadImageData(tinygltf::Image *image, const int image_idx, std::string *err, std::string *warn, int req_width, int req_height, const unsigned char *bytes, int size, void *user_data) {
 	ImageDataResources imageDataResources;
 
 	// Defaulting to 4 channels.
@@ -49,6 +47,33 @@ static bool LoadImageData(tinygltf::Image *image, const int image_idx, std::stri
 	return true;
 }
 
+static bool FileExists(const std::string &abs_filename, void *user_data)
+{
+	return HelperFile::exists(abs_filename);
+}
+
+static std::string ExpandFilePath(const std::string &filepath, void *user_data)
+{
+	return filepath;
+}
+
+static bool ReadWholeFile(std::vector<unsigned char> *out, std::string *err, const std::string &filepath, void *user_data)
+{
+	std::string output = "";
+
+	if (!FileIO::open(output, filepath))
+	{
+		return false;
+	}
+
+	if (out)
+	{
+		out->resize(output.size());
+		memcpy(out->data(), output.data(), output.size());
+	}
+
+	return true;
+}
 
 HelperLoad::HelperLoad() :
 	model()
@@ -565,8 +590,14 @@ bool HelperLoad::open(GLTF& glTF, const std::string& filename)
 	std::string err = "";
 	std::string warn = "";
 
+	tinygltf::FsCallbacks tinygltfCallbacks = {};
+	tinygltfCallbacks.FileExists = ::FileExists;
+	tinygltfCallbacks.ExpandFilePath = ::ExpandFilePath;
+	tinygltfCallbacks.ReadWholeFile = ::ReadWholeFile;
+
 	tinygltf::TinyGLTF tinyGLTF;
 	tinyGLTF.SetImageLoader(::LoadImageData, nullptr);
+	tinyGLTF.SetFsCallbacks(tinygltfCallbacks);
 
 	bool status = false;
 	if (HelperFile::getExtension(filename) == "gltf")

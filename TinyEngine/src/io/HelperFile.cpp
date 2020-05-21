@@ -1,6 +1,7 @@
 #include "HelperFile.h"
 
 #include <algorithm>
+#include <cstdio>
 
 std::string HelperFile::getPath(const std::string& filename)
 {
@@ -31,3 +32,17 @@ std::string HelperFile::getExtension(const std::string& filename)
 
 	return "";
 }
+
+bool HelperFile::exists(const std::string& filename)
+{
+	FILE* file = fopen(filename.c_str(), "rb");
+
+	if (file)
+	{
+		fclose(file);
+		return true;
+	}
+
+	return false;
+}
+

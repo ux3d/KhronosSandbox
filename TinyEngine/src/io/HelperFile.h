@@ -9,6 +9,8 @@ public:
 	static std::string getPath(const std::string& filename);
 
 	static std::string getExtension(const std::string& filename);
+
+	static bool exists(const std::string& filename);
 };
 
 #endif /* IO_HELPERFILE_H_ */
