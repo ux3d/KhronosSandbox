@@ -47,6 +47,9 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	ImGui::NewFrame();
 
 	ImGui::Begin("Settings");
+
+	focused = ImGui::IsWindowFocused();
+
 	ImGui::Checkbox("Raytrace", &raytrace);
 	if (raytrace)
 	{
@@ -266,11 +269,19 @@ Application::~Application()
 
 void Application::orbitY(float orbit)
 {
+	if (focused)
+	{
+		return;
+	}
 	rotY -= orbit * 0.01f;
 }
 
 void Application::orbitX(float orbit)
 {
+	if (focused)
+	{
+		return;
+	}
 	rotX -= orbit * 0.01f;
 
 	// Not more than 90 degrees
@@ -279,6 +290,10 @@ void Application::orbitX(float orbit)
 
 void Application::zoom(float zoom)
 {
+	if (focused)
+	{
+		return;
+	}
 	eyeObjectDistance += zoom * zoomSpeed;
 
 	eyeObjectDistance = glm::clamp(eyeObjectDistance, 0.001f, 1000.0f);

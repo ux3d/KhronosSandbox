@@ -21,6 +21,8 @@ private:
 
 	float zoomSpeed = 0.05f;
 
+	bool focused = false;
+
 	//
 
 	ImageViewResource raytraceImageViewResource;
