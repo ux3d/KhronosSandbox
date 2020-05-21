@@ -10,6 +10,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
+#include "Aabb.h"
 #include "Plane.h"
 #include "Projection.h"
 #include "Random.h"
