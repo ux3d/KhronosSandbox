@@ -26,7 +26,7 @@ float Plane::getD() const
 
 float Plane::distance(const glm::vec4& point) const
 {
-	return glm::dot(getNormal(), glm::vec3(point)) + getD();
+	return glm::abs(glm::dot(getNormal(), glm::vec3(point)) + getD());
 }
 
 float Plane::distance(const Plane& plane) const
@@ -44,6 +44,21 @@ float Plane::distance(const Plane& plane) const
 float Plane::distance(const Sphere& sphere) const
 {
 	return distance(sphere.getCenter()) - sphere.getRadius();
+}
+
+bool Plane::intersect(const glm::vec4& point) const
+{
+	return distance(point) == 0.0f;
+}
+
+bool Plane::intersect(const Plane& plane) const
+{
+	return distance(plane) == 0.0f;
+}
+
+bool Plane::intersect(const Sphere& sphere) const
+{
+	return distance(sphere) <= 0.0f;
 }
 
 Plane Plane::operator* (const glm::mat4& matrix) const

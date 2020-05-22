@@ -65,17 +65,71 @@ const glm::vec4& Aabb::getCorner(uint32_t i) const
 	return corners[i];
 }
 
-bool Aabb::intersect(const Aabb& other) const
+float Aabb::distance(const glm::vec4& point) const
+{
+	glm::vec4 closestPoint(0.0f, 0.0f, 0.0f, 1.0f);
+
+	for (uint32_t i = 0; i < 3; i++)
+	{
+		float v = point[i];
+		if (v < minimumCorner[i])
+		{
+			v = minimumCorner[i];
+		}
+		if (v > maximumCorner[i])
+		{
+			v = maximumCorner[i];
+		}
+		closestPoint[i] = v;
+	}
+
+	return glm::distance(closestPoint, point);
+}
+
+float Aabb::distance(const Sphere& sphere) const
+{
+	return distance(sphere.getCenter()) - sphere.getRadius();
+}
+
+bool Aabb::intersect(const glm::vec4& point) const
 {
 	for (uint32_t i = 0; i < 3; i++)
 	{
-		if (maximumCorner[i] < other.minimumCorner[i] || other.maximumCorner[i] < minimumCorner[i])
+		if (point[i] < minimumCorner[i] || point[i] > maximumCorner[i])
 		{
 			return false;
 		}
 	}
 
 	return true;
+}
+
+bool Aabb::intersect(const Aabb& aabb) const
+{
+	for (uint32_t i = 0; i < 3; i++)
+	{
+		if (maximumCorner[i] < aabb.minimumCorner[i] || aabb.maximumCorner[i] < minimumCorner[i])
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool Aabb::intersect(const Sphere& sphere) const
+{
+	return distance(sphere) <= 0.0f;
+}
+
+Aabb::operator Sphere() const
+{
+	return toSphere();
+}
+
+Sphere Aabb::toSphere() const
+{
+	return Sphere((minimumCorner + maximumCorner) * 0.5f, glm::distance(minimumCorner, maximumCorner) * 0.5);
 }
 
 Aabb Aabb::operator *(const glm::mat4& transform) const

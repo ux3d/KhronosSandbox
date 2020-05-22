@@ -29,6 +29,12 @@ public:
 
 	float distance(const Sphere& sphere) const;
 
+	bool intersect(const glm::vec4& point) const;
+
+	bool intersect(const Plane& plane) const;
+
+	bool intersect(const Sphere& sphere) const;
+
 	Plane operator* (const glm::mat4& matrix) const;
 
 };

@@ -34,6 +34,44 @@ float Sphere::distance(const Sphere& sphere) const
 	return glm::distance(center, sphere.getCenter()) - radius - sphere.getRadius();
 }
 
+float Sphere::distance(const Aabb& aabb) const
+{
+	return aabb.distance(*this);
+}
+
+bool Sphere::intersect(const glm::vec4& point) const
+{
+	return distance(point) <= 0.0f;
+}
+
+bool Sphere::intersect(const Plane& plane) const
+{
+	return distance(plane) <= 0.0f;
+}
+
+bool Sphere::intersect(const Sphere& sphere) const
+{
+	return distance(sphere) <= 0.0f;
+}
+
+bool Sphere::intersect(const Aabb& aabb) const
+{
+	return aabb.intersect(*this);
+}
+
+Sphere::operator Aabb() const
+{
+	return toAabb();
+}
+
+Aabb Sphere::toAabb() const
+{
+	glm::vec4 minimumCorner(center[0] - radius, center[1] - radius, center[2] - radius, 1.0f);
+	glm::vec4 maximumCorner(center[0] + radius, center[1] + radius, center[2] + radius, 1.0f);
+
+	return Aabb(minimumCorner, maximumCorner);
+}
+
 Sphere Sphere::operator *(const glm::mat4& transform) const
 {
 	float sx = glm::length(glm::vec3(transform[0]));

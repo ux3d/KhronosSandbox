@@ -3,6 +3,7 @@
 
 #include "Math.h"
 
+class Aabb;
 class Plane;
 
 class Sphere
@@ -27,6 +28,19 @@ public:
 	float distance(const Plane& plane) const;
 
 	float distance(const Sphere& sphere) const;
+
+	float distance(const Aabb& aabb) const;
+
+	bool intersect(const glm::vec4& point) const;
+
+	bool intersect(const Plane& plane) const;
+
+	bool intersect(const Sphere& sphere) const;
+
+	bool intersect(const Aabb& aabb) const;
+
+	operator Aabb() const;
+	Aabb toAabb() const;
 
 	Sphere operator *(const glm::mat4& transform) const;
 

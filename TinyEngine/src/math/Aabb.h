@@ -3,6 +3,8 @@
 
 #include "Math.h"
 
+class Sphere;
+
 class Aabb {
 private:
 
@@ -24,9 +26,21 @@ public:
 
 	const glm::vec4& getCorner(uint32_t i) const;
 
-	bool intersect(const Aabb& other) const;
+	float distance(const glm::vec4& point) const;
+
+	float distance(const Sphere& sphere) const;
+
+	bool intersect(const glm::vec4& point) const;
+
+	bool intersect(const Aabb& aabb) const;
+
+	bool intersect(const Sphere& sphere) const;
+
+	operator Sphere() const;
+	Sphere toSphere() const;
 
 	Aabb operator *(const glm::mat4& transform) const;
+
 };
 
 Aabb operator *(const glm::mat4& transform, const Aabb& aabb);
