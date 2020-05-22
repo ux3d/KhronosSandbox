@@ -17,4 +17,6 @@
 
 #include "Frustum.h"
 
+#include "Interpolator.h"
+
 #endif /* MATH_MATH_H_ */
