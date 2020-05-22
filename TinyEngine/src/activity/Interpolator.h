@@ -1,5 +1,5 @@
-#ifndef ANIMATION_INTERPOLATOR_H_
-#define ANIMATION_INTERPOLATOR_H_
+#ifndef ACTIVITY_INTERPOLATOR_H_
+#define ACTIVITY_INTERPOLATOR_H_
 
 #include "../math/Math.h"
 

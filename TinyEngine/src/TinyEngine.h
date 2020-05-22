@@ -10,7 +10,7 @@
 #include "gui/Gui.h"
 #include "math/Math.h"
 
-#include "animation/Animation.h"
+#include "activity/Activity.h"
 #include "io/IO.h"
 #include "shader/Shader.h"
 
