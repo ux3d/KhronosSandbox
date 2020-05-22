@@ -368,13 +368,13 @@ gltf</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>225</x>
-      <y>285</y>
-      <w>915</w>
-      <h>315</h>
+      <x>495</x>
+      <y>465</y>
+      <w>645</w>
+      <h>135</h>
     </coordinates>
     <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>590.0;190.0;590.0;170.0;10.0;170.0;10.0;10.0</additional_attributes>
+    <additional_attributes>410.0;70.0;410.0;50.0;10.0;50.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLGeneric</id>
@@ -477,5 +477,28 @@ bg=gray</panel_attributes>
     </coordinates>
     <panel_attributes>lt=&lt;.</panel_attributes>
     <additional_attributes>10.0;70.0;10.0;50.0;330.0;50.0;330.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>360</x>
+      <y>390</y>
+      <w>300</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>symbol=component
+animation</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>225</x>
+      <y>285</y>
+      <w>195</w>
+      <h>135</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>110.0;70.0;110.0;50.0;10.0;50.0;10.0;10.0</additional_attributes>
   </element>
 </diagram>

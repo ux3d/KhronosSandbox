@@ -7,12 +7,16 @@
 #include <vector>
 
 #include "common/Common.h"
-#include "math/Math.h"
 #include "gui/Gui.h"
+#include "math/Math.h"
+
+#include "animation/Animation.h"
 #include "io/IO.h"
 #include "shader/Shader.h"
+
 #include "composite/Composite.h"
 #include "gltf/GLTF.h"
+
 #include "render/Render.h"
 
 class TinyEngine

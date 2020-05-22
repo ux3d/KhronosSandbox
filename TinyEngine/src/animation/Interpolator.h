@@ -1,7 +1,7 @@
-#ifndef MATH_INTERPOLATOR_H_
-#define MATH_INTERPOLATOR_H_
+#ifndef ANIMATION_INTERPOLATOR_H_
+#define ANIMATION_INTERPOLATOR_H_
 
-#include "glm_include.h"
+#include "../math/Math.h"
 
 class Interpolator {
 public:
