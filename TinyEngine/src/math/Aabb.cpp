@@ -131,7 +131,7 @@ Aabb::operator Sphere() const
 
 Sphere Aabb::toSphere() const
 {
-	return Sphere((minimumCorner + maximumCorner) * 0.5f, glm::distance(minimumCorner, maximumCorner) * 0.5);
+	return Sphere((minimumCorner + maximumCorner) * 0.5f, glm::distance(minimumCorner, maximumCorner) * 0.5f);
 }
 
 Aabb Aabb::operator *(const glm::mat4& transform) const
