@@ -1,9 +1,9 @@
 #ifndef MATH_SAMPLE_H_
 #define MATH_SAMPLE_H_
 
-#include "Math.h"
+#include "glm_include.h"
 
-class SphericalCoordinate;
+#include "SphericalCoordinate.h"
 
 class Sample {
 public:

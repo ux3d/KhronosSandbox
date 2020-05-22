@@ -1,7 +1,7 @@
 #ifndef MATH_SPHERE_H_
 #define MATH_SPHERE_H_
 
-#include "Math.h"
+#include "glm_include.h"
 
 class Aabb;
 class Plane;

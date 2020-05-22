@@ -1,5 +1,12 @@
 #include "Plane.h"
 
+#include "Sphere.h"
+
+Plane::Plane() :
+	normal(0.0f, 1.0f, 0.0f), d(0.0f)
+{
+}
+
 Plane::Plane(const glm::vec3& normal, const float d) :
 	normal(glm::normalize(normal)), d(d/glm::length(normal))
 {
@@ -24,9 +31,14 @@ float Plane::getD() const
 	return d;
 }
 
+float Plane::signedDistance(const glm::vec4& point) const
+{
+	return glm::dot(getNormal(), glm::vec3(point)) + getD();
+}
+
 float Plane::distance(const glm::vec4& point) const
 {
-	return glm::abs(glm::dot(getNormal(), glm::vec3(point)) + getD());
+	return glm::abs(signedDistance(point));
 }
 
 float Plane::distance(const Plane& plane) const

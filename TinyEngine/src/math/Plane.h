@@ -1,7 +1,7 @@
 #ifndef MATH_PLANE_H_
 #define MATH_PLANE_H_
 
-#include "Math.h"
+#include "glm_include.h"
 
 class Sphere;
 
@@ -14,6 +14,7 @@ private:
 
 public:
 
+	Plane();
 	Plane(const glm::vec3& normal, float d);
 	Plane(const glm::vec3& normal, const glm::vec4& point);
 
@@ -22,6 +23,8 @@ public:
 	const glm::vec3& getNormal() const;
 
 	float getD() const;
+
+	float signedDistance(const glm::vec4& point) const;
 
 	float distance(const glm::vec4& point) const;
 

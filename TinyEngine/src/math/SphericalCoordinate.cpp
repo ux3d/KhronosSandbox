@@ -1,5 +1,7 @@
 #include "SphericalCoordinate.h"
 
+#include <cmath>
+
 // https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 
 SphericalCoordinate::SphericalCoordinate(float theta, float phi, float rho) :

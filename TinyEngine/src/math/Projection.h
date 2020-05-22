@@ -1,7 +1,7 @@
 #ifndef MATH_PROJECTION_H_
 #define MATH_PROJECTION_H_
 
-#include "Math.h"
+#include "glm_include.h"
 
 class Projection
 {

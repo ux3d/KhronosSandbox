@@ -1,5 +1,8 @@
 #include "Sphere.h"
 
+#include "Aabb.h"
+#include "Plane.h"
+
 Sphere::Sphere(const glm::vec4& center, float radius) :
 	center(center), radius(glm::abs(radius))
 {

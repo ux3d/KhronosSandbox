@@ -1,5 +1,7 @@
 #include "Sample.h"
 
+#include <cmath>
+
 // see https://cg.informatik.uni-freiburg.de/course_notes/graphics2_08_renderingEquation.pdf
 // and https://www.tobias-franke.eu/log/2014/03/30/notes_on_importance_sampling.html
 // and https://agraphicsguy.wordpress.com/2015/11/01/sampling-microfacet-brdf/

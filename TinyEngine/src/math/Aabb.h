@@ -1,7 +1,9 @@
 #ifndef MATH_AABB_H_
 #define MATH_AABB_H_
 
-#include "Math.h"
+#include <cstdint>
+
+#include "glm_include.h"
 
 class Sphere;
 

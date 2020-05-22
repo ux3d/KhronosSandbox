@@ -1,5 +1,7 @@
 #include "Projection.h"
 
+#include <cmath>
+
 glm::mat4 Projection::ortho(float left, float right, float bottom, float top, float nearVal, float farVal)
 {
     glm::mat4 result;
