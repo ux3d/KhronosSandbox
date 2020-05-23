@@ -547,6 +547,16 @@ bool HelperLoad::initNodes(GLTF& glTF)
 		if (model.nodes[i].mesh >= 0)
 		{
 			node.mesh = model.nodes[i].mesh;
+
+			if (model.nodes[i].weights.size() > 0)
+			{
+				node.weights.resize(model.nodes[i].weights.size());
+
+				for (size_t k = 0; k < model.nodes[i].weights.size(); k++)
+				{
+					node.weights[k] = static_cast<float>(model.nodes[i].weights[k]);
+				}
+			}
 		}
 
 		for (size_t k = 0; k < model.nodes[i].children.size(); k++)

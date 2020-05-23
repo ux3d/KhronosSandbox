@@ -14,10 +14,10 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 
 	Node& node = *channel.target.targetNode;
 
-	float x[4];
-	float y[4];
-	float xout[4];
-	float yin[4];
+	std::vector<float> x;
+	std::vector<float> y;
+	std::vector<float> xout;
+	std::vector<float> yin;
 
 	uint32_t typeCount = 1;
 	if (channel.target.path == translation || channel.target.path == scale)
@@ -28,6 +28,15 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 	{
 		typeCount = 4;
 	}
+	else
+	{
+		typeCount = static_cast<uint32_t>(node.weights.size());
+	}
+
+	x.resize(typeCount);
+	y.resize(typeCount);
+	xout.resize(typeCount);
+	yin.resize(typeCount);
 
 	uint32_t elementCount = 1;
 	uint32_t elementOffset = 0;
@@ -38,17 +47,17 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 	}
 	uint32_t offset = typeCount * elementCount;
 
-	memcpy(x, &sampler.outputValues[startIndex * offset + elementOffset], sizeof(float) * typeCount * elementCount);
+	memcpy(x.data(), &sampler.outputValues[startIndex * offset + elementOffset], sizeof(float) * typeCount * elementCount);
 	if (sampler.interpolation == CUBICSPLINE)
 	{
-		memcpy(xout, &sampler.outputValues[startIndex * offset + elementOffset * 2], sizeof(float) * typeCount * elementCount);
+		memcpy(xout.data(), &sampler.outputValues[startIndex * offset + elementOffset * 2], sizeof(float) * typeCount * elementCount);
 	}
 	if (stopIndex != -1)
 	{
-		memcpy(y, &sampler.outputValues[stopIndex * offset + elementOffset], sizeof(float) * typeCount * elementCount);
+		memcpy(y.data(), &sampler.outputValues[stopIndex * offset + elementOffset], sizeof(float) * typeCount * elementCount);
 		if (sampler.interpolation == CUBICSPLINE)
 		{
-			memcpy(yin, &sampler.outputValues[stopIndex * offset], sizeof(float) * typeCount * elementCount);
+			memcpy(yin.data(), &sampler.outputValues[stopIndex * offset], sizeof(float) * typeCount * elementCount);
 		}
 	}
 
@@ -101,8 +110,25 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 	}
 	else
 	{
-		// Not supported yet.
-		return false;
+		for (size_t i = 0; i < node.weights.size(); i++)
+		{
+			float value;
+
+			if (sampler.interpolation == CUBICSPLINE)
+			{
+				value = Interpolator::cubicspline(x[i], xout[i], yin[i], y[i], t);
+			}
+			else if (sampler.interpolation == LINEAR)
+			{
+				value = Interpolator::linear(x[i], y[i], t);
+			}
+			else
+			{
+				value = Interpolator::step(x[i], y[i], t);
+			}
+
+			node.weights[i] = value;
+		}
 	}
 
 	return true;

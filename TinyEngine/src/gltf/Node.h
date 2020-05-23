@@ -16,6 +16,8 @@ struct Node {
 
 	int32_t mesh = -1;
 
+	std::vector<float> weights;
+
 	// Generic helper
 
 	glm::mat4 worldMatrix;
