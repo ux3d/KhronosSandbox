@@ -20,50 +20,224 @@ bool HelperVulkan::isDepthStencilFormat(VkFormat format)
 bool HelperVulkan::getFormat(VkFormat& format, uint32_t componentTypeSize, bool componentTypeSigned, bool componentTypeInteger, uint32_t typeCount, bool normalized)
 {
 	bool result = false;
+	format = VK_FORMAT_UNDEFINED;
 
 	if (componentTypeInteger)
 	{
-		if (!componentTypeSigned)
+		if (componentTypeSize == 1)
 		{
-			if (componentTypeSize == 1)
+			switch (typeCount)
 			{
-				switch (typeCount)
-				{
-					case 1:
-						// TODO
-						break;
-					case 2:
-						// TODO
-						break;
-					case 3:
-						// TODO
-						break;
-					case 4:
-						// TODO
-						break;
-					default:
-						break;
-				}
+				case 1:
+					if (normalized)
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R8_SNORM;
+						}
+						else
+						{
+							format = VK_FORMAT_R8_UNORM;
+						}
+					}
+					else
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R8_SINT;
+						}
+						else
+						{
+							format = VK_FORMAT_R8_UINT;
+						}
+					}
+					result = true;
+					break;
+				case 2:
+					if (normalized)
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R8G8_SNORM;
+						}
+						else
+						{
+							format = VK_FORMAT_R8G8_UNORM;
+						}
+					}
+					else
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R8G8_SINT;
+						}
+						else
+						{
+							format = VK_FORMAT_R8G8_UINT;
+						}
+					}
+					result = true;
+					break;
+				case 3:
+					if (normalized)
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R8G8B8_SNORM;
+						}
+						else
+						{
+							format = VK_FORMAT_R8G8B8_UNORM;
+						}
+					}
+					else
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R8G8B8_SINT;
+						}
+						else
+						{
+							format = VK_FORMAT_R8G8B8_UINT;
+						}
+					}
+					result = true;
+					break;
+				case 4:
+					if (normalized)
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R8G8B8A8_SNORM;
+						}
+						else
+						{
+							format = VK_FORMAT_R8G8B8A8_UNORM;
+						}
+					}
+					else
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R8G8B8A8_SINT;
+						}
+						else
+						{
+							format = VK_FORMAT_R8G8B8A8_UINT;
+						}
+					}
+					result = true;
+					break;
+				default:
+					break;
 			}
-			else if (componentTypeSize == 2)
+		}
+		else if (componentTypeSize == 2)
+		{
+			switch (typeCount)
 			{
-				switch (typeCount)
-				{
-					case 1:
-						// TODO
-						break;
-					case 2:
-						// TODO
-						break;
-					case 3:
-						// TODO
-						break;
-					case 4:
-						// TODO
-						break;
-					default:
-						break;
-				}
+				case 1:
+					if (normalized)
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R16_SNORM;
+						}
+						else
+						{
+							format = VK_FORMAT_R16_UNORM;
+						}
+					}
+					else
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R16_SINT;
+						}
+						else
+						{
+							format = VK_FORMAT_R16_UINT;
+						}
+					}
+					result = true;
+					break;
+				case 2:
+					if (normalized)
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R16G16_SNORM;
+						}
+						else
+						{
+							format = VK_FORMAT_R16G16_UNORM;
+						}
+					}
+					else
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R16G16_SINT;
+						}
+						else
+						{
+							format = VK_FORMAT_R16G16_UINT;
+						}
+					}
+					result = true;
+					break;
+				case 3:
+					if (normalized)
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R16G16B16_SNORM;
+						}
+						else
+						{
+							format = VK_FORMAT_R16G16B16_UNORM;
+						}
+					}
+					else
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R16G16B16_SINT;
+						}
+						else
+						{
+							format = VK_FORMAT_R16G16B16_UINT;
+						}
+					}
+					result = true;
+					break;
+				case 4:
+					if (normalized)
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R16G16B16A16_SNORM;
+						}
+						else
+						{
+							format = VK_FORMAT_R16G16B16A16_UNORM;
+						}
+					}
+					else
+					{
+						if (componentTypeSigned)
+						{
+							format = VK_FORMAT_R16G16B16A16_SINT;
+						}
+						else
+						{
+							format = VK_FORMAT_R16G16B16A16_UINT;
+						}
+					}
+					result = true;
+					break;
+				default:
+					break;
 			}
 		}
 	}
