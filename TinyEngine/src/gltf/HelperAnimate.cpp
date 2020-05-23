@@ -198,9 +198,9 @@ bool HelperAnimate::update(GLTF& glTF, uint32_t animationIndex, float currentTim
 		{
 			for (int32_t startIndex = 0; startIndex < static_cast<int32_t>(inputTime.size()); startIndex++)
 			{
-				if (currentTime >= inputTime[startIndex])
+				if (currentTime < inputTime[startIndex])
 				{
-					update(glTF, channel, startIndex, startIndex + 1, currentTime);
+					update(glTF, channel, startIndex - 1, startIndex, currentTime);
 
 					break;
 				}
