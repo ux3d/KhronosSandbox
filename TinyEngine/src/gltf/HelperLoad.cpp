@@ -609,7 +609,25 @@ bool HelperLoad::initAnimations(GLTF& glTF)
 				return false;
 			}
 
-			// TODO: Implement output.
+			if (sampler.output >= 0)
+			{
+				if (glTF.accessors[sampler.output].componentType == 5126)
+				{
+					uint32_t range = HelperAccess::getRange(glTF.accessors[sampler.output]);
+
+					sampler.outputValues.resize(range / sizeof(float));
+					memcpy(sampler.outputValues.data(), HelperAccess::accessData(glTF.accessors[sampler.output]), range);
+				}
+				else
+				{
+					// Not supported yet.
+					return false;
+				}
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		//

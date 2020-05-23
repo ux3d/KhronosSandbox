@@ -35,7 +35,7 @@ struct AnimationSampler {
 
 	std::vector<float> inputTime;
 
-	// TODO: Add helper for output.
+	std::vector<float> outputValues;
 };
 
 struct AnimationChannel {
