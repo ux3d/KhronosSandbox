@@ -566,22 +566,98 @@ bool HelperLoad::initAnimations(GLTF& glTF)
 	{
 		Animation& animation = glTF.animations[i];
 
-		animation.channels.resize(model.animations[i].channels.size());
-
-		for (size_t k = 0; k < animation.channels.size(); k++)
-		{
-			AnimationChannel& channel = animation.channels[k];
-
-			// TODO: Implement.
-		}
-
 		animation.samplers.resize(model.animations[i].samplers.size());
 
 		for (size_t k = 0; k < animation.samplers.size(); k++)
 		{
 			AnimationSampler& sampler = animation.samplers[k];
 
-			// TODO: Implement.
+			if (model.animations[i].samplers[k].input >= 0)
+			{
+				sampler.input = model.animations[i].samplers[k].input;
+			}
+
+			if (model.animations[i].samplers[k].output >= 0)
+			{
+				sampler.output = model.animations[i].samplers[k].output;
+			}
+
+			if (model.animations[i].samplers[k].interpolation == "LINEAR")
+			{
+				sampler.interpolation = LINEAR;
+			}
+			else if (model.animations[i].samplers[k].interpolation == "STEP")
+			{
+				sampler.interpolation = STEP;
+			}
+			else if (model.animations[i].samplers[k].interpolation == "CUBICSPLINE")
+			{
+				sampler.interpolation = CUBICSPLINE;
+			}
+
+			//
+
+			if (sampler.input >= 0 && glTF.accessors[sampler.input].componentType == 5126 && glTF.accessors[sampler.input].typeCount == 1)
+			{
+				uint32_t range = HelperAccess::getRange(glTF.accessors[sampler.input]);
+
+				sampler.inputTime.resize(range / sizeof(float));
+				memcpy(sampler.inputTime.data(), HelperAccess::accessData(glTF.accessors[sampler.input]), range);
+			}
+			else
+			{
+				return false;
+			}
+
+			// TODO: Implement output.
+		}
+
+		//
+
+		animation.channels.resize(model.animations[i].channels.size());
+
+		for (size_t k = 0; k < animation.channels.size(); k++)
+		{
+			AnimationChannel& channel = animation.channels[k];
+
+			if (model.animations[i].channels[k].sampler >= 0)
+			{
+				channel.sampler = model.animations[i].channels[k].sampler;
+			}
+
+			if (model.animations[i].channels[k].target_node >= 0)
+			{
+				channel.target.node = model.animations[i].channels[k].target_node;
+			}
+
+			if (model.animations[i].channels[k].target_path == "translation")
+			{
+				channel.target.path = translation;
+			}
+			else if (model.animations[i].channels[k].target_path == "rotation")
+			{
+				channel.target.path = rotation;
+			}
+			else if (model.animations[i].channels[k].target_path == "scale")
+			{
+				channel.target.path = scale;
+			}
+			else if (model.animations[i].channels[k].target_path == "weights")
+			{
+				channel.target.path = weights;
+			}
+
+			//
+
+			if (channel.sampler >= 0)
+			{
+				channel.targetSampler = &animation.samplers[channel.sampler];
+			}
+
+			if (channel.target.node >= 0)
+			{
+				channel.target.targetNode = &glTF.nodes[channel.target.node];
+			}
 		}
 	}
 

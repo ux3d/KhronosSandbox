@@ -1,14 +1,50 @@
 #ifndef GLTF_ANIMATION_H_
 #define GLTF_ANIMATION_H_
 
+#include <cstdint>
 #include <vector>
 
-struct AnimationChannel {
-	// TODO: Implement.
+enum InterpolationAlgorithm {
+	LINEAR,
+	STEP,
+	CUBICSPLINE
+};
+
+enum NodePath{
+	translation,
+	rotation,
+	scale,
+	weights
+};
+
+struct AnimationChannelTarget {
+	int32_t node = -1;
+	NodePath path = translation;
+
+	// Generic helper
+
+	Node* targetNode = nullptr;
 };
 
 struct AnimationSampler {
-	// TODO: Implement.
+	int32_t input = -1;
+	int32_t output = -1;
+	InterpolationAlgorithm interpolation = LINEAR;
+
+	// Generic helper
+
+	std::vector<float> inputTime;
+
+	// TODO: Add helper for output.
+};
+
+struct AnimationChannel {
+	int32_t sampler = -1;
+	AnimationChannelTarget target;
+
+	// Generic helper
+
+	AnimationSampler* targetSampler = nullptr;
 };
 
 struct Animation {
