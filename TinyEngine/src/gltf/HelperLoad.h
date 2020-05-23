@@ -40,6 +40,8 @@ private:
 
 	bool initNodes(GLTF& glTF);
 
+	bool initAnimations(GLTF& glTF);
+
 	bool initScenes(GLTF& glTF);
 
 public:

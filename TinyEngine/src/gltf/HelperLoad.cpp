@@ -558,6 +558,36 @@ bool HelperLoad::initNodes(GLTF& glTF)
 	return true;
 }
 
+bool HelperLoad::initAnimations(GLTF& glTF)
+{
+	glTF.animations.resize(model.animations.size());
+
+	for (size_t i = 0; i < glTF.animations.size(); i++)
+	{
+		Animation& animation = glTF.animations[i];
+
+		animation.channels.resize(model.animations[i].channels.size());
+
+		for (size_t k = 0; k < animation.channels.size(); k++)
+		{
+			AnimationChannel& channel = animation.channels[k];
+
+			// TODO: Implement.
+		}
+
+		animation.samplers.resize(model.animations[i].samplers.size());
+
+		for (size_t k = 0; k < animation.samplers.size(); k++)
+		{
+			AnimationSampler& sampler = animation.samplers[k];
+
+			// TODO: Implement.
+		}
+	}
+
+	return true;
+}
+
 bool HelperLoad::initScenes(GLTF& glTF)
 {
 	glTF.scenes.resize(model.scenes.size());
@@ -673,6 +703,13 @@ bool HelperLoad::open(GLTF& glTF, const std::string& filename)
 	// Nodes
 
 	if (!initNodes(glTF))
+	{
+		return false;
+	}
+
+	// Animations
+
+	if (!initAnimations(glTF))
 	{
 		return false;
 	}
