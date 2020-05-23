@@ -43,21 +43,21 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 	if (sampler.interpolation == CUBICSPLINE)
 	{
 		elementCount = 3;
-		elementOffset = typeCount * 3;
+		elementOffset = typeCount;
 	}
 	uint32_t offset = typeCount * elementCount;
 
-	memcpy(x.data(), &sampler.outputValues[startIndex * offset + elementOffset], sizeof(float) * typeCount * elementCount);
+	memcpy(x.data(), &sampler.outputValues[startIndex * offset + elementOffset], sizeof(float) * typeCount);
 	if (sampler.interpolation == CUBICSPLINE)
 	{
-		memcpy(xout.data(), &sampler.outputValues[startIndex * offset + elementOffset * 2], sizeof(float) * typeCount * elementCount);
+		memcpy(xout.data(), &sampler.outputValues[startIndex * offset + elementOffset * 2], sizeof(float) * typeCount);
 	}
 	if (stopIndex != -1)
 	{
-		memcpy(y.data(), &sampler.outputValues[stopIndex * offset + elementOffset], sizeof(float) * typeCount * elementCount);
+		memcpy(y.data(), &sampler.outputValues[stopIndex * offset + elementOffset], sizeof(float) * typeCount);
 		if (sampler.interpolation == CUBICSPLINE)
 		{
-			memcpy(yin.data(), &sampler.outputValues[stopIndex * offset], sizeof(float) * typeCount * elementCount);
+			memcpy(yin.data(), &sampler.outputValues[stopIndex * offset], sizeof(float) * typeCount);
 		}
 	}
 
