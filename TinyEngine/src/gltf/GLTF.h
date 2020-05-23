@@ -18,6 +18,7 @@
 #include "Animation.h"
 #include "Scene.h"
 #include "HelperAccess.h"
+#include "HelperAnimate.h"
 #include "HelperLoad.h"
 #include "HelperUpdate.h"
 
