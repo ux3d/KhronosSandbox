@@ -623,17 +623,48 @@ bool HelperLoad::initAnimations(GLTF& glTF)
 
 			if (sampler.output >= 0)
 			{
+				uint32_t range = HelperAccess::getRange(glTF.accessors[sampler.output]);
+
 				if (glTF.accessors[sampler.output].componentType == 5126)
 				{
-					uint32_t range = HelperAccess::getRange(glTF.accessors[sampler.output]);
-
 					sampler.outputValues.resize(range / sizeof(float));
 					memcpy(sampler.outputValues.data(), HelperAccess::accessData(glTF.accessors[sampler.output]), range);
 				}
-				else
+				else if (glTF.accessors[sampler.output].componentType == 5123)
 				{
-					// Not supported yet.
-					return false;
+					sampler.outputValues.resize(2 * range / sizeof(float));
+					const uint16_t* data = reinterpret_cast<const uint16_t*>(HelperAccess::accessData(glTF.accessors[sampler.output]));
+					for (size_t m = 0; m < sampler.outputValues.size(); m++)
+					{
+						sampler.outputValues[m] = data[m] / 65535.0f;
+					}
+				}
+				else if (glTF.accessors[sampler.output].componentType == 5122)
+				{
+					sampler.outputValues.resize(2 * range / sizeof(float));
+					const int16_t* data = reinterpret_cast<const int16_t*>(HelperAccess::accessData(glTF.accessors[sampler.output]));
+					for (size_t m = 0; m < sampler.outputValues.size(); m++)
+					{
+						sampler.outputValues[m] = glm::max(data[m] / 32767.0f, -1.0f);
+					}
+				}
+				else if (glTF.accessors[sampler.output].componentType == 5121)
+				{
+					sampler.outputValues.resize(4 * range / sizeof(float));
+					const uint8_t* data = reinterpret_cast<const uint8_t*>(HelperAccess::accessData(glTF.accessors[sampler.output]));
+					for (size_t m = 0; m < sampler.outputValues.size(); m++)
+					{
+						sampler.outputValues[m] = data[m] / 255.0f;
+					}
+				}
+				else if (glTF.accessors[sampler.output].componentType == 5120)
+				{
+					sampler.outputValues.resize(4 * range / sizeof(float));
+					const int8_t* data = reinterpret_cast<const int8_t*>(HelperAccess::accessData(glTF.accessors[sampler.output]));
+					for (size_t m = 0; m < sampler.outputValues.size(); m++)
+					{
+						sampler.outputValues[m] = glm::max(data[m] / 127.0f, -1.0f);
+					}
 				}
 			}
 			else

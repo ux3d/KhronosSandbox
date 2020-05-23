@@ -240,6 +240,58 @@ bool HelperVulkan::getFormat(VkFormat& format, uint32_t componentTypeSize, bool 
 					break;
 			}
 		}
+		else if (componentTypeSize == 4)
+		{
+			switch (typeCount)
+			{
+				case 1:
+					if (componentTypeSigned)
+					{
+						format = VK_FORMAT_R32_SINT;
+					}
+					else
+					{
+						format = VK_FORMAT_R32_UINT;
+					}
+					result = true;
+					break;
+				case 2:
+					if (componentTypeSigned)
+					{
+						format = VK_FORMAT_R32G32_SINT;
+					}
+					else
+					{
+						format = VK_FORMAT_R32G32_UINT;
+					}
+					result = true;
+					break;
+				case 3:
+					if (componentTypeSigned)
+					{
+						format = VK_FORMAT_R32G32B32_SINT;
+					}
+					else
+					{
+						format = VK_FORMAT_R32G32B32_UINT;
+					}
+					result = true;
+					break;
+				case 4:
+					if (componentTypeSigned)
+					{
+						format = VK_FORMAT_R32G32B32A32_SINT;
+					}
+					else
+					{
+						format = VK_FORMAT_R32G32B32A32_UINT;
+					}
+					result = true;
+					break;
+				default:
+					break;
+			}
+		}
 	}
 	else
 	{
