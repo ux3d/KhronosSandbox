@@ -134,7 +134,7 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 	return true;
 }
 
-bool HelperAnimate::gatherStartStop(float& start, float& stop, const GLTF& glTF, uint32_t animationIndex)
+bool HelperAnimate::gatherStop(float& stop, const GLTF& glTF, uint32_t animationIndex)
 {
 	if (animationIndex > static_cast<uint32_t>(glTF.animations.size()))
 	{
@@ -148,7 +148,6 @@ bool HelperAnimate::gatherStartStop(float& start, float& stop, const GLTF& glTF,
 		return false;
 	}
 
-	start = animation.samplers[0].inputTime.front();
 	stop = animation.samplers[0].inputTime.back();
 
 	for (uint32_t i = 1; i < animation.samplers.size(); i++)
@@ -158,7 +157,6 @@ bool HelperAnimate::gatherStartStop(float& start, float& stop, const GLTF& glTF,
 			return false;
 		}
 
-		start = glm::min(start, animation.samplers[i].inputTime.front());
 		stop = glm::max(stop, animation.samplers[i].inputTime.back());
 	}
 

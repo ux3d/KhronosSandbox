@@ -23,13 +23,11 @@ bool Application::applicationInit()
 
 	//
 
-	float start = 0.0f;
 	float stop = 0.0f;
-	if (!HelperAnimate::gatherStartStop(start, stop, glTF, 0))
+	if (!HelperAnimate::gatherStop(stop, glTF, 0))
 	{
 		Logger::print(TinyEnigne_WARNING, __FILE__, __LINE__, "glTF has no animation");
 	}
-	animationController.setStartTime(start);
 	animationController.setStopTime(stop);
 	animationController.setPlay(true);
 

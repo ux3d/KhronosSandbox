@@ -17,7 +17,7 @@ private:
 
 public:
 
-	static bool gatherStartStop(float& start, float& stop, const GLTF& glTF, uint32_t animationIndex);
+	static bool gatherStop(float& stop, const GLTF& glTF, uint32_t animationIndex);
 
 	static bool update(GLTF& glTF, uint32_t animationIndex, float currentTime);
 
