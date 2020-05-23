@@ -80,7 +80,7 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 			node.scale = value;
 		}
 	}
-	else if (channel.target.path == translation || channel.target.path == scale)
+	else if (channel.target.path == rotation)
 	{
 		glm::quat value;
 

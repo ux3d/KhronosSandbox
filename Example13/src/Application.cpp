@@ -21,11 +21,29 @@ bool Application::applicationInit()
 		return false;
 	}
 
+	//
+
+	float start = 0.0f;
+	float stop = 0.0f;
+	if (!HelperAnimate::gatherStartStop(start, stop, glTF, 0))
+	{
+		Logger::print(TinyEnigne_WARNING, __FILE__, __LINE__, "glTF has no animation");
+	}
+	animationController.setStartTime(start);
+	animationController.setStopTime(stop);
+	animationController.setPlay(true);
+
 	return true;
 }
 
 bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime)
 {
+	animationController.updateCurrentTime(deltaTime);
+	HelperAnimate::update(glTF, 0, animationController.getCurrentTime());
+	HelperUpdate::update(glTF, glm::mat4(1.0f));
+
+	//
+
 	GltfResource* gltfResource = resourceManager.getGltfResource();
 
 	//

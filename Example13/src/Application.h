@@ -9,6 +9,7 @@ private:
 
 	ResourceManager resourceManager;
 	GLTF glTF;
+	AnimationController animationController;
 
 	std::string filename = "";
 	std::string environment = "";
