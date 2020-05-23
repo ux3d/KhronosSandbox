@@ -535,7 +535,7 @@ bool ResourceManager::initPrimitive(const Primitive& primitive, const GLTF& glTF
 
 		VkFormat positionFormat = VK_FORMAT_UNDEFINED;
 
-		if (!HelperVulkan::getFormat(positionFormat, glTF.accessors[primitive.position].componentTypeSize, glTF.accessors[primitive.position].componentTypeSigned, glTF.accessors[primitive.position].componentTypeInteger, glTF.accessors[primitive.position].typeCount))
+		if (!HelperVulkan::getFormat(positionFormat, glTF.accessors[primitive.position].componentTypeSize, glTF.accessors[primitive.position].componentTypeSigned, glTF.accessors[primitive.position].componentTypeInteger, glTF.accessors[primitive.position].typeCount, glTF.accessors[primitive.position].normalized))
 		{
 			return false;
 		}

@@ -8,6 +8,7 @@
 struct Accessor {
 	int32_t bufferView = -1;
 	uint32_t byteOffset = 0;
+	bool normalized = false;
 	uint32_t count = 1;
 	int32_t componentType = -1;
 	int32_t type = -1;

@@ -17,7 +17,7 @@ bool HelperVulkan::isDepthStencilFormat(VkFormat format)
 	return false;
 }
 
-bool HelperVulkan::getFormat(VkFormat& format, uint32_t componentTypeSize, bool componentTypeSigned, bool componentTypeInteger, uint32_t typeCount)
+bool HelperVulkan::getFormat(VkFormat& format, uint32_t componentTypeSize, bool componentTypeSigned, bool componentTypeInteger, uint32_t typeCount, bool normalized)
 {
 	bool result = false;
 

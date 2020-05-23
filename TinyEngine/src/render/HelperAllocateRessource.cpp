@@ -437,7 +437,7 @@ bool HelperAllocateResource::initMeshes(ResourceManager& resourceManager, const 
 
 				uint32_t stride = HelperAccess::getStride(accessor);
 				VkFormat format = VK_FORMAT_UNDEFINED;
-				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount))
+				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
@@ -482,7 +482,7 @@ bool HelperAllocateResource::initMeshes(ResourceManager& resourceManager, const 
 
 				uint32_t stride = HelperAccess::getStride(accessor);
 				VkFormat format = VK_FORMAT_UNDEFINED;
-				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount))
+				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
@@ -527,7 +527,7 @@ bool HelperAllocateResource::initMeshes(ResourceManager& resourceManager, const 
 
 				uint32_t stride = HelperAccess::getStride(accessor);
 				VkFormat format = VK_FORMAT_UNDEFINED;
-				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount))
+				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
@@ -572,7 +572,7 @@ bool HelperAllocateResource::initMeshes(ResourceManager& resourceManager, const 
 
 				uint32_t stride = HelperAccess::getStride(accessor);
 				VkFormat format = VK_FORMAT_UNDEFINED;
-				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount))
+				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
@@ -617,7 +617,7 @@ bool HelperAllocateResource::initMeshes(ResourceManager& resourceManager, const 
 
 				uint32_t stride = HelperAccess::getStride(accessor);
 				VkFormat format = VK_FORMAT_UNDEFINED;
-				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount))
+				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
@@ -666,7 +666,7 @@ bool HelperAllocateResource::initMeshes(ResourceManager& resourceManager, const 
 
 				uint32_t stride = HelperAccess::getStride(accessor);
 				VkFormat format = VK_FORMAT_UNDEFINED;
-				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount))
+				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
@@ -711,7 +711,7 @@ bool HelperAllocateResource::initMeshes(ResourceManager& resourceManager, const 
 
 				uint32_t stride = HelperAccess::getStride(accessor);
 				VkFormat format = VK_FORMAT_UNDEFINED;
-				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount))
+				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
@@ -756,7 +756,7 @@ bool HelperAllocateResource::initMeshes(ResourceManager& resourceManager, const 
 
 				uint32_t stride = HelperAccess::getStride(accessor);
 				VkFormat format = VK_FORMAT_UNDEFINED;
-				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount))
+				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
@@ -801,7 +801,7 @@ bool HelperAllocateResource::initMeshes(ResourceManager& resourceManager, const 
 
 				uint32_t stride = HelperAccess::getStride(accessor);
 				VkFormat format = VK_FORMAT_UNDEFINED;
-				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount))
+				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
@@ -846,7 +846,7 @@ bool HelperAllocateResource::initMeshes(ResourceManager& resourceManager, const 
 
 				uint32_t stride = HelperAccess::getStride(accessor);
 				VkFormat format = VK_FORMAT_UNDEFINED;
-				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount))
+				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}

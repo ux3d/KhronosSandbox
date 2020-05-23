@@ -147,6 +147,8 @@ bool HelperLoad::initAccessors(GLTF& glTF)
 
 		accessor.byteOffset = static_cast<uint32_t>(model.accessors[i].byteOffset);
 
+		accessor.normalized = model.accessors[i].normalized;
+
 		accessor.count = static_cast<uint32_t>(model.accessors[i].count);
 
 		accessor.componentType = model.accessors[i].componentType;
