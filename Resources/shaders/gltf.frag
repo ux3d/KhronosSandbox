@@ -1,5 +1,7 @@
 #version 460 core
 
+#ifdef UNIFORMBUFFER_BINDING
+
 layout(binding = UNIFORMBUFFER_BINDING) uniform UniformBuffer {
 	vec4 baseColorFactor;
 
@@ -22,6 +24,8 @@ layout (binding = DIFFUSE_BINDING) uniform samplerCube u_diffuseTexture;
 layout (binding = SPECULAR_BINDING) uniform samplerCube u_specularTexture;
 
 layout (binding = LUT_BINDING) uniform sampler2D u_lutTexture;
+
+#endif
 
 //
 
@@ -85,6 +89,8 @@ vec3 toNonLinear(vec3 color)
 
 //
 
+#ifdef UNIFORMBUFFER_BINDING
+
 vec3 getLambertian(vec3 normal, vec3 diffuseColor)
 {
     return diffuseColor * texture(u_diffuseTexture, normal).rgb;
@@ -105,11 +111,17 @@ vec3 getSpecular(vec3 normal, vec3 view, float alpha, vec3 f0)
     return specularSample * (f0 * brdf.x + brdf.y);
 }
 
+#endif
+
 //
 
 vec4 getBaseColor()
 {
+#ifdef UNIFORMBUFFER_BINDING
     vec4 baseColor = in_ub.baseColorFactor;
+#else
+    vec4 baseColor = vec4(1.0, 1.0, 1.0, 1.0);
+#endif 
 
 #ifdef BASECOLOR_TEXTURE
     vec4 baseColorTexture = texture(u_baseColorTexture, BASECOLOR_TEXCOORD.st).rgba;
@@ -130,7 +142,11 @@ vec4 getBaseColor()
 
 float getMetallic()
 {
+#ifdef UNIFORMBUFFER_BINDING
     float metallic = in_ub.metallicFactor;
+#else
+    float metallic = 1.0;
+#endif 
 
 #ifdef METALLICROUGHNESS_TEXTURE
     metallic *= texture(u_metallicRoughnessTexture, METALLICROUGHNESS_TEXCOORD.st).b;
@@ -141,7 +157,11 @@ float getMetallic()
 
 float getRoughness()
 {
+#ifdef UNIFORMBUFFER_BINDING
     float roughness = in_ub.roughnessFactor;
+#else
+    float roughness = 1.0;
+#endif 
 
 #ifdef METALLICROUGHNESS_TEXTURE
     roughness *= texture(u_metallicRoughnessTexture, METALLICROUGHNESS_TEXCOORD.st).g;
@@ -152,7 +172,11 @@ float getRoughness()
 
 vec3 getEmissive()
 {
+#ifdef UNIFORMBUFFER_BINDING
     vec3 emissive = in_ub.emissiveFactor;
+#else
+    vec3 emissive = vec3(0.0, 0.0, 0.0);
+#endif 
 
 #ifdef EMISSIVE_TEXTURE
     emissive *= toLinear(texture(u_emissiveTexture, EMISSIVE_TEXCOORD.st).rgb);
@@ -172,12 +196,10 @@ float getOcclusion()
     return occlusion;
 }
 
+#ifdef NORMAL_VEC3
 vec3 getNormal()
 {
-    vec3 normal = vec3(0.0, 1.0, 0.0);
-#ifdef NORMAL_VEC3
-    normal = normalize(in_normal);
-#endif
+    vec3 normal = normalize(in_normal);
 
 #ifdef NORMAL_TEXTURE
     vec3 tangent;
@@ -210,6 +232,7 @@ vec3 getNormal()
 
     return normal;
 }
+#endif
 
 void main()
 {
@@ -237,6 +260,7 @@ void main()
 	vec3 color = baseColor.rgb;
 #endif
 
+#ifdef UNIFORMBUFFER_BINDING
     if (in_ub.alphaMode == 0)
     {
         alphaChannel = 1.0;
@@ -249,6 +273,7 @@ void main()
         }
         alphaChannel = 1.0;
     }
+#endif
 
     out_pixelColor = vec4(toNonLinear(color), alphaChannel);
 }
