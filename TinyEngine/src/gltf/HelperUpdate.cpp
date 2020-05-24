@@ -4,8 +4,6 @@
 
 bool HelperUpdate::update(Primitive& primitive, GLTF& glTF, const glm::mat4& parentWorldMatrix)
 {
-	primitive.worldMatrix = parentWorldMatrix;
-
 	return true;
 }
 

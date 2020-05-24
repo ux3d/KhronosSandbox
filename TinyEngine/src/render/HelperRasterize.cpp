@@ -2,7 +2,7 @@
 
 #include "HelperAccessResource.h"
 
-void HelperRasterize::draw(ResourceManager& resourceManager, const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
+void HelperRasterize::draw(ResourceManager& resourceManager, const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, const glm::mat4& worldMatrix)
 {
 	GltfResource* gltfResource = resourceManager.getGltfResource();
 
@@ -18,7 +18,7 @@ void HelperRasterize::draw(ResourceManager& resourceManager, const Primitive& pr
 	}
 
 	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(gltfResource->viewProjection), &gltfResource->viewProjection);
-	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(gltfResource->viewProjection), sizeof(primitive.worldMatrix), &primitive.worldMatrix);
+	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(gltfResource->viewProjection), sizeof(worldMatrix), &worldMatrix);
 
 	if (primitive.indices >= 0)
 	{
@@ -43,11 +43,11 @@ void HelperRasterize::draw(ResourceManager& resourceManager, const Primitive& pr
 	}
 }
 
-void HelperRasterize::draw(ResourceManager& resourceManager, const Mesh& mesh, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex)
+void HelperRasterize::draw(ResourceManager& resourceManager, const Mesh& mesh, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, const glm::mat4& worldMatrix)
 {
 	for (size_t i = 0; i < mesh.primitives.size(); i++)
 	{
-		HelperRasterize::draw(resourceManager, mesh.primitives[i], glTF, commandBuffer, frameIndex);
+		HelperRasterize::draw(resourceManager, mesh.primitives[i], glTF, commandBuffer, frameIndex, worldMatrix);
 	}
 }
 
@@ -55,7 +55,7 @@ void HelperRasterize::draw(ResourceManager& resourceManager, const Node& node, c
 {
 	if (node.mesh >= 0)
 	{
-		HelperRasterize::draw(resourceManager, glTF.meshes[node.mesh], glTF, commandBuffer, frameIndex);
+		HelperRasterize::draw(resourceManager, glTF.meshes[node.mesh], glTF, commandBuffer, frameIndex, node.worldMatrix);
 	}
 
 	for (size_t i = 0; i < node.children.size(); i++)
