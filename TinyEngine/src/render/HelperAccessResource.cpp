@@ -7,6 +7,11 @@ VkBuffer HelperAccessResource::getBuffer(ResourceManager& resourceManager, const
 
 VkBuffer HelperAccessResource::getBuffer(ResourceManager& resourceManager, const Accessor& accessor)
 {
+	if (accessor.sparse.count >= 1)
+	{
+		return HelperAccessResource::getBuffer(resourceManager, accessor.sparse.bufferView);
+	}
+
 	if (accessor.pBufferView == nullptr)
 	{
 		return VK_NULL_HANDLE;

@@ -35,7 +35,8 @@ struct AccessorSparse {
 
 	// Generic helper
 
-	std::vector<uint8_t> binary;
+	Buffer buffer;
+	BufferView bufferView;
 };
 
 struct Accessor {

@@ -22,19 +22,19 @@ private:
 	VkSampleCountFlagBits samples;
 	VkImageView imageView;
 
-	bool initBuffers(ResourceManager& resourceManager, const GLTF& glTF);
+	bool initBuffers(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
 	bool initBufferViews(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
-	bool initAccessors(ResourceManager& resourceManager, const GLTF& glTF);
+	bool initAccessors(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
-	bool initImages(ResourceManager& resourceManager, const GLTF& glTF);
+	bool initImages(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
-	bool initSamplers(ResourceManager& resourceManager, const GLTF& glTF);
+	bool initSamplers(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
-	bool initTextures(ResourceManager& resourceManager, const GLTF& glTF);
+	bool initTextures(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
-	bool initMaterials(ResourceManager& resourceManager, const GLTF& glTF);
+	bool initMaterials(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
 	bool initMeshes(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 

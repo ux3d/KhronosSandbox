@@ -19,7 +19,7 @@ const uint8_t* HelperAccess::accessData(const Accessor& accessor)
 {
 	if (accessor.sparse.count >= 1)
 	{
-		return accessor.sparse.binary.data() + accessor.byteOffset;
+		return accessor.sparse.buffer.binary.data() + accessor.byteOffset;
 	}
 
 	return HelperAccess::accessData(*accessor.pBufferView) + accessor.byteOffset;

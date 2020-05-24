@@ -9,7 +9,7 @@ HelperAllocateResource::HelperAllocateResource(uint32_t width, uint32_t height, 
 {
 }
 
-bool HelperAllocateResource::initBuffers(ResourceManager& resourceManager, const GLTF& glTF)
+bool HelperAllocateResource::initBuffers(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
 {
 	return true;
 }
@@ -29,22 +29,35 @@ bool HelperAllocateResource::initBufferViews(ResourceManager& resourceManager, c
 	return true;
 }
 
-bool HelperAllocateResource::initAccessors(ResourceManager& resourceManager, const GLTF& glTF)
+bool HelperAllocateResource::initAccessors(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+{
+	for (size_t i = 0; i < glTF.accessors.size(); i++)
+	{
+		const Accessor& accessor = glTF.accessors[i];
+
+		if (accessor.sparse.count >= 1)
+		{
+			if (!resourceManager.initBufferView(accessor.sparse.bufferView, glTF, physicalDevice, device, queue, commandPool, useRaytrace))
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool HelperAllocateResource::initImages(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
 {
 	return true;
 }
 
-bool HelperAllocateResource::initImages(ResourceManager& resourceManager, const GLTF& glTF)
+bool HelperAllocateResource::initSamplers(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
 {
 	return true;
 }
 
-bool HelperAllocateResource::initSamplers(ResourceManager& resourceManager, const GLTF& glTF)
-{
-	return true;
-}
-
-bool HelperAllocateResource::initTextures(ResourceManager& resourceManager, const GLTF& glTF)
+bool HelperAllocateResource::initTextures(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.textures.size(); i++)
 	{
@@ -74,7 +87,7 @@ bool HelperAllocateResource::initTextures(ResourceManager& resourceManager, cons
 	return true;
 }
 
-bool HelperAllocateResource::initMaterials(ResourceManager& resourceManager, const GLTF& glTF)
+bool HelperAllocateResource::initMaterials(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.materials.size(); i++)
 	{
@@ -994,35 +1007,35 @@ bool HelperAllocateResource::allocate(ResourceManager& resourceManager, const GL
 
 	// Images
 
-	if (!initImages(resourceManager, glTF))
+	if (!initImages(resourceManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Samplers
 
-	if (!initSamplers(resourceManager, glTF))
+	if (!initSamplers(resourceManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Textures
 
-	if (!initTextures(resourceManager, glTF))
+	if (!initTextures(resourceManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Materials
 
-	if (!initMaterials(resourceManager, glTF))
+	if (!initMaterials(resourceManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Buffers
 
-	if (!initBuffers(resourceManager, glTF))
+	if (!initBuffers(resourceManager, glTF, useRaytrace))
 	{
 		return false;
 	}
@@ -1036,7 +1049,7 @@ bool HelperAllocateResource::allocate(ResourceManager& resourceManager, const GL
 
 	// Accessors
 
-	if (!initAccessors(resourceManager, glTF))
+	if (!initAccessors(resourceManager, glTF, useRaytrace))
 	{
 		return false;
 	}

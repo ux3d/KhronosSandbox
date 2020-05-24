@@ -267,11 +267,20 @@ bool HelperLoad::initAccessors(GLTF& glTF)
 			accessor.sparse.values.byteOffset = static_cast<uint32_t>(model.accessors[i].sparse.values.byteOffset);
 
 			// Initialize binary data.
-
-			accessor.sparse.binary.resize(accessor.count * accessor.componentTypeSize * accessor.typeCount);
+			accessor.sparse.buffer.byteLength = accessor.count * accessor.componentTypeSize * accessor.typeCount;
+			accessor.sparse.buffer.binary.resize(accessor.sparse.buffer.byteLength);
 			if (accessor.pBufferView)
 			{
-				memcpy(accessor.sparse.binary.data(), HelperAccess::accessData(*accessor.pBufferView) + accessor.byteOffset, accessor.count * accessor.componentTypeSize * accessor.typeCount);
+				memcpy(accessor.sparse.buffer.binary.data(), HelperAccess::accessData(*accessor.pBufferView) + accessor.byteOffset, accessor.sparse.buffer.byteLength);
+
+				//
+
+				accessor.sparse.bufferView.target = accessor.pBufferView->target;
+				accessor.sparse.bufferView.byteStride = accessor.pBufferView->byteStride;
+
+				accessor.sparse.bufferView.byteOffset = 0;
+				accessor.sparse.bufferView.byteLength = accessor.sparse.buffer.byteLength;
+				accessor.sparse.bufferView.pBuffer = &accessor.sparse.buffer;
 			}
 
 			const uint8_t* indices = HelperAccess::accessData(*accessor.sparse.indices.pBufferView) + accessor.sparse.indices.byteOffset;
@@ -298,7 +307,7 @@ bool HelperLoad::initAccessors(GLTF& glTF)
 				uint32_t offsetBinary = index * accessor.componentTypeSize * accessor.typeCount;
 				uint32_t offsetValues = k * accessor.componentTypeSize * accessor.typeCount;
 
-				memcpy(&accessor.sparse.binary.data()[offsetBinary], &values[offsetValues], accessor.componentTypeSize * accessor.typeCount);
+				memcpy(&accessor.sparse.buffer.binary.data()[offsetBinary], &values[offsetValues], accessor.componentTypeSize * accessor.typeCount);
 			}
 		}
 	}
