@@ -62,6 +62,12 @@ void ResourceManager::terminate(PrimitiveResource& primitiveResource, VkDevice d
 
 	//
 
+	VulkanResource::destroyStorageBufferResource(device, primitiveResource.targetPosition);
+	VulkanResource::destroyStorageBufferResource(device, primitiveResource.targetNormal);
+	VulkanResource::destroyStorageBufferResource(device, primitiveResource.targetTangent);
+
+	//
+
 	VulkanRaytraceResource::destroyBottomLevelResource(device, primitiveResource.bottomLevelResource);
 }
 
@@ -357,6 +363,48 @@ bool ResourceManager::initPrimitive(const Primitive& primitive, const GLTF& glTF
 	if (!primitiveResource)
 	{
 		return false;
+	}
+
+	//
+
+	if (primitive.targetsCount > 0)
+	{
+		StorageBufferResourceCreateInfo storageBufferResourceCreateInfo = {};
+		storageBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+		storageBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+
+		if (primitive.targetPositionData.size() > 0)
+		{
+			storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(glm::vec3) * primitive.targetPositionData.size();
+			storageBufferResourceCreateInfo.data = primitive.targetPositionData.data();
+
+			if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, primitiveResource->targetPosition, storageBufferResourceCreateInfo))
+			{
+				return false;
+			}
+		}
+
+		if (primitive.targetNormalData.size() > 0)
+		{
+			storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(glm::vec3) * primitive.targetNormalData.size();
+			storageBufferResourceCreateInfo.data = primitive.targetNormalData.data();
+
+			if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, primitiveResource->targetNormal, storageBufferResourceCreateInfo))
+			{
+				return false;
+			}
+		}
+
+		if (primitive.targetTangentData.size() > 0)
+		{
+			storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(glm::vec3) * primitive.targetTangentData.size();
+			storageBufferResourceCreateInfo.data = primitive.targetTangentData.data();
+
+			if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, primitiveResource->targetTangent, storageBufferResourceCreateInfo))
+			{
+				return false;
+			}
+		}
 	}
 
 	//
