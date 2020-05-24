@@ -211,6 +211,96 @@ bool HelperLoad::initAccessors(GLTF& glTF)
 				accessor.typeCount = 16;
 			break;
 		}
+
+		// Sparse
+
+		if (model.accessors[i].sparse.isSparse)
+		{
+			accessor.sparse.count = static_cast<uint32_t>(model.accessors[i].sparse.count);
+
+			// Indices
+
+			accessor.sparse.indices.bufferView = model.accessors[i].sparse.indices.bufferView;
+			if (accessor.sparse.indices.bufferView >= 0)
+			{
+				accessor.sparse.indices.pBufferView = &glTF.bufferViews[accessor.sparse.indices.bufferView];
+			}
+			else
+			{
+				return false;
+			}
+
+			accessor.sparse.indices.byteOffset = static_cast<uint32_t>(model.accessors[i].sparse.indices.byteOffset);
+
+			accessor.sparse.indices.componentType = model.accessors[i].sparse.indices.componentType;
+			switch (accessor.sparse.indices.componentType)
+			{
+				case TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE:
+					accessor.sparse.indices.componentTypeSize = 1;
+					accessor.sparse.indices.componentTypeSigned = false;
+					accessor.sparse.indices.componentTypeInteger = true;
+				break;
+				case TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT:
+					accessor.sparse.indices.componentTypeSize = 2;
+					accessor.sparse.indices.componentTypeSigned = false;
+					accessor.sparse.indices.componentTypeInteger = true;
+				break;
+				case TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT:
+					accessor.sparse.indices.componentTypeSize = 4;
+					accessor.sparse.indices.componentTypeSigned = false;
+					accessor.sparse.indices.componentTypeInteger = true;
+				break;
+			}
+
+			// Values
+
+			accessor.sparse.values.bufferView = model.accessors[i].sparse.values.bufferView;
+			if (accessor.sparse.values.bufferView >= 0)
+			{
+				accessor.sparse.values.pBufferView = &glTF.bufferViews[accessor.sparse.values.bufferView];
+			}
+			else
+			{
+				return false;
+			}
+
+			accessor.sparse.values.byteOffset = static_cast<uint32_t>(model.accessors[i].sparse.values.byteOffset);
+
+			// Initialize binary data.
+
+			accessor.sparse.binary.resize(accessor.count * accessor.componentTypeSize * accessor.typeCount);
+			if (accessor.pBufferView)
+			{
+				memcpy(accessor.sparse.binary.data(), HelperAccess::accessData(*accessor.pBufferView) + accessor.byteOffset, accessor.count * accessor.componentTypeSize * accessor.typeCount);
+			}
+
+			const uint8_t* indices = HelperAccess::accessData(*accessor.sparse.indices.pBufferView) + accessor.sparse.indices.byteOffset;
+			const uint8_t* values = HelperAccess::accessData(*accessor.sparse.values.pBufferView) + accessor.sparse.values.byteOffset;
+			for (uint32_t k = 0; k < accessor.sparse.count; k++)
+			{
+				uint32_t index;
+
+				switch (accessor.sparse.indices.componentTypeSize)
+				{
+					case 1:
+						index = static_cast<uint32_t>(indices[k]);
+						break;
+					case 2:
+						index = static_cast<uint32_t>(*reinterpret_cast<const uint16_t*>(&indices[k * 2]));
+						break;
+					case 4:
+						index = *reinterpret_cast<const uint32_t*>(&indices[k * 4]);
+						break;
+				}
+
+				//
+
+				uint32_t offsetBinary = index * accessor.componentTypeSize * accessor.typeCount;
+				uint32_t offsetValues = k * accessor.componentTypeSize * accessor.typeCount;
+
+				memcpy(&accessor.sparse.binary.data()[offsetBinary], &values[offsetValues], accessor.componentTypeSize * accessor.typeCount);
+			}
+		}
 	}
 
 	return true;

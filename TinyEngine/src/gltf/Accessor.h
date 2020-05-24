@@ -5,6 +5,39 @@
 
 #include "BufferView.h"
 
+struct AccessorSparseValues {
+	int32_t bufferView = -1;
+	uint32_t byteOffset = 0;
+
+	// Generic helper
+
+	BufferView* pBufferView = nullptr;
+};
+
+struct AccessorSparseIndices {
+	int32_t bufferView = -1;
+	uint32_t byteOffset = 0;
+	int32_t componentType = -1;
+
+	// Generic helper
+
+	uint32_t componentTypeSize = 0;
+	bool componentTypeSigned = false;
+	bool componentTypeInteger = false;
+
+	BufferView* pBufferView = nullptr;
+};
+
+struct AccessorSparse {
+	uint32_t count = 0;
+	AccessorSparseIndices indices;
+	AccessorSparseValues values;
+
+	// Generic helper
+
+	std::vector<uint8_t> binary;
+};
+
 struct Accessor {
 	int32_t bufferView = -1;
 	uint32_t byteOffset = 0;
@@ -12,6 +45,8 @@ struct Accessor {
 	uint32_t count = 1;
 	int32_t componentType = -1;
 	int32_t type = -1;
+
+	AccessorSparse sparse;
 
 	// Generic helper
 

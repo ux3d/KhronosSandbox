@@ -329,7 +329,7 @@ bool HelperAllocateResource::initMaterials(ResourceManager& resourceManager, con
 
 		//
 
-		if (!resourceManager.initMaterial(glTF.materials.back(), glTF, physicalDevice, device, descriptorSetLayoutBindings))
+		if (!resourceManager.initMaterial(material, glTF, physicalDevice, device, descriptorSetLayoutBindings))
 		{
 			return false;
 		}

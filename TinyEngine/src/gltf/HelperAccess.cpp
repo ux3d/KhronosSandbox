@@ -17,6 +17,11 @@ uint32_t HelperAccess::getOffset(const BufferView& bufferView)
 
 const uint8_t* HelperAccess::accessData(const Accessor& accessor)
 {
+	if (accessor.sparse.count >= 1)
+	{
+		return accessor.sparse.binary.data() + accessor.byteOffset;
+	}
+
 	return HelperAccess::accessData(*accessor.pBufferView) + accessor.byteOffset;
 }
 
