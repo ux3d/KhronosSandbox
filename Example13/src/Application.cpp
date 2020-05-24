@@ -95,7 +95,8 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	gltfResource->viewProjection.view = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	HelperRasterize::draw(resourceManager, glTF, commandBuffers[frameIndex], frameIndex);
+	HelperRasterize::draw(resourceManager, glTF, commandBuffers[frameIndex], frameIndex, OPAQUE);
+	HelperRasterize::draw(resourceManager, glTF, commandBuffers[frameIndex], frameIndex, TRANSPARENT);
 
 	vkCmdEndRenderPass(commandBuffers[frameIndex]);
 
