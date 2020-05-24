@@ -136,7 +136,7 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 
 bool HelperAnimate::gatherStop(float& stop, const GLTF& glTF, uint32_t animationIndex)
 {
-	if (animationIndex > static_cast<uint32_t>(glTF.animations.size()))
+	if (animationIndex >= static_cast<uint32_t>(glTF.animations.size()))
 	{
 		return false;
 	}
@@ -165,7 +165,7 @@ bool HelperAnimate::gatherStop(float& stop, const GLTF& glTF, uint32_t animation
 
 bool HelperAnimate::update(GLTF& glTF, uint32_t animationIndex, float currentTime)
 {
-	if (animationIndex > static_cast<uint32_t>(glTF.animations.size()))
+	if (animationIndex >= static_cast<uint32_t>(glTF.animations.size()))
 	{
 		return false;
 	}
