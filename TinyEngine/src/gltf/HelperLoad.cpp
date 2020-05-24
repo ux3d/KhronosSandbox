@@ -142,7 +142,10 @@ bool HelperLoad::initAccessors(GLTF& glTF)
 		}
 		else
 		{
-			return false;
+			if (!model.accessors[i].sparse.isSparse)
+			{
+				return false;
+			}
 		}
 
 		accessor.byteOffset = static_cast<uint32_t>(model.accessors[i].byteOffset);
@@ -269,6 +272,11 @@ bool HelperLoad::initAccessors(GLTF& glTF)
 			// Initialize binary data.
 			accessor.sparse.buffer.byteLength = accessor.count * accessor.componentTypeSize * accessor.typeCount;
 			accessor.sparse.buffer.binary.resize(accessor.sparse.buffer.byteLength);
+
+			accessor.sparse.bufferView.byteOffset = 0;
+			accessor.sparse.bufferView.byteLength = accessor.sparse.buffer.byteLength;
+			accessor.sparse.bufferView.pBuffer = &accessor.sparse.buffer;
+
 			if (accessor.pBufferView)
 			{
 				memcpy(accessor.sparse.buffer.binary.data(), HelperAccess::accessData(*accessor.pBufferView) + accessor.byteOffset, accessor.sparse.buffer.byteLength);
@@ -277,10 +285,6 @@ bool HelperLoad::initAccessors(GLTF& glTF)
 
 				accessor.sparse.bufferView.target = accessor.pBufferView->target;
 				accessor.sparse.bufferView.byteStride = accessor.pBufferView->byteStride;
-
-				accessor.sparse.bufferView.byteOffset = 0;
-				accessor.sparse.bufferView.byteLength = accessor.sparse.buffer.byteLength;
-				accessor.sparse.bufferView.pBuffer = &accessor.sparse.buffer;
 			}
 
 			const uint8_t* indices = HelperAccess::accessData(*accessor.sparse.indices.pBufferView) + accessor.sparse.indices.byteOffset;

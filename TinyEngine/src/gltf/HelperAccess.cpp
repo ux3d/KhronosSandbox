@@ -32,6 +32,11 @@ uint32_t HelperAccess::getOffset(const Accessor& accessor)
 
 uint32_t HelperAccess::getRange(const Accessor& accessor)
 {
+	if (accessor.sparse.count >= 1)
+	{
+		return accessor.sparse.bufferView.byteLength - accessor.byteOffset;
+	}
+
 	return accessor.pBufferView->byteLength - accessor.byteOffset;
 }
 
