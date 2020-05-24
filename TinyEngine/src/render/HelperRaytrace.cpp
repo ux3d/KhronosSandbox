@@ -27,7 +27,11 @@ void HelperRaytrace::draw(ResourceManager& resourceManager, const Scene& scene, 
 	VkStridedBufferRegionKHR callableStridedBufferRegion = {};
 
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, defaultSceneResource->raytracePipeline);
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, defaultSceneResource->raytracePipelineLayout, 0, 1, &defaultSceneResource->raytraceDescriptorSet, 0, 0);
+
+	if (defaultSceneResource->raytraceDescriptorSet != VK_NULL_HANDLE)
+	{
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, defaultSceneResource->raytracePipelineLayout, 0, 1, &defaultSceneResource->raytraceDescriptorSet, 0, 0);
+	}
 
 	vkCmdTraceRaysKHR(commandBuffer, &rayGenStridedBufferRegion, &missStridedBufferRegion, &closestHitStridedBufferRegion, &callableStridedBufferRegion, width, height, 1);
 }

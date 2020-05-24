@@ -460,8 +460,8 @@ bool ResourceManager::initPrimitive(const Primitive& primitive, const GLTF& glTF
 
 	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
 	pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutCreateInfo.setLayoutCount = 1;
-	pipelineLayoutCreateInfo.pSetLayouts = pSetLayouts;
+	pipelineLayoutCreateInfo.setLayoutCount = (*pSetLayouts != VK_NULL_HANDLE) ? 1 : 0;
+	pipelineLayoutCreateInfo.pSetLayouts = (*pSetLayouts != VK_NULL_HANDLE) ? pSetLayouts : nullptr;
 	pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
 	pipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;
 

@@ -12,7 +12,10 @@ void HelperRasterize::draw(ResourceManager& resourceManager, const Primitive& pr
 
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->graphicsPipeline);
 
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->pipelineLayout, 0, 1, &resourceManager.getMaterialResource(&glTF.materials[primitive.material])->descriptorSet, 0, nullptr);
+	if (resourceManager.getMaterialResource(&glTF.materials[primitive.material])->descriptorSet != VK_NULL_HANDLE)
+	{
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->pipelineLayout, 0, 1, &resourceManager.getMaterialResource(&glTF.materials[primitive.material])->descriptorSet, 0, nullptr);
+	}
 
 	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(gltfResource->viewProjection), &gltfResource->viewProjection);
 	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(gltfResource->viewProjection), sizeof(primitive.worldMatrix), &primitive.worldMatrix);
