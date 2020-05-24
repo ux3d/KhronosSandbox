@@ -264,10 +264,12 @@ void main()
     float roughness = getRoughness();
 
     // BRDF
-    vec3 color = getEmissive() + getLambertian(normal, diffuseColor) + getSpecular(normal, view, roughness, f0);
+    vec3 color = getLambertian(normal, diffuseColor) + getSpecular(normal, view, roughness, f0);
 #else
 	vec3 color = baseColor.rgb;
 #endif
+
+    color += getEmissive();
 
 #ifdef UNIFORMBUFFER_BINDING
     // Ambient occlusion
