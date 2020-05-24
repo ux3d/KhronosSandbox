@@ -636,6 +636,18 @@ bool HelperLoad::initMeshes(GLTF& glTF)
 				return false;
 			}
 		}
+
+		//
+
+		if (model.meshes[i].weights.size() > 0)
+		{
+			mesh.weights.resize(model.meshes[i].weights.size());
+
+			for (size_t k = 0; k < model.meshes[i].weights.size(); k++)
+			{
+				mesh.weights[k] = static_cast<float>(model.meshes[i].weights[k]);
+			}
+		}
 	}
 
 	return true;

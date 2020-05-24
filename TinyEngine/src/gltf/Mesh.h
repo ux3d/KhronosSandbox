@@ -7,6 +7,8 @@
 
 struct Mesh {
 	std::vector<Primitive> primitives;
+
+	std::vector<float> weights;
 };
 
 #endif /* GLTF_MESH_H_ */
