@@ -406,15 +406,10 @@ bool HelperAllocateResource::initMeshes(ResourceManager& resourceManager, const 
 
 			std::map<std::string, std::string> macros;
 
-			VkCullModeFlags cullMode = VK_CULL_MODE_BACK_BIT;
+			VkCullModeFlags cullMode = VK_CULL_MODE_NONE;
 			if (primitive.material >= 0)
 			{
 				macros = resourceManager.getMaterialResource(&glTF.materials[primitive.material])->macros;
-
-				if (glTF.materials[primitive.material].doubleSided)
-				{
-					cullMode = VK_CULL_MODE_NONE;
-				}
 			}
 
 			primitiveResource->vertexBuffers.resize(primitive.attributesCount);

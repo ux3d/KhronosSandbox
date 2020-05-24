@@ -71,6 +71,8 @@ layout (location = 7) in vec4 in_color;
 layout (location = 7) in vec4 in_color;
 #endif
 
+layout (location = 8) flat in float in_determinant;
+
 //
 
 layout(location = 0) out vec4 out_pixelColor;
@@ -236,6 +238,16 @@ vec3 getNormal()
 
 void main()
 {
+#ifdef UNIFORMBUFFER_BINDING
+    if (!in_ub.doubleSided && !gl_FrontFacing)
+    {
+        if (in_determinant > 0.0)
+        {   
+            discard;
+        }
+    }
+#endif 
+
     vec4 baseColor = getBaseColor();
     float alphaChannel = baseColor.a;
 

@@ -48,6 +48,8 @@ layout (location = 7) out vec4 out_color;
 layout (location = 7) out vec4 out_color;
 #endif
 
+layout (location = 8) flat out float out_determinant;
+
 void main()
 {
     mat3 normalMatrix = transpose(inverse(mat3(in_upc.world)));
@@ -80,6 +82,8 @@ void main()
 
     vec4 position = in_upc.world * vec4(in_position, 1.0);
     out_position = position.xyz / position.w;
+
+    out_determinant = determinant(in_upc.world);
     
     out_view = inverse(mat3(in_upc.view)) * vec3(0.0, 0.0, 1.0);
 
