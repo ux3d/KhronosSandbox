@@ -329,6 +329,8 @@ bool TinyEngine::createDevice()
 	physicalDeviceDescriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
 	VkPhysicalDeviceRayTracingFeaturesKHR physicalDeviceRayTracingFeatures = {};
 	physicalDeviceRayTracingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_FEATURES_KHR;
+	VkPhysicalDeviceIndexTypeUint8FeaturesEXT physicalDeviceIndexTypeUint8Features = {};
+	physicalDeviceIndexTypeUint8Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_EXT;
 
 	if (major == 1 && minor < 1)
 	{
@@ -358,6 +360,13 @@ bool TinyEngine::createDevice()
 
 			*ppNext = &physicalDeviceRayTracingFeatures;
 			ppNext = &physicalDeviceRayTracingFeatures.pNext;
+		}
+		if (hasEnabledDeviceExtensionName(VK_EXT_INDEX_TYPE_UINT8_EXTENSION_NAME))
+		{
+			physicalDeviceIndexTypeUint8Features.indexTypeUint8 = VK_TRUE;
+
+			*ppNext = &physicalDeviceIndexTypeUint8Features;
+			ppNext = &physicalDeviceIndexTypeUint8Features.pNext;
 		}
 
 		deviceCreateInfo.pNext = &physicalDeviceFeatures2;

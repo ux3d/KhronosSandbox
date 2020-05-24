@@ -516,8 +516,12 @@ bool ResourceManager::initPrimitive(const Primitive& primitive, const GLTF& glTF
 		VkDeviceAddress vertexIndexBufferAddress = 0;
 		if (primitive.indices >= 0)
 		{
-			indexType = VK_INDEX_TYPE_UINT16;
-			if (glTF.accessors[primitive.indices].componentTypeSize == 4)
+			indexType = VK_INDEX_TYPE_UINT8_EXT;
+			if (glTF.accessors[primitive.indices].componentTypeSize == 2)
+			{
+				indexType = VK_INDEX_TYPE_UINT16;
+			}
+			else if (glTF.accessors[primitive.indices].componentTypeSize == 4)
 			{
 				indexType = VK_INDEX_TYPE_UINT32;
 			}
