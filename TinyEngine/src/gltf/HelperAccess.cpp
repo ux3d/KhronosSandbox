@@ -42,7 +42,18 @@ uint32_t HelperAccess::getRange(const Accessor& accessor)
 
 uint32_t HelperAccess::getStride(const Accessor& accessor)
 {
-	return accessor.typeCount * accessor.componentTypeSize;
+	uint32_t stride = 4;
+
+	if (accessor.sparse.count >= 1)
+	{
+		stride = accessor.sparse.bufferView.byteStride;
+	}
+	else if (accessor.pBufferView)
+	{
+		stride = accessor.pBufferView->byteStride;
+	}
+
+	return glm::max(accessor.typeCount * accessor.componentTypeSize, stride);
 }
 
 const uint8_t* HelperAccess::accessData(const Image& image, uint32_t index)
