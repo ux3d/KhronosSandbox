@@ -21,7 +21,8 @@ layout (location = TEXCOORD_1_LOC) in vec2 in_texCoord1;
 #endif
 #ifdef COLOR_0_VEC4
 layout (location = COLOR_0_LOC) in vec4 in_color;
-#elif  COLOR_0_VEC3
+#endif
+#ifdef COLOR_0_VEC3
 layout (location = COLOR_0_LOC) in vec3 in_color;
 #endif
 
@@ -42,7 +43,8 @@ layout (location = 6) out vec2 out_texCoord1;
 #endif
 #ifdef COLOR_0_VEC4
 layout (location = 7) out vec4 out_color;
-#elif  COLOR_0_VEC3
+#endif
+#ifdef COLOR_0_VEC3
 layout (location = 7) out vec4 out_color;
 #endif
 
@@ -71,7 +73,8 @@ void main()
 
 #ifdef COLOR_0_VEC4
     out_color = in_color;
-#elif  COLOR_0_VEC3
+#endif
+#ifdef COLOR_0_VEC3
     out_color = vec4(in_color, 1.0);
 #endif
 

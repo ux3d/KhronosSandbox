@@ -62,7 +62,8 @@ layout (location = 6) in vec2 in_texCoord1;
 #endif
 #ifdef COLOR_0_VEC4
 layout (location = 7) in vec4 in_color;
-#elif  COLOR_0_VEC3
+#endif
+#ifdef COLOR_0_VEC3
 layout (location = 7) in vec4 in_color;
 #endif
 
@@ -119,7 +120,8 @@ vec4 getBaseColor()
 
 #ifdef COLOR_0_VEC4
     baseColor *= in_color;
-#elif  COLOR_0_VEC3
+#endif
+#ifdef COLOR_0_VEC3
     baseColor *= in_color;
 #endif
 
@@ -213,19 +215,8 @@ void main()
 {
     vec4 baseColor = getBaseColor();
     float alphaChannel = baseColor.a;
-    if (in_ub.alphaMode == 0)
-    {
-        alphaChannel = 1.0;
-    }
-    else if (in_ub.alphaMode == 1)
-    {
-        if(alphaChannel < in_ub.alphaCutoff)
-        {
-            discard;
-        }
-        alphaChannel = 1.0;
-    }
 
+#ifdef NORMAL_VEC3
     vec3 view = normalize(in_view);
 
     vec3 normal = getNormal();
@@ -242,6 +233,22 @@ void main()
 
     // Ambient occlusion
     color = mix(color, color * getOcclusion(), in_ub.occlusionStrength);
+#else
+	vec3 color = baseColor.rgb;
+#endif
+
+    if (in_ub.alphaMode == 0)
+    {
+        alphaChannel = 1.0;
+    }
+    else if (in_ub.alphaMode == 1)
+    {
+        if(alphaChannel < in_ub.alphaCutoff)
+        {
+            discard;
+        }
+        alphaChannel = 1.0;
+    }
 
     out_pixelColor = vec4(toNonLinear(color), alphaChannel);
 }
