@@ -4,7 +4,7 @@
 
 bool Application::applicationInit()
 {
-	HelperLoad helperLoad;
+	HelperLoad helperLoad(true);
 	if(!helperLoad.open(glTF, filename))
 	{
 		return false;

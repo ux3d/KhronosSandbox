@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 	{
 		application.addEnabledInstanceExtensionName(glfwExtensionNames[i]);
 	}
-	application.addEnabledDeviceExtensionName(VK_EXT_INDEX_TYPE_UINT8_EXTENSION_NAME);	// Required by for glTF.
+	application.addEnabledDeviceExtensionName(VK_EXT_INDEX_TYPE_UINT8_EXTENSION_NAME);			// Required by for glTF.
 	application.addEnabledDeviceExtensionName(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
 	application.addEnabledDeviceExtensionName(VK_KHR_RAY_TRACING_EXTENSION_NAME);
 	application.addEnabledDeviceExtensionName(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);	// Required by ray tracing.

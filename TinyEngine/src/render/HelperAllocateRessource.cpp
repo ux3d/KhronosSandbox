@@ -35,7 +35,14 @@ bool HelperAllocateResource::initAccessors(ResourceManager& resourceManager, con
 	{
 		const Accessor& accessor = glTF.accessors[i];
 
-		if (accessor.sparse.count >= 1)
+		if (accessor.aliasedBuffer.byteLength > 0)
+		{
+			if (!resourceManager.initBufferView(accessor.aliasedBufferView, glTF, physicalDevice, device, queue, commandPool, useRaytrace))
+			{
+				return false;
+			}
+		}
+		else if (accessor.sparse.count >= 1)
 		{
 			if (!resourceManager.initBufferView(accessor.sparse.bufferView, glTF, physicalDevice, device, queue, commandPool, useRaytrace))
 			{

@@ -21,7 +21,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	HelperLoad helperLoad;
+	HelperLoad helperLoad(false);
 	if(!helperLoad.open(glTF, filename))
 	{
 		return false;

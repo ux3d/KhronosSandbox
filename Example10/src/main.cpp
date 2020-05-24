@@ -39,7 +39,6 @@ int main(int argc, char **argv)
 	{
 		application.addEnabledInstanceExtensionName(glfwExtensionNames[i]);
 	}
-	application.addEnabledDeviceExtensionName(VK_EXT_INDEX_TYPE_UINT8_EXTENSION_NAME);	// Required by for glTF.
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);

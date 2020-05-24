@@ -58,6 +58,9 @@ struct Accessor {
 	uint32_t typeCount = 0;
 
 	BufferView* pBufferView = nullptr;
+
+	Buffer aliasedBuffer;
+	BufferView aliasedBufferView;
 };
 
 #endif /* GLTF_ACCESSOR_H_ */

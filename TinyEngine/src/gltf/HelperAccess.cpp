@@ -17,6 +17,11 @@ uint32_t HelperAccess::getOffset(const BufferView& bufferView)
 
 const uint8_t* HelperAccess::accessData(const Accessor& accessor)
 {
+	if (accessor.aliasedBuffer.byteLength > 0)
+	{
+		return accessor.aliasedBuffer.binary.data() + accessor.byteOffset;
+	}
+
 	if (accessor.sparse.count >= 1)
 	{
 		return accessor.sparse.buffer.binary.data() + accessor.byteOffset;
@@ -32,6 +37,11 @@ uint32_t HelperAccess::getOffset(const Accessor& accessor)
 
 uint32_t HelperAccess::getRange(const Accessor& accessor)
 {
+	if (accessor.aliasedBuffer.byteLength > 0)
+	{
+		return accessor.aliasedBufferView.byteLength - accessor.byteOffset;
+	}
+
 	if (accessor.sparse.count >= 1)
 	{
 		return accessor.sparse.bufferView.byteLength - accessor.byteOffset;
@@ -44,7 +54,11 @@ uint32_t HelperAccess::getStride(const Accessor& accessor)
 {
 	uint32_t stride = 4;
 
-	if (accessor.sparse.count >= 1)
+	if (accessor.aliasedBuffer.byteLength > 0)
+	{
+		stride = accessor.aliasedBufferView.byteStride;
+	}
+	else if (accessor.sparse.count >= 1)
 	{
 		stride = accessor.sparse.bufferView.byteStride;
 	}

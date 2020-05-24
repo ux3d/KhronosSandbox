@@ -75,8 +75,8 @@ static bool ReadWholeFile(std::vector<unsigned char> *out, std::string *err, con
 	return true;
 }
 
-HelperLoad::HelperLoad() :
-	model()
+HelperLoad::HelperLoad(bool convertIndexBuffer) :
+	convertIndexBuffer(convertIndexBuffer), model()
 {
 }
 
@@ -313,6 +313,31 @@ bool HelperLoad::initAccessors(GLTF& glTF)
 
 				memcpy(&accessor.sparse.buffer.binary.data()[offsetBinary], &values[offsetValues], accessor.componentTypeSize * accessor.typeCount);
 			}
+		}
+
+		//
+
+		if (convertIndexBuffer && accessor.componentTypeSize == 1)
+		{
+			const uint8_t* data = reinterpret_cast<const uint8_t*>(HelperAccess::accessData(accessor));
+
+			accessor.aliasedBuffer.byteLength = static_cast<uint32_t>(2 * accessor.count);
+			accessor.aliasedBuffer.binary.resize(accessor.aliasedBuffer.byteLength);
+
+			accessor.aliasedBufferView.byteOffset = 0;
+			accessor.aliasedBufferView.byteLength = accessor.aliasedBuffer.byteLength;
+			accessor.aliasedBufferView.target = 34963;
+			accessor.aliasedBufferView.byteStride = 2;
+			accessor.aliasedBufferView.pBuffer = &accessor.aliasedBuffer;
+
+			for (uint32_t k = 0; k < accessor.count; k++)
+			{
+				uint16_t newData = static_cast<uint16_t>(data[k]);
+				memcpy(&accessor.aliasedBuffer.binary.data()[k * 2], &newData, sizeof(uint16_t));
+			}
+
+			accessor.componentTypeSize = 2;
+			accessor.byteOffset = 0;
 		}
 	}
 
