@@ -2,8 +2,15 @@
 #define GLTF_PRIMITIVE_H_
 
 #include <cstdint>
+#include <vector>
 
 #include "../math/Math.h"
+
+struct Target {
+	int32_t position = -1;
+	int32_t normal = -1;
+	int32_t tangent = -1;
+};
 
 struct Primitive {
 	int32_t position = -1;
@@ -21,9 +28,16 @@ struct Primitive {
 
 	int32_t material = -1;
 
+	std::vector<Target> targets;
+
 	// Generic Helper
 
 	uint32_t attributesCount = 0;
+
+	std::vector<glm::vec3> targetPositionData;
+	std::vector<glm::vec3> targetNormalData;
+	std::vector<glm::vec3> targetTangentData;
+	uint32_t targetsCount = 0;
 };
 
 #endif /* GLTF_PRIMITIVE_H_ */

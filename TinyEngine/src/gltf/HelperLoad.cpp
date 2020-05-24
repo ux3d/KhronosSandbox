@@ -635,6 +635,59 @@ bool HelperLoad::initMeshes(GLTF& glTF)
 			{
 				return false;
 			}
+
+			//
+
+			if (model.meshes[i].primitives[k].targets.size() > 0)
+			{
+				primitive.targets.resize(model.meshes[i].primitives[k].targets.size());
+
+				primitive.targetsCount = static_cast<uint32_t>(model.meshes[i].primitives[k].targets[0].size());
+
+				for (uint32_t m = 0; m < primitive.targets.size(); m++)
+				{
+					const auto& currentTarget = model.meshes[i].primitives[k].targets[m];
+
+					const auto postionIt = currentTarget.find("POSITION");
+					if (postionIt != currentTarget.end())
+					{
+						primitive.targets[m].position = static_cast<int32_t>(postionIt->second);
+
+						if (m == 0)
+						{
+							primitive.targetPositionData.resize(glTF.accessors[primitive.position].count * primitive.targets.size());
+						}
+
+						memcpy(&primitive.targetPositionData.data()[m * glTF.accessors[primitive.position].count], HelperAccess::accessData(glTF.accessors[primitive.position]), sizeof(glm::vec3) * glTF.accessors[primitive.position].count);
+					}
+
+					const auto normalIt = currentTarget.find("NORMAL");
+					if (normalIt != currentTarget.end())
+					{
+						primitive.targets[m].normal = static_cast<int32_t>(normalIt->second);
+
+						if (m == 0)
+						{
+							primitive.targetNormalData.resize(glTF.accessors[primitive.normal].count * primitive.targets.size());
+						}
+
+						memcpy(&primitive.targetNormalData.data()[m * glTF.accessors[primitive.normal].count], HelperAccess::accessData(glTF.accessors[primitive.normal]), sizeof(glm::vec3) * glTF.accessors[primitive.normal].count);
+					}
+
+					const auto tangentIt = currentTarget.find("TANGENT");
+					if (tangentIt != currentTarget.end())
+					{
+						primitive.targets[m].tangent = static_cast<int32_t>(tangentIt->second);
+
+						if (m == 0)
+						{
+							primitive.targetTangentData.resize(glTF.accessors[primitive.tangent].count * primitive.targets.size());
+						}
+
+						memcpy(&primitive.targetTangentData.data()[m * glTF.accessors[primitive.tangent].count], HelperAccess::accessData(glTF.accessors[primitive.tangent]), sizeof(glm::vec3) * glTF.accessors[primitive.tangent].count);
+					}
+				}
+			}
 		}
 
 		//
