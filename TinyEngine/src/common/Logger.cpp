@@ -10,7 +10,7 @@ const char* Logger::reduceFileMacro(const char* fileMacro)
 	return strrchr(fileMacro, '/') ? strrchr(fileMacro, '/') + 1 : (strrchr(fileMacro, '\\') ? strrchr(fileMacro, '\\') + 1 : fileMacro);
 }
 
-const std::vector<const char*> Logger::LOG_STRINGS = {"ERROR", "WARNING", "INFO", "DEBUG"};
+const std::vector<const char*> Logger::LOG_STRINGS = {"ERROR", "WARNING", "INFO", "DEBUG", "VERBOSE"};
 
 DebugLevel Logger::debugLevel = TinyEngine_INFO;
 

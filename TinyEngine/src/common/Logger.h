@@ -10,7 +10,8 @@ enum DebugLevel {
 	TinyEngine_ERROR,
 	TinyEngine_WARNING,
 	TinyEngine_INFO,
-	TinyEngine_DEBUG
+	TinyEngine_DEBUG,
+	TinyEngine_VERBOSE
 };
 
 class Logger
