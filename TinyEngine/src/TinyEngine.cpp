@@ -406,6 +406,23 @@ bool TinyEngine::createSwapchain()
 {
 	VkResult result = VK_SUCCESS;
 
+	//
+
+	VkSurfaceCapabilitiesKHR surfaceCapabilities = {};
+
+	result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &surfaceCapabilities);
+	if (result != VK_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+		return false;
+	}
+
+	width = surfaceCapabilities.currentExtent.width;
+	height = surfaceCapabilities.currentExtent.height;
+
+	//
+
 	VkSwapchainCreateInfoKHR swapchainCreateInfo = {};
 	swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	swapchainCreateInfo.surface = surface;
@@ -916,7 +933,7 @@ bool TinyEngine::prepare()
 	return true;
 }
 
-bool TinyEngine::init(VkSurfaceKHR surface, uint32_t width, uint32_t height)
+bool TinyEngine::init(VkSurfaceKHR surface)
 {
 	if (!surface)
 	{
@@ -924,8 +941,6 @@ bool TinyEngine::init(VkSurfaceKHR surface, uint32_t width, uint32_t height)
 	}
 
 	this->surface = surface;
-	this->width = width;
-	this->height = height;
 
 	if (!choosePhysicalDevice())
 	{
@@ -990,33 +1005,40 @@ bool TinyEngine::init(VkSurfaceKHR surface, uint32_t width, uint32_t height)
 	return applicationInit();
 }
 
-bool TinyEngine::resize(uint32_t width, uint32_t height)
+bool TinyEngine::resize()
 {
 	inResize = true;
-
-	if (!terminate())
-	{
-		// Switch back to clean up later everything.
-		inResize = false;
-
-		return false;
-	}
-
-	if (!init(surface, width, height))
-	{
-		// Switch back to clean up later everything.
-		inResize = false;
-
-		return false;
-	}
-
-	inResize = false;
 
 	return true;
 }
 
 bool TinyEngine::update()
 {
+	if (inResize)
+	{
+		if (!terminate())
+		{
+			// Switch back to clean up later everything.
+			inResize = false;
+
+			return false;
+		}
+
+		if (!init(surface))
+		{
+			// Switch back to clean up later everything.
+			inResize = false;
+
+			return false;
+		}
+
+		inResize = false;
+
+		return true;
+	}
+
+	//
+
 	static std::optional<double> firstTime;
 	static double lastTime = 0.0;
 
@@ -1178,7 +1200,15 @@ bool TinyEngine::update()
 	presentInfo.pImageIndices = &frameIndex;
 
 	result = vkQueuePresentKHR(queue, &presentInfo);
-	if (result != VK_SUCCESS)
+	if (result == VK_ERROR_OUT_OF_DATE_KHR)
+	{
+		Logger::print(TinyEngine_VERBOSE, __FILE__, __LINE__, result);
+
+		inResize = true;
+
+		return true;
+	}
+	else if (result != VK_SUCCESS)
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 

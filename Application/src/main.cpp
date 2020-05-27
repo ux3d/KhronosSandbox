@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	if (!application.init(surface, APP_WIDTH, APP_HEIGHT))
+	if (!application.init(surface))
 	{
 		application.terminate();
 		glfwDestroyWindow(window);

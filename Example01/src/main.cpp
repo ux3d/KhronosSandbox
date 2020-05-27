@@ -50,7 +50,7 @@ int main()
 		return -1;
 	}
 
-	if (!application.init(surface, APP_WIDTH, APP_HEIGHT))
+	if (!application.init(surface))
 	{
 		application.terminate();
 		glfwDestroyWindow(window);
@@ -69,7 +69,7 @@ int main()
 			glfwGetWindowSize(window, &width, &height);
 			if (width != lastWidth || height != lastHeight)
 			{
-				if (!application.resize(width, height))
+				if (!application.resize())
 				{
 					break;
 				}
