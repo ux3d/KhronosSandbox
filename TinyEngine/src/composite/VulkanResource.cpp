@@ -20,7 +20,7 @@ bool VulkanResource::copyHostToDevice(VkDevice device, BufferResource& bufferRes
 	result = vkMapMemory(device, bufferResource.deviceMemory, 0, size, 0, (void**)&mappedData);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -54,7 +54,7 @@ bool VulkanResource::createBufferResource(VkPhysicalDevice physicalDevice, VkDev
 	result = vkCreateBuffer(device, &bufferCreateInfo, nullptr, &bufferResource.buffer);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -88,7 +88,7 @@ bool VulkanResource::createBufferResource(VkPhysicalDevice physicalDevice, VkDev
 	result = vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &bufferResource.deviceMemory);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -96,7 +96,7 @@ bool VulkanResource::createBufferResource(VkPhysicalDevice physicalDevice, VkDev
 	result = vkBindBufferMemory(device, bufferResource.buffer, bufferResource.deviceMemory, 0);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -131,7 +131,7 @@ bool VulkanResource::createShaderModule(VkShaderModule& shaderModule, VkDevice d
 	result = vkCreateShaderModule(device, &shaderModuleCreateInfo, nullptr, &shaderModule);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -273,7 +273,7 @@ bool VulkanResource::createImageViewResource(VkPhysicalDevice physicalDevice, Vk
 	result = vkCreateImage(device, &imageCreateInfo, nullptr, &imageViewResource.image);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -297,7 +297,7 @@ bool VulkanResource::createImageViewResource(VkPhysicalDevice physicalDevice, Vk
 	result = vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &imageViewResource.deviceMemory);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -305,7 +305,7 @@ bool VulkanResource::createImageViewResource(VkPhysicalDevice physicalDevice, Vk
 	result = vkBindImageMemory(device, imageViewResource.image, imageViewResource.deviceMemory, 0);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -324,7 +324,7 @@ bool VulkanResource::createImageViewResource(VkPhysicalDevice physicalDevice, Vk
 	result = vkCreateImageView(device, &imageViewCreateInfo, nullptr, &imageViewResource.imageView);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -492,7 +492,7 @@ bool VulkanResource::createSamplerResource(VkDevice device, SamplerResource& sam
 	result = vkCreateSampler(device, &samplerCreateInfo, nullptr, &samplerResource.sampler);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}

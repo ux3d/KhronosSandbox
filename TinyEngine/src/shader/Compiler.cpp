@@ -23,7 +23,7 @@ bool Compiler::buildShader(std::vector<uint32_t>& spirv, const std::string& sour
   auto result = compiler.CompileGlslToSpv(source, shaderKind, "", options);
   if (result.GetCompilationStatus() != shaderc_compilation_status_success)
   {
-	  Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, "Compiler error: %s", result.GetErrorMessage().c_str());
+	  Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "Compiler error: %s", result.GetErrorMessage().c_str());
 
 	  return false;
   }

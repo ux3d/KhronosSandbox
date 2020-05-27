@@ -18,7 +18,7 @@ bool TinyEngine::createInstance()
 	result = volkInitialize();
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -45,11 +45,11 @@ bool TinyEngine::createInstance()
 
 	for (const char* instanceLayerName : enabledInstanceLayerNames)
 	{
-		Logger::print(TinyEnigne_INFO, __FILE__, __LINE__, "Instance layer '%s'", instanceLayerName);
+		Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "Instance layer '%s'", instanceLayerName);
 	}
 	for (const char* instanceExtensionNames : enabledInstanceExtensionNames)
 	{
-		Logger::print(TinyEnigne_INFO, __FILE__, __LINE__, "Instance extension '%s'", instanceExtensionNames);
+		Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "Instance extension '%s'", instanceExtensionNames);
 	}
 
 	//
@@ -57,7 +57,7 @@ bool TinyEngine::createInstance()
 	result = vkCreateInstance(&instanceCreateInfo, nullptr, &instance);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -66,7 +66,7 @@ bool TinyEngine::createInstance()
 
 	volkLoadInstance(instance);
 
-	Logger::print(TinyEnigne_INFO, __FILE__, __LINE__, "Created VkInstance with version %u.%u.%u", major, minor, patch);
+	Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "Created VkInstance with version %u.%u.%u", major, minor, patch);
 
 	return true;
 }
@@ -84,7 +84,7 @@ bool TinyEngine::choosePhysicalDevice()
 	result = vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -97,7 +97,7 @@ bool TinyEngine::choosePhysicalDevice()
 	result = vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, physicalDevices.data());
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -124,7 +124,7 @@ bool TinyEngine::choosePhysicalDevice()
 		result = vkEnumerateDeviceExtensionProperties(currentPhysicalDevice, nullptr, &propertyCount, nullptr);
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
@@ -132,7 +132,7 @@ bool TinyEngine::choosePhysicalDevice()
 		result = vkEnumerateDeviceExtensionProperties(currentPhysicalDevice, nullptr, &propertyCount, extensionProperties.data());
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
@@ -179,7 +179,7 @@ bool TinyEngine::createSurface()
 	result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &surfaceCapabilities);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -202,7 +202,7 @@ bool TinyEngine::createSurface()
 	result = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &surfaceFormatCount, nullptr);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -215,7 +215,7 @@ bool TinyEngine::createSurface()
 	result = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &surfaceFormatCount, surfaceFormats.data());
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -237,7 +237,7 @@ bool TinyEngine::createSurface()
 	result = vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, nullptr);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -250,7 +250,7 @@ bool TinyEngine::createSurface()
 	result = vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, presentModes.data());
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -288,7 +288,7 @@ bool TinyEngine::createDevice()
 		result = vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, currentQueueFamilyIndex, surface, &surfaceSupport);
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
@@ -376,7 +376,7 @@ bool TinyEngine::createDevice()
 
 	for (const char* deviceExtensionName : enabledDeviceExtensionNames)
 	{
-		Logger::print(TinyEnigne_INFO, __FILE__, __LINE__, "Device extension '%s'", deviceExtensionName);
+		Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "Device extension '%s'", deviceExtensionName);
 	}
 
 	//
@@ -384,7 +384,7 @@ bool TinyEngine::createDevice()
 	result = vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -397,7 +397,7 @@ bool TinyEngine::createDevice()
 
 	//
 
-	Logger::print(TinyEnigne_INFO, __FILE__, __LINE__, "Created VkDevice");
+	Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "Created VkDevice");
 
 	return true;
 }
@@ -423,7 +423,7 @@ bool TinyEngine::createSwapchain()
 	result = vkCreateSwapchainKHR(device, &swapchainCreateInfo, nullptr, &swapchain);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -432,7 +432,7 @@ bool TinyEngine::createSwapchain()
 	result = vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount, nullptr);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -445,7 +445,7 @@ bool TinyEngine::createSwapchain()
 	result = vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount, swapchainImages.data());
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -466,7 +466,7 @@ bool TinyEngine::createSwapchain()
 		result = vkCreateImageView(device, &imageViewCreateInfo, nullptr, &swapchainImageViews[i]);
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
@@ -608,7 +608,7 @@ bool TinyEngine::createRenderpass()
 	result = vkCreateRenderPass(device, &renderPassCreateInfo, nullptr, &renderPass);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -623,7 +623,7 @@ bool TinyEngine::createRenderpass()
 		result = vkCreateRenderPass(device, &renderPassCreateInfo, nullptr, &imguiRenderPass);
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
@@ -680,7 +680,7 @@ bool TinyEngine::createFramebuffer()
 		result = vkCreateFramebuffer(device, &framebufferCreateInfo, nullptr, &framebuffers[i]);
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
@@ -706,7 +706,7 @@ bool TinyEngine::createCommandResources()
 	result = vkCreateCommandPool(device, &commandPoolCreateInfo, nullptr, &commandPool);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -722,7 +722,7 @@ bool TinyEngine::createCommandResources()
 	result = vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, commandBuffers.data());
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -755,7 +755,7 @@ bool TinyEngine::createSynchronizationResources()
 		result = vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &imageAvailableSemaphores[i]);
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
@@ -763,7 +763,7 @@ bool TinyEngine::createSynchronizationResources()
 		result = vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &renderFinishedSemaphores[i]);
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
@@ -773,7 +773,7 @@ bool TinyEngine::createSynchronizationResources()
 		result = vkCreateFence(device, &fenceCreateInfo, nullptr, &queueSubmitFences[i]);
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
@@ -817,7 +817,7 @@ bool TinyEngine::createImgui()
 	result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &imguiDescriptorPool);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -1038,7 +1038,7 @@ bool TinyEngine::update()
 	result = vkWaitForFences(device, 1, &queueSubmitFences[frameIndex], VK_TRUE, UINT64_MAX);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -1046,7 +1046,7 @@ bool TinyEngine::update()
 	result = vkResetFences(device, 1, &queueSubmitFences[frameIndex]);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -1054,7 +1054,7 @@ bool TinyEngine::update()
 	result = vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, imageAvailableSemaphores[frameIndex], VK_NULL_HANDLE, &frameIndex);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -1067,7 +1067,7 @@ bool TinyEngine::update()
 	result = vkBeginCommandBuffer(commandBuffers[frameIndex], &commandBufferBeginInfo);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -1137,7 +1137,7 @@ bool TinyEngine::update()
 	result = vkEndCommandBuffer(commandBuffers[frameIndex]);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -1160,7 +1160,7 @@ bool TinyEngine::update()
 	result = vkQueueSubmit(queue, 1, &submitInfo, queueSubmitFences[frameIndex]);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -1180,7 +1180,7 @@ bool TinyEngine::update()
 	result = vkQueuePresentKHR(queue, &presentInfo);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}

@@ -26,7 +26,7 @@ bool Application::applicationInit()
 	float stop = 0.0f;
 	if (!HelperAnimate::gatherStop(stop, glTF, 0))
 	{
-		Logger::print(TinyEnigne_WARNING, __FILE__, __LINE__, "glTF has no animation");
+		Logger::print(TinyEngine_WARNING, __FILE__, __LINE__, "glTF has no animation");
 	}
 	animationController.setStopTime(stop);
 	animationController.setPlay(true);

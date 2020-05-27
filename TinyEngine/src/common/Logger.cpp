@@ -12,7 +12,7 @@ const char* Logger::reduceFileMacro(const char* fileMacro)
 
 const std::vector<const char*> Logger::LOG_STRINGS = {"ERROR", "WARNING", "INFO", "DEBUG"};
 
-DebugLevel Logger::debugLevel = TinyEnigne_INFO;
+DebugLevel Logger::debugLevel = TinyEngine_INFO;
 
 void Logger::print(DebugLevel debugLevel, const char* fileMacro, uint32_t lineMacro, VkResult result)
 {
@@ -74,7 +74,7 @@ void Logger::print(DebugLevel debugLevel, const char* fileName, uint32_t lineNum
 	char buffer[2048] = { 0 };
 	vsnprintf(buffer, 2048, format, argList);
 
-	if (debugLevel == TinyEnigne_DEBUG)
+	if (Logger::debugLevel == TinyEngine_DEBUG)
 	{
 		printf("Log [%s] in '%s' at %u: %s\n", Logger::LOG_STRINGS[debugLevel], reduceFileMacro(fileName), lineNumber, buffer);
 	}

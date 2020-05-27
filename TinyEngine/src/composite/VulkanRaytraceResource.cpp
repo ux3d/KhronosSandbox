@@ -16,7 +16,7 @@ bool VulkanRaytraceResource::createAccelerationStructureResource(VkPhysicalDevic
 	result = vkCreateAccelerationStructureKHR(device, &accelerationStructureCreateInfo, nullptr, &accelerationStructureResource.accelerationStructure);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -49,7 +49,7 @@ bool VulkanRaytraceResource::createAccelerationStructureResource(VkPhysicalDevic
 	result = vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &accelerationStructureResource.deviceMemory);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -62,7 +62,7 @@ bool VulkanRaytraceResource::createAccelerationStructureResource(VkPhysicalDevic
 	result = vkBindAccelerationStructureMemoryKHR(device, 1, &bindAccelerationStructureMemoryInfo);
 	if (result != VK_SUCCESS)
 	{
-		Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 		return false;
 	}
@@ -140,7 +140,7 @@ bool VulkanRaytraceResource::buildAccelerationStructure(VkDevice device, VkQueue
 		result = vkBuildAccelerationStructureKHR(device, infoCount, accelerationStructureBuildGeometryInfos, accelerationStructureBuildOffsetInfos);
 		if (result != VK_SUCCESS)
 		{
-			Logger::print(TinyEnigne_ERROR, __FILE__, __LINE__, result);
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 
 			return false;
 		}
