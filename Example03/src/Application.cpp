@@ -54,8 +54,7 @@ void Application::applicationTerminate()
 
 // Public
 
-Application::Application(const char* title) :
-	TinyEngine(title)
+Application::Application()
 {
 }
 

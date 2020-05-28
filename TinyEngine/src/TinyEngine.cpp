@@ -27,7 +27,7 @@ bool TinyEngine::createInstance()
 
 	VkApplicationInfo applicationInfo = {};
 	applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	applicationInfo.pApplicationName = getTitle();
+	applicationInfo.pApplicationName = applicationName.c_str();
 	applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 	applicationInfo.pEngineName = "Tiny Engine";
 	applicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -909,18 +909,8 @@ TinyEngine::TinyEngine()
 {
 }
 
-TinyEngine::TinyEngine(const char* title) :
-	title(title)
-{
-}
-
 TinyEngine::~TinyEngine()
 {
-}
-
-const char* TinyEngine::getTitle() const
-{
-	return title.c_str();
 }
 
 bool TinyEngine::prepare()
@@ -1376,6 +1366,16 @@ bool TinyEngine::terminate()
 VkInstance TinyEngine::getInstance() const
 {
 	return instance;
+}
+
+const std::string& TinyEngine::getApplicationName() const
+{
+	return applicationName;
+}
+
+void TinyEngine::setApplicationName(const std::string& applicationName)
+{
+	this->applicationName = applicationName;
 }
 
 uint32_t TinyEngine::getMajor() const

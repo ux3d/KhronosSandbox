@@ -46,7 +46,7 @@ private:
 	bool createConfiguration();
 
 protected:
-	std::string title = "";
+	std::string applicationName = "TinyEngineApp";
 
 	uint32_t width = 0;
 	uint32_t height = 0;
@@ -108,10 +108,7 @@ protected:
 
 public:
 	TinyEngine();
-	TinyEngine(const char* title);
 	virtual ~TinyEngine();
-
-	const char* getTitle() const;
 
 	bool prepare();
 
@@ -123,6 +120,9 @@ public:
 	//
 
 	VkInstance getInstance() const;
+
+	const std::string& getApplicationName() const;
+	void setApplicationName(const std::string& applicationName);
 
 	uint32_t getMajor() const;
 	void setMajor(uint32_t major);

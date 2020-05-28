@@ -110,8 +110,8 @@ void Application::applicationTerminate()
 
 // Public
 
-Application::Application(const char* title, const std::string& filename, const std::string& environment) :
-	TinyEngine(title), filename(filename), environment(environment)
+Application::Application(const std::string& filename, const std::string& environment) :
+	filename(filename), environment(environment)
 {
 }
 

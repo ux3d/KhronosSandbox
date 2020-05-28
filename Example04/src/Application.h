@@ -18,7 +18,7 @@ private:
 	virtual void applicationTerminate();
 
 public:
-	Application(const char* title);
+	Application();
 	~Application();
 };
 

@@ -4,6 +4,7 @@
 
 #define APP_WIDTH 1920
 #define APP_HEIGHT 1080
+#define APP_TITLE "Example07: Rectangle using index buffers"
 
 int main()
 {
@@ -14,7 +15,17 @@ int main()
 		return -1;
 	}
 
-	Application application("Example07: Rectangle using index buffers");
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	window = glfwCreateWindow(APP_WIDTH, APP_HEIGHT, APP_TITLE, NULL, NULL);
+	if (!window)
+	{
+		glfwTerminate();
+	    return -1;
+	}
+
+	Application application;
+	application.setApplicationName(APP_TITLE);
 	application.setMinor(2);
 	application.addEnabledInstanceLayerName("VK_LAYER_KHRONOS_validation");
 	uint32_t glfwExtensionCount = 0;
@@ -22,15 +33,6 @@ int main()
 	for (uint32_t i = 0; i < glfwExtensionCount; i++)
 	{
 		application.addEnabledInstanceExtensionName(glfwExtensionNames[i]);
-	}
-
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-	window = glfwCreateWindow(APP_WIDTH, APP_HEIGHT, application.getTitle(), NULL, NULL);
-	if (!window)
-	{
-		glfwTerminate();
-	    return -1;
 	}
 
 	if (!application.prepare())

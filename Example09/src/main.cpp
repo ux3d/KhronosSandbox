@@ -4,6 +4,7 @@
 
 #define APP_WIDTH 1920
 #define APP_HEIGHT 1080
+#define APP_TITLE "Example09: Rectangle with texture image"
 
 int main()
 {
@@ -14,7 +15,8 @@ int main()
 		return -1;
 	}
 
-	Application application("Example09: Rectangle with texture image");
+	Application application;
+	application.setApplicationName(APP_TITLE);
 	application.setMinor(2);
 	application.addEnabledInstanceLayerName("VK_LAYER_KHRONOS_validation");
 	uint32_t glfwExtensionCount = 0;
@@ -26,7 +28,7 @@ int main()
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-	window = glfwCreateWindow(APP_WIDTH, APP_HEIGHT, application.getTitle(), NULL, NULL);
+	window = glfwCreateWindow(APP_WIDTH, APP_HEIGHT, APP_TITLE, NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();

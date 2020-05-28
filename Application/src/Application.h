@@ -37,7 +37,7 @@ private:
 	virtual void applicationTerminate();
 
 public:
-	Application(const char* title, const std::string& filename, const std::string& environment);
+	Application(const std::string& filename, const std::string& environment);
 	~Application();
 
 	void orbitY(float orbit);

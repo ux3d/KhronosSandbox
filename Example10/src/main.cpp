@@ -4,6 +4,7 @@
 
 #define APP_WIDTH 1920
 #define APP_HEIGHT 1080
+#define APP_TITLE "Example10: glTF"
 
 int main(int argc, char **argv)
 {
@@ -28,7 +29,17 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	Application application("Example10: glTF", filename, environment);
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	window = glfwCreateWindow(APP_WIDTH, APP_HEIGHT, APP_TITLE, NULL, NULL);
+	if (!window)
+	{
+		glfwTerminate();
+	    return -1;
+	}
+
+	Application application(filename, environment);
+	application.setApplicationName(APP_TITLE);
 	application.setMinor(2);
 	application.setDepthStencilFormat(VK_FORMAT_D24_UNORM_S8_UINT);
 	application.setSamples(VK_SAMPLE_COUNT_4_BIT);
@@ -38,15 +49,6 @@ int main(int argc, char **argv)
 	for (uint32_t i = 0; i < glfwExtensionCount; i++)
 	{
 		application.addEnabledInstanceExtensionName(glfwExtensionNames[i]);
-	}
-
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-	window = glfwCreateWindow(APP_WIDTH, APP_HEIGHT, application.getTitle(), NULL, NULL);
-	if (!window)
-	{
-		glfwTerminate();
-	    return -1;
 	}
 
 	if (!application.prepare())

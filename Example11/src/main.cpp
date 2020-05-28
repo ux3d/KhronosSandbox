@@ -4,6 +4,7 @@
 
 #define APP_WIDTH 1920
 #define APP_HEIGHT 1080
+#define APP_TITLE "Example11: Triangle raytraced"
 
 int main()
 {
@@ -14,7 +15,17 @@ int main()
 		return -1;
 	}
 
-	Application application("Example11: Triangle raytraced");
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	window = glfwCreateWindow(APP_WIDTH, APP_HEIGHT, APP_TITLE, NULL, NULL);
+	if (!window)
+	{
+		glfwTerminate();
+	    return -1;
+	}
+
+	Application application;
+	application.setApplicationName(APP_TITLE);
 	application.setMinor(2);
 	application.addEnabledInstanceLayerName("VK_LAYER_KHRONOS_validation");
 	uint32_t glfwExtensionCount = 0;
@@ -28,15 +39,6 @@ int main()
 	application.addEnabledDeviceExtensionName(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);	// Required by ray tracing.
 	application.addEnabledDeviceExtensionName(VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME);			// Required by ray tracing.
 	application.setImageUsage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
-
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-	window = glfwCreateWindow(APP_WIDTH, APP_HEIGHT, application.getTitle(), NULL, NULL);
-	if (!window)
-	{
-		glfwTerminate();
-	    return -1;
-	}
 
 	if (!application.prepare())
 	{

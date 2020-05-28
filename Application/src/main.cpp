@@ -4,6 +4,7 @@
 
 #define APP_WIDTH 1920
 #define APP_HEIGHT 1080
+#define APP_TITLE "glTF 2.0 raytrace vs. pathtrace vs. rasterize using Vulkan"
 
 int main(int argc, char **argv)
 {
@@ -28,7 +29,17 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	Application application("glTF 2.0 raytrace vs. pathtrace vs. rasterize using Vulkan", filename, environment);
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	window = glfwCreateWindow(APP_WIDTH, APP_HEIGHT, APP_TITLE, NULL, NULL);
+	if (!window)
+	{
+		glfwTerminate();
+	    return -1;
+	}
+
+	Application application(filename, environment);
+	application.setApplicationName(APP_TITLE);
 	application.setUseImgui(true);
 	application.setMinor(2);
 	application.setDepthStencilFormat(VK_FORMAT_D24_UNORM_S8_UINT);
@@ -46,16 +57,6 @@ int main(int argc, char **argv)
 	application.addEnabledDeviceExtensionName(VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME);			// Required by ray tracing.
 	application.addEnabledDeviceExtensionName(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);	    // Required by sophisticated ray tracing.
 	application.setImageUsage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
-
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-	window = glfwCreateWindow(APP_WIDTH, APP_HEIGHT, application.getTitle(), NULL, NULL);
-	if (!window)
-	{
-		glfwTerminate();
-	    return -1;
-	}
-
 	if (!application.prepare())
 	{
 		glfwDestroyWindow(window);
