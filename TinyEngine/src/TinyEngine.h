@@ -22,6 +22,7 @@
 class TinyEngine
 {
 private:
+	std::string applicationName = "TinyEngineApp";
 	uint32_t major = 1;
 	uint32_t minor = 0;
 	uint32_t patch = 0;
@@ -46,8 +47,6 @@ private:
 	bool createConfiguration();
 
 protected:
-	std::string applicationName = "TinyEngineApp";
-
 	uint32_t width = 0;
 	uint32_t height = 0;
 
