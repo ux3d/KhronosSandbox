@@ -18,7 +18,7 @@ bool HelperAllocateResource::initBufferViews(AllocationManager& allocationManage
 	{
 		const BufferView& bufferView = glTF.bufferViews[i];
 
-		if (!allocationManager.createBufferViewResource(bufferView, physicalDevice, device, queue, commandPool, useRaytrace))
+		if (!allocationManager.createSharedDataResource(bufferView, physicalDevice, device, queue, commandPool, useRaytrace))
 		{
 			return false;
 		}
@@ -35,14 +35,14 @@ bool HelperAllocateResource::initAccessors(AllocationManager& allocationManager,
 
 		if (accessor.aliasedBuffer.byteLength > 0)
 		{
-			if (!allocationManager.createBufferViewResource(accessor.aliasedBufferView, physicalDevice, device, queue, commandPool, useRaytrace))
+			if (!allocationManager.createSharedDataResource(accessor.aliasedBufferView, physicalDevice, device, queue, commandPool, useRaytrace))
 			{
 				return false;
 			}
 		}
 		else if (accessor.sparse.count >= 1)
 		{
-			if (!allocationManager.createBufferViewResource(accessor.sparse.bufferView, physicalDevice, device, queue, commandPool, useRaytrace))
+			if (!allocationManager.createSharedDataResource(accessor.sparse.bufferView, physicalDevice, device, queue, commandPool, useRaytrace))
 			{
 				return false;
 			}

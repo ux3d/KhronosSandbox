@@ -35,7 +35,7 @@ ResourceManager& AllocationManager::getResourceManager()
 	return resourceManager;
 }
 
-bool AllocationManager::createBufferViewResource(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
+bool AllocationManager::createSharedDataResource(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
 {
 	VkBufferUsageFlags usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	if (bufferView.target == 34963) // ELEMENT_ARRAY_BUFFER
