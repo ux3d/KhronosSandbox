@@ -931,19 +931,6 @@ bool HelperAllocateResource::initNodes(AllocationManager& allocationManager, con
 	return true;
 }
 
-bool HelperAllocateResource::initScenes(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
-{
-	for (size_t i = 0; i < glTF.scenes.size(); i++)
-	{
-		if (!allocationManager.initScene(glTF.scenes[i], glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
 bool HelperAllocateResource::allocate(AllocationManager& allocationManager, const GLTF& glTF, const std::string& environment, bool useRaytrace)
 {
 	WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource((uint64_t)&glTF);
@@ -1070,9 +1057,16 @@ bool HelperAllocateResource::allocate(AllocationManager& allocationManager, cons
 		return false;
 	}
 
-	// Scenes
+	// Scene
 
-	if (!initScenes(allocationManager, glTF, useRaytrace))
+	if (glTF.defaultScene < glTF.scenes.size())
+	{
+		if (!allocationManager.initScene(glTF.scenes[glTF.defaultScene], glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
+		{
+			return false;
+		}
+	}
+	else
 	{
 		return false;
 	}

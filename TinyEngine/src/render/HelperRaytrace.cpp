@@ -2,35 +2,34 @@
 
 void HelperRaytrace::draw(ResourceManager& resourceManager, const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height)
 {
-	WorldResource* gltfResource = resourceManager.getWorldResource((uint64_t)&glTF);
-	SceneResource* defaultSceneResource = resourceManager.getSceneResource((uint64_t)&scene);
+	WorldResource* worldResource = resourceManager.getWorldResource((uint64_t)&glTF);
 
 	//
 
-	vkCmdPushConstants(commandBuffer, defaultSceneResource->raytracePipelineLayout, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, 0, sizeof(gltfResource->raytrace), &gltfResource->raytrace);
+	vkCmdPushConstants(commandBuffer, worldResource->raytracePipelineLayout, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, 0, sizeof(worldResource->raytrace), &worldResource->raytrace);
 
 	VkStridedBufferRegionKHR rayGenStridedBufferRegion = {};
-	rayGenStridedBufferRegion.buffer = defaultSceneResource->shaderBindingBufferResource.buffer;
-	rayGenStridedBufferRegion.offset = defaultSceneResource->size * 0;
-	rayGenStridedBufferRegion.size   = defaultSceneResource->size;
+	rayGenStridedBufferRegion.buffer = worldResource->shaderBindingBufferResource.buffer;
+	rayGenStridedBufferRegion.offset = worldResource->size * 0;
+	rayGenStridedBufferRegion.size   = worldResource->size;
 
 	VkStridedBufferRegionKHR missStridedBufferRegion = {};
-	missStridedBufferRegion.buffer = defaultSceneResource->shaderBindingBufferResource.buffer;
-	missStridedBufferRegion.offset = defaultSceneResource->size * 1;
-	missStridedBufferRegion.size   = defaultSceneResource->size;
+	missStridedBufferRegion.buffer = worldResource->shaderBindingBufferResource.buffer;
+	missStridedBufferRegion.offset = worldResource->size * 1;
+	missStridedBufferRegion.size   = worldResource->size;
 
 	VkStridedBufferRegionKHR closestHitStridedBufferRegion = {};
-	closestHitStridedBufferRegion.buffer = defaultSceneResource->shaderBindingBufferResource.buffer;
-	closestHitStridedBufferRegion.offset = defaultSceneResource->size * 2;
-	closestHitStridedBufferRegion.size   = defaultSceneResource->size;
+	closestHitStridedBufferRegion.buffer = worldResource->shaderBindingBufferResource.buffer;
+	closestHitStridedBufferRegion.offset = worldResource->size * 2;
+	closestHitStridedBufferRegion.size   = worldResource->size;
 
 	VkStridedBufferRegionKHR callableStridedBufferRegion = {};
 
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, defaultSceneResource->raytracePipeline);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, worldResource->raytracePipeline);
 
-	if (defaultSceneResource->raytraceDescriptorSet != VK_NULL_HANDLE)
+	if (worldResource->raytraceDescriptorSet != VK_NULL_HANDLE)
 	{
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, defaultSceneResource->raytracePipelineLayout, 0, 1, &defaultSceneResource->raytraceDescriptorSet, 0, 0);
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, worldResource->raytracePipelineLayout, 0, 1, &worldResource->raytraceDescriptorSet, 0, 0);
 	}
 
 	vkCmdTraceRaysKHR(commandBuffer, &rayGenStridedBufferRegion, &missStridedBufferRegion, &closestHitStridedBufferRegion, &callableStridedBufferRegion, width, height, 1);

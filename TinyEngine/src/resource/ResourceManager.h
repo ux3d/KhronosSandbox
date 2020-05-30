@@ -11,7 +11,6 @@
 #include "PrimitiveResource.h"
 #include "GroupResource.h"
 #include "InstanceResource.h"
-#include "SceneResource.h"
 #include "WorldResource.h"
 
 class ResourceManager {
@@ -24,7 +23,6 @@ private:
 	std::map<uint64_t, PrimitiveResource> primitiveResources;
 	std::map<uint64_t, GroupResource> groupResources;
 	std::map<uint64_t, InstanceResource> instanceResources;
-	std::map<uint64_t, SceneResource> sceneResources;
 	std::map<uint64_t, WorldResource> worldResources;
 
 	void terminate(BufferViewResource& bufferViewResource, VkDevice device);
@@ -33,7 +31,6 @@ private:
 	void terminate(PrimitiveResource& primitiveResource, VkDevice device);
 	void terminate(GroupResource& groupResource, VkDevice device);
 	void terminate(InstanceResource& instanceResource, VkDevice device);
-	void terminate(SceneResource& sceneResource, VkDevice device);
 	void terminate(WorldResource& worldResource, VkDevice device);
 
 public:
@@ -50,7 +47,6 @@ public:
 	PrimitiveResource* getPrimitiveResource(uint64_t primitiveHandle);
 	GroupResource* getGroupResource(uint64_t sceneHandle);
 	InstanceResource* getInstanceResource(uint64_t sceneHandle);
-	SceneResource* getSceneResource(uint64_t sceneHandle);
 	WorldResource* getWorldResource(uint64_t worldHandle);
 
 	//
@@ -61,7 +57,6 @@ public:
 	uint64_t createPrimitiveResource(uint64_t externalHandle);
 	uint64_t createGroupResource(uint64_t externalHandle);
 	uint64_t createInstanceResource(uint64_t externalHandle);
-	uint64_t createSceneResource(uint64_t externalHandle);
 	uint64_t createWorldResource(uint64_t externalHandle);
 
 	//
@@ -72,7 +67,6 @@ public:
 	bool deletePrimitiveResource(uint64_t primitiveHanlde, VkDevice device);
 	bool deleteGroupResource(uint64_t groupHandle, VkDevice device);
 	bool deleteInstanceResource(uint64_t instanceHandle, VkDevice device);
-	bool deleteSceneResource(uint64_t sceneHandle, VkDevice device);
 	bool deleteWorldResource(uint64_t worldHandle, VkDevice device);
 
 	//

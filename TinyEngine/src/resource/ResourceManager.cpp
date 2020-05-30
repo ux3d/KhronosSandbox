@@ -75,69 +75,66 @@ void ResourceManager::terminate(InstanceResource& instanceResource, VkDevice dev
 {
 }
 
-void ResourceManager::terminate(SceneResource& sceneResource, VkDevice device)
-{
-	VulkanResource::destroyStorageBufferResource(device, sceneResource.instanceResourcesStorageBufferResource);
-	VulkanResource::destroyStorageBufferResource(device, sceneResource.materialStorageBufferResource);
-
-	VulkanRaytraceResource::destroyTopLevelResource(device, sceneResource.topLevelResource);
-	VulkanResource::destroyBufferResource(device, sceneResource.accelerationStructureInstanceBuffer);
-
-	VulkanResource::destroyBufferResource(device, sceneResource.shaderBindingBufferResource);
-	sceneResource.size = 0;
-
-	sceneResource.accelerationStructureInstances.clear();
-
-	if (sceneResource.raytracePipeline != VK_NULL_HANDLE)
-	{
-		vkDestroyPipeline(device, sceneResource.raytracePipeline, nullptr);
-		sceneResource.raytracePipeline = VK_NULL_HANDLE;
-	}
-
-	if (sceneResource.rayGenShaderModule != VK_NULL_HANDLE)
-	{
-		vkDestroyShaderModule(device, sceneResource.rayGenShaderModule, nullptr);
-		sceneResource.rayGenShaderModule = VK_NULL_HANDLE;
-	}
-
-	if (sceneResource.missShaderModule != VK_NULL_HANDLE)
-	{
-		vkDestroyShaderModule(device, sceneResource.missShaderModule, nullptr);
-		sceneResource.missShaderModule = VK_NULL_HANDLE;
-	}
-
-	if (sceneResource.closestHitShaderModule != VK_NULL_HANDLE)
-	{
-		vkDestroyShaderModule(device, sceneResource.closestHitShaderModule, nullptr);
-		sceneResource.closestHitShaderModule = VK_NULL_HANDLE;
-	}
-
-	if (sceneResource.raytracePipelineLayout != VK_NULL_HANDLE)
-	{
-		vkDestroyPipelineLayout(device, sceneResource.raytracePipelineLayout, nullptr);
-		sceneResource.raytracePipelineLayout = VK_NULL_HANDLE;
-	}
-
-	sceneResource.raytraceDescriptorSet = VK_NULL_HANDLE;
-
-	if (sceneResource.raytraceDescriptorPool != VK_NULL_HANDLE)
-	{
-		vkDestroyDescriptorPool(device, sceneResource.raytraceDescriptorPool, nullptr);
-		sceneResource.raytraceDescriptorPool = VK_NULL_HANDLE;
-	}
-
-	if (sceneResource.raytraceDescriptorSetLayout != VK_NULL_HANDLE)
-	{
-		vkDestroyDescriptorSetLayout(device, sceneResource.raytraceDescriptorSetLayout, nullptr);
-		sceneResource.raytraceDescriptorSetLayout = VK_NULL_HANDLE;
-	}
-}
-
 void ResourceManager::terminate(WorldResource& worldResource, VkDevice device)
 {
 	VulkanResource::destroyTextureResource(device, worldResource.diffuse);
 	VulkanResource::destroyTextureResource(device, worldResource.specular);
 	VulkanResource::destroyTextureResource(device, worldResource.lut);
+
+	VulkanResource::destroyStorageBufferResource(device, worldResource.instanceResourcesStorageBufferResource);
+	VulkanResource::destroyStorageBufferResource(device, worldResource.materialStorageBufferResource);
+
+	VulkanRaytraceResource::destroyTopLevelResource(device, worldResource.topLevelResource);
+	VulkanResource::destroyBufferResource(device, worldResource.accelerationStructureInstanceBuffer);
+
+	VulkanResource::destroyBufferResource(device, worldResource.shaderBindingBufferResource);
+	worldResource.size = 0;
+
+	worldResource.accelerationStructureInstances.clear();
+
+	if (worldResource.raytracePipeline != VK_NULL_HANDLE)
+	{
+		vkDestroyPipeline(device, worldResource.raytracePipeline, nullptr);
+		worldResource.raytracePipeline = VK_NULL_HANDLE;
+	}
+
+	if (worldResource.rayGenShaderModule != VK_NULL_HANDLE)
+	{
+		vkDestroyShaderModule(device, worldResource.rayGenShaderModule, nullptr);
+		worldResource.rayGenShaderModule = VK_NULL_HANDLE;
+	}
+
+	if (worldResource.missShaderModule != VK_NULL_HANDLE)
+	{
+		vkDestroyShaderModule(device, worldResource.missShaderModule, nullptr);
+		worldResource.missShaderModule = VK_NULL_HANDLE;
+	}
+
+	if (worldResource.closestHitShaderModule != VK_NULL_HANDLE)
+	{
+		vkDestroyShaderModule(device, worldResource.closestHitShaderModule, nullptr);
+		worldResource.closestHitShaderModule = VK_NULL_HANDLE;
+	}
+
+	if (worldResource.raytracePipelineLayout != VK_NULL_HANDLE)
+	{
+		vkDestroyPipelineLayout(device, worldResource.raytracePipelineLayout, nullptr);
+		worldResource.raytracePipelineLayout = VK_NULL_HANDLE;
+	}
+
+	worldResource.raytraceDescriptorSet = VK_NULL_HANDLE;
+
+	if (worldResource.raytraceDescriptorPool != VK_NULL_HANDLE)
+	{
+		vkDestroyDescriptorPool(device, worldResource.raytraceDescriptorPool, nullptr);
+		worldResource.raytraceDescriptorPool = VK_NULL_HANDLE;
+	}
+
+	if (worldResource.raytraceDescriptorSetLayout != VK_NULL_HANDLE)
+	{
+		vkDestroyDescriptorSetLayout(device, worldResource.raytraceDescriptorSetLayout, nullptr);
+		worldResource.raytraceDescriptorSetLayout = VK_NULL_HANDLE;
+	}
 }
 
 ResourceManager::ResourceManager()
@@ -214,17 +211,6 @@ InstanceResource* ResourceManager::getInstanceResource(uint64_t instanceHandle)
 	return &result->second;
 }
 
-SceneResource* ResourceManager::getSceneResource(uint64_t sceneHandle)
-{
-	auto result = sceneResources.find(sceneHandle);
-	if (result == sceneResources.end())
-	{
-		sceneResources[sceneHandle] = SceneResource();
-		return &sceneResources[sceneHandle];
-	}
-	return &result->second;
-}
-
 WorldResource* ResourceManager::getWorldResource(uint64_t worldHandle)
 {
 	auto result = worldResources.find(worldHandle);
@@ -292,16 +278,6 @@ uint64_t ResourceManager::createInstanceResource(uint64_t externalHandle)
 	if (result == instanceResources.end())
 	{
 		instanceResources[externalHandle] = InstanceResource();
-	}
-	return externalHandle;
-}
-
-uint64_t ResourceManager::createSceneResource(uint64_t externalHandle)
-{
-	auto result = sceneResources.find(externalHandle);
-	if (result == sceneResources.end())
-	{
-		sceneResources[externalHandle] = SceneResource();
 	}
 	return externalHandle;
 }
@@ -400,20 +376,6 @@ bool ResourceManager::deleteInstanceResource(uint64_t instanceHandle, VkDevice d
 	return true;
 }
 
-bool ResourceManager::deleteSceneResource(uint64_t sceneHandle, VkDevice device)
-{
-	SceneResource* sceneResource = getSceneResource(sceneHandle);
-
-	if (!sceneResource)
-	{
-		return false;
-	}
-	terminate(*sceneResource, device);
-	sceneResources.erase(sceneHandle);
-
-	return true;
-}
-
 bool ResourceManager::deleteWorldResource(uint64_t worldHandle, VkDevice device)
 {
 	WorldResource* worldResource = getWorldResource(worldHandle);
@@ -435,12 +397,6 @@ void ResourceManager::terminate(VkDevice device)
 		terminate(it.second, device);
 	}
 	worldResources.clear();
-
-	for (auto it : sceneResources)
-	{
-		terminate(it.second, device);
-	}
-	sceneResources.clear();
 
 	for (auto it : instanceResources)
 	{
