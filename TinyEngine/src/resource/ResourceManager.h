@@ -66,12 +66,6 @@ public:
 
 	//
 
-	bool setMaterialResource(uint64_t materialHandle, uint32_t alphaMode);
-
-	bool setPrimitiveResource(uint64_t primitiveHandle, uint64_t materialHandle);
-
-	//
-
 	bool deleteBufferViewResource(uint64_t bufferViewHandle, VkDevice device);
 	bool deleteTextureResource(uint64_t textureHandle, VkDevice device);
 	bool deleteMaterialResource(uint64_t materialHandle, VkDevice device);

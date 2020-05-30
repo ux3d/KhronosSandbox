@@ -3,13 +3,13 @@
 
 #include "../render/HelperAccessResource.h"
 
-void HelperRasterize::draw(AllocationManager& allocationManager, const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode, const glm::mat4& worldMatrix)
+void HelperRasterize::draw(ResourceManager& resourceManager, const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode, const glm::mat4& worldMatrix)
 {
-	PrimitiveResource* primitiveResource = allocationManager.getPrimitiveResource(&primitive);
+	PrimitiveResource* primitiveResource = resourceManager.getPrimitiveResource((uint64_t)&primitive);
 
 	//
 
-	MaterialResource* materialResource = allocationManager.getResourceManager().getMaterialResource(primitiveResource->materialHandle);
+	MaterialResource* materialResource = resourceManager.getMaterialResource(primitiveResource->materialHandle);
 	if (materialResource->alphaMode == 2 && drawMode == OPAQUE)
 	{
 		return;
@@ -21,7 +21,7 @@ void HelperRasterize::draw(AllocationManager& allocationManager, const Primitive
 
 	//
 
-	WorldResource* worldResource = allocationManager.getWorldResource(&glTF);
+	WorldResource* worldResource = resourceManager.getWorldResource((uint64_t)&glTF);
 
 	//
 
@@ -52,39 +52,39 @@ void HelperRasterize::draw(AllocationManager& allocationManager, const Primitive
 	}
 }
 
-void HelperRasterize::draw(AllocationManager& allocationManager, const Mesh& mesh, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode, const glm::mat4& worldMatrix)
+void HelperRasterize::draw(ResourceManager& resourceManager, const Mesh& mesh, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode, const glm::mat4& worldMatrix)
 {
 	for (size_t i = 0; i < mesh.primitives.size(); i++)
 	{
-		HelperRasterize::draw(allocationManager, mesh.primitives[i], glTF, commandBuffer, frameIndex, drawMode, worldMatrix);
+		HelperRasterize::draw(resourceManager, mesh.primitives[i], glTF, commandBuffer, frameIndex, drawMode, worldMatrix);
 	}
 }
 
-void HelperRasterize::draw(AllocationManager& allocationManager, const Node& node, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
+void HelperRasterize::draw(ResourceManager& resourceManager, const Node& node, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
 {
 	if (node.mesh >= 0)
 	{
-		HelperRasterize::draw(allocationManager, glTF.meshes[node.mesh], glTF, commandBuffer, frameIndex, drawMode, node.worldMatrix);
+		HelperRasterize::draw(resourceManager, glTF.meshes[node.mesh], glTF, commandBuffer, frameIndex, drawMode, node.worldMatrix);
 	}
 
 	for (size_t i = 0; i < node.children.size(); i++)
 	{
-		HelperRasterize::draw(allocationManager, glTF.nodes[node.children[i]], glTF, commandBuffer, frameIndex, drawMode);
+		HelperRasterize::draw(resourceManager, glTF.nodes[node.children[i]], glTF, commandBuffer, frameIndex, drawMode);
 	}
 }
 
-void HelperRasterize::draw(AllocationManager& allocationManager, const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
+void HelperRasterize::draw(ResourceManager& resourceManager, const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
 {
 	for (size_t i = 0; i < scene.nodes.size(); i++)
 	{
-		HelperRasterize::draw(allocationManager, glTF.nodes[scene.nodes[i]], glTF, commandBuffer, frameIndex, drawMode);
+		HelperRasterize::draw(resourceManager, glTF.nodes[scene.nodes[i]], glTF, commandBuffer, frameIndex, drawMode);
 	}
 }
 
-void HelperRasterize::draw(AllocationManager& allocationManager, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
+void HelperRasterize::draw(ResourceManager& resourceManager, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
 {
 	if (glTF.defaultScene < glTF.scenes.size())
 	{
-		HelperRasterize::draw(allocationManager, glTF.scenes[glTF.defaultScene], glTF, commandBuffer, frameIndex, drawMode);
+		HelperRasterize::draw(resourceManager, glTF.scenes[glTF.defaultScene], glTF, commandBuffer, frameIndex, drawMode);
 	}
 }

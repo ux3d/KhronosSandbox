@@ -1,9 +1,9 @@
 #include "../render/HelperRaytrace.h"
 
-void HelperRaytrace::draw(AllocationManager& allocationManager, const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height)
+void HelperRaytrace::draw(ResourceManager& resourceManager, const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height)
 {
-	WorldResource* gltfResource = allocationManager.getWorldResource(&glTF);
-	SceneResource* defaultSceneResource = allocationManager.getSceneResource(&scene);
+	WorldResource* gltfResource = resourceManager.getWorldResource((uint64_t)&glTF);
+	SceneResource* defaultSceneResource = resourceManager.getSceneResource((uint64_t)&scene);
 
 	//
 
@@ -36,10 +36,10 @@ void HelperRaytrace::draw(AllocationManager& allocationManager, const Scene& sce
 	vkCmdTraceRaysKHR(commandBuffer, &rayGenStridedBufferRegion, &missStridedBufferRegion, &closestHitStridedBufferRegion, &callableStridedBufferRegion, width, height, 1);
 }
 
-void HelperRaytrace::draw(AllocationManager& allocationManager, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height)
+void HelperRaytrace::draw(ResourceManager& resourceManager, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height)
 {
 	if (glTF.defaultScene < glTF.scenes.size())
 	{
-		HelperRaytrace::draw(allocationManager, glTF.scenes[glTF.defaultScene], glTF, commandBuffer, frameIndex, width, height);
+		HelperRaytrace::draw(resourceManager, glTF.scenes[glTF.defaultScene], glTF, commandBuffer, frameIndex, width, height);
 	}
 }

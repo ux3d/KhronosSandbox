@@ -85,7 +85,7 @@ bool HelperAllocateResource::initTextures(AllocationManager& allocationManager, 
 			textureResourceCreateInfo.samplerResourceCreateInfo.maxLod = glTF.samplers[texture.sampler].maxLod;
 		}
 
-		if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, *allocationManager.getTextureResource(&texture), textureResourceCreateInfo))
+		if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, *allocationManager.getResourceManager().getTextureResource((uint64_t)&texture), textureResourceCreateInfo))
 		{
 			return false;
 		}
@@ -99,7 +99,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 	for (size_t i = 0; i < glTF.materials.size(); i++)
 	{
 		const Material& material = glTF.materials[i];
-		MaterialResource* materialResource = allocationManager.getMaterialResource(&material);
+		MaterialResource* materialResource = allocationManager.getResourceManager().getMaterialResource((uint64_t)&material);
 
 		uint32_t binding = 0;
 
@@ -108,7 +108,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		// Metallic Roughness
 		if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
 		{
-			TextureResource* textureResource = allocationManager.getTextureResource(&glTF.textures[material.pbrMetallicRoughness.baseColorTexture.index]);
+			TextureResource* textureResource = allocationManager.getResourceManager().getTextureResource((uint64_t)&glTF.textures[material.pbrMetallicRoughness.baseColorTexture.index]);
 
 			//
 
@@ -138,7 +138,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		if (material.pbrMetallicRoughness.metallicRoughnessTexture.index >= 0)
 		{
-			TextureResource* textureResource = allocationManager.getTextureResource(&glTF.textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index]);
+			TextureResource* textureResource = allocationManager.getResourceManager().getTextureResource((uint64_t)&glTF.textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index]);
 
 			//
 
@@ -169,7 +169,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		// Base Material
 		if (material.emissiveTexture.index >= 0)
 		{
-			TextureResource* textureResource = allocationManager.getTextureResource(&glTF.textures[material.emissiveTexture.index]);
+			TextureResource* textureResource = allocationManager.getResourceManager().getTextureResource((uint64_t)&glTF.textures[material.emissiveTexture.index]);
 
 			//
 
@@ -199,7 +199,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		if (material.occlusionTexture.index >= 0)
 		{
-			TextureResource* textureResource = allocationManager.getTextureResource(&glTF.textures[material.occlusionTexture.index]);
+			TextureResource* textureResource = allocationManager.getResourceManager().getTextureResource((uint64_t)&glTF.textures[material.occlusionTexture.index]);
 
 			//
 
@@ -229,7 +229,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		if (material.normalTexture.index >= 0)
 		{
-			TextureResource* textureResource = allocationManager.getTextureResource(&glTF.textures[material.normalTexture.index]);
+			TextureResource* textureResource = allocationManager.getResourceManager().getTextureResource((uint64_t)&glTF.textures[material.normalTexture.index]);
 
 			//
 
@@ -260,7 +260,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		//
 		//
 
-		WorldResource* gltfResource = allocationManager.getWorldResource(&glTF);
+		WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource((uint64_t)&glTF);
 
 		//
 
@@ -409,14 +409,14 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 		{
 			const Primitive& primitive = mesh.primitives[k];
 
-			PrimitiveResource* primitiveResource = allocationManager.getPrimitiveResource(&primitive);
+			PrimitiveResource* primitiveResource = allocationManager.getResourceManager().getPrimitiveResource((uint64_t)&primitive);
 
 			std::map<std::string, std::string> macros;
 
 			VkCullModeFlags cullMode = VK_CULL_MODE_NONE;
 			if (primitive.material >= 0)
 			{
-				macros = allocationManager.getMaterialResource(&glTF.materials[primitive.material])->macros;
+				macros = allocationManager.getResourceManager().getMaterialResource((uint64_t)&glTF.materials[primitive.material])->macros;
 			}
 
 			primitiveResource->vertexBuffers.resize(primitive.attributesCount);
@@ -468,7 +468,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -513,7 +513,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -558,7 +558,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -603,7 +603,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -648,7 +648,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -697,7 +697,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -742,7 +742,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -787,7 +787,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -832,7 +832,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -877,7 +877,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -916,7 +916,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 				return false;
 			}
 
-			if (!allocationManager.initPrimitive(primitive, glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &allocationManager.getMaterialResource(&glTF.materials[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
+			if (!allocationManager.initPrimitive(primitive, glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &allocationManager.getResourceManager().getMaterialResource((uint64_t)&glTF.materials[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
 			{
 				return false;
 			}
@@ -946,7 +946,7 @@ bool HelperAllocateResource::initScenes(AllocationManager& allocationManager, co
 
 bool HelperAllocateResource::allocate(AllocationManager& allocationManager, const GLTF& glTF, const std::string& environment, bool useRaytrace)
 {
-	WorldResource* gltfResource = allocationManager.getWorldResource(&glTF);
+	WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource((uint64_t)&glTF);
 
 	// Diffuse
 

@@ -42,7 +42,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	//
 
-	WorldResource* gltfResource = allocationManager.getWorldResource(&glTF);
+	WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource((uint64_t)&glTF);
 
 	//
 
@@ -95,8 +95,8 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	gltfResource->viewProjection.view = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	HelperRasterize::draw(allocationManager, glTF, commandBuffers[frameIndex], frameIndex, OPAQUE);
-	HelperRasterize::draw(allocationManager, glTF, commandBuffers[frameIndex], frameIndex, TRANSPARENT);
+	HelperRasterize::draw(allocationManager.getResourceManager(), glTF, commandBuffers[frameIndex], frameIndex, OPAQUE);
+	HelperRasterize::draw(allocationManager.getResourceManager(), glTF, commandBuffers[frameIndex], frameIndex, TRANSPARENT);
 
 	vkCmdEndRenderPass(commandBuffers[frameIndex]);
 

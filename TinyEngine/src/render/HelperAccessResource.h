@@ -3,20 +3,19 @@
 
 #include "../common/Common.h"
 #include "../gltf/GLTF.h"
-
-#include "../render/AllocationManager.h"
+#include "../resource/ResourceManager.h"
 
 class HelperAccessResource {
 public:
 
-	static VkBuffer getBuffer(AllocationManager& allocationManager, const BufferView& bufferView);
-	static VkBuffer getBuffer(AllocationManager& allocationManager, const Accessor& accessor);
+	static VkBuffer getBuffer(ResourceManager& resourceManager, const BufferView& bufferView);
+	static VkBuffer getBuffer(ResourceManager& resourceManager, const Accessor& accessor);
 
-	static VkImage getImage(AllocationManager& allocationManager, const Texture& texture);
+	static VkImage getImage(ResourceManager& resourceManager, const Texture& texture);
 
-	static VkImageView getImageView(AllocationManager& allocationManager, const Texture& texture);
+	static VkImageView getImageView(ResourceManager& resourceManager, const Texture& texture);
 
-	static VkSampler getSampler(AllocationManager& allocationManager, const Texture& texture);
+	static VkSampler getSampler(ResourceManager& resourceManager, const Texture& texture);
 };
 
 #endif /* RENDER_HELPERACCESSRESOURCE_H_ */

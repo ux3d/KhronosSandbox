@@ -17,39 +17,9 @@ ResourceManager& AllocationManager::getResourceManager()
 	return resourceManager;
 }
 
-BufferViewResource* AllocationManager::getBufferViewResource(const BufferView* bufferView)
-{
-	return resourceManager.getBufferViewResource((uint64_t)bufferView);
-}
-
-TextureResource* AllocationManager::getTextureResource(const Texture* texture)
-{
-	return resourceManager.getTextureResource((uint64_t)texture);
-}
-
-MaterialResource* AllocationManager::getMaterialResource(const Material* material)
-{
-	return resourceManager.getMaterialResource((uint64_t)material);
-}
-
-PrimitiveResource* AllocationManager::getPrimitiveResource(const Primitive* primitive)
-{
-	return resourceManager.getPrimitiveResource((uint64_t)primitive);
-}
-
-SceneResource* AllocationManager::getSceneResource(const Scene* scene)
-{
-	return resourceManager.getSceneResource((uint64_t)scene);
-}
-
-WorldResource* AllocationManager::getWorldResource(const GLTF* glTF)
-{
-	return resourceManager.getWorldResource((uint64_t)glTF);
-}
-
 bool AllocationManager::initBufferView(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
 {
-	BufferViewResource* bufferViewResource = getBufferViewResource(&bufferView);
+	BufferViewResource* bufferViewResource = resourceManager.getBufferViewResource((uint64_t)&bufferView);
 
 	if (!bufferViewResource)
 	{
@@ -86,7 +56,7 @@ bool AllocationManager::initBufferView(const BufferView& bufferView, VkPhysicalD
 
 bool AllocationManager::initMaterial(const Material& material, VkPhysicalDevice physicalDevice, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
 {
-	MaterialResource* materialResource = getMaterialResource(&material);
+	MaterialResource* materialResource = resourceManager.getMaterialResource((uint64_t)&material);
 
 	if (!materialResource)
 	{
@@ -186,7 +156,7 @@ bool AllocationManager::initMaterial(const Material& material, VkPhysicalDevice 
 
 bool AllocationManager::initPrimitive(const Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
 {
-	PrimitiveResource* primitiveResource = getPrimitiveResource(&primitive);
+	PrimitiveResource* primitiveResource = resourceManager.getPrimitiveResource((uint64_t)&primitive);
 
 	if (!primitiveResource)
 	{
@@ -389,7 +359,7 @@ bool AllocationManager::initPrimitive(const Primitive& primitive, const GLTF& gl
 		}
 
 		primitiveResource->indexType = indexType;
-		primitiveResource->indexBuffer = HelperAccessResource::getBuffer(*this, glTF.accessors[primitive.indices]);
+		primitiveResource->indexBuffer = HelperAccessResource::getBuffer(resourceManager, glTF.accessors[primitive.indices]);
 		primitiveResource->indexOffset = HelperAccess::getOffset(glTF.accessors[primitive.indices]);
 
 		primitiveResource->count = glTF.accessors[primitive.indices].count;
@@ -410,7 +380,7 @@ bool AllocationManager::initPrimitive(const Primitive& primitive, const GLTF& gl
 		VkBufferDeviceAddressInfo bufferDeviceAddressInfo = {};
 		bufferDeviceAddressInfo.sType  = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
 
-		bufferDeviceAddressInfo.buffer = HelperAccessResource::getBuffer(*this, glTF.accessors[primitive.position]);
+		bufferDeviceAddressInfo.buffer = HelperAccessResource::getBuffer(resourceManager, glTF.accessors[primitive.position]);
 		VkDeviceAddress vertexBufferAddress = vkGetBufferDeviceAddress(device, &bufferDeviceAddressInfo);
 
 		uint32_t vertexCount = glTF.accessors[primitive.position].count;
@@ -419,7 +389,7 @@ bool AllocationManager::initPrimitive(const Primitive& primitive, const GLTF& gl
 		VkDeviceAddress vertexIndexBufferAddress = 0;
 		if (primitive.indices >= 0)
 		{
-			bufferDeviceAddressInfo.buffer = HelperAccessResource::getBuffer(*this, glTF.accessors[primitive.indices]);
+			bufferDeviceAddressInfo.buffer = HelperAccessResource::getBuffer(resourceManager, glTF.accessors[primitive.indices]);
 
 			vertexIndexBufferAddress = vkGetBufferDeviceAddress(device, &bufferDeviceAddressInfo);
 
@@ -458,7 +428,7 @@ bool AllocationManager::initPrimitive(const Primitive& primitive, const GLTF& gl
 
 bool AllocationManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
 {
-	SceneResource* sceneResource = getSceneResource(&scene);
+	SceneResource* sceneResource = resourceManager.getSceneResource((uint64_t)&scene);
 
 	if (!sceneResource)
 	{
@@ -497,7 +467,7 @@ bool AllocationManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysic
 
 				for (const Primitive& currentPrimitive : glTF.meshes[node.mesh].primitives)
 				{
-					PrimitiveResource* currentPrimitiveResource = getPrimitiveResource(&currentPrimitive);
+					PrimitiveResource* currentPrimitiveResource = resourceManager.getPrimitiveResource((uint64_t)&currentPrimitive);
 
 					//
 
@@ -550,7 +520,7 @@ bool AllocationManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysic
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, glTF.accessors[currentPrimitive.indices]);
+						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(resourceManager, glTF.accessors[currentPrimitive.indices]);
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.indices]);
 						currentDescriptorBufferInfo.range = HelperAccess::getRange(glTF.accessors[currentPrimitive.indices]);
 
@@ -561,7 +531,7 @@ bool AllocationManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysic
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, glTF.accessors[currentPrimitive.position]);
+						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(resourceManager, glTF.accessors[currentPrimitive.position]);
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.position]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.position]);
 
@@ -572,7 +542,7 @@ bool AllocationManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysic
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, glTF.accessors[currentPrimitive.normal]);
+						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(resourceManager, glTF.accessors[currentPrimitive.normal]);
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.normal]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.normal]);
 
@@ -583,7 +553,7 @@ bool AllocationManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysic
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, glTF.accessors[currentPrimitive.tangent]);
+						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(resourceManager, glTF.accessors[currentPrimitive.tangent]);
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.tangent]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.tangent]);
 
@@ -594,7 +564,7 @@ bool AllocationManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysic
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(*this, glTF.accessors[currentPrimitive.texCoord0]);
+						currentDescriptorBufferInfo.buffer = HelperAccessResource::getBuffer(resourceManager, glTF.accessors[currentPrimitive.texCoord0]);
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.texCoord0]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.texCoord0]);
 
@@ -699,7 +669,7 @@ bool AllocationManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysic
 		std::vector<VkDescriptorImageInfo> descriptorImageInfoTextures;
 		for (const Texture& currentTexture : glTF.textures)
 		{
-			TextureResource* currentTextureResource = getTextureResource(&currentTexture);
+			TextureResource* currentTextureResource = resourceManager.getTextureResource((uint64_t)&currentTexture);
 
 			VkDescriptorImageInfo descriptorImageInfo = {};
 
@@ -962,7 +932,7 @@ bool AllocationManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysic
 		//
 		//
 
-		WorldResource* gltfResource = getWorldResource(&glTF);
+		WorldResource* gltfResource = resourceManager.getWorldResource((uint64_t)&glTF);
 
 		//
 		//

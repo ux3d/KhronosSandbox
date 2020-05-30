@@ -316,20 +316,6 @@ uint64_t ResourceManager::createWorldResource(uint64_t externalHandle)
 	return externalHandle;
 }
 
-bool ResourceManager::setMaterialResource(uint64_t materialHandle, uint32_t alphaMode)
-{
-	materialResources[materialHandle].alphaMode = alphaMode;
-
-    return true;
-}
-
-bool ResourceManager::setPrimitiveResource(uint64_t primitiveHandle, uint64_t materialHandle)
-{
-	primitiveResources[primitiveHandle].materialHandle = materialHandle;
-
-    return true;
-}
-
 bool ResourceManager::deleteBufferViewResource(uint64_t bufferViewHandle, VkDevice device)
 {
 	BufferViewResource* bufferViewResource = getBufferViewResource(bufferViewHandle);

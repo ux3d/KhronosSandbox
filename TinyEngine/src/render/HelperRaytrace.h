@@ -5,15 +5,14 @@
 
 #include "../common/Common.h"
 #include "../gltf/GLTF.h"
-
-#include "../render/AllocationManager.h"
+#include "../resource/ResourceManager.h"
 
 class HelperRaytrace {
 public:
 
-	static void draw(AllocationManager& allocationManager, const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height);
+	static void draw(ResourceManager& resourceManager, const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height);
 
-	static void draw(AllocationManager& allocationManager, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height);
+	static void draw(ResourceManager& resourceManager, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height);
 
 };
 

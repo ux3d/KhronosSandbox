@@ -19,18 +19,7 @@ public:
 
 	~AllocationManager();
 
-	//
-
 	ResourceManager& getResourceManager();
-
-	BufferViewResource* getBufferViewResource(const BufferView* bufferView);
-	TextureResource* getTextureResource(const Texture* texture);
-	MaterialResource* getMaterialResource(const Material* material);
-	PrimitiveResource* getPrimitiveResource(const Primitive* primitive);
-	SceneResource* getSceneResource(const Scene* scene);
-	WorldResource* getWorldResource(const GLTF* glTF);
-
-	//
 
 	bool initBufferView(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace = false);
 
