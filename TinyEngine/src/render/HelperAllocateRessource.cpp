@@ -97,37 +97,19 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 	for (size_t i = 0; i < glTF.materials.size(); i++)
 	{
 		const Material& material = glTF.materials[i];
+
 		MaterialResource* materialResource = allocationManager.getResourceManager().getMaterialResource((uint64_t)&material);
+		materialResource->alphaMode = material.alphaMode;
 
 		uint32_t binding = 0;
-
-		std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
 
 		// Metallic Roughness
 		if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
 		{
-			TextureResource* textureResource = allocationManager.getResourceManager().getTextureResource((uint64_t)&glTF.textures[material.pbrMetallicRoughness.baseColorTexture.index]);
-
-			//
-
-			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-			descriptorSetLayoutBinding.binding = binding;
-			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			descriptorSetLayoutBinding.descriptorCount = 1;
-			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-			VkDescriptorImageInfo descriptorImageInfo = {};
-			descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
-			descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
-			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-			//
-
-			materialResource->macros["BASECOLOR_TEXTURE"] = "";
-			materialResource->macros["BASECOLOR_BINDING"] = std::to_string(binding);
-			materialResource->macros["BASECOLOR_TEXCOORD"] = HelperShader::getTexCoord(material.pbrMetallicRoughness.baseColorTexture.texCoord);
+			if (!allocationManager.addMaterialResource(material, glTF.textures[material.pbrMetallicRoughness.baseColorTexture.index], material.pbrMetallicRoughness.baseColorTexture.texCoord, binding, "BASECOLOR"))
+			{
+				return false;
+			}
 
 			//
 
@@ -136,28 +118,10 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		if (material.pbrMetallicRoughness.metallicRoughnessTexture.index >= 0)
 		{
-			TextureResource* textureResource = allocationManager.getResourceManager().getTextureResource((uint64_t)&glTF.textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index]);
-
-			//
-
-			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-			descriptorSetLayoutBinding.binding = binding;
-			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			descriptorSetLayoutBinding.descriptorCount = 1;
-			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-			VkDescriptorImageInfo descriptorImageInfo = {};
-			descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
-			descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
-			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-			//
-
-			materialResource->macros["METALLICROUGHNESS_TEXTURE"] = "";
-			materialResource->macros["METALLICROUGHNESS_BINDING"] = std::to_string(binding);
-			materialResource->macros["METALLICROUGHNESS_TEXCOORD"] = HelperShader::getTexCoord(material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord);
+			if (!allocationManager.addMaterialResource(material, glTF.textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index], material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord, binding, "METALLICROUGHNESS"))
+			{
+				return false;
+			}
 
 			//
 
@@ -167,28 +131,10 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		// Base Material
 		if (material.emissiveTexture.index >= 0)
 		{
-			TextureResource* textureResource = allocationManager.getResourceManager().getTextureResource((uint64_t)&glTF.textures[material.emissiveTexture.index]);
-
-			//
-
-			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-			descriptorSetLayoutBinding.binding = binding;
-			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			descriptorSetLayoutBinding.descriptorCount = 1;
-			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-			VkDescriptorImageInfo descriptorImageInfo = {};
-			descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
-			descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
-			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-			//
-
-			materialResource->macros["EMISSIVE_TEXTURE"] = "";
-			materialResource->macros["EMISSIVE_BINDING"] = std::to_string(binding);
-			materialResource->macros["EMISSIVE_TEXCOORD"] = HelperShader::getTexCoord(material.emissiveTexture.texCoord);
+			if (!allocationManager.addMaterialResource(material, glTF.textures[material.emissiveTexture.index], material.emissiveTexture.texCoord, binding, "EMISSIVE"))
+			{
+				return false;
+			}
 
 			//
 
@@ -197,28 +143,10 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		if (material.occlusionTexture.index >= 0)
 		{
-			TextureResource* textureResource = allocationManager.getResourceManager().getTextureResource((uint64_t)&glTF.textures[material.occlusionTexture.index]);
-
-			//
-
-			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-			descriptorSetLayoutBinding.binding = binding;
-			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			descriptorSetLayoutBinding.descriptorCount = 1;
-			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-			VkDescriptorImageInfo descriptorImageInfo = {};
-			descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
-			descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
-			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-			//
-
-			materialResource->macros["OCCLUSION_TEXTURE"] = "";
-			materialResource->macros["OCCLUSION_BINDING"] = std::to_string(binding);
-			materialResource->macros["OCCLUSION_TEXCOORD"] = HelperShader::getTexCoord(material.occlusionTexture.texCoord);
+			if (!allocationManager.addMaterialResource(material, glTF.textures[material.occlusionTexture.index], material.occlusionTexture.texCoord, binding, "OCCLUSION"))
+			{
+				return false;
+			}
 
 			//
 
@@ -227,28 +155,10 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		if (material.normalTexture.index >= 0)
 		{
-			TextureResource* textureResource = allocationManager.getResourceManager().getTextureResource((uint64_t)&glTF.textures[material.normalTexture.index]);
-
-			//
-
-			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-			descriptorSetLayoutBinding.binding = binding;
-			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			descriptorSetLayoutBinding.descriptorCount = 1;
-			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-			VkDescriptorImageInfo descriptorImageInfo = {};
-			descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
-			descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
-			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-			//
-
-			materialResource->macros["NORMAL_TEXTURE"] = "";
-			materialResource->macros["NORMAL_BINDING"] = std::to_string(binding);
-			materialResource->macros["NORMAL_TEXCOORD"] = HelperShader::getTexCoord(material.normalTexture.texCoord);
+			if (!allocationManager.addMaterialResource(material, glTF.textures[material.normalTexture.index], material.normalTexture.texCoord, binding, "NORMAL"))
+			{
+				return false;
+			}
 
 			//
 
@@ -267,7 +177,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptorSetLayoutBinding.descriptorCount = 1;
 		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 		VkDescriptorImageInfo descriptorImageInfo = {};
 		descriptorImageInfo.sampler = gltfResource->diffuse.samplerResource.sampler;
@@ -286,7 +196,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptorSetLayoutBinding.descriptorCount = 1;
 		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 		descriptorImageInfo = {};
 		descriptorImageInfo.sampler = gltfResource->specular.samplerResource.sampler;
@@ -305,7 +215,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptorSetLayoutBinding.descriptorCount = 1;
 		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 		descriptorImageInfo = {};
 		descriptorImageInfo.sampler = gltfResource->lut.samplerResource.sampler;
@@ -335,7 +245,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		descriptorSetLayoutBinding.descriptorCount = 1;
 		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 		materialResource->descriptorBufferInfo.buffer = materialResource->uniformBufferResource.bufferResource.buffer;
 		materialResource->descriptorBufferInfo.offset = 0;
@@ -347,7 +257,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		//
 
-		if (!allocationManager.createMaterialResource(material, device, descriptorSetLayoutBindings))
+		if (!allocationManager.finalizeMaterialResource(material, device))
 		{
 			return false;
 		}

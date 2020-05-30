@@ -47,7 +47,7 @@ bool AllocationManager::createSharedDataResource(const BufferView& bufferView, V
 		usage |= (VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 	}
 
-	if (!resourceManager.createSharedDataResource((uint64_t)&bufferView, bufferView.byteLength, HelperAccess::accessData(bufferView), usage, physicalDevice, device, queue, commandPool))
+	if (!resourceManager.finalizeSharedDataResource((uint64_t)&bufferView, bufferView.byteLength, HelperAccess::accessData(bufferView), usage, physicalDevice, device, queue, commandPool))
 	{
 		return false;
 	}
@@ -57,7 +57,7 @@ bool AllocationManager::createSharedDataResource(const BufferView& bufferView, V
 
 bool AllocationManager::createTextureResource(const Texture& texture, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
-	if (!resourceManager.createTextureResource((uint64_t)&texture, textureResourceCreateInfo, physicalDevice, device, queue, commandPool))
+	if (!resourceManager.finalizeTextureResource((uint64_t)&texture, textureResourceCreateInfo, physicalDevice, device, queue, commandPool))
 	{
 		return false;
 	}
@@ -65,9 +65,38 @@ bool AllocationManager::createTextureResource(const Texture& texture, const Text
 	return true;
 }
 
-bool AllocationManager::createMaterialResource(const Material& material, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
+bool AllocationManager::addMaterialResource(const Material& material, const Texture& texture, uint32_t texCoord, uint32_t binding, const std::string& prefix)
 {
-	if (!resourceManager.createMaterialResource((uint64_t)&material, material.alphaMode, descriptorSetLayoutBindings, device))
+	MaterialResource* materialResource = resourceManager.getMaterialResource((uint64_t)&material);
+	TextureResource* textureResource = resourceManager.getTextureResource((uint64_t)&texture);
+
+	//
+
+	VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+	descriptorSetLayoutBinding.binding = binding;
+	descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	descriptorSetLayoutBinding.descriptorCount = 1;
+	descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+	VkDescriptorImageInfo descriptorImageInfo = {};
+	descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
+	descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
+	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
+
+	//
+
+	materialResource->macros[prefix + "_TEXTURE"] = "";
+	materialResource->macros[prefix + "_BINDING"] = std::to_string(binding);
+	materialResource->macros[prefix + "_TEXCOORD"] = HelperShader::getTexCoord(texCoord);
+
+	return true;
+}
+
+bool AllocationManager::finalizeMaterialResource(const Material& material, VkDevice device)
+{
+	if (!resourceManager.finalizeMaterialResource((uint64_t)&material, device))
 	{
 		return false;
 	}

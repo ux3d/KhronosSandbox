@@ -227,7 +227,7 @@ WorldResource* ResourceManager::getWorldResource(uint64_t worldHandle)
 	return &result->second;
 }
 
-bool ResourceManager::createSharedDataResource(uint64_t externalHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool ResourceManager::finalizeSharedDataResource(uint64_t externalHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
 	auto it = sharedDataResources.find(externalHandle);
 	if (it == sharedDataResources.end())
@@ -254,7 +254,7 @@ bool ResourceManager::createSharedDataResource(uint64_t externalHandle, VkDevice
 	return true;
 }
 
-bool ResourceManager::createTextureResource(uint64_t externalHandle, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool ResourceManager::finalizeTextureResource(uint64_t externalHandle, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
 	auto it = textureResources.find(externalHandle);
 	if (it == textureResources.end())
@@ -274,7 +274,7 @@ bool ResourceManager::createTextureResource(uint64_t externalHandle, const Textu
 	return true;
 }
 
-bool ResourceManager::createMaterialResource(uint64_t externalHandle, uint32_t alphaMode, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings, VkDevice device)
+bool ResourceManager::finalizeMaterialResource(uint64_t externalHandle, VkDevice device)
 {
 	auto it = materialResources.find(externalHandle);
 	if (it == materialResources.end())
@@ -290,8 +290,8 @@ bool ResourceManager::createMaterialResource(uint64_t externalHandle, uint32_t a
 
 	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = {};
 	descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	descriptorSetLayoutCreateInfo.bindingCount = static_cast<uint32_t>(descriptorSetLayoutBindings.size());
-	descriptorSetLayoutCreateInfo.pBindings = descriptorSetLayoutBindings.data();
+	descriptorSetLayoutCreateInfo.bindingCount = static_cast<uint32_t>(materialResources[externalHandle].descriptorSetLayoutBindings.size());
+	descriptorSetLayoutCreateInfo.pBindings = materialResources[externalHandle].descriptorSetLayoutBindings.data();
 
 	result = vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &materialResources[externalHandle].descriptorSetLayout);
 	if (result != VK_SUCCESS)
@@ -304,11 +304,11 @@ bool ResourceManager::createMaterialResource(uint64_t externalHandle, uint32_t a
 	//
 
 	std::vector<VkDescriptorPoolSize> descriptorPoolSizes;
-	descriptorPoolSizes.resize(descriptorSetLayoutBindings.size(), {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1});
+	descriptorPoolSizes.resize(materialResources[externalHandle].descriptorSetLayoutBindings.size(), {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1});
 
 	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
 	descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(descriptorSetLayoutBindings.size());
+	descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(materialResources[externalHandle].descriptorSetLayoutBindings.size());
 	descriptorPoolCreateInfo.pPoolSizes = descriptorPoolSizes.data();
 	descriptorPoolCreateInfo.maxSets = 1;
 
@@ -366,14 +366,10 @@ bool ResourceManager::createMaterialResource(uint64_t externalHandle, uint32_t a
 
 	vkUpdateDescriptorSets(device, descriptorImageInfosSize + descriptorBufferInfosSize, writeDescriptorSets.data(), 0, nullptr);
 
-	//
-
-	materialResources[externalHandle].alphaMode = alphaMode;
-
 	return true;
 }
 
-bool ResourceManager::createPrimitiveResource(uint64_t externalHandle)
+bool ResourceManager::finalizePrimitiveResource(uint64_t externalHandle)
 {
 	auto it = primitiveResources.find(externalHandle);
 	if (it == primitiveResources.end())
@@ -383,7 +379,7 @@ bool ResourceManager::createPrimitiveResource(uint64_t externalHandle)
 	return true;
 }
 
-bool ResourceManager::createGroupResource(uint64_t externalHandle)
+bool ResourceManager::finalizeGroupResource(uint64_t externalHandle)
 {
 	auto it = groupResources.find(externalHandle);
 	if (it == groupResources.end())
@@ -393,7 +389,7 @@ bool ResourceManager::createGroupResource(uint64_t externalHandle)
 	return true;
 }
 
-bool ResourceManager::createInstanceResource(uint64_t externalHandle)
+bool ResourceManager::finalizeInstanceResource(uint64_t externalHandle)
 {
 	auto it = instanceResources.find(externalHandle);
 	if (it == instanceResources.end())
@@ -403,7 +399,7 @@ bool ResourceManager::createInstanceResource(uint64_t externalHandle)
 	return true;
 }
 
-bool ResourceManager::createWorldResource(uint64_t externalHandle)
+bool ResourceManager::finalizeWorldResource(uint64_t externalHandle)
 {
 	auto it = worldResources.find(externalHandle);
 	if (it == worldResources.end())

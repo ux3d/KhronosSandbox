@@ -13,6 +13,8 @@ struct MaterialResource {
 
 	uint32_t alphaMode = 0;
 
+	std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
+
 	// Rasterize helper
 
 	VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;

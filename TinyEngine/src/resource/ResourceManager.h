@@ -55,13 +55,13 @@ public:
 
 	//
 
-	bool createSharedDataResource(uint64_t externalHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
-	bool createTextureResource(uint64_t externalHandle, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
-	bool createMaterialResource(uint64_t externalHandle, uint32_t alphaMode, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings, VkDevice device);
-	bool createPrimitiveResource(uint64_t externalHandle);
-	bool createGroupResource(uint64_t externalHandle);
-	bool createInstanceResource(uint64_t externalHandle);
-	bool createWorldResource(uint64_t externalHandle);
+	bool finalizeSharedDataResource(uint64_t externalHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+	bool finalizeTextureResource(uint64_t externalHandle, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+	bool finalizeMaterialResource(uint64_t externalHandle, VkDevice device);
+	bool finalizePrimitiveResource(uint64_t externalHandle);
+	bool finalizeGroupResource(uint64_t externalHandle);
+	bool finalizeInstanceResource(uint64_t externalHandle);
+	bool finalizeWorldResource(uint64_t externalHandle);
 
 	//
 
