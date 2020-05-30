@@ -254,13 +254,23 @@ bool ResourceManager::createSharedDataResource(uint64_t externalHandle, VkDevice
 	return true;
 }
 
-bool ResourceManager::createTextureResource(uint64_t externalHandle)
+bool ResourceManager::createTextureResource(uint64_t externalHandle, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
 	auto it = textureResources.find(externalHandle);
 	if (it == textureResources.end())
 	{
 		textureResources[externalHandle] = TextureResource();
 	}
+
+	//
+
+	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, textureResources[externalHandle], textureResourceCreateInfo))
+	{
+		return false;
+	}
+
+	//
+
 	return true;
 }
 

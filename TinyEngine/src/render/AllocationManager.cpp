@@ -55,6 +55,16 @@ bool AllocationManager::createSharedDataResource(const BufferView& bufferView, V
 	return true;
 }
 
+bool AllocationManager::createTextureResource(const Texture& texture, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+{
+	if (!resourceManager.createTextureResource((uint64_t)&texture, textureResourceCreateInfo, physicalDevice, device, queue, commandPool))
+	{
+		return false;
+	}
+
+	return true;
+}
+
 bool AllocationManager::createMaterialResource(const Material& material, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
 {
 	if (!resourceManager.createMaterialResource((uint64_t)&material, material.alphaMode, descriptorSetLayoutBindings, device))

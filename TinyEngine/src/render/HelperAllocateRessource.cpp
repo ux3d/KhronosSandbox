@@ -83,7 +83,7 @@ bool HelperAllocateResource::initTextures(AllocationManager& allocationManager, 
 			textureResourceCreateInfo.samplerResourceCreateInfo.maxLod = glTF.samplers[texture.sampler].maxLod;
 		}
 
-		if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, *allocationManager.getResourceManager().getTextureResource((uint64_t)&texture), textureResourceCreateInfo))
+		if (!allocationManager.createTextureResource(texture, textureResourceCreateInfo, physicalDevice, device, queue, commandPool))
 		{
 			return false;
 		}

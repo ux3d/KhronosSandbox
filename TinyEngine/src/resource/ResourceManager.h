@@ -56,7 +56,7 @@ public:
 	//
 
 	bool createSharedDataResource(uint64_t externalHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
-	bool createTextureResource(uint64_t externalHandle);
+	bool createTextureResource(uint64_t externalHandle, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
 	bool createMaterialResource(uint64_t externalHandle, uint32_t alphaMode, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings, VkDevice device);
 	bool createPrimitiveResource(uint64_t externalHandle);
 	bool createGroupResource(uint64_t externalHandle);
