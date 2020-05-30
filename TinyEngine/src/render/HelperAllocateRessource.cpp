@@ -609,7 +609,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 				return false;
 			}
 
-			if (!allocationManager.initPrimitive(primitive, glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &allocationManager.getResourceManager().getMaterialResource((uint64_t)&glTF.materials[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
+			if (!allocationManager.finalizePrimitive(primitive, glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &allocationManager.getResourceManager().getMaterialResource((uint64_t)&glTF.materials[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
 			{
 				return false;
 			}
@@ -775,7 +775,7 @@ bool HelperAllocateResource::allocate(AllocationManager& allocationManager, cons
 			gltfResource->instanceHandles.push_back((uint64_t)&glTF.nodes[glTF.scenes[glTF.defaultScene].nodes[i]]);
 		}
 
-		if (!allocationManager.initScene(glTF.scenes[glTF.defaultScene], glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
+		if (!allocationManager.finalizeWorld(glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
 		{
 			return false;
 		}

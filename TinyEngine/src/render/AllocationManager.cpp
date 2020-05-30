@@ -148,7 +148,7 @@ bool AllocationManager::addPrimitiveResource(const Primitive& primitive, uint32_
 	return true;
 }
 
-bool AllocationManager::initPrimitive(const Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
+bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
 {
 	PrimitiveResource* primitiveResource = resourceManager.getPrimitiveResource((uint64_t)&primitive);
 
@@ -420,7 +420,7 @@ bool AllocationManager::initPrimitive(const Primitive& primitive, const GLTF& gl
 	return true;
 }
 
-bool AllocationManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
+bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
 {
 	WorldResource* worldResource = resourceManager.getWorldResource((uint64_t)&glTF);
 
