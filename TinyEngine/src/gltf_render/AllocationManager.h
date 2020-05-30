@@ -1,5 +1,5 @@
-#ifndef RENDER_RESOURCEMANAGER_H_
-#define RENDER_RESOURCEMANAGER_H_
+#ifndef RENDER_ALLOCATIONMANAGER_H_
+#define RENDER_ALLOCATIONMANAGER_H_
 
 #include <cstdint>
 #include <map>
@@ -13,7 +13,7 @@
 #include "../render/SceneResource.h"
 #include "../render/WorldResource.h"
 
-class ResourceManager {
+class AllocationManager {
 
 private:
 
@@ -32,9 +32,9 @@ private:
 
 public:
 
-	ResourceManager();
+	AllocationManager();
 
-	~ResourceManager();
+	~AllocationManager();
 
 	//
 
@@ -63,4 +63,4 @@ public:
 
 };
 
-#endif /* RENDER_RESOURCEMANAGER_H_ */
+#endif /* RENDER_ALLOCATIONMANAGER_H_ */

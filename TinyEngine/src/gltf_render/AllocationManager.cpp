@@ -1,20 +1,19 @@
-#include "ResourceManager.h"
-
 #include "../shader/Shader.h"
+#include "AllocationManager.h"
 
 #include "HelperAccessResource.h"
 
-void ResourceManager::terminate(BufferViewResource& bufferViewResource, VkDevice device)
+void AllocationManager::terminate(BufferViewResource& bufferViewResource, VkDevice device)
 {
 	VulkanResource::destroyVertexBufferResource(device, bufferViewResource.vertexBufferResource);
 }
 
-void ResourceManager::terminate(TextureResource& textureResource, VkDevice device)
+void AllocationManager::terminate(TextureResource& textureResource, VkDevice device)
 {
 	VulkanResource::destroyTextureResource(device, textureResource);
 }
 
-void ResourceManager::terminate(MaterialResource& materialResource, VkDevice device)
+void AllocationManager::terminate(MaterialResource& materialResource, VkDevice device)
 {
 	// Descriptor sets do not have to be freed, as managed by pool.
 	materialResource.descriptorSet = VK_NULL_HANDLE;
@@ -34,7 +33,7 @@ void ResourceManager::terminate(MaterialResource& materialResource, VkDevice dev
 	VulkanResource::destroyUniformBufferResource(device, materialResource.uniformBufferResource);
 }
 
-void ResourceManager::terminate(PrimitiveResource& primitiveResource, VkDevice device)
+void AllocationManager::terminate(PrimitiveResource& primitiveResource, VkDevice device)
 {
 	if (primitiveResource.graphicsPipeline != VK_NULL_HANDLE)
 	{
@@ -71,7 +70,7 @@ void ResourceManager::terminate(PrimitiveResource& primitiveResource, VkDevice d
 	VulkanRaytraceResource::destroyBottomLevelResource(device, primitiveResource.bottomLevelResource);
 }
 
-void ResourceManager::terminate(SceneResource& sceneResource, VkDevice device)
+void AllocationManager::terminate(SceneResource& sceneResource, VkDevice device)
 {
 	VulkanResource::destroyStorageBufferResource(device, sceneResource.instanceResourcesStorageBufferResource);
 	VulkanResource::destroyStorageBufferResource(device, sceneResource.materialStorageBufferResource);
@@ -129,15 +128,15 @@ void ResourceManager::terminate(SceneResource& sceneResource, VkDevice device)
 	}
 }
 
-ResourceManager::ResourceManager()
+AllocationManager::AllocationManager()
 {
 }
 
-ResourceManager::~ResourceManager()
+AllocationManager::~AllocationManager()
 {
 }
 
-BufferViewResource* ResourceManager::getBufferViewResource(const BufferView* bufferView)
+BufferViewResource* AllocationManager::getBufferViewResource(const BufferView* bufferView)
 {
 	auto result = bufferViewResources.find(bufferView);
 	if (result == bufferViewResources.end())
@@ -148,7 +147,7 @@ BufferViewResource* ResourceManager::getBufferViewResource(const BufferView* buf
 	return &result->second;
 }
 
-TextureResource* ResourceManager::getTextureResource(const Texture* texture)
+TextureResource* AllocationManager::getTextureResource(const Texture* texture)
 {
 	auto result = textureResources.find(texture);
 	if (result == textureResources.end())
@@ -159,7 +158,7 @@ TextureResource* ResourceManager::getTextureResource(const Texture* texture)
 	return &result->second;
 }
 
-MaterialResource* ResourceManager::getMaterialResource(const Material* material)
+MaterialResource* AllocationManager::getMaterialResource(const Material* material)
 {
 	auto result = materialResources.find(material);
 	if (result == materialResources.end())
@@ -170,7 +169,7 @@ MaterialResource* ResourceManager::getMaterialResource(const Material* material)
 	return &result->second;
 }
 
-PrimitiveResource* ResourceManager::getPrimitiveResource(const Primitive* primitive)
+PrimitiveResource* AllocationManager::getPrimitiveResource(const Primitive* primitive)
 {
 	auto result = primitiveResources.find(primitive);
 	if (result == primitiveResources.end())
@@ -181,7 +180,7 @@ PrimitiveResource* ResourceManager::getPrimitiveResource(const Primitive* primit
 	return &result->second;
 }
 
-SceneResource* ResourceManager::getSceneResource(const Scene* scene)
+SceneResource* AllocationManager::getSceneResource(const Scene* scene)
 {
 	auto result = sceneResources.find(scene);
 	if (result == sceneResources.end())
@@ -192,12 +191,12 @@ SceneResource* ResourceManager::getSceneResource(const Scene* scene)
 	return &result->second;
 }
 
-WorldResource* ResourceManager::getWorldResource()
+WorldResource* AllocationManager::getWorldResource()
 {
 	return &worldResource;
 }
 
-bool ResourceManager::initBufferView(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
+bool AllocationManager::initBufferView(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
 {
 	BufferViewResource* bufferViewResource = getBufferViewResource(&bufferView);
 
@@ -234,7 +233,7 @@ bool ResourceManager::initBufferView(const BufferView& bufferView, VkPhysicalDev
 	return true;
 }
 
-bool ResourceManager::resetBufferView(const BufferView& bufferView, VkDevice device)
+bool AllocationManager::resetBufferView(const BufferView& bufferView, VkDevice device)
 {
 	BufferViewResource* bufferViewResource = getBufferViewResource(&bufferView);
 
@@ -247,7 +246,7 @@ bool ResourceManager::resetBufferView(const BufferView& bufferView, VkDevice dev
 	return true;
 }
 
-bool ResourceManager::initMaterial(const Material& material, VkPhysicalDevice physicalDevice, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
+bool AllocationManager::initMaterial(const Material& material, VkPhysicalDevice physicalDevice, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
 {
 	MaterialResource* materialResource = getMaterialResource(&material);
 
@@ -343,7 +342,7 @@ bool ResourceManager::initMaterial(const Material& material, VkPhysicalDevice ph
 	return true;
 }
 
-bool ResourceManager::resetMaterial(const Material& material, VkDevice device)
+bool AllocationManager::resetMaterial(const Material& material, VkDevice device)
 {
 	MaterialResource* materialResource = getMaterialResource(&material);
 
@@ -356,7 +355,7 @@ bool ResourceManager::resetMaterial(const Material& material, VkDevice device)
 	return true;
 }
 
-bool ResourceManager::initPrimitive(const Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
+bool AllocationManager::initPrimitive(const Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
 {
 	PrimitiveResource* primitiveResource = getPrimitiveResource(&primitive);
 
@@ -611,7 +610,7 @@ bool ResourceManager::initPrimitive(const Primitive& primitive, const GLTF& glTF
 	return true;
 }
 
-bool ResourceManager::resetPrimitive(const Primitive& primitive, VkDevice device)
+bool AllocationManager::resetPrimitive(const Primitive& primitive, VkDevice device)
 {
 	PrimitiveResource* primitiveResource = getPrimitiveResource(&primitive);
 
@@ -624,7 +623,7 @@ bool ResourceManager::resetPrimitive(const Primitive& primitive, VkDevice device
 	return true;
 }
 
-bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
+bool AllocationManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
 {
 	SceneResource* sceneResource = getSceneResource(&scene);
 
@@ -1522,7 +1521,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 	return true;
 }
 
-bool ResourceManager::resetScene(const Scene& scene, VkDevice device)
+bool AllocationManager::resetScene(const Scene& scene, VkDevice device)
 {
 	SceneResource* sceneResource = getSceneResource(&scene);
 
@@ -1535,7 +1534,7 @@ bool ResourceManager::resetScene(const Scene& scene, VkDevice device)
 	return true;
 }
 
-void ResourceManager::terminate(VkDevice device)
+void AllocationManager::terminate(VkDevice device)
 {
 	for (auto it : primitiveResources)
 	{

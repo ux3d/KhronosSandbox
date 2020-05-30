@@ -9,12 +9,12 @@ HelperAllocateResource::HelperAllocateResource(uint32_t width, uint32_t height, 
 {
 }
 
-bool HelperAllocateResource::initBuffers(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initBuffers(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
 {
 	return true;
 }
 
-bool HelperAllocateResource::initBufferViews(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initBufferViews(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.bufferViews.size(); i++)
 	{
@@ -29,7 +29,7 @@ bool HelperAllocateResource::initBufferViews(ResourceManager& resourceManager, c
 	return true;
 }
 
-bool HelperAllocateResource::initAccessors(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initAccessors(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.accessors.size(); i++)
 	{
@@ -54,17 +54,17 @@ bool HelperAllocateResource::initAccessors(ResourceManager& resourceManager, con
 	return true;
 }
 
-bool HelperAllocateResource::initImages(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initImages(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
 {
 	return true;
 }
 
-bool HelperAllocateResource::initSamplers(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initSamplers(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
 {
 	return true;
 }
 
-bool HelperAllocateResource::initTextures(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initTextures(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.textures.size(); i++)
 	{
@@ -94,7 +94,7 @@ bool HelperAllocateResource::initTextures(ResourceManager& resourceManager, cons
 	return true;
 }
 
-bool HelperAllocateResource::initMaterials(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initMaterials(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.materials.size(); i++)
 	{
@@ -383,7 +383,7 @@ bool HelperAllocateResource::initMaterials(ResourceManager& resourceManager, con
 	return true;
 }
 
-bool HelperAllocateResource::initMeshes(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initMeshes(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
 {
 	//
 	// Load the shader code.
@@ -926,12 +926,12 @@ bool HelperAllocateResource::initMeshes(ResourceManager& resourceManager, const 
 	return true;
 }
 
-bool HelperAllocateResource::initNodes(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initNodes(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
 {
 	return true;
 }
 
-bool HelperAllocateResource::initScenes(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initScenes(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.scenes.size(); i++)
 	{
@@ -944,7 +944,7 @@ bool HelperAllocateResource::initScenes(ResourceManager& resourceManager, const 
 	return true;
 }
 
-bool HelperAllocateResource::allocate(ResourceManager& resourceManager, const GLTF& glTF, const std::string& environment, bool useRaytrace)
+bool HelperAllocateResource::allocate(AllocationManager& resourceManager, const GLTF& glTF, const std::string& environment, bool useRaytrace)
 {
 	WorldResource* gltfResource = resourceManager.getWorldResource();
 

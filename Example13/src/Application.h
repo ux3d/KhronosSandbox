@@ -7,7 +7,7 @@ class Application: public TinyEngine
 {
 private:
 
-	ResourceManager resourceManager;
+	AllocationManager resourceManager;
 	GLTF glTF;
 	AnimationController animationController;
 

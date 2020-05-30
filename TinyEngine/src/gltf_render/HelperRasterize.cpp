@@ -2,7 +2,7 @@
 
 #include "HelperAccessResource.h"
 
-void HelperRasterize::draw(ResourceManager& resourceManager, const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode, const glm::mat4& worldMatrix)
+void HelperRasterize::draw(AllocationManager& resourceManager, const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode, const glm::mat4& worldMatrix)
 {
 	if (glTF.materials[primitive.material].alphaMode == 2 && drawMode == OPAQUE)
 	{
@@ -58,7 +58,7 @@ void HelperRasterize::draw(ResourceManager& resourceManager, const Primitive& pr
 	}
 }
 
-void HelperRasterize::draw(ResourceManager& resourceManager, const Mesh& mesh, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode, const glm::mat4& worldMatrix)
+void HelperRasterize::draw(AllocationManager& resourceManager, const Mesh& mesh, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode, const glm::mat4& worldMatrix)
 {
 	for (size_t i = 0; i < mesh.primitives.size(); i++)
 	{
@@ -66,7 +66,7 @@ void HelperRasterize::draw(ResourceManager& resourceManager, const Mesh& mesh, c
 	}
 }
 
-void HelperRasterize::draw(ResourceManager& resourceManager, const Node& node, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
+void HelperRasterize::draw(AllocationManager& resourceManager, const Node& node, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
 {
 	if (node.mesh >= 0)
 	{
@@ -79,7 +79,7 @@ void HelperRasterize::draw(ResourceManager& resourceManager, const Node& node, c
 	}
 }
 
-void HelperRasterize::draw(ResourceManager& resourceManager, const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
+void HelperRasterize::draw(AllocationManager& resourceManager, const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
 {
 	for (size_t i = 0; i < scene.nodes.size(); i++)
 	{
@@ -87,7 +87,7 @@ void HelperRasterize::draw(ResourceManager& resourceManager, const Scene& scene,
 	}
 }
 
-void HelperRasterize::draw(ResourceManager& resourceManager, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
+void HelperRasterize::draw(AllocationManager& resourceManager, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
 {
 	if (glTF.defaultScene < glTF.scenes.size())
 	{

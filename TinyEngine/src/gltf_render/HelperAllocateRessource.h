@@ -6,7 +6,7 @@
 #include "../common/Common.h"
 #include "../gltf/GLTF.h"
 
-#include "ResourceManager.h"
+#include "AllocationManager.h"
 
 class HelperAllocateResource {
 
@@ -22,31 +22,31 @@ private:
 	VkSampleCountFlagBits samples;
 	VkImageView imageView;
 
-	bool initBuffers(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
+	bool initBuffers(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
-	bool initBufferViews(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
+	bool initBufferViews(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
-	bool initAccessors(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
+	bool initAccessors(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
-	bool initImages(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
+	bool initImages(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
-	bool initSamplers(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
+	bool initSamplers(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
-	bool initTextures(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
+	bool initTextures(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
-	bool initMaterials(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
+	bool initMaterials(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
-	bool initMeshes(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
+	bool initMeshes(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
-	bool initNodes(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
+	bool initNodes(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
-	bool initScenes(ResourceManager& resourceManager, const GLTF& glTF, bool useRaytrace);
+	bool initScenes(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace);
 
 public:
 
 	HelperAllocateResource(uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView = VK_NULL_HANDLE);
 
-	bool allocate(ResourceManager& resourceManager, const GLTF& glTF, const std::string& diffuseFilename, bool useRaytrace = false);
+	bool allocate(AllocationManager& resourceManager, const GLTF& glTF, const std::string& diffuseFilename, bool useRaytrace = false);
 
 };
 
