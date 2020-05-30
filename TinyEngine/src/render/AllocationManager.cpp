@@ -35,36 +35,19 @@ ResourceManager& AllocationManager::getResourceManager()
 	return resourceManager;
 }
 
-bool AllocationManager::initBufferView(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
+bool AllocationManager::createBufferViewResource(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
 {
-	BufferViewResource* bufferViewResource = resourceManager.getBufferViewResource((uint64_t)&bufferView);
-
-	if (!bufferViewResource)
-	{
-		return false;
-	}
-
-	//
-
 	VkBufferUsageFlags usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	if (bufferView.target == 34963) // ELEMENT_ARRAY_BUFFER
 	{
 		usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 	}
-
-	VertexBufferResourceCreateInfo vertexBufferResourceCreateInfo = {};
-
-	vertexBufferResourceCreateInfo.bufferResourceCreateInfo.size = bufferView.byteLength;
-	vertexBufferResourceCreateInfo.bufferResourceCreateInfo.usage = usage;
-	vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-	vertexBufferResourceCreateInfo.data = HelperAccess::accessData(bufferView);
-
 	if (useRaytrace)
 	{
-		vertexBufferResourceCreateInfo.bufferResourceCreateInfo.usage |= (VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+		usage |= (VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 	}
 
-	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, bufferViewResource->vertexBufferResource, vertexBufferResourceCreateInfo))
+	if (!resourceManager.createSharedDataResource((uint64_t)&bufferView, bufferView.byteLength, HelperAccess::accessData(bufferView), usage, physicalDevice, device, queue, commandPool))
 	{
 		return false;
 	}
@@ -72,102 +55,12 @@ bool AllocationManager::initBufferView(const BufferView& bufferView, VkPhysicalD
 	return true;
 }
 
-bool AllocationManager::initMaterial(const Material& material, VkPhysicalDevice physicalDevice, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
+bool AllocationManager::createMaterialResource(const Material& material, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
 {
-	MaterialResource* materialResource = resourceManager.getMaterialResource((uint64_t)&material);
-
-	if (!materialResource)
+	if (!resourceManager.createMaterialResource((uint64_t)&material, material.alphaMode, descriptorSetLayoutBindings, device))
 	{
 		return false;
 	}
-
-	//
-
-	VkResult result = VK_SUCCESS;
-
-	//
-
-	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = {};
-	descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	descriptorSetLayoutCreateInfo.bindingCount = static_cast<uint32_t>(descriptorSetLayoutBindings.size());
-	descriptorSetLayoutCreateInfo.pBindings = descriptorSetLayoutBindings.data();
-
-	result = vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &materialResource->descriptorSetLayout);
-	if (result != VK_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
-
-		return false;
-	}
-
-	//
-
-	std::vector<VkDescriptorPoolSize> descriptorPoolSizes;
-	descriptorPoolSizes.resize(descriptorSetLayoutBindings.size(), {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1});
-
-	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
-	descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(descriptorSetLayoutBindings.size());
-	descriptorPoolCreateInfo.pPoolSizes = descriptorPoolSizes.data();
-	descriptorPoolCreateInfo.maxSets = 1;
-
-	result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &materialResource->descriptorPool);
-	if (result != VK_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
-
-		return false;
-	}
-
-	VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = {};
-	descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	descriptorSetAllocateInfo.descriptorPool = materialResource->descriptorPool;
-	descriptorSetAllocateInfo.descriptorSetCount = 1;
-	descriptorSetAllocateInfo.pSetLayouts = &materialResource->descriptorSetLayout;
-
-	result = vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &materialResource->descriptorSet);
-	if (result != VK_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
-
-		return false;
-	}
-
-	uint32_t descriptorImageInfosSize = static_cast<uint32_t>(materialResource->descriptorImageInfos.size());
-	uint32_t descriptorBufferInfosSize = 1;
-
-	std::vector<VkWriteDescriptorSet> writeDescriptorSets(descriptorImageInfosSize + descriptorBufferInfosSize);
-
-	for (uint32_t k = 0; k < descriptorImageInfosSize; k++)
-	{
-		writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		writeDescriptorSets[k].dstSet = materialResource->descriptorSet;
-		writeDescriptorSets[k].dstBinding = k;
-		writeDescriptorSets[k].dstArrayElement = 0;
-		writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		writeDescriptorSets[k].descriptorCount = 1;
-		writeDescriptorSets[k].pImageInfo = &materialResource->descriptorImageInfos[k];
-	}
-
-	for (uint32_t k = descriptorImageInfosSize; k < descriptorImageInfosSize + descriptorBufferInfosSize; k++)
-	{
-		writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		writeDescriptorSets[k].dstSet = materialResource->descriptorSet;
-		writeDescriptorSets[k].dstBinding = k;
-		writeDescriptorSets[k].dstArrayElement = 0;
-		writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		writeDescriptorSets[k].descriptorCount = 1;
-		writeDescriptorSets[k].pBufferInfo = &materialResource->descriptorBufferInfo;
-
-		// No more at this point of time.
-		break;
-	}
-
-	vkUpdateDescriptorSets(device, descriptorImageInfosSize + descriptorBufferInfosSize, writeDescriptorSets.data(), 0, nullptr);
-
-	//
-
-	materialResource->alphaMode = material.alphaMode;
 
 	return true;
 }

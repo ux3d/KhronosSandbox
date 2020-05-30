@@ -1,8 +1,8 @@
 #include "ResourceManager.h"
 
-void ResourceManager::terminate(BufferViewResource& bufferViewResource, VkDevice device)
+void ResourceManager::terminate(SharedDataResource& sharedDataResource, VkDevice device)
 {
-	VulkanResource::destroyVertexBufferResource(device, bufferViewResource.vertexBufferResource);
+	VulkanResource::destroyVertexBufferResource(device, sharedDataResource.vertexBufferResource);
 }
 
 void ResourceManager::terminate(TextureResource& textureResource, VkDevice device)
@@ -145,18 +145,18 @@ ResourceManager::~ResourceManager()
 {
 }
 
-VkBuffer ResourceManager::getBuffer(uint64_t bufferViewHandle)
+VkBuffer ResourceManager::getBuffer(uint64_t sharedDataHandle)
 {
-	return getBufferViewResource(bufferViewHandle)->vertexBufferResource.bufferResource.buffer;
+	return getSharedDataResource(sharedDataHandle)->vertexBufferResource.bufferResource.buffer;
 }
 
-BufferViewResource* ResourceManager::getBufferViewResource(uint64_t bufferViewHandle)
+SharedDataResource* ResourceManager::getSharedDataResource(uint64_t sharedDataHandle)
 {
-	auto result = bufferViewResources.find(bufferViewHandle);
-	if (result == bufferViewResources.end())
+	auto result = sharedDataResources.find(sharedDataHandle);
+	if (result == sharedDataResources.end())
 	{
-		bufferViewResources[bufferViewHandle] = BufferViewResource();
-		return &bufferViewResources[bufferViewHandle];
+		sharedDataResources[sharedDataHandle] = SharedDataResource();
+		return &sharedDataResources[sharedDataHandle];
 	}
 	return &result->second;
 }
@@ -227,86 +227,192 @@ WorldResource* ResourceManager::getWorldResource(uint64_t worldHandle)
 	return &result->second;
 }
 
-uint64_t ResourceManager::createBufferViewResource(uint64_t externalHandle)
+bool ResourceManager::createSharedDataResource(uint64_t externalHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
-	auto result = bufferViewResources.find(externalHandle);
-	if (result == bufferViewResources.end())
+	auto it = sharedDataResources.find(externalHandle);
+	if (it == sharedDataResources.end())
 	{
-		bufferViewResources[externalHandle] = BufferViewResource();
+		sharedDataResources[externalHandle] = SharedDataResource();
 	}
-	return externalHandle;
-}
 
-uint64_t ResourceManager::createTextureResource(uint64_t externalHandle)
-{
-	auto result = textureResources.find(externalHandle);
-	if (result == textureResources.end())
-	{
-		textureResources[externalHandle] = TextureResource();
-	}
-	return externalHandle;
-}
+	//
 
-uint64_t ResourceManager::createMaterialResource(uint64_t externalHandle)
-{
-	auto result = materialResources.find(externalHandle);
-	if (result == materialResources.end())
-	{
-		materialResources[externalHandle] = MaterialResource();
-	}
-	return externalHandle;
-}
+	VertexBufferResourceCreateInfo vertexBufferResourceCreateInfo = {};
 
-uint64_t ResourceManager::createPrimitiveResource(uint64_t externalHandle)
-{
-	auto result = primitiveResources.find(externalHandle);
-	if (result == primitiveResources.end())
-	{
-		primitiveResources[externalHandle] = PrimitiveResource();
-	}
-	return externalHandle;
-}
+	vertexBufferResourceCreateInfo.bufferResourceCreateInfo.size = size;
+	vertexBufferResourceCreateInfo.bufferResourceCreateInfo.usage = usage;
+	vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	vertexBufferResourceCreateInfo.data = data;
 
-uint64_t ResourceManager::createGroupResource(uint64_t externalHandle)
-{
-	auto result = groupResources.find(externalHandle);
-	if (result == groupResources.end())
-	{
-		groupResources[externalHandle] = GroupResource();
-	}
-	return externalHandle;
-}
-
-uint64_t ResourceManager::createInstanceResource(uint64_t externalHandle)
-{
-	auto result = instanceResources.find(externalHandle);
-	if (result == instanceResources.end())
-	{
-		instanceResources[externalHandle] = InstanceResource();
-	}
-	return externalHandle;
-}
-
-uint64_t ResourceManager::createWorldResource(uint64_t externalHandle)
-{
-	auto result = worldResources.find(externalHandle);
-	if (result == worldResources.end())
-	{
-		worldResources[externalHandle] = WorldResource();
-	}
-	return externalHandle;
-}
-
-bool ResourceManager::deleteBufferViewResource(uint64_t bufferViewHandle, VkDevice device)
-{
-	BufferViewResource* bufferViewResource = getBufferViewResource(bufferViewHandle);
-
-	if (!bufferViewResource)
+	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, sharedDataResources[externalHandle].vertexBufferResource, vertexBufferResourceCreateInfo))
 	{
 		return false;
 	}
-	terminate(*bufferViewResource, device);
-	bufferViewResources.erase(bufferViewHandle);
+
+	//
+
+	return true;
+}
+
+bool ResourceManager::createTextureResource(uint64_t externalHandle)
+{
+	auto it = textureResources.find(externalHandle);
+	if (it == textureResources.end())
+	{
+		textureResources[externalHandle] = TextureResource();
+	}
+	return true;
+}
+
+bool ResourceManager::createMaterialResource(uint64_t externalHandle, uint32_t alphaMode, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings, VkDevice device)
+{
+	auto it = materialResources.find(externalHandle);
+	if (it == materialResources.end())
+	{
+		materialResources[externalHandle] = MaterialResource();
+	}
+
+	//
+
+	VkResult result = VK_SUCCESS;
+
+	//
+
+	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = {};
+	descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	descriptorSetLayoutCreateInfo.bindingCount = static_cast<uint32_t>(descriptorSetLayoutBindings.size());
+	descriptorSetLayoutCreateInfo.pBindings = descriptorSetLayoutBindings.data();
+
+	result = vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &materialResources[externalHandle].descriptorSetLayout);
+	if (result != VK_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+		return false;
+	}
+
+	//
+
+	std::vector<VkDescriptorPoolSize> descriptorPoolSizes;
+	descriptorPoolSizes.resize(descriptorSetLayoutBindings.size(), {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1});
+
+	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
+	descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(descriptorSetLayoutBindings.size());
+	descriptorPoolCreateInfo.pPoolSizes = descriptorPoolSizes.data();
+	descriptorPoolCreateInfo.maxSets = 1;
+
+	result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &materialResources[externalHandle].descriptorPool);
+	if (result != VK_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+		return false;
+	}
+
+	VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = {};
+	descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+	descriptorSetAllocateInfo.descriptorPool = materialResources[externalHandle].descriptorPool;
+	descriptorSetAllocateInfo.descriptorSetCount = 1;
+	descriptorSetAllocateInfo.pSetLayouts = &materialResources[externalHandle].descriptorSetLayout;
+
+	result = vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &materialResources[externalHandle].descriptorSet);
+	if (result != VK_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+		return false;
+	}
+
+	uint32_t descriptorImageInfosSize = static_cast<uint32_t>(materialResources[externalHandle].descriptorImageInfos.size());
+	uint32_t descriptorBufferInfosSize = 1;
+
+	std::vector<VkWriteDescriptorSet> writeDescriptorSets(descriptorImageInfosSize + descriptorBufferInfosSize);
+
+	for (uint32_t k = 0; k < descriptorImageInfosSize; k++)
+	{
+		writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		writeDescriptorSets[k].dstSet = materialResources[externalHandle].descriptorSet;
+		writeDescriptorSets[k].dstBinding = k;
+		writeDescriptorSets[k].dstArrayElement = 0;
+		writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		writeDescriptorSets[k].descriptorCount = 1;
+		writeDescriptorSets[k].pImageInfo = &materialResources[externalHandle].descriptorImageInfos[k];
+	}
+
+	for (uint32_t k = descriptorImageInfosSize; k < descriptorImageInfosSize + descriptorBufferInfosSize; k++)
+	{
+		writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		writeDescriptorSets[k].dstSet = materialResources[externalHandle].descriptorSet;
+		writeDescriptorSets[k].dstBinding = k;
+		writeDescriptorSets[k].dstArrayElement = 0;
+		writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		writeDescriptorSets[k].descriptorCount = 1;
+		writeDescriptorSets[k].pBufferInfo = &materialResources[externalHandle].descriptorBufferInfo;
+
+		// No more at this point of time.
+		break;
+	}
+
+	vkUpdateDescriptorSets(device, descriptorImageInfosSize + descriptorBufferInfosSize, writeDescriptorSets.data(), 0, nullptr);
+
+	//
+
+	materialResources[externalHandle].alphaMode = alphaMode;
+
+	return true;
+}
+
+bool ResourceManager::createPrimitiveResource(uint64_t externalHandle)
+{
+	auto it = primitiveResources.find(externalHandle);
+	if (it == primitiveResources.end())
+	{
+		primitiveResources[externalHandle] = PrimitiveResource();
+	}
+	return true;
+}
+
+bool ResourceManager::createGroupResource(uint64_t externalHandle)
+{
+	auto it = groupResources.find(externalHandle);
+	if (it == groupResources.end())
+	{
+		groupResources[externalHandle] = GroupResource();
+	}
+	return true;
+}
+
+bool ResourceManager::createInstanceResource(uint64_t externalHandle)
+{
+	auto it = instanceResources.find(externalHandle);
+	if (it == instanceResources.end())
+	{
+		instanceResources[externalHandle] = InstanceResource();
+	}
+	return true;
+}
+
+bool ResourceManager::createWorldResource(uint64_t externalHandle)
+{
+	auto it = worldResources.find(externalHandle);
+	if (it == worldResources.end())
+	{
+		worldResources[externalHandle] = WorldResource();
+	}
+	return true;
+}
+
+bool ResourceManager::deleteSharedDataResource(uint64_t sharedDataHandle, VkDevice device)
+{
+	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
+
+	if (!sharedDataResource)
+	{
+		return false;
+	}
+	terminate(*sharedDataResource, device);
+	sharedDataResources.erase(sharedDataHandle);
 
 	return true;
 }
@@ -433,9 +539,9 @@ void ResourceManager::terminate(VkDevice device)
 	}
 	textureResources.clear();
 
-	for (auto it : bufferViewResources)
+	for (auto it : sharedDataResources)
 	{
 		terminate(it.second, device);
 	}
-	bufferViewResources.clear();
+	sharedDataResources.clear();
 }
