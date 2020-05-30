@@ -8,6 +8,10 @@
 #include "../composite/Composite.h"
 
 struct MaterialResource {
+	// Mapper helper
+
+	uint32_t alphaMode = 0;
+
 	// Rasterize helper
 
 	VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;

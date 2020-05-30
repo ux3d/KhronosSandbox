@@ -5,57 +5,50 @@
 
 void HelperRasterize::draw(AllocationManager& allocationManager, const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode, const glm::mat4& worldMatrix)
 {
-	if (glTF.materials[primitive.material].alphaMode == 2 && drawMode == OPAQUE)
-	{
-		return;
-	}
-	else if (glTF.materials[primitive.material].alphaMode != 2 && drawMode == TRANSPARENT)
-	{
-		return;
-	}
-
-	//
-
-	WorldResource* gltfResource = allocationManager.getWorldResource(&glTF);
-
-	//
-
 	PrimitiveResource* primitiveResource = allocationManager.getPrimitiveResource(&primitive);
+
+	//
+
+	MaterialResource* materialResource = allocationManager.getResourceManager().getMaterialResource(primitiveResource->materialHandle);
+	if (materialResource->alphaMode == 2 && drawMode == OPAQUE)
+	{
+		return;
+	}
+	else if (materialResource->alphaMode != 2 && drawMode == TRANSPARENT)
+	{
+		return;
+	}
+
+	//
+
+	WorldResource* worldResource = allocationManager.getWorldResource(&glTF);
+
+	//
 
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->graphicsPipeline);
 
-	if (allocationManager.getMaterialResource(&glTF.materials[primitive.material])->descriptorSet != VK_NULL_HANDLE)
+	if (materialResource->descriptorSet != VK_NULL_HANDLE)
 	{
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->pipelineLayout, 0, 1, &allocationManager.getMaterialResource(&glTF.materials[primitive.material])->descriptorSet, 0, nullptr);
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->pipelineLayout, 0, 1, &materialResource->descriptorSet, 0, nullptr);
 	}
 
-	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(gltfResource->viewProjection), &gltfResource->viewProjection);
-	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(gltfResource->viewProjection), sizeof(worldMatrix), &worldMatrix);
+	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(worldResource->viewProjection), &worldResource->viewProjection);
+	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(worldResource->viewProjection), sizeof(worldMatrix), &worldMatrix);
 
-	if (primitive.indices >= 0)
+	if (primitiveResource->indexBuffer != VK_NULL_HANDLE)
 	{
-		VkIndexType indexType = VK_INDEX_TYPE_UINT8_EXT;
-		if (glTF.accessors[primitive.indices].componentTypeSize == 2)
-		{
-			indexType = VK_INDEX_TYPE_UINT16;
-		}
-		else if (glTF.accessors[primitive.indices].componentTypeSize == 4)
-		{
-			indexType = VK_INDEX_TYPE_UINT32;
-		}
-
-		vkCmdBindIndexBuffer(commandBuffer, HelperAccessResource::getBuffer(allocationManager, glTF.accessors[primitive.indices]), HelperAccess::getOffset(glTF.accessors[primitive.indices]), indexType);
+		vkCmdBindIndexBuffer(commandBuffer, primitiveResource->indexBuffer, primitiveResource->indexOffset, primitiveResource->indexType);
 	}
 
-	vkCmdBindVertexBuffers(commandBuffer, 0, primitive.attributesCount, primitiveResource->vertexBuffers.data(), primitiveResource->vertexBuffersOffsets.data());
+	vkCmdBindVertexBuffers(commandBuffer, 0, primitiveResource->vertexBuffers.size(), primitiveResource->vertexBuffers.data(), primitiveResource->vertexBuffersOffsets.data());
 
-	if (primitive.indices >= 0)
+	if (primitiveResource->indexBuffer != VK_NULL_HANDLE)
 	{
-		vkCmdDrawIndexed(commandBuffer, glTF.accessors[primitive.indices].count, 1, 0, 0, 0);
+		vkCmdDrawIndexed(commandBuffer, primitiveResource->count, 1, 0, 0, 0);
 	}
 	else
 	{
-		vkCmdDraw(commandBuffer, glTF.accessors[primitive.position].count, 1, 0, 0);
+		vkCmdDraw(commandBuffer, primitiveResource->count, 1, 0, 0);
 	}
 }
 

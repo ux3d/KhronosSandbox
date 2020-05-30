@@ -7,6 +7,16 @@
 #include "../composite/Composite.h"
 
 struct PrimitiveResource {
+	// Mapper helper
+
+	uint64_t materialHandle = 0;
+
+	VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR;
+	VkBuffer indexBuffer = VK_NULL_HANDLE;
+	uint32_t indexOffset = 0;
+
+	uint32_t count = 0;
+
 	// Rasterize helper
 
 	std::vector<VkVertexInputBindingDescription> vertexInputBindingDescriptions;

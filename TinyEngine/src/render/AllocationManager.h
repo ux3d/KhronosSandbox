@@ -21,6 +21,8 @@ public:
 
 	//
 
+	ResourceManager& getResourceManager();
+
 	BufferViewResource* getBufferViewResource(const BufferView* bufferView);
 	TextureResource* getTextureResource(const Texture* texture);
 	MaterialResource* getMaterialResource(const Material* material);

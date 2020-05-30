@@ -12,6 +12,11 @@ AllocationManager::~AllocationManager()
 {
 }
 
+ResourceManager& AllocationManager::getResourceManager()
+{
+	return resourceManager;
+}
+
 BufferViewResource* AllocationManager::getBufferViewResource(const BufferView* bufferView)
 {
 	return resourceManager.getBufferViewResource((uint64_t)bufferView);
@@ -171,6 +176,10 @@ bool AllocationManager::initMaterial(const Material& material, VkPhysicalDevice 
 	}
 
 	vkUpdateDescriptorSets(device, descriptorImageInfosSize + descriptorBufferInfosSize, writeDescriptorSets.data(), 0, nullptr);
+
+	//
+
+	materialResource->alphaMode = material.alphaMode;
 
 	return true;
 }
@@ -364,6 +373,34 @@ bool AllocationManager::initPrimitive(const Primitive& primitive, const GLTF& gl
 		return false;
 	}
 
+	//
+
+	VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR;
+	if (primitive.indices >= 0)
+	{
+		indexType = VK_INDEX_TYPE_UINT8_EXT;
+		if (glTF.accessors[primitive.indices].componentTypeSize == 2)
+		{
+			indexType = VK_INDEX_TYPE_UINT16;
+		}
+		else if (glTF.accessors[primitive.indices].componentTypeSize == 4)
+		{
+			indexType = VK_INDEX_TYPE_UINT32;
+		}
+
+		primitiveResource->indexType = indexType;
+		primitiveResource->indexBuffer = HelperAccessResource::getBuffer(*this, glTF.accessors[primitive.indices]);
+		primitiveResource->indexOffset = HelperAccess::getOffset(glTF.accessors[primitive.indices]);
+
+		primitiveResource->count = glTF.accessors[primitive.indices].count;
+	}
+	else
+	{
+		primitiveResource->count = glTF.accessors[primitive.position].count;
+	}
+
+	primitiveResource->materialHandle = (uint64_t)&glTF.materials[primitive.material];
+
 	if (useRaytrace)
 	{
 		//
@@ -379,20 +416,9 @@ bool AllocationManager::initPrimitive(const Primitive& primitive, const GLTF& gl
 		uint32_t vertexCount = glTF.accessors[primitive.position].count;
 		uint32_t primitiveCount = vertexCount / 3;
 
-		VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR;
 		VkDeviceAddress vertexIndexBufferAddress = 0;
 		if (primitive.indices >= 0)
 		{
-			indexType = VK_INDEX_TYPE_UINT8_EXT;
-			if (glTF.accessors[primitive.indices].componentTypeSize == 2)
-			{
-				indexType = VK_INDEX_TYPE_UINT16;
-			}
-			else if (glTF.accessors[primitive.indices].componentTypeSize == 4)
-			{
-				indexType = VK_INDEX_TYPE_UINT32;
-			}
-
 			bufferDeviceAddressInfo.buffer = HelperAccessResource::getBuffer(*this, glTF.accessors[primitive.indices]);
 
 			vertexIndexBufferAddress = vkGetBufferDeviceAddress(device, &bufferDeviceAddressInfo);
