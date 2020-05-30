@@ -342,45 +342,20 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 			{
 				primitiveResource->positionAttributeIndex = attributeIndex;
 
-				if (glTF.accessors[primitive.position].typeCount == 3)
-				{
-					macros["POSITION_VEC3"] = "";
-				}
-				else if (glTF.accessors[primitive.position].typeCount == 4)
-				{
-					macros["POSITION_VEC4"] = "";
-				}
-				else
-				{
-					return false;
-				}
-
-				macros["POSITION_LOC"] = std::to_string(attributeIndex);
-
-				//
-
 				const Accessor& accessor = glTF.accessors[primitive.position];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
+
 				VkFormat format = VK_FORMAT_UNDEFINED;
 				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
 
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].stride = stride;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].location = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].format = format;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].offset = 0;
-
-				//
-
-				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
-				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
+				if (!allocationManager.addPrimitiveResource(primitive, attributeIndex, glTF.accessors[primitive.position].typeCount, "POSITION", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				{
+					return false;
+				}
 
 				//
 
@@ -391,41 +366,20 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 			{
 				primitiveResource->normalAttributeIndex = attributeIndex;
 
-				if (glTF.accessors[primitive.normal].typeCount == 3)
-				{
-					macros["NORMAL_VEC3"] = "";
-				}
-				else
-				{
-					return false;
-				}
-
-				macros["NORMAL_LOC"] = std::to_string(attributeIndex);
-
-				//
-
 				const Accessor& accessor = glTF.accessors[primitive.normal];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
+
 				VkFormat format = VK_FORMAT_UNDEFINED;
 				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
 
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].stride = stride;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].location = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].format = format;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].offset = 0;
-
-				//
-
-				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
-				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
+				if (!allocationManager.addPrimitiveResource(primitive, attributeIndex, glTF.accessors[primitive.normal].typeCount, "NORMAL", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				{
+					return false;
+				}
 
 				//
 
@@ -436,41 +390,20 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 			{
 				primitiveResource->tangentAttributeIndex = attributeIndex;
 
-				if (glTF.accessors[primitive.tangent].typeCount == 4)
-				{
-					macros["TANGENT_VEC4"] = "";
-				}
-				else
-				{
-					return false;
-				}
-
-				macros["TANGENT_LOC"] = std::to_string(attributeIndex);
-
-				//
-
 				const Accessor& accessor = glTF.accessors[primitive.tangent];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
+
 				VkFormat format = VK_FORMAT_UNDEFINED;
 				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
 
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].stride = stride;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].location = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].format = format;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].offset = 0;
-
-				//
-
-				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
-				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
+				if (!allocationManager.addPrimitiveResource(primitive, attributeIndex, glTF.accessors[primitive.tangent].typeCount, "TANGENT", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				{
+					return false;
+				}
 
 				//
 
@@ -481,41 +414,20 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 			{
 				primitiveResource->texCoord0AttributeIndex = attributeIndex;
 
-				if (glTF.accessors[primitive.texCoord0].typeCount == 2)
-				{
-					macros["TEXCOORD_0_VEC2"] = "";
-				}
-				else
-				{
-					return false;
-				}
-
-				macros["TEXCOORD_0_LOC"] = std::to_string(attributeIndex);
-
-				//
-
 				const Accessor& accessor = glTF.accessors[primitive.texCoord0];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
+
 				VkFormat format = VK_FORMAT_UNDEFINED;
 				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
 
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].stride = stride;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].location = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].format = format;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].offset = 0;
-
-				//
-
-				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
-				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
+				if (!allocationManager.addPrimitiveResource(primitive, attributeIndex, glTF.accessors[primitive.texCoord0].typeCount, "TEXCOORD_0", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				{
+					return false;
+				}
 
 				//
 
@@ -526,41 +438,20 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 			{
 				primitiveResource->texCoord1AttributeIndex = attributeIndex;
 
-				if (glTF.accessors[primitive.texCoord1].typeCount == 2)
-				{
-					macros["TEXCOORD_1_VEC2"] = "";
-				}
-				else
-				{
-					return false;
-				}
-
-				macros["TEXCOORD_1_LOC"] = std::to_string(attributeIndex);
-
-				//
-
 				const Accessor& accessor = glTF.accessors[primitive.texCoord1];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
+
 				VkFormat format = VK_FORMAT_UNDEFINED;
 				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
 
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].stride = stride;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].location = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].format = format;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].offset = 0;
-
-				//
-
-				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
-				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
+				if (!allocationManager.addPrimitiveResource(primitive, attributeIndex, glTF.accessors[primitive.texCoord1].typeCount, "TEXCOORD_1", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				{
+					return false;
+				}
 
 				//
 
@@ -571,45 +462,20 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 			{
 				primitiveResource->color0AttributeIndex = attributeIndex;
 
-				if (glTF.accessors[primitive.color0].typeCount == 4)
-				{
-					macros["COLOR_0_VEC4"] = "";
-				}
-				else if (glTF.accessors[primitive.color0].typeCount == 3)
-				{
-					macros["COLOR_0_VEC3"] = "";
-				}
-				else
-				{
-					return false;
-				}
-
-				macros["COLOR_0_LOC"] = std::to_string(attributeIndex);
-
-				//
-
 				const Accessor& accessor = glTF.accessors[primitive.color0];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
+
 				VkFormat format = VK_FORMAT_UNDEFINED;
 				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
 
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].stride = stride;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].location = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].format = format;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].offset = 0;
-
-				//
-
-				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
-				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
+				if (!allocationManager.addPrimitiveResource(primitive, attributeIndex, glTF.accessors[primitive.color0].typeCount, "COLOR_0", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				{
+					return false;
+				}
 
 				//
 
@@ -620,41 +486,20 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 			{
 				primitiveResource->joints0AttributeIndex = attributeIndex;
 
-				if (glTF.accessors[primitive.joints0].typeCount == 4)
-				{
-					macros["JOINTS_0_VEC4"] = "";
-				}
-				else
-				{
-					return false;
-				}
-
-				macros["JOINTS_0_LOC"] = std::to_string(attributeIndex);
-
-				//
-
 				const Accessor& accessor = glTF.accessors[primitive.joints0];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
+
 				VkFormat format = VK_FORMAT_UNDEFINED;
 				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
 
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].stride = stride;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].location = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].format = format;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].offset = 0;
-
-				//
-
-				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
-				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
+				if (!allocationManager.addPrimitiveResource(primitive, attributeIndex, glTF.accessors[primitive.joints0].typeCount, "JOINTS_0", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				{
+					return false;
+				}
 
 				//
 
@@ -665,41 +510,20 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 			{
 				primitiveResource->joints1AttributeIndex = attributeIndex;
 
-				if (glTF.accessors[primitive.joints1].typeCount == 4)
-				{
-					macros["JOINTS_1_VEC4"] = "";
-				}
-				else
-				{
-					return false;
-				}
-
-				macros["JOINTS_1_LOC"] = std::to_string(attributeIndex);
-
-				//
-
 				const Accessor& accessor = glTF.accessors[primitive.joints1];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
+
 				VkFormat format = VK_FORMAT_UNDEFINED;
 				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
 
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].stride = stride;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].location = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].format = format;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].offset = 0;
-
-				//
-
-				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
-				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
+				if (!allocationManager.addPrimitiveResource(primitive, attributeIndex, glTF.accessors[primitive.joints1].typeCount, "JOINTS_1", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				{
+					return false;
+				}
 
 				//
 
@@ -710,41 +534,20 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 			{
 				primitiveResource->weights0AttributeIndex = attributeIndex;
 
-				if (glTF.accessors[primitive.weights0].typeCount == 4)
-				{
-					macros["WEIGHTS_0_VEC4"] = "";
-				}
-				else
-				{
-					return false;
-				}
-
-				macros["WEIGHTS_0_LOC"] = std::to_string(attributeIndex);
-
-				//
-
 				const Accessor& accessor = glTF.accessors[primitive.weights0];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
+
 				VkFormat format = VK_FORMAT_UNDEFINED;
 				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
 
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].stride = stride;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].location = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].format = format;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].offset = 0;
-
-				//
-
-				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
-				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
+				if (!allocationManager.addPrimitiveResource(primitive, attributeIndex, glTF.accessors[primitive.weights0].typeCount, "WEIGHTS_0", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				{
+					return false;
+				}
 
 				//
 
@@ -755,41 +558,20 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 			{
 				primitiveResource->weights1AttributeIndex = attributeIndex;
 
-				if (glTF.accessors[primitive.weights1].typeCount == 4)
-				{
-					macros["WEIGHTS_1_VEC4"] = "";
-				}
-				else
-				{
-					return false;
-				}
-
-				macros["WEIGHTS_1_LOC"] = std::to_string(attributeIndex);
-
-				//
-
 				const Accessor& accessor = glTF.accessors[primitive.weights1];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
+
 				VkFormat format = VK_FORMAT_UNDEFINED;
 				if (!HelperVulkan::getFormat(format, accessor.componentTypeSize, accessor.componentTypeSigned, accessor.componentTypeInteger, accessor.typeCount, accessor.normalized))
 				{
 					return false;
 				}
 
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].stride = stride;
-				primitiveResource->vertexInputBindingDescriptions[attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].binding = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].location = attributeIndex;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].format = format;
-				primitiveResource->vertexInputAttributeDescriptions[attributeIndex].offset = 0;
-
-				//
-
-				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
-				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
+				if (!allocationManager.addPrimitiveResource(primitive, attributeIndex, glTF.accessors[primitive.weights1].typeCount, "WEIGHTS_1", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				{
+					return false;
+				}
 
 				//
 

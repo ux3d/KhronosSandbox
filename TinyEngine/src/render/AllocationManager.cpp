@@ -104,6 +104,50 @@ bool AllocationManager::finalizeMaterialResource(const Material& material, VkDev
 	return true;
 }
 
+bool AllocationManager::addPrimitiveResource(const Primitive& primitive, uint32_t attributeIndex, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset)
+{
+	PrimitiveResource* primitiveResource = resourceManager.getPrimitiveResource((uint64_t)&primitive);
+
+	//
+
+	if (typeCount == 2)
+	{
+		macros[prefix + "_VEC2"] = "";
+	}
+	else if (typeCount == 3)
+	{
+		macros[prefix + "_VEC3"] = "";
+	}
+	else if (typeCount == 4)
+	{
+		macros[prefix + "_VEC4"] = "";
+	}
+	else
+	{
+		return false;
+	}
+
+	macros[prefix + "_LOC"] = std::to_string(attributeIndex);
+
+	primitiveResource->vertexInputBindingDescriptions[attributeIndex].binding = attributeIndex;
+	primitiveResource->vertexInputBindingDescriptions[attributeIndex].stride = stride;
+	primitiveResource->vertexInputBindingDescriptions[attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+	primitiveResource->vertexInputAttributeDescriptions[attributeIndex].binding = attributeIndex;
+	primitiveResource->vertexInputAttributeDescriptions[attributeIndex].location = attributeIndex;
+	primitiveResource->vertexInputAttributeDescriptions[attributeIndex].format = format;
+	primitiveResource->vertexInputAttributeDescriptions[attributeIndex].offset = 0;
+
+	//
+
+	primitiveResource->vertexBuffers[attributeIndex] = buffer;
+	primitiveResource->vertexBuffersOffsets[attributeIndex] = offset;
+
+	//
+
+	return true;
+}
+
 bool AllocationManager::initPrimitive(const Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
 {
 	PrimitiveResource* primitiveResource = resourceManager.getPrimitiveResource((uint64_t)&primitive);
