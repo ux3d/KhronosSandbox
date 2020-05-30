@@ -106,7 +106,7 @@ bool AllocationManager::finalizeMaterialResource(const Material& material, VkDev
 
 bool AllocationManager::addPrimitiveResource(const Primitive& primitive, uint32_t attributeIndex, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset)
 {
-	PrimitiveResource* primitiveResource = resourceManager.getPrimitiveResource((uint64_t)&primitive);
+	GeometryModelResource* primitiveResource = resourceManager.getGeometryModelResource((uint64_t)&primitive);
 
 	//
 
@@ -150,7 +150,7 @@ bool AllocationManager::addPrimitiveResource(const Primitive& primitive, uint32_
 
 bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
 {
-	PrimitiveResource* primitiveResource = resourceManager.getPrimitiveResource((uint64_t)&primitive);
+	GeometryModelResource* primitiveResource = resourceManager.getGeometryModelResource((uint64_t)&primitive);
 
 	if (!primitiveResource)
 	{
@@ -461,7 +461,7 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 
 				for (const Primitive& currentPrimitive : glTF.meshes[node.mesh].primitives)
 				{
-					PrimitiveResource* currentPrimitiveResource = resourceManager.getPrimitiveResource((uint64_t)&currentPrimitive);
+					GeometryModelResource* currentPrimitiveResource = resourceManager.getGeometryModelResource((uint64_t)&currentPrimitive);
 
 					//
 

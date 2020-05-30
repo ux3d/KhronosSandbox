@@ -30,41 +30,45 @@ void ResourceManager::terminate(MaterialResource& materialResource, VkDevice dev
 	VulkanResource::destroyUniformBufferResource(device, materialResource.uniformBufferResource);
 }
 
-void ResourceManager::terminate(PrimitiveResource& primitiveResource, VkDevice device)
+void ResourceManager::terminate(GeometryResource& geometryResource, VkDevice device)
 {
-	if (primitiveResource.graphicsPipeline != VK_NULL_HANDLE)
+}
+
+void ResourceManager::terminate(GeometryModelResource& geometryModelResource, VkDevice device)
+{
+	if (geometryModelResource.graphicsPipeline != VK_NULL_HANDLE)
 	{
-		vkDestroyPipeline(device, primitiveResource.graphicsPipeline, nullptr);
-		primitiveResource.graphicsPipeline = VK_NULL_HANDLE;
+		vkDestroyPipeline(device, geometryModelResource.graphicsPipeline, nullptr);
+		geometryModelResource.graphicsPipeline = VK_NULL_HANDLE;
 	}
 
-	if (primitiveResource.pipelineLayout != VK_NULL_HANDLE)
+	if (geometryModelResource.pipelineLayout != VK_NULL_HANDLE)
 	{
-		vkDestroyPipelineLayout(device, primitiveResource.pipelineLayout, nullptr);
-		primitiveResource.pipelineLayout = VK_NULL_HANDLE;
+		vkDestroyPipelineLayout(device, geometryModelResource.pipelineLayout, nullptr);
+		geometryModelResource.pipelineLayout = VK_NULL_HANDLE;
 	}
 
-	if (primitiveResource.vertexShaderModule != VK_NULL_HANDLE)
+	if (geometryModelResource.vertexShaderModule != VK_NULL_HANDLE)
 	{
-		vkDestroyShaderModule(device, primitiveResource.vertexShaderModule, nullptr);
-		primitiveResource.vertexShaderModule = VK_NULL_HANDLE;
+		vkDestroyShaderModule(device, geometryModelResource.vertexShaderModule, nullptr);
+		geometryModelResource.vertexShaderModule = VK_NULL_HANDLE;
 	}
 
-	if (primitiveResource.fragmentShaderModule != VK_NULL_HANDLE)
+	if (geometryModelResource.fragmentShaderModule != VK_NULL_HANDLE)
 	{
-		vkDestroyShaderModule(device, primitiveResource.fragmentShaderModule, nullptr);
-		primitiveResource.fragmentShaderModule = VK_NULL_HANDLE;
+		vkDestroyShaderModule(device, geometryModelResource.fragmentShaderModule, nullptr);
+		geometryModelResource.fragmentShaderModule = VK_NULL_HANDLE;
 	}
 
 	//
 
-	VulkanResource::destroyStorageBufferResource(device, primitiveResource.targetPosition);
-	VulkanResource::destroyStorageBufferResource(device, primitiveResource.targetNormal);
-	VulkanResource::destroyStorageBufferResource(device, primitiveResource.targetTangent);
+	VulkanResource::destroyStorageBufferResource(device, geometryModelResource.targetPosition);
+	VulkanResource::destroyStorageBufferResource(device, geometryModelResource.targetNormal);
+	VulkanResource::destroyStorageBufferResource(device, geometryModelResource.targetTangent);
 
 	//
 
-	VulkanRaytraceResource::destroyBottomLevelResource(device, primitiveResource.bottomLevelResource);
+	VulkanRaytraceResource::destroyBottomLevelResource(device, geometryModelResource.bottomLevelResource);
 }
 
 void ResourceManager::terminate(GroupResource& groupResource, VkDevice device)
@@ -183,13 +187,24 @@ MaterialResource* ResourceManager::getMaterialResource(uint64_t materialHandle)
 	return &result->second;
 }
 
-PrimitiveResource* ResourceManager::getPrimitiveResource(uint64_t primitiveHandle)
+GeometryResource* ResourceManager::getGeometryResource(uint64_t geometryHandle)
 {
-	auto result = primitiveResources.find(primitiveHandle);
-	if (result == primitiveResources.end())
+	auto result = geometryResources.find(geometryHandle);
+	if (result == geometryResources.end())
 	{
-		primitiveResources[primitiveHandle] = PrimitiveResource();
-		return &primitiveResources[primitiveHandle];
+		geometryResources[geometryHandle] = GeometryResource();
+		return &geometryResources[geometryHandle];
+	}
+	return &result->second;
+}
+
+GeometryModelResource* ResourceManager::getGeometryModelResource(uint64_t geometryModelHandle)
+{
+	auto result = geometryModelResources.find(geometryModelHandle);
+	if (result == geometryModelResources.end())
+	{
+		geometryModelResources[geometryModelHandle] = GeometryModelResource();
+		return &geometryModelResources[geometryModelHandle];
 	}
 	return &result->second;
 }
@@ -369,12 +384,22 @@ bool ResourceManager::finalizeMaterialResource(uint64_t externalHandle, VkDevice
 	return true;
 }
 
-bool ResourceManager::finalizePrimitiveResource(uint64_t externalHandle)
+bool ResourceManager::finalizeGeometryResource(uint64_t externalHandle)
 {
-	auto it = primitiveResources.find(externalHandle);
-	if (it == primitiveResources.end())
+	auto it = geometryResources.find(externalHandle);
+	if (it == geometryResources.end())
 	{
-		primitiveResources[externalHandle] = PrimitiveResource();
+		geometryResources[externalHandle] = GeometryResource();
+	}
+	return true;
+}
+
+bool ResourceManager::finalizeGeometryModelResource(uint64_t externalHandle)
+{
+	auto it = geometryModelResources.find(externalHandle);
+	if (it == geometryModelResources.end())
+	{
+		geometryModelResources[externalHandle] = GeometryModelResource();
 	}
 	return true;
 }
@@ -451,16 +476,30 @@ bool ResourceManager::deleteMaterialResource(uint64_t materialHandle, VkDevice d
 	return true;
 }
 
-bool ResourceManager::deletePrimitiveResource(uint64_t primitiveHandle, VkDevice device)
+bool ResourceManager::deleteGeometryResource(uint64_t geometryHandle, VkDevice device)
 {
-	PrimitiveResource* primitiveResource = getPrimitiveResource(primitiveHandle);
+	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
 
-	if (!primitiveResource)
+	if (!geometryResource)
 	{
 		return false;
 	}
-	terminate(*primitiveResource, device);
-	primitiveResources.erase(primitiveHandle);
+	terminate(*geometryResource, device);
+	geometryResources.erase(geometryHandle);
+
+	return true;
+}
+
+bool ResourceManager::deleteGeometryModelResource(uint64_t geometryModelHandle, VkDevice device)
+{
+	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+
+	if (!geometryModelResource)
+	{
+		return false;
+	}
+	terminate(*geometryModelResource, device);
+	geometryModelResources.erase(geometryModelHandle);
 
 	return true;
 }
@@ -527,11 +566,17 @@ void ResourceManager::terminate(VkDevice device)
 	}
 	groupResources.clear();
 
-	for (auto it : primitiveResources)
+	for (auto it : geometryModelResources)
 	{
 		terminate(it.second, device);
 	}
-	primitiveResources.clear();
+	geometryModelResources.clear();
+
+	for (auto it : geometryResources)
+	{
+		terminate(it.second, device);
+	}
+	geometryResources.clear();
 
 	for (auto it : materialResources)
 	{

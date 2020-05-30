@@ -1,0 +1,7 @@
+#ifndef RESOURCE_GEOMETRYRESOURCE_H_
+#define RESOURCE_GEOMETRYRESOURCE_H_
+
+struct GeometryResource {
+};
+
+#endif /* RESOURCE_GEOMETRYRESOURCE_H_ */

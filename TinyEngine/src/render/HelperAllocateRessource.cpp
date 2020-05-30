@@ -319,7 +319,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 		{
 			const Primitive& primitive = mesh.primitives[k];
 
-			PrimitiveResource* primitiveResource = allocationManager.getResourceManager().getPrimitiveResource((uint64_t)&primitive);
+			GeometryModelResource* primitiveResource = allocationManager.getResourceManager().getGeometryModelResource((uint64_t)&primitive);
 			groupResource->primitiveHandles.push_back((uint64_t)&primitive);
 
 			std::map<std::string, std::string> macros;

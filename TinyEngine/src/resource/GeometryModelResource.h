@@ -1,12 +1,12 @@
-#ifndef RESOURCE_PRIMITIVERESOURCE_H_
-#define RESOURCE_PRIMITIVERESOURCE_H_
+#ifndef RESOURCE_GEOMETRYMODELRESOURCE_H_
+#define RESOURCE_GEOMETRYMODELRESOURCE_H_
 
 #include <cstdint>
 #include <vector>
 
 #include "../composite/Composite.h"
 
-struct PrimitiveResource {
+struct GeometryModelResource {
 	// Mapper helper
 
 	uint64_t materialHandle = 0;
@@ -50,4 +50,4 @@ struct PrimitiveResource {
 	int32_t weights1AttributeIndex = -1;
 };
 
-#endif /* RESOURCE_PRIMITIVERESOURCE_H_ */
+#endif /* RESOURCE_GEOMETRYMODELRESOURCE_H_ */

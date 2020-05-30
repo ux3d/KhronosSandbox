@@ -10,7 +10,7 @@ void HelperRasterize::draw(ResourceManager& resourceManager, WorldResource& worl
 
 		for (size_t k = 0; k < groupResource->primitiveHandles.size(); k++)
 		{
-			PrimitiveResource* primitiveResource = resourceManager.getPrimitiveResource(groupResource->primitiveHandles[k]);
+			GeometryModelResource* primitiveResource = resourceManager.getGeometryModelResource(groupResource->primitiveHandles[k]);
 
 			MaterialResource* materialResource = resourceManager.getMaterialResource(primitiveResource->materialHandle);
 
