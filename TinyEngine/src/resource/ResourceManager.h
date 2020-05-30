@@ -41,6 +41,10 @@ public:
 
 	//
 
+	VkBuffer getBuffer(uint64_t bufferViewHandle);
+
+	//
+
 	BufferViewResource* getBufferViewResource(uint64_t bufferViewHandle);
 	TextureResource* getTextureResource(uint64_t textureHandle);
 	MaterialResource* getMaterialResource(uint64_t materialHandle);

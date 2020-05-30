@@ -145,6 +145,11 @@ ResourceManager::~ResourceManager()
 {
 }
 
+VkBuffer ResourceManager::getBuffer(uint64_t bufferViewHandle)
+{
+	return getBufferViewResource(bufferViewHandle)->vertexBufferResource.bufferResource.buffer;
+}
+
 BufferViewResource* ResourceManager::getBufferViewResource(uint64_t bufferViewHandle)
 {
 	auto result = bufferViewResources.find(bufferViewHandle);

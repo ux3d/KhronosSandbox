@@ -19,7 +19,6 @@ public:
 
 	~AllocationManager();
 
-	VkBuffer getBuffer(const BufferView& bufferView);
 	VkBuffer getBuffer(const Accessor& accessor);
 
 	ResourceManager& getResourceManager();

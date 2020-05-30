@@ -10,21 +10,16 @@ AllocationManager::~AllocationManager()
 {
 }
 
-VkBuffer AllocationManager::getBuffer(const BufferView& bufferView)
-{
-	return resourceManager.getBufferViewResource((uint64_t)&bufferView)->vertexBufferResource.bufferResource.buffer;
-}
-
 VkBuffer AllocationManager::getBuffer(const Accessor& accessor)
 {
 	if (accessor.aliasedBuffer.byteLength > 0)
 	{
-		return getBuffer(accessor.aliasedBufferView);
+		return resourceManager.getBuffer((uint64_t)&accessor.aliasedBufferView);
 	}
 
 	if (accessor.sparse.count >= 1)
 	{
-		return getBuffer(accessor.sparse.bufferView);
+		return resourceManager.getBuffer((uint64_t)&accessor.sparse.bufferView);
 	}
 
 	if (accessor.pBufferView == nullptr)
@@ -32,7 +27,7 @@ VkBuffer AllocationManager::getBuffer(const Accessor& accessor)
 		return VK_NULL_HANDLE;
 	}
 
-	return getBuffer(*accessor.pBufferView);
+	return resourceManager.getBuffer((uint64_t)accessor.pBufferView);
 }
 
 ResourceManager& AllocationManager::getResourceManager()
