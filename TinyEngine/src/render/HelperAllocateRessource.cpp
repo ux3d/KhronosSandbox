@@ -1,26 +1,26 @@
-#include "HelperAllocateRessource.h"
+#include "../render/HelperAllocateRessource.h"
 
+#include "../render/HelperAccessResource.h"
 #include "../shader/Shader.h"
 
-#include "HelperAccessResource.h"
 
 HelperAllocateResource::HelperAllocateResource(uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView) :
 	width(width), height(height), physicalDevice(physicalDevice), device(device), queue(queue), commandPool(commandPool), renderPass(renderPass), samples(samples), imageView(imageView)
 {
 }
 
-bool HelperAllocateResource::initBuffers(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initBuffers(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
 {
 	return true;
 }
 
-bool HelperAllocateResource::initBufferViews(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initBufferViews(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.bufferViews.size(); i++)
 	{
 		const BufferView& bufferView = glTF.bufferViews[i];
 
-		if (!resourceManager.initBufferView(bufferView, physicalDevice, device, queue, commandPool, useRaytrace))
+		if (!allocationManager.initBufferView(bufferView, physicalDevice, device, queue, commandPool, useRaytrace))
 		{
 			return false;
 		}
@@ -29,7 +29,7 @@ bool HelperAllocateResource::initBufferViews(AllocationManager& resourceManager,
 	return true;
 }
 
-bool HelperAllocateResource::initAccessors(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initAccessors(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.accessors.size(); i++)
 	{
@@ -37,14 +37,14 @@ bool HelperAllocateResource::initAccessors(AllocationManager& resourceManager, c
 
 		if (accessor.aliasedBuffer.byteLength > 0)
 		{
-			if (!resourceManager.initBufferView(accessor.aliasedBufferView, physicalDevice, device, queue, commandPool, useRaytrace))
+			if (!allocationManager.initBufferView(accessor.aliasedBufferView, physicalDevice, device, queue, commandPool, useRaytrace))
 			{
 				return false;
 			}
 		}
 		else if (accessor.sparse.count >= 1)
 		{
-			if (!resourceManager.initBufferView(accessor.sparse.bufferView, physicalDevice, device, queue, commandPool, useRaytrace))
+			if (!allocationManager.initBufferView(accessor.sparse.bufferView, physicalDevice, device, queue, commandPool, useRaytrace))
 			{
 				return false;
 			}
@@ -54,17 +54,17 @@ bool HelperAllocateResource::initAccessors(AllocationManager& resourceManager, c
 	return true;
 }
 
-bool HelperAllocateResource::initImages(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initImages(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
 {
 	return true;
 }
 
-bool HelperAllocateResource::initSamplers(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initSamplers(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
 {
 	return true;
 }
 
-bool HelperAllocateResource::initTextures(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initTextures(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.textures.size(); i++)
 	{
@@ -85,7 +85,7 @@ bool HelperAllocateResource::initTextures(AllocationManager& resourceManager, co
 			textureResourceCreateInfo.samplerResourceCreateInfo.maxLod = glTF.samplers[texture.sampler].maxLod;
 		}
 
-		if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, *resourceManager.getTextureResource(&texture), textureResourceCreateInfo))
+		if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, *allocationManager.getTextureResource(&texture), textureResourceCreateInfo))
 		{
 			return false;
 		}
@@ -94,12 +94,12 @@ bool HelperAllocateResource::initTextures(AllocationManager& resourceManager, co
 	return true;
 }
 
-bool HelperAllocateResource::initMaterials(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.materials.size(); i++)
 	{
 		const Material& material = glTF.materials[i];
-		MaterialResource* materialResource = resourceManager.getMaterialResource(&material);
+		MaterialResource* materialResource = allocationManager.getMaterialResource(&material);
 
 		uint32_t binding = 0;
 
@@ -108,7 +108,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& resourceManager, c
 		// Metallic Roughness
 		if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
 		{
-			TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.pbrMetallicRoughness.baseColorTexture.index]);
+			TextureResource* textureResource = allocationManager.getTextureResource(&glTF.textures[material.pbrMetallicRoughness.baseColorTexture.index]);
 
 			//
 
@@ -138,7 +138,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& resourceManager, c
 
 		if (material.pbrMetallicRoughness.metallicRoughnessTexture.index >= 0)
 		{
-			TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index]);
+			TextureResource* textureResource = allocationManager.getTextureResource(&glTF.textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index]);
 
 			//
 
@@ -169,7 +169,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& resourceManager, c
 		// Base Material
 		if (material.emissiveTexture.index >= 0)
 		{
-			TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.emissiveTexture.index]);
+			TextureResource* textureResource = allocationManager.getTextureResource(&glTF.textures[material.emissiveTexture.index]);
 
 			//
 
@@ -199,7 +199,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& resourceManager, c
 
 		if (material.occlusionTexture.index >= 0)
 		{
-			TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.occlusionTexture.index]);
+			TextureResource* textureResource = allocationManager.getTextureResource(&glTF.textures[material.occlusionTexture.index]);
 
 			//
 
@@ -229,7 +229,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& resourceManager, c
 
 		if (material.normalTexture.index >= 0)
 		{
-			TextureResource* textureResource = resourceManager.getTextureResource(&glTF.textures[material.normalTexture.index]);
+			TextureResource* textureResource = allocationManager.getTextureResource(&glTF.textures[material.normalTexture.index]);
 
 			//
 
@@ -260,7 +260,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& resourceManager, c
 		//
 		//
 
-		WorldResource* gltfResource = resourceManager.getWorldResource();
+		WorldResource* gltfResource = allocationManager.getWorldResource(&glTF);
 
 		//
 
@@ -349,7 +349,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& resourceManager, c
 
 		//
 
-		if (!resourceManager.initMaterial(material, physicalDevice, device, descriptorSetLayoutBindings))
+		if (!allocationManager.initMaterial(material, physicalDevice, device, descriptorSetLayoutBindings))
 		{
 			return false;
 		}
@@ -383,7 +383,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& resourceManager, c
 	return true;
 }
 
-bool HelperAllocateResource::initMeshes(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
 {
 	//
 	// Load the shader code.
@@ -409,14 +409,14 @@ bool HelperAllocateResource::initMeshes(AllocationManager& resourceManager, cons
 		{
 			const Primitive& primitive = mesh.primitives[k];
 
-			PrimitiveResource* primitiveResource = resourceManager.getPrimitiveResource(&primitive);
+			PrimitiveResource* primitiveResource = allocationManager.getPrimitiveResource(&primitive);
 
 			std::map<std::string, std::string> macros;
 
 			VkCullModeFlags cullMode = VK_CULL_MODE_NONE;
 			if (primitive.material >= 0)
 			{
-				macros = resourceManager.getMaterialResource(&glTF.materials[primitive.material])->macros;
+				macros = allocationManager.getMaterialResource(&glTF.materials[primitive.material])->macros;
 			}
 
 			primitiveResource->vertexBuffers.resize(primitive.attributesCount);
@@ -468,7 +468,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& resourceManager, cons
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(resourceManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -513,7 +513,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& resourceManager, cons
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(resourceManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -558,7 +558,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& resourceManager, cons
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(resourceManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -603,7 +603,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& resourceManager, cons
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(resourceManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -648,7 +648,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& resourceManager, cons
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(resourceManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -697,7 +697,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& resourceManager, cons
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(resourceManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -742,7 +742,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& resourceManager, cons
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(resourceManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -787,7 +787,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& resourceManager, cons
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(resourceManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -832,7 +832,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& resourceManager, cons
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(resourceManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -877,7 +877,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& resourceManager, cons
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(resourceManager, accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager, accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -916,7 +916,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& resourceManager, cons
 				return false;
 			}
 
-			if (!resourceManager.initPrimitive(primitive, glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &resourceManager.getMaterialResource(&glTF.materials[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
+			if (!allocationManager.initPrimitive(primitive, glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &allocationManager.getMaterialResource(&glTF.materials[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
 			{
 				return false;
 			}
@@ -926,16 +926,16 @@ bool HelperAllocateResource::initMeshes(AllocationManager& resourceManager, cons
 	return true;
 }
 
-bool HelperAllocateResource::initNodes(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initNodes(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
 {
 	return true;
 }
 
-bool HelperAllocateResource::initScenes(AllocationManager& resourceManager, const GLTF& glTF, bool useRaytrace)
+bool HelperAllocateResource::initScenes(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.scenes.size(); i++)
 	{
-		if (!resourceManager.initScene(glTF.scenes[i], glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
+		if (!allocationManager.initScene(glTF.scenes[i], glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
 		{
 			return false;
 		}
@@ -944,9 +944,9 @@ bool HelperAllocateResource::initScenes(AllocationManager& resourceManager, cons
 	return true;
 }
 
-bool HelperAllocateResource::allocate(AllocationManager& resourceManager, const GLTF& glTF, const std::string& environment, bool useRaytrace)
+bool HelperAllocateResource::allocate(AllocationManager& allocationManager, const GLTF& glTF, const std::string& environment, bool useRaytrace)
 {
-	WorldResource* gltfResource = resourceManager.getWorldResource();
+	WorldResource* gltfResource = allocationManager.getWorldResource(&glTF);
 
 	// Diffuse
 
@@ -1009,70 +1009,70 @@ bool HelperAllocateResource::allocate(AllocationManager& resourceManager, const 
 
 	// Images
 
-	if (!initImages(resourceManager, glTF, useRaytrace))
+	if (!initImages(allocationManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Samplers
 
-	if (!initSamplers(resourceManager, glTF, useRaytrace))
+	if (!initSamplers(allocationManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Textures
 
-	if (!initTextures(resourceManager, glTF, useRaytrace))
+	if (!initTextures(allocationManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Materials
 
-	if (!initMaterials(resourceManager, glTF, useRaytrace))
+	if (!initMaterials(allocationManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Buffers
 
-	if (!initBuffers(resourceManager, glTF, useRaytrace))
+	if (!initBuffers(allocationManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// BufferViews
 
-	if (!initBufferViews(resourceManager, glTF, useRaytrace))
+	if (!initBufferViews(allocationManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Accessors
 
-	if (!initAccessors(resourceManager, glTF, useRaytrace))
+	if (!initAccessors(allocationManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Meshes
 
-	if (!initMeshes(resourceManager, glTF, useRaytrace))
+	if (!initMeshes(allocationManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Nodes
 
-	if (!initNodes(resourceManager, glTF, useRaytrace))
+	if (!initNodes(allocationManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Scenes
 
-	if (!initScenes(resourceManager, glTF, useRaytrace))
+	if (!initScenes(allocationManager, glTF, useRaytrace))
 	{
 		return false;
 	}

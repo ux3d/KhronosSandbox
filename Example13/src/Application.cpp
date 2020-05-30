@@ -16,7 +16,7 @@ bool Application::applicationInit()
 	}
 
 	HelperAllocateResource helperAllocateResource(width, height, physicalDevice, device, queue, commandPool, renderPass, samples);
-	if(!helperAllocateResource.allocate(resourceManager, glTF, environment))
+	if(!helperAllocateResource.allocate(allocationManager, glTF, environment))
 	{
 		return false;
 	}
@@ -42,7 +42,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	//
 
-	WorldResource* gltfResource = resourceManager.getWorldResource();
+	WorldResource* gltfResource = allocationManager.getWorldResource(&glTF);
 
 	//
 
@@ -95,8 +95,8 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	gltfResource->viewProjection.view = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	HelperRasterize::draw(resourceManager, glTF, commandBuffers[frameIndex], frameIndex, OPAQUE);
-	HelperRasterize::draw(resourceManager, glTF, commandBuffers[frameIndex], frameIndex, TRANSPARENT);
+	HelperRasterize::draw(allocationManager, glTF, commandBuffers[frameIndex], frameIndex, OPAQUE);
+	HelperRasterize::draw(allocationManager, glTF, commandBuffers[frameIndex], frameIndex, TRANSPARENT);
 
 	vkCmdEndRenderPass(commandBuffers[frameIndex]);
 
@@ -105,7 +105,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 void Application::applicationTerminate()
 {
-	resourceManager.terminate(device);
+	allocationManager.terminate(device);
 }
 
 // Public

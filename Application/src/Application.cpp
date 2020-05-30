@@ -33,7 +33,7 @@ bool Application::applicationInit()
 	}
 
 	HelperAllocateResource helperAllocateResource(width, height, physicalDevice, device, queue, commandPool, renderPass, samples, raytraceImageViewResource.imageView);
-	if(!helperAllocateResource.allocate(resourceManager, glTF, environment, true))
+	if(!helperAllocateResource.allocate(allocationManager, glTF, environment, true))
 	{
 		return false;
 	}
@@ -113,7 +113,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 		// Update view & projection
 		//
 
-		WorldResource* gltfResource = resourceManager.getWorldResource();
+		WorldResource* gltfResource = allocationManager.getWorldResource(&glTF);
 
 		gltfResource->raytrace.inverseViewProjection.inverseProjection = glm::inverse(Projection::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f));
 
@@ -125,7 +125,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 		gltfResource->raytrace.specularSamples = specularSamples;
 		gltfResource->raytrace.diffuseSamples = diffuseSamples;
 
-		HelperRaytrace::draw(resourceManager, glTF, commandBuffers[frameIndex], frameIndex, width, height);
+		HelperRaytrace::draw(allocationManager, glTF, commandBuffers[frameIndex], frameIndex, width, height);
 
 		//
 		// Prepare to to copy raytraced image.
@@ -167,7 +167,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	}
 	else
 	{
-		WorldResource* gltfResource = resourceManager.getWorldResource();
+		WorldResource* gltfResource = allocationManager.getWorldResource(&glTF);
 
 		//
 
@@ -220,8 +220,8 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 		gltfResource->viewProjection.view = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		HelperRasterize::draw(resourceManager, glTF, commandBuffers[frameIndex], frameIndex, OPAQUE);
-		HelperRasterize::draw(resourceManager, glTF, commandBuffers[frameIndex], frameIndex, TRANSPARENT);
+		HelperRasterize::draw(allocationManager, glTF, commandBuffers[frameIndex], frameIndex, OPAQUE);
+		HelperRasterize::draw(allocationManager, glTF, commandBuffers[frameIndex], frameIndex, TRANSPARENT);
 
 		vkCmdEndRenderPass(commandBuffers[frameIndex]);
 	}
@@ -254,7 +254,7 @@ void Application::applicationTerminate()
 {
 	VulkanResource::destroyImageViewResource(device, raytraceImageViewResource);
 
-	resourceManager.terminate(device);
+	allocationManager.terminate(device);
 }
 
 // Public
