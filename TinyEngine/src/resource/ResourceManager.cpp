@@ -67,6 +67,14 @@ void ResourceManager::terminate(PrimitiveResource& primitiveResource, VkDevice d
 	VulkanRaytraceResource::destroyBottomLevelResource(device, primitiveResource.bottomLevelResource);
 }
 
+void ResourceManager::terminate(GroupResource& groupResource, VkDevice device)
+{
+}
+
+void ResourceManager::terminate(InstanceResource& instanceResource, VkDevice device)
+{
+}
+
 void ResourceManager::terminate(SceneResource& sceneResource, VkDevice device)
 {
 	VulkanResource::destroyStorageBufferResource(device, sceneResource.instanceResourcesStorageBufferResource);
@@ -184,6 +192,28 @@ PrimitiveResource* ResourceManager::getPrimitiveResource(uint64_t primitiveHandl
 	return &result->second;
 }
 
+GroupResource* ResourceManager::getGroupResource(uint64_t groupHandle)
+{
+	auto result = groupResources.find(groupHandle);
+	if (result == groupResources.end())
+	{
+		groupResources[groupHandle] = GroupResource();
+		return &groupResources[groupHandle];
+	}
+	return &result->second;
+}
+
+InstanceResource* ResourceManager::getInstanceResource(uint64_t instanceHandle)
+{
+	auto result = instanceResources.find(instanceHandle);
+	if (result == instanceResources.end())
+	{
+		instanceResources[instanceHandle] = InstanceResource();
+		return &instanceResources[instanceHandle];
+	}
+	return &result->second;
+}
+
 SceneResource* ResourceManager::getSceneResource(uint64_t sceneHandle)
 {
 	auto result = sceneResources.find(sceneHandle);
@@ -206,7 +236,87 @@ WorldResource* ResourceManager::getWorldResource(uint64_t worldHandle)
 	return &result->second;
 }
 
-bool ResourceManager::resetBufferView(uint64_t bufferViewHandle, VkDevice device)
+uint64_t ResourceManager::createBufferViewResource(uint64_t externalHandle)
+{
+	auto result = bufferViewResources.find(externalHandle);
+	if (result == bufferViewResources.end())
+	{
+		bufferViewResources[externalHandle] = BufferViewResource();
+	}
+	return externalHandle;
+}
+
+uint64_t ResourceManager::createTextureResource(uint64_t externalHandle)
+{
+	auto result = textureResources.find(externalHandle);
+	if (result == textureResources.end())
+	{
+		textureResources[externalHandle] = TextureResource();
+	}
+	return externalHandle;
+}
+
+uint64_t ResourceManager::createMaterialResource(uint64_t externalHandle)
+{
+	auto result = materialResources.find(externalHandle);
+	if (result == materialResources.end())
+	{
+		materialResources[externalHandle] = MaterialResource();
+	}
+	return externalHandle;
+}
+
+uint64_t ResourceManager::createPrimitiveResource(uint64_t externalHandle)
+{
+	auto result = primitiveResources.find(externalHandle);
+	if (result == primitiveResources.end())
+	{
+		primitiveResources[externalHandle] = PrimitiveResource();
+	}
+	return externalHandle;
+}
+
+uint64_t ResourceManager::createGroupResource(uint64_t externalHandle)
+{
+	auto result = groupResources.find(externalHandle);
+	if (result == groupResources.end())
+	{
+		groupResources[externalHandle] = GroupResource();
+	}
+	return externalHandle;
+}
+
+uint64_t ResourceManager::createInstanceResource(uint64_t externalHandle)
+{
+	auto result = instanceResources.find(externalHandle);
+	if (result == instanceResources.end())
+	{
+		instanceResources[externalHandle] = InstanceResource();
+	}
+	return externalHandle;
+}
+
+uint64_t ResourceManager::createSceneResource(uint64_t externalHandle)
+{
+	auto result = sceneResources.find(externalHandle);
+	if (result == sceneResources.end())
+	{
+		sceneResources[externalHandle] = SceneResource();
+	}
+	return externalHandle;
+}
+
+uint64_t ResourceManager::createWorldResource(uint64_t externalHandle)
+{
+	auto result = worldResources.find(externalHandle);
+	if (result == worldResources.end())
+	{
+		worldResources[externalHandle] = WorldResource();
+	}
+	return externalHandle;
+}
+
+bool ResourceManager::deleteBufferViewResource(uint64_t bufferViewHandle, VkDevice device)
 {
 	BufferViewResource* bufferViewResource = getBufferViewResource(bufferViewHandle);
 
@@ -215,11 +325,12 @@ bool ResourceManager::resetBufferView(uint64_t bufferViewHandle, VkDevice device
 		return false;
 	}
 	terminate(*bufferViewResource, device);
+	bufferViewResources.erase(bufferViewHandle);
 
 	return true;
 }
 
-bool ResourceManager::resetTexture(uint64_t textureHandle, VkDevice device)
+bool ResourceManager::deleteTextureResource(uint64_t textureHandle, VkDevice device)
 {
 	TextureResource* textureResource = getTextureResource(textureHandle);
 
@@ -228,11 +339,12 @@ bool ResourceManager::resetTexture(uint64_t textureHandle, VkDevice device)
 		return false;
 	}
 	terminate(*textureResource, device);
+	textureResources.erase(textureHandle);
 
 	return true;
 }
 
-bool ResourceManager::resetMaterial(uint64_t materialHandle, VkDevice device)
+bool ResourceManager::deleteMaterialResource(uint64_t materialHandle, VkDevice device)
 {
 	MaterialResource* materialResource = getMaterialResource(materialHandle);
 
@@ -241,11 +353,12 @@ bool ResourceManager::resetMaterial(uint64_t materialHandle, VkDevice device)
 		return false;
 	}
 	terminate(*materialResource, device);
+	materialResources.erase(materialHandle);
 
 	return true;
 }
 
-bool ResourceManager::resetPrimitive(uint64_t primitiveHandle, VkDevice device)
+bool ResourceManager::deletePrimitiveResource(uint64_t primitiveHandle, VkDevice device)
 {
 	PrimitiveResource* primitiveResource = getPrimitiveResource(primitiveHandle);
 
@@ -254,11 +367,40 @@ bool ResourceManager::resetPrimitive(uint64_t primitiveHandle, VkDevice device)
 		return false;
 	}
 	terminate(*primitiveResource, device);
+	primitiveResources.erase(primitiveHandle);
 
 	return true;
 }
 
-bool ResourceManager::resetScene(uint64_t sceneHandle, VkDevice device)
+bool ResourceManager::deleteGroupResource(uint64_t groupHandle, VkDevice device)
+{
+	GroupResource* groupResource = getGroupResource(groupHandle);
+
+	if (!groupResource)
+	{
+		return false;
+	}
+	terminate(*groupResource, device);
+	groupResources.erase(groupHandle);
+
+	return true;
+}
+
+bool ResourceManager::deleteInstanceResource(uint64_t instanceHandle, VkDevice device)
+{
+	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
+
+	if (!instanceResource)
+	{
+		return false;
+	}
+	terminate(*instanceResource, device);
+	instanceResources.erase(instanceHandle);
+
+	return true;
+}
+
+bool ResourceManager::deleteSceneResource(uint64_t sceneHandle, VkDevice device)
 {
 	SceneResource* sceneResource = getSceneResource(sceneHandle);
 
@@ -267,11 +409,12 @@ bool ResourceManager::resetScene(uint64_t sceneHandle, VkDevice device)
 		return false;
 	}
 	terminate(*sceneResource, device);
+	sceneResources.erase(sceneHandle);
 
 	return true;
 }
 
-bool ResourceManager::resetWorld(uint64_t worldHandle, VkDevice device)
+bool ResourceManager::deleteWorldResource(uint64_t worldHandle, VkDevice device)
 {
 	WorldResource* worldResource = getWorldResource(worldHandle);
 
@@ -280,12 +423,37 @@ bool ResourceManager::resetWorld(uint64_t worldHandle, VkDevice device)
 		return false;
 	}
 	terminate(*worldResource, device);
+	worldResources.erase(worldHandle);
 
 	return true;
 }
 
 void ResourceManager::terminate(VkDevice device)
 {
+	for (auto it : worldResources)
+	{
+		terminate(it.second, device);
+	}
+	worldResources.clear();
+
+	for (auto it : sceneResources)
+	{
+		terminate(it.second, device);
+	}
+	sceneResources.clear();
+
+	for (auto it : instanceResources)
+	{
+		terminate(it.second, device);
+	}
+	instanceResources.clear();
+
+	for (auto it : groupResources)
+	{
+		terminate(it.second, device);
+	}
+	groupResources.clear();
+
 	for (auto it : primitiveResources)
 	{
 		terminate(it.second, device);
@@ -298,27 +466,15 @@ void ResourceManager::terminate(VkDevice device)
 	}
 	materialResources.clear();
 
-	for (auto it : bufferViewResources)
-	{
-		terminate(it.second, device);
-	}
-	bufferViewResources.clear();
-
 	for (auto it : textureResources)
 	{
 		terminate(it.second, device);
 	}
 	textureResources.clear();
 
-	for (auto it : sceneResources)
+	for (auto it : bufferViewResources)
 	{
 		terminate(it.second, device);
 	}
-	sceneResources.clear();
-
-	for (auto it : worldResources)
-	{
-		terminate(it.second, device);
-	}
-	worldResources.clear();
+	bufferViewResources.clear();
 }

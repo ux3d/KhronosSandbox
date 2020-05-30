@@ -1,5 +1,5 @@
-#ifndef RENDER_SCENERESOURCE_H_
-#define RENDER_SCENERESOURCE_H_
+#ifndef RESOURCE_SCENERESOURCE_H_
+#define RESOURCE_SCENERESOURCE_H_
 
 #include <vector>
 
@@ -35,4 +35,4 @@ struct SceneResource {
 	VkDeviceSize size = 0;
 };
 
-#endif /* RENDER_SCENERESOURCE_H_ */
+#endif /* RESOURCE_SCENERESOURCE_H_ */

@@ -1,5 +1,5 @@
-#ifndef RENDER_PRIMITIVERESOURCE_H_
-#define RENDER_PRIMITIVERESOURCE_H_
+#ifndef RESOURCE_PRIMITIVERESOURCE_H_
+#define RESOURCE_PRIMITIVERESOURCE_H_
 
 #include <cstdint>
 #include <vector>
@@ -40,4 +40,4 @@ struct PrimitiveResource {
 	int32_t weights1AttributeIndex = -1;
 };
 
-#endif /* RENDER_PRIMITIVERESOURCE_H_ */
+#endif /* RESOURCE_PRIMITIVERESOURCE_H_ */

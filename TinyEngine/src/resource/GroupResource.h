@@ -1,0 +1,7 @@
+#ifndef RESOURCE_GROUPRESOURCE_H_
+#define RESOURCE_GROUPRESOURCE_H_
+
+struct GroupResource {
+};
+
+#endif /* RESOURCE_GROUPRESOURCE_H_ */

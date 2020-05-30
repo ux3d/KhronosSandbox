@@ -1,5 +1,5 @@
-#ifndef RENDER_WORLDRESOURCE_H_
-#define RENDER_WORLDRESOURCE_H_
+#ifndef RESOURCE_WORLDRESOURCE_H_
+#define RESOURCE_WORLDRESOURCE_H_
 
 #include <cstdint>
 
@@ -88,4 +88,4 @@ struct WorldResource {
 	RaytraceUniformPushConstant raytrace = {};
 };
 
-#endif /* RENDER_WORLDRESOURCE_H_ */
+#endif /* RESOURCE_WORLDRESOURCE_H_ */

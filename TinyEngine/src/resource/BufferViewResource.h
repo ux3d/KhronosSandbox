@@ -1,5 +1,5 @@
-#ifndef RENDER_BUFFERVIEWRESOURCE_H_
-#define RENDER_BUFFERVIEWRESOURCE_H_
+#ifndef RESOURCE_BUFFERVIEWRESOURCE_H_
+#define RESOURCE_BUFFERVIEWRESOURCE_H_
 
 #include "../composite/Composite.h"
 
@@ -9,4 +9,4 @@ struct BufferViewResource {
 	VertexBufferResource vertexBufferResource = {};
 };
 
-#endif /* RENDER_BUFFERVIEWRESOURCE_H_ */
+#endif /* RESOURCE_BUFFERVIEWRESOURCE_H_ */

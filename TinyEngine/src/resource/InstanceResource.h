@@ -1,0 +1,7 @@
+#ifndef RESOURCE_INSTANCERESOURCE_H_
+#define RESOURCE_INSTANCERESOURCE_H_
+
+struct InstanceResource {
+};
+
+#endif /* RESOURCE_INSTANCERESOURCE_H_ */

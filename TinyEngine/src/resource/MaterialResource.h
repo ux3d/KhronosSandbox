@@ -1,5 +1,5 @@
-#ifndef RENDER_MATERIALRESOURCE_H_
-#define RENDER_MATERIALRESOURCE_H_
+#ifndef RESOURCE_MATERIALRESOURCE_H_
+#define RESOURCE_MATERIALRESOURCE_H_
 
 #include <map>
 #include <string>
@@ -23,4 +23,4 @@ struct MaterialResource {
 
 };
 
-#endif /* RENDER_MATERIALRESOURCE_H_ */
+#endif /* RESOURCE_MATERIALRESOURCE_H_ */
