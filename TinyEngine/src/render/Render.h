@@ -2,7 +2,6 @@
 #define RENDER_RENDER_H_
 
 #include "AllocationManager.h"
-#include "HelperAccessResource.h"
 #include "HelperAllocateRessource.h"
 
 #endif /* RENDER_RENDER_H_ */

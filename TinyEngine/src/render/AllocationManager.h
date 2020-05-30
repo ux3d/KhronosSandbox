@@ -19,6 +19,9 @@ public:
 
 	~AllocationManager();
 
+	VkBuffer getBuffer(const BufferView& bufferView);
+	VkBuffer getBuffer(const Accessor& accessor);
+
 	ResourceManager& getResourceManager();
 
 	bool initBufferView(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace = false);

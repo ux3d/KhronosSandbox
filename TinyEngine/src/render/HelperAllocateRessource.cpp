@@ -2,8 +2,6 @@
 
 #include "../shader/Shader.h"
 
-#include "HelperAccessResource.h"
-
 HelperAllocateResource::HelperAllocateResource(uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView) :
 	width(width), height(height), physicalDevice(physicalDevice), device(device), queue(queue), commandPool(commandPool), renderPass(renderPass), samples(samples), imageView(imageView)
 {
@@ -471,7 +469,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -516,7 +514,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -561,7 +559,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -606,7 +604,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -651,7 +649,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -700,7 +698,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -745,7 +743,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -790,7 +788,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -835,7 +833,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
@@ -880,7 +878,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 				//
 
-				primitiveResource->vertexBuffers[attributeIndex] = HelperAccessResource::getBuffer(allocationManager.getResourceManager(), accessor);
+				primitiveResource->vertexBuffers[attributeIndex] = allocationManager.getBuffer(accessor);
 				primitiveResource->vertexBuffersOffsets[attributeIndex] = HelperAccess::getOffset(accessor);
 
 				//
