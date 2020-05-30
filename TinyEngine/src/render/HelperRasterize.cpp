@@ -2,88 +2,58 @@
 
 #include "HelperAccessResource.h"
 
-void HelperRasterize::draw(ResourceManager& resourceManager, const Primitive& primitive, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode, const glm::mat4& worldMatrix)
+void HelperRasterize::draw(ResourceManager& resourceManager, WorldResource& worldResource, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
 {
-	PrimitiveResource* primitiveResource = resourceManager.getPrimitiveResource((uint64_t)&primitive);
-
-	//
-
-	MaterialResource* materialResource = resourceManager.getMaterialResource(primitiveResource->materialHandle);
-	if (materialResource->alphaMode == 2 && drawMode == OPAQUE)
+	for (size_t i = 0; i < worldResource.instanceHandles.size(); i++)
 	{
-		return;
-	}
-	else if (materialResource->alphaMode != 2 && drawMode == TRANSPARENT)
-	{
-		return;
-	}
+		InstanceResource* instanceResource = resourceManager.getInstanceResource(worldResource.instanceHandles[i]);
 
-	//
+		GroupResource* groupResource = resourceManager.getGroupResource(instanceResource->groupHandle);
 
-	WorldResource* worldResource = resourceManager.getWorldResource((uint64_t)&glTF);
+		for (size_t k = 0; k < groupResource->primitiveHandles.size(); k++)
+		{
+			PrimitiveResource* primitiveResource = resourceManager.getPrimitiveResource(groupResource->primitiveHandles[k]);
 
-	//
+			MaterialResource* materialResource = resourceManager.getMaterialResource(primitiveResource->materialHandle);
 
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->graphicsPipeline);
+			//
 
-	if (materialResource->descriptorSet != VK_NULL_HANDLE)
-	{
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->pipelineLayout, 0, 1, &materialResource->descriptorSet, 0, nullptr);
-	}
+			if (materialResource->alphaMode == 2 && drawMode == OPAQUE)
+			{
+				return;
+			}
+			else if (materialResource->alphaMode != 2 && drawMode == TRANSPARENT)
+			{
+				return;
+			}
 
-	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(worldResource->viewProjection), &worldResource->viewProjection);
-	vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(worldResource->viewProjection), sizeof(worldMatrix), &worldMatrix);
+			//
 
-	if (primitiveResource->indexBuffer != VK_NULL_HANDLE)
-	{
-		vkCmdBindIndexBuffer(commandBuffer, primitiveResource->indexBuffer, primitiveResource->indexOffset, primitiveResource->indexType);
-	}
+			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->graphicsPipeline);
 
-	vkCmdBindVertexBuffers(commandBuffer, 0, primitiveResource->vertexBuffers.size(), primitiveResource->vertexBuffers.data(), primitiveResource->vertexBuffersOffsets.data());
+			if (materialResource->descriptorSet != VK_NULL_HANDLE)
+			{
+				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->pipelineLayout, 0, 1, &materialResource->descriptorSet, 0, nullptr);
+			}
 
-	if (primitiveResource->indexBuffer != VK_NULL_HANDLE)
-	{
-		vkCmdDrawIndexed(commandBuffer, primitiveResource->count, 1, 0, 0, 0);
-	}
-	else
-	{
-		vkCmdDraw(commandBuffer, primitiveResource->count, 1, 0, 0);
-	}
-}
+			vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(worldResource.viewProjection), &worldResource.viewProjection);
+			vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(worldResource.viewProjection), sizeof(instanceResource->worldMatrix), &instanceResource->worldMatrix);
 
-void HelperRasterize::draw(ResourceManager& resourceManager, const Mesh& mesh, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode, const glm::mat4& worldMatrix)
-{
-	for (size_t i = 0; i < mesh.primitives.size(); i++)
-	{
-		HelperRasterize::draw(resourceManager, mesh.primitives[i], glTF, commandBuffer, frameIndex, drawMode, worldMatrix);
-	}
-}
+			if (primitiveResource->indexBuffer != VK_NULL_HANDLE)
+			{
+				vkCmdBindIndexBuffer(commandBuffer, primitiveResource->indexBuffer, primitiveResource->indexOffset, primitiveResource->indexType);
+			}
 
-void HelperRasterize::draw(ResourceManager& resourceManager, const Node& node, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
-{
-	if (node.mesh >= 0)
-	{
-		HelperRasterize::draw(resourceManager, glTF.meshes[node.mesh], glTF, commandBuffer, frameIndex, drawMode, node.worldMatrix);
-	}
+			vkCmdBindVertexBuffers(commandBuffer, 0, primitiveResource->vertexBuffers.size(), primitiveResource->vertexBuffers.data(), primitiveResource->vertexBuffersOffsets.data());
 
-	for (size_t i = 0; i < node.children.size(); i++)
-	{
-		HelperRasterize::draw(resourceManager, glTF.nodes[node.children[i]], glTF, commandBuffer, frameIndex, drawMode);
-	}
-}
-
-void HelperRasterize::draw(ResourceManager& resourceManager, const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
-{
-	for (size_t i = 0; i < scene.nodes.size(); i++)
-	{
-		HelperRasterize::draw(resourceManager, glTF.nodes[scene.nodes[i]], glTF, commandBuffer, frameIndex, drawMode);
-	}
-}
-
-void HelperRasterize::draw(ResourceManager& resourceManager, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
-{
-	if (glTF.defaultScene < glTF.scenes.size())
-	{
-		HelperRasterize::draw(resourceManager, glTF.scenes[glTF.defaultScene], glTF, commandBuffer, frameIndex, drawMode);
+			if (primitiveResource->indexBuffer != VK_NULL_HANDLE)
+			{
+				vkCmdDrawIndexed(commandBuffer, primitiveResource->count, 1, 0, 0, 0);
+			}
+			else
+			{
+				vkCmdDraw(commandBuffer, primitiveResource->count, 1, 0, 0);
+			}
+		}
 	}
 }

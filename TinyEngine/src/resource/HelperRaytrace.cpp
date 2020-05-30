@@ -1,6 +1,6 @@
 #include "HelperRaytrace.h"
 
-void HelperRaytrace::draw(const ResourceManager& resourceManager, const WorldResource& worldResource, VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height)
+void HelperRaytrace::draw(ResourceManager& resourceManager, WorldResource& worldResource, VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height)
 {
 	vkCmdPushConstants(commandBuffer, worldResource.raytracePipelineLayout, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, 0, sizeof(worldResource.raytrace), &worldResource.raytrace);
 

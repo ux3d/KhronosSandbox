@@ -405,11 +405,14 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 	{
 		const Mesh& mesh = glTF.meshes[i];
 
+		GroupResource* groupResource = allocationManager.getResourceManager().getGroupResource((uint64_t)&mesh);
+
 		for (size_t k = 0; k < mesh.primitives.size(); k++)
 		{
 			const Primitive& primitive = mesh.primitives[k];
 
 			PrimitiveResource* primitiveResource = allocationManager.getResourceManager().getPrimitiveResource((uint64_t)&primitive);
+			groupResource->primitiveHandles.push_back((uint64_t)&primitive);
 
 			std::map<std::string, std::string> macros;
 
@@ -928,6 +931,20 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 bool HelperAllocateResource::initNodes(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
 {
+	for (size_t i = 0; i < glTF.nodes.size(); i++)
+	{
+		const Node& node = glTF.nodes[i];
+
+		if (node.mesh >= 0)
+		{
+			const Mesh& mesh = glTF.meshes[node.mesh];
+
+			InstanceResource* instanceResource = allocationManager.getResourceManager().getInstanceResource((uint64_t)&node);
+			instanceResource->worldMatrix = node.worldMatrix;
+			instanceResource->groupHandle = (uint64_t)&mesh;
+		}
+	}
+
 	return true;
 }
 
@@ -1061,6 +1078,13 @@ bool HelperAllocateResource::allocate(AllocationManager& allocationManager, cons
 
 	if (glTF.defaultScene < glTF.scenes.size())
 	{
+		WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource((uint64_t)&glTF);
+
+		for (size_t i = 0; i < glTF.scenes[glTF.defaultScene].nodes.size(); i++)
+		{
+			gltfResource->instanceHandles.push_back((uint64_t)&glTF.nodes[glTF.scenes[glTF.defaultScene].nodes[i]]);
+		}
+
 		if (!allocationManager.initScene(glTF.scenes[glTF.defaultScene], glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
 		{
 			return false;
