@@ -197,7 +197,7 @@ WorldResource* ResourceManager::getWorldResource()
 	return &worldResource;
 }
 
-bool ResourceManager::initBufferView(const BufferView& bufferView, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
+bool ResourceManager::initBufferView(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
 {
 	BufferViewResource* bufferViewResource = getBufferViewResource(&bufferView);
 
@@ -247,7 +247,7 @@ bool ResourceManager::resetBufferView(const BufferView& bufferView, VkDevice dev
 	return true;
 }
 
-bool ResourceManager::initMaterial(const Material& material, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
+bool ResourceManager::initMaterial(const Material& material, VkPhysicalDevice physicalDevice, VkDevice device, const std::vector<VkDescriptorSetLayoutBinding>& descriptorSetLayoutBindings)
 {
 	MaterialResource* materialResource = getMaterialResource(&material);
 

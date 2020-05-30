@@ -20,7 +20,7 @@ bool HelperAllocateResource::initBufferViews(ResourceManager& resourceManager, c
 	{
 		const BufferView& bufferView = glTF.bufferViews[i];
 
-		if (!resourceManager.initBufferView(bufferView, glTF, physicalDevice, device, queue, commandPool, useRaytrace))
+		if (!resourceManager.initBufferView(bufferView, physicalDevice, device, queue, commandPool, useRaytrace))
 		{
 			return false;
 		}
@@ -37,14 +37,14 @@ bool HelperAllocateResource::initAccessors(ResourceManager& resourceManager, con
 
 		if (accessor.aliasedBuffer.byteLength > 0)
 		{
-			if (!resourceManager.initBufferView(accessor.aliasedBufferView, glTF, physicalDevice, device, queue, commandPool, useRaytrace))
+			if (!resourceManager.initBufferView(accessor.aliasedBufferView, physicalDevice, device, queue, commandPool, useRaytrace))
 			{
 				return false;
 			}
 		}
 		else if (accessor.sparse.count >= 1)
 		{
-			if (!resourceManager.initBufferView(accessor.sparse.bufferView, glTF, physicalDevice, device, queue, commandPool, useRaytrace))
+			if (!resourceManager.initBufferView(accessor.sparse.bufferView, physicalDevice, device, queue, commandPool, useRaytrace))
 			{
 				return false;
 			}
@@ -349,7 +349,7 @@ bool HelperAllocateResource::initMaterials(ResourceManager& resourceManager, con
 
 		//
 
-		if (!resourceManager.initMaterial(material, glTF, physicalDevice, device, descriptorSetLayoutBindings))
+		if (!resourceManager.initMaterial(material, physicalDevice, device, descriptorSetLayoutBindings))
 		{
 			return false;
 		}
