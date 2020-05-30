@@ -2,6 +2,7 @@
 #define RESOURCE_WORLDRESOURCE_H_
 
 #include <cstdint>
+#include <vector>
 
 #include "../composite/Composite.h"
 #include "../math/Math.h"
@@ -75,6 +76,10 @@ struct RaytracePrimitiveUniformBuffer {
 };
 
 struct WorldResource {
+	// Mapper helper
+
+	std::vector<uint64_t> instanceHandles;
+
 	// Rasterize helper
 
 	ViewProjectionUniformPushConstant viewProjection = {};

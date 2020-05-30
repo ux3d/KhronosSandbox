@@ -7,6 +7,8 @@
 
 struct InstanceResource {
 
+	// Mapper helper
+
 	uint64_t groupHandle;
 
 	glm::mat4 worldMatrix;

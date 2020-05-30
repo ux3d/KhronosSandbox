@@ -125,7 +125,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 		gltfResource->raytrace.specularSamples = specularSamples;
 		gltfResource->raytrace.diffuseSamples = diffuseSamples;
 
-		HelperRaytrace::draw(allocationManager.getResourceManager(), glTF, commandBuffers[frameIndex], frameIndex, width, height);
+		HelperRaytrace::draw(allocationManager.getResourceManager(), *allocationManager.getResourceManager().getWorldResource((uint64_t)&glTF), commandBuffers[frameIndex], frameIndex, width, height);
 
 		//
 		// Prepare to to copy raytraced image.

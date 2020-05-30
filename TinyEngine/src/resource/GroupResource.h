@@ -6,6 +6,8 @@
 
 struct GroupResource {
 
+	// Mapper helper
+
 	std::vector<uint64_t> primitiveHandles;
 
 };

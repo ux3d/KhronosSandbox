@@ -1,10 +1,9 @@
 #ifndef RENDER_RENDER_H_
 #define RENDER_RENDER_H_
 
-#include "../render/AllocationManager.h"
-#include "../render/HelperAccessResource.h"
-#include "../render/HelperAllocateRessource.h"
-#include "../render/HelperRasterize.h"
-#include "../render/HelperRaytrace.h"
+#include "AllocationManager.h"
+#include "HelperAccessResource.h"
+#include "HelperAllocateRessource.h"
+#include "HelperRasterize.h"
 
 #endif /* RENDER_RENDER_H_ */
