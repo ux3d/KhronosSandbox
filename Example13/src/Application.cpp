@@ -44,6 +44,14 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource((uint64_t)&glTF);
 
+	// Update the animations to the renderer.
+	for (size_t i = 0; i < glTF.nodes.size(); i++)
+	{
+		const Node& node = glTF.nodes[i];
+		InstanceResource* instanceResource = allocationManager.getResourceManager().getInstanceResource((uint64_t)&node);
+		instanceResource->worldMatrix = node.worldMatrix;
+	}
+
 	//
 
 	VkClearColorValue resolveClearColorValue = {};
