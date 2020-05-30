@@ -6,7 +6,7 @@
 #include "../common/Common.h"
 #include "../gltf/GLTF.h"
 
-#include "../render/AllocationManager.h"
+#include "AllocationManager.h"
 
 class HelperAllocateResource {
 

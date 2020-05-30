@@ -1,4 +1,4 @@
-#include "../render/HelperAccessResource.h"
+#include "HelperAccessResource.h"
 
 VkBuffer HelperAccessResource::getBuffer(ResourceManager& resourceManager, const BufferView& bufferView)
 {

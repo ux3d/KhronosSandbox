@@ -1,6 +1,7 @@
 #ifndef RESOURCE_MATERIALRESOURCE_H_
 #define RESOURCE_MATERIALRESOURCE_H_
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
