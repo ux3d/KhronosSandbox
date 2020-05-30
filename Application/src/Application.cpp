@@ -113,7 +113,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 		// Update view & projection
 		//
 
-		GltfResource* gltfResource = resourceManager.getGltfResource();
+		WorldResource* gltfResource = resourceManager.getWorldResource();
 
 		gltfResource->raytrace.inverseViewProjection.inverseProjection = glm::inverse(Projection::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f));
 
@@ -167,7 +167,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	}
 	else
 	{
-		GltfResource* gltfResource = resourceManager.getGltfResource();
+		WorldResource* gltfResource = resourceManager.getWorldResource();
 
 		//
 

@@ -7,11 +7,11 @@
 #include "../composite/Composite.h"
 #include "../gltf/GLTF.h"
 
-#include "BufferViewResource.h"
-#include "MaterialResource.h"
-#include "PrimitiveResource.h"
-#include "SceneResource.h"
-#include "GltfResource.h"
+#include "../render/BufferViewResource.h"
+#include "../render/MaterialResource.h"
+#include "../render/PrimitiveResource.h"
+#include "../render/SceneResource.h"
+#include "../render/WorldResource.h"
 
 class ResourceManager {
 
@@ -22,7 +22,7 @@ private:
 	std::map<const Material*, MaterialResource> materialResources;
 	std::map<const Primitive*, PrimitiveResource> primitiveResources;
 	std::map<const Scene*, SceneResource> sceneResources;
-	GltfResource gltfResource;
+	WorldResource worldResource;
 
 	void terminate(BufferViewResource& bufferViewResource, VkDevice device);
 	void terminate(TextureResource& textureResource, VkDevice device);
@@ -43,7 +43,7 @@ public:
 	MaterialResource* getMaterialResource(const Material* material);
 	PrimitiveResource* getPrimitiveResource(const Primitive* primitive);
 	SceneResource* getSceneResource(const Scene* scene);
-	GltfResource* getGltfResource();
+	WorldResource* getWorldResource();
 
 	//
 

@@ -17,7 +17,7 @@
 #include "composite/Composite.h"
 #include "gltf/GLTF.h"
 
-#include "render/Render.h"
+#include "gltf_render/Render.h"
 #include "wsi/Wsi.h"
 
 class TinyEngine

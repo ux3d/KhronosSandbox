@@ -2,7 +2,7 @@
 
 void HelperRaytrace::draw(ResourceManager& resourceManager, const Scene& scene, const GLTF& glTF, VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height)
 {
-	GltfResource* gltfResource = resourceManager.getGltfResource();
+	WorldResource* gltfResource = resourceManager.getWorldResource();
 	SceneResource* defaultSceneResource = resourceManager.getSceneResource(&scene);
 
 	//

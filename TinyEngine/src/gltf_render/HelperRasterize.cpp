@@ -15,7 +15,7 @@ void HelperRasterize::draw(ResourceManager& resourceManager, const Primitive& pr
 
 	//
 
-	GltfResource* gltfResource = resourceManager.getGltfResource();
+	WorldResource* gltfResource = resourceManager.getWorldResource();
 
 	//
 

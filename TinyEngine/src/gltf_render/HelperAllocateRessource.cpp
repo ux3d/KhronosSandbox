@@ -260,7 +260,7 @@ bool HelperAllocateResource::initMaterials(ResourceManager& resourceManager, con
 		//
 		//
 
-		GltfResource* gltfResource = resourceManager.getGltfResource();
+		WorldResource* gltfResource = resourceManager.getWorldResource();
 
 		//
 
@@ -946,7 +946,7 @@ bool HelperAllocateResource::initScenes(ResourceManager& resourceManager, const 
 
 bool HelperAllocateResource::allocate(ResourceManager& resourceManager, const GLTF& glTF, const std::string& environment, bool useRaytrace)
 {
-	GltfResource* gltfResource = resourceManager.getGltfResource();
+	WorldResource* gltfResource = resourceManager.getWorldResource();
 
 	// Diffuse
 

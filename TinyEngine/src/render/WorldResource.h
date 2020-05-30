@@ -1,5 +1,5 @@
-#ifndef RENDER_GLTFRESOURCE_H_
-#define RENDER_GLTFRESOURCE_H_
+#ifndef RENDER_WORLDRESOURCE_H_
+#define RENDER_WORLDRESOURCE_H_
 
 #include <cstdint>
 
@@ -74,7 +74,7 @@ struct RaytracePrimitiveUniformBuffer {
 	int32_t padding[3];
 };
 
-struct GltfResource {
+struct WorldResource {
 	// Rasterize helper
 
 	ViewProjectionUniformPushConstant viewProjection = {};
@@ -88,4 +88,4 @@ struct GltfResource {
 	RaytraceUniformPushConstant raytrace = {};
 };
 
-#endif /* RENDER_GLTFRESOURCE_H_ */
+#endif /* RENDER_WORLDRESOURCE_H_ */

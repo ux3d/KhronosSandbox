@@ -5,7 +5,7 @@
 
 #include "../composite/Composite.h"
 
-#include "GltfResource.h"
+#include "WorldResource.h"
 
 struct SceneResource {
 	// Raytrace helper

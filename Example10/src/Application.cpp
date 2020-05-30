@@ -26,7 +26,7 @@ bool Application::applicationInit()
 
 bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime)
 {
-	GltfResource* gltfResource = resourceManager.getGltfResource();
+	WorldResource* gltfResource = resourceManager.getWorldResource();
 
 	//
 

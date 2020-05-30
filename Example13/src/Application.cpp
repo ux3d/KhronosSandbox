@@ -42,7 +42,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	//
 
-	GltfResource* gltfResource = resourceManager.getGltfResource();
+	WorldResource* gltfResource = resourceManager.getWorldResource();
 
 	//
 

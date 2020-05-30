@@ -192,9 +192,9 @@ SceneResource* ResourceManager::getSceneResource(const Scene* scene)
 	return &result->second;
 }
 
-GltfResource* ResourceManager::getGltfResource()
+WorldResource* ResourceManager::getWorldResource()
 {
-	return &gltfResource;
+	return &worldResource;
 }
 
 bool ResourceManager::initBufferView(const BufferView& bufferView, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
@@ -1130,7 +1130,7 @@ bool ResourceManager::initScene(const Scene& scene, const GLTF& glTF, VkPhysical
 		//
 		//
 
-		GltfResource* gltfResource = getGltfResource();
+		WorldResource* gltfResource = getWorldResource();
 
 		//
 		//
@@ -1567,7 +1567,7 @@ void ResourceManager::terminate(VkDevice device)
 	}
 	sceneResources.clear();
 
-	VulkanResource::destroyTextureResource(device, gltfResource.diffuse);
-	VulkanResource::destroyTextureResource(device, gltfResource.specular);
-	VulkanResource::destroyTextureResource(device, gltfResource.lut);
+	VulkanResource::destroyTextureResource(device, worldResource.diffuse);
+	VulkanResource::destroyTextureResource(device, worldResource.specular);
+	VulkanResource::destroyTextureResource(device, worldResource.lut);
 }
