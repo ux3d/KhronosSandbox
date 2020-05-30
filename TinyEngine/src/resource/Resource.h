@@ -2,6 +2,7 @@
 #define RESOURCE_RESOURCE_H_
 
 #include "ResourceManager.h"
+#include "HelperRasterize.h"
 #include "HelperRaytrace.h"
 
 #endif /* RESOURCE_RESOURCE_H_ */

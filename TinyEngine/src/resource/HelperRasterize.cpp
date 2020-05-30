@@ -1,7 +1,5 @@
 #include "HelperRasterize.h"
 
-#include "HelperAccessResource.h"
-
 void HelperRasterize::draw(ResourceManager& resourceManager, WorldResource& worldResource, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
 {
 	for (size_t i = 0; i < worldResource.instanceHandles.size(); i++)
