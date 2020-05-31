@@ -299,6 +299,196 @@ bool ResourceManager::materialResourceSetTextureResource(uint64_t materialHandle
 	return true;
 }
 
+bool ResourceManager::geometryResourceSetAttributesCount(uint64_t geometryHandle, uint32_t attributesCount)
+{
+	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
+
+	geometryResource->vertexBuffers.resize(attributesCount);
+	geometryResource->vertexBuffersOffsets.resize(attributesCount);
+
+	geometryResource->vertexInputBindingDescriptions.resize(attributesCount);
+	geometryResource->vertexInputAttributeDescriptions.resize(attributesCount);
+
+	return true;
+}
+
+bool ResourceManager::geometryResourceSetPrimitiveResource(uint64_t geometryHandle, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset)
+{
+	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
+
+	//
+
+	if (prefix == "POSITION")
+	{
+		if (typeCount == 3)
+		{
+			macros[prefix + "_VEC3"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		geometryResource->positionAttributeIndex = geometryResource->attributeIndex;
+	}
+	else if (prefix == "NORMAL")
+	{
+		if (typeCount == 3)
+		{
+			macros[prefix + "_VEC3"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		geometryResource->normalAttributeIndex = geometryResource->attributeIndex;
+	}
+	else if (prefix == "TANGENT")
+	{
+		if (typeCount == 4)
+		{
+			macros[prefix + "_VEC4"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		geometryResource->tangentAttributeIndex = geometryResource->attributeIndex;
+	}
+	else if (prefix == "TEXCOORD_0")
+	{
+		if (typeCount == 2)
+		{
+			macros[prefix + "_VEC2"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		geometryResource->texCoord0AttributeIndex = geometryResource->attributeIndex;
+	}
+	else if (prefix == "TEXCOORD_1")
+	{
+		if (typeCount == 2)
+		{
+			macros[prefix + "_VEC2"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		geometryResource->texCoord1AttributeIndex = geometryResource->attributeIndex;
+	}
+	else if (prefix == "COLOR_0")
+	{
+		if (typeCount == 3)
+		{
+			macros[prefix + "_VEC3"] = "";
+		}
+		else if (typeCount == 4)
+		{
+			macros[prefix + "_VEC4"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		geometryResource->color0AttributeIndex = geometryResource->attributeIndex;
+	}
+	else if (prefix == "JOINTS_0")
+	{
+		if (typeCount == 4)
+		{
+			macros[prefix + "_VEC4"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		geometryResource->joints0AttributeIndex = geometryResource->attributeIndex;
+	}
+	else if (prefix == "JOINTS_1")
+	{
+		if (typeCount == 4)
+		{
+			macros[prefix + "_VEC4"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		geometryResource->joints1AttributeIndex = geometryResource->attributeIndex;
+	}
+	else if (prefix == "WEIGHTS_0")
+	{
+		if (typeCount == 4)
+		{
+			macros[prefix + "_VEC4"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		geometryResource->weights0AttributeIndex = geometryResource->attributeIndex;
+	}
+	else if (prefix == "WEIGHTS_1")
+	{
+		if (typeCount == 4)
+		{
+			macros[prefix + "_VEC4"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		geometryResource->weights1AttributeIndex = geometryResource->attributeIndex;
+	}
+	else
+	{
+		return false;
+	}
+
+	macros[prefix + "_LOC"] = std::to_string(geometryResource->attributeIndex);
+
+	geometryResource->vertexInputBindingDescriptions[geometryResource->attributeIndex].binding = geometryResource->attributeIndex;
+	geometryResource->vertexInputBindingDescriptions[geometryResource->attributeIndex].stride = stride;
+	geometryResource->vertexInputBindingDescriptions[geometryResource->attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+	geometryResource->vertexInputAttributeDescriptions[geometryResource->attributeIndex].binding = geometryResource->attributeIndex;
+	geometryResource->vertexInputAttributeDescriptions[geometryResource->attributeIndex].location = geometryResource->attributeIndex;
+	geometryResource->vertexInputAttributeDescriptions[geometryResource->attributeIndex].format = format;
+	geometryResource->vertexInputAttributeDescriptions[geometryResource->attributeIndex].offset = 0;
+
+	//
+
+	geometryResource->vertexBuffers[geometryResource->attributeIndex] = buffer;
+	geometryResource->vertexBuffersOffsets[geometryResource->attributeIndex] = offset;
+
+	//
+
+	geometryResource->attributeIndex++;
+
+	return true;
+}
+
+bool ResourceManager::geometryModelResourceSetGeometryResource(uint64_t geometryModelHandle, uint64_t geometryHandle)
+{
+	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+
+	geometryModelResource->geometryHandle = geometryHandle;
+
+	return true;
+}
+
 bool ResourceManager::instanceResourceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix)
 {
 	InstanceResource* instanceResource = getInstanceResource(instanceHandle);

@@ -12,6 +12,8 @@ void HelperRasterize::draw(ResourceManager& resourceManager, WorldResource& worl
 		{
 			GeometryModelResource* primitiveResource = resourceManager.getGeometryModelResource(groupResource->primitiveHandles[k]);
 
+			GeometryResource* geometryResource = resourceManager.getGeometryResource(primitiveResource->geometryHandle);
+
 			MaterialResource* materialResource = resourceManager.getMaterialResource(primitiveResource->materialHandle);
 
 			//
@@ -42,7 +44,7 @@ void HelperRasterize::draw(ResourceManager& resourceManager, WorldResource& worl
 				vkCmdBindIndexBuffer(commandBuffer, primitiveResource->indexBuffer, primitiveResource->indexOffset, primitiveResource->indexType);
 			}
 
-			vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<uint32_t>(primitiveResource->vertexBuffers.size()), primitiveResource->vertexBuffers.data(), primitiveResource->vertexBuffersOffsets.data());
+			vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<uint32_t>(geometryResource->vertexBuffers.size()), geometryResource->vertexBuffers.data(), geometryResource->vertexBuffersOffsets.data());
 
 			if (primitiveResource->indexBuffer != VK_NULL_HANDLE)
 			{

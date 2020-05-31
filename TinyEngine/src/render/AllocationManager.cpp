@@ -82,182 +82,16 @@ bool AllocationManager::createTextureResource(const Texture& texture, const Text
 	return true;
 }
 
-bool AllocationManager::addPrimitiveResource(uint64_t primitiveHandle, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset)
-{
-	GeometryModelResource* primitiveResource = resourceManager.getGeometryModelResource(primitiveHandle);
-
-	//
-
-	if (prefix == "POSITION")
-	{
-		if (typeCount == 3)
-		{
-			macros[prefix + "_VEC3"] = "";
-		}
-		else
-		{
-			return false;
-		}
-
-		primitiveResource->positionAttributeIndex = primitiveResource->attributeIndex;
-	}
-	else if (prefix == "NORMAL")
-	{
-		if (typeCount == 3)
-		{
-			macros[prefix + "_VEC3"] = "";
-		}
-		else
-		{
-			return false;
-		}
-
-		primitiveResource->normalAttributeIndex = primitiveResource->attributeIndex;
-	}
-	else if (prefix == "TANGENT")
-	{
-		if (typeCount == 4)
-		{
-			macros[prefix + "_VEC4"] = "";
-		}
-		else
-		{
-			return false;
-		}
-
-		primitiveResource->tangentAttributeIndex = primitiveResource->attributeIndex;
-	}
-	else if (prefix == "TEXCOORD_0")
-	{
-		if (typeCount == 2)
-		{
-			macros[prefix + "_VEC2"] = "";
-		}
-		else
-		{
-			return false;
-		}
-
-		primitiveResource->texCoord0AttributeIndex = primitiveResource->attributeIndex;
-	}
-	else if (prefix == "TEXCOORD_1")
-	{
-		if (typeCount == 2)
-		{
-			macros[prefix + "_VEC2"] = "";
-		}
-		else
-		{
-			return false;
-		}
-
-		primitiveResource->texCoord1AttributeIndex = primitiveResource->attributeIndex;
-	}
-	else if (prefix == "COLOR_0")
-	{
-		if (typeCount == 3)
-		{
-			macros[prefix + "_VEC3"] = "";
-		}
-		else if (typeCount == 4)
-		{
-			macros[prefix + "_VEC4"] = "";
-		}
-		else
-		{
-			return false;
-		}
-
-		primitiveResource->color0AttributeIndex = primitiveResource->attributeIndex;
-	}
-	else if (prefix == "JOINTS_0")
-	{
-		if (typeCount == 4)
-		{
-			macros[prefix + "_VEC4"] = "";
-		}
-		else
-		{
-			return false;
-		}
-
-		primitiveResource->joints0AttributeIndex = primitiveResource->attributeIndex;
-	}
-	else if (prefix == "JOINTS_1")
-	{
-		if (typeCount == 4)
-		{
-			macros[prefix + "_VEC4"] = "";
-		}
-		else
-		{
-			return false;
-		}
-
-		primitiveResource->joints1AttributeIndex = primitiveResource->attributeIndex;
-	}
-	else if (prefix == "WEIGHTS_0")
-	{
-		if (typeCount == 4)
-		{
-			macros[prefix + "_VEC4"] = "";
-		}
-		else
-		{
-			return false;
-		}
-
-		primitiveResource->weights0AttributeIndex = primitiveResource->attributeIndex;
-	}
-	else if (prefix == "WEIGHTS_1")
-	{
-		if (typeCount == 4)
-		{
-			macros[prefix + "_VEC4"] = "";
-		}
-		else
-		{
-			return false;
-		}
-
-		primitiveResource->weights1AttributeIndex = primitiveResource->attributeIndex;
-	}
-	else
-	{
-		return false;
-	}
-
-	macros[prefix + "_LOC"] = std::to_string(primitiveResource->attributeIndex);
-
-	primitiveResource->vertexInputBindingDescriptions[primitiveResource->attributeIndex].binding = primitiveResource->attributeIndex;
-	primitiveResource->vertexInputBindingDescriptions[primitiveResource->attributeIndex].stride = stride;
-	primitiveResource->vertexInputBindingDescriptions[primitiveResource->attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-	primitiveResource->vertexInputAttributeDescriptions[primitiveResource->attributeIndex].binding = primitiveResource->attributeIndex;
-	primitiveResource->vertexInputAttributeDescriptions[primitiveResource->attributeIndex].location = primitiveResource->attributeIndex;
-	primitiveResource->vertexInputAttributeDescriptions[primitiveResource->attributeIndex].format = format;
-	primitiveResource->vertexInputAttributeDescriptions[primitiveResource->attributeIndex].offset = 0;
-
-	//
-
-	primitiveResource->vertexBuffers[primitiveResource->attributeIndex] = buffer;
-	primitiveResource->vertexBuffersOffsets[primitiveResource->attributeIndex] = offset;
-
-	//
-
-	primitiveResource->attributeIndex++;
-
-	return true;
-}
-
 bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
 {
-	GeometryModelResource* primitiveResource = resourceManager.getGeometryModelResource((uint64_t)&primitive);
+	GeometryModelResource* geometryModelResource = resourceManager.getGeometryModelResource((uint64_t)&primitive);
 
-	if (!primitiveResource)
+	if (!geometryModelResource)
 	{
 		return false;
 	}
+
+	GeometryResource* geometryResource = resourceManager.getGeometryResource(geometryModelResource->geometryHandle);
 
 	//
 
@@ -272,7 +106,7 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 			storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(glm::vec3) * primitive.targetPositionData.size();
 			storageBufferResourceCreateInfo.data = primitive.targetPositionData.data();
 
-			if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, primitiveResource->targetPosition, storageBufferResourceCreateInfo))
+			if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, geometryModelResource->targetPosition, storageBufferResourceCreateInfo))
 			{
 				return false;
 			}
@@ -283,7 +117,7 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 			storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(glm::vec3) * primitive.targetNormalData.size();
 			storageBufferResourceCreateInfo.data = primitive.targetNormalData.data();
 
-			if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, primitiveResource->targetNormal, storageBufferResourceCreateInfo))
+			if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, geometryModelResource->targetNormal, storageBufferResourceCreateInfo))
 			{
 				return false;
 			}
@@ -294,7 +128,7 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 			storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(glm::vec3) * primitive.targetTangentData.size();
 			storageBufferResourceCreateInfo.data = primitive.targetTangentData.data();
 
-			if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, primitiveResource->targetTangent, storageBufferResourceCreateInfo))
+			if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, geometryModelResource->targetTangent, storageBufferResourceCreateInfo))
 			{
 				return false;
 			}
@@ -309,12 +143,12 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 
 	pipelineShaderStageCreateInfo[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	pipelineShaderStageCreateInfo[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-	pipelineShaderStageCreateInfo[0].module = primitiveResource->vertexShaderModule;
+	pipelineShaderStageCreateInfo[0].module = geometryModelResource->vertexShaderModule;
 	pipelineShaderStageCreateInfo[0].pName = "main";
 
 	pipelineShaderStageCreateInfo[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	pipelineShaderStageCreateInfo[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	pipelineShaderStageCreateInfo[1].module = primitiveResource->fragmentShaderModule;
+	pipelineShaderStageCreateInfo[1].module = geometryModelResource->fragmentShaderModule;
 	pipelineShaderStageCreateInfo[1].pName = "main";
 
 	//
@@ -322,9 +156,9 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 	VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo = {};
 	pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = primitive.attributesCount;
-	pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = primitiveResource->vertexInputBindingDescriptions.data();
+	pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = geometryResource->vertexInputBindingDescriptions.data();
 	pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = primitive.attributesCount;
-	pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = primitiveResource->vertexInputAttributeDescriptions.data();
+	pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = geometryResource->vertexInputAttributeDescriptions.data();
 
 	//
 
@@ -407,7 +241,7 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 	pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
 	pipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;
 
-	result = vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &primitiveResource->pipelineLayout);
+	result = vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &geometryModelResource->pipelineLayout);
 	if (result != VK_SUCCESS)
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
@@ -428,10 +262,10 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 	graphicsPipelineCreateInfo.pMultisampleState = &pipelineMultisampleStateCreateInfo;
 	graphicsPipelineCreateInfo.pDepthStencilState = &pipelineDepthStencilStateCreateInfo;
 	graphicsPipelineCreateInfo.pColorBlendState = &pipelineColorBlendStateCreateInfo;
-	graphicsPipelineCreateInfo.layout = primitiveResource->pipelineLayout;
+	graphicsPipelineCreateInfo.layout = geometryModelResource->pipelineLayout;
 	graphicsPipelineCreateInfo.renderPass = renderPass;
 
-	result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &primitiveResource->graphicsPipeline);
+	result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &geometryModelResource->graphicsPipeline);
 	if (result != VK_SUCCESS)
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
@@ -454,18 +288,18 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 			indexType = VK_INDEX_TYPE_UINT32;
 		}
 
-		primitiveResource->indexType = indexType;
-		primitiveResource->indexBuffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[primitive.indices]));
-		primitiveResource->indexOffset = HelperAccess::getOffset(glTF.accessors[primitive.indices]);
+		geometryModelResource->indexType = indexType;
+		geometryModelResource->indexBuffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[primitive.indices]));
+		geometryModelResource->indexOffset = HelperAccess::getOffset(glTF.accessors[primitive.indices]);
 
-		primitiveResource->count = glTF.accessors[primitive.indices].count;
+		geometryModelResource->count = glTF.accessors[primitive.indices].count;
 	}
 	else
 	{
-		primitiveResource->count = glTF.accessors[primitive.position].count;
+		geometryModelResource->count = glTF.accessors[primitive.position].count;
 	}
 
-	primitiveResource->materialHandle = (uint64_t)&glTF.materials[primitive.material];
+	geometryModelResource->materialHandle = (uint64_t)&glTF.materials[primitive.material];
 
 	if (useRaytrace)
 	{
@@ -513,7 +347,7 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 		bottomLevelResourceCreateInfo.primitiveCount = primitiveCount;
 		bottomLevelResourceCreateInfo.useHostCommand = false;
 
-		if (!VulkanRaytraceResource::createBottomLevelResource(physicalDevice, device, queue, commandPool, primitiveResource->bottomLevelResource, bottomLevelResourceCreateInfo))
+		if (!VulkanRaytraceResource::createBottomLevelResource(physicalDevice, device, queue, commandPool, geometryModelResource->bottomLevelResource, bottomLevelResourceCreateInfo))
 		{
 			return false;
 		}
@@ -565,11 +399,12 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 
 				for (const Primitive& currentPrimitive : glTF.meshes[node.mesh].primitives)
 				{
-					GeometryModelResource* currentPrimitiveResource = resourceManager.getGeometryModelResource((uint64_t)&currentPrimitive);
+					GeometryModelResource* geometryModelResource = resourceManager.getGeometryModelResource((uint64_t)&currentPrimitive);
+					GeometryResource* geometryResource = resourceManager.getGeometryResource((uint64_t)&currentPrimitive);
 
 					//
 
-					accelerationStructureDeviceAddressInfo.accelerationStructure = currentPrimitiveResource->bottomLevelResource.levelResource.accelerationStructureResource.accelerationStructure;
+					accelerationStructureDeviceAddressInfo.accelerationStructure = geometryModelResource->bottomLevelResource.levelResource.accelerationStructureResource.accelerationStructure;
 					VkDeviceAddress bottomDeviceAddress = vkGetAccelerationStructureDeviceAddressKHR(device, &accelerationStructureDeviceAddressInfo);
 
 					VkAccelerationStructureInstanceKHR accelerationStructureInstance = {};
@@ -587,19 +422,19 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 					primitiveInformation.componentTypeSize = glTF.accessors[currentPrimitive.indices].componentTypeSize;
 					primitiveInformation.worldMatrix = node.worldMatrix;
 
-					if (currentPrimitiveResource->normalAttributeIndex >= 0)
+					if (geometryResource->normalAttributeIndex >= 0)
 					{
 						primitiveInformation.normalInstanceID = normalInstanceID;
 
 						normalInstanceID++;
 					}
-					if (currentPrimitiveResource->tangentAttributeIndex >= 0)
+					if (geometryResource->tangentAttributeIndex >= 0)
 					{
 						primitiveInformation.tangentInstanceID = tangentInstanceID;
 
 						tangentInstanceID++;
 					}
-					if (currentPrimitiveResource->texCoord0AttributeIndex >= 0)
+					if (geometryResource->texCoord0AttributeIndex >= 0)
 					{
 						primitiveInformation.texCoord0InstanceID = texCoord0InstanceID;
 
@@ -625,7 +460,7 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 						descriptorBufferInfoIndices.push_back(currentDescriptorBufferInfo);
 					}
 
-					if (currentPrimitiveResource->positionAttributeIndex >= 0)
+					if (geometryResource->positionAttributeIndex >= 0)
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
@@ -636,7 +471,7 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 						descriptorBufferInfoPosition.push_back(currentDescriptorBufferInfo);
 					}
 
-					if (currentPrimitiveResource->normalAttributeIndex >= 0)
+					if (geometryResource->normalAttributeIndex >= 0)
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
@@ -647,7 +482,7 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 						descriptorBufferInfoNormal.push_back(currentDescriptorBufferInfo);
 					}
 
-					if (currentPrimitiveResource->tangentAttributeIndex >= 0)
+					if (geometryResource->tangentAttributeIndex >= 0)
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
@@ -658,7 +493,7 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 						descriptorBufferInfoTangent.push_back(currentDescriptorBufferInfo);
 					}
 
-					if (currentPrimitiveResource->texCoord0AttributeIndex >= 0)
+					if (geometryResource->texCoord0AttributeIndex >= 0)
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
