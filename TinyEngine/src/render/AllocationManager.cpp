@@ -82,7 +82,7 @@ bool AllocationManager::createTextureResource(const Texture& texture, const Text
 	return true;
 }
 
-bool AllocationManager::addPrimitiveResource(uint64_t primitiveHandle, uint32_t attributeIndex, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset)
+bool AllocationManager::addPrimitiveResource(uint64_t primitiveHandle, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset)
 {
 	GeometryModelResource* primitiveResource = resourceManager.getGeometryModelResource(primitiveHandle);
 
@@ -99,7 +99,7 @@ bool AllocationManager::addPrimitiveResource(uint64_t primitiveHandle, uint32_t 
 			return false;
 		}
 
-		primitiveResource->positionAttributeIndex = attributeIndex;
+		primitiveResource->positionAttributeIndex = primitiveResource->attributeIndex;
 	}
 	else if (prefix == "NORMAL")
 	{
@@ -112,7 +112,7 @@ bool AllocationManager::addPrimitiveResource(uint64_t primitiveHandle, uint32_t 
 			return false;
 		}
 
-		primitiveResource->normalAttributeIndex = attributeIndex;
+		primitiveResource->normalAttributeIndex = primitiveResource->attributeIndex;
 	}
 	else if (prefix == "TANGENT")
 	{
@@ -125,7 +125,7 @@ bool AllocationManager::addPrimitiveResource(uint64_t primitiveHandle, uint32_t 
 			return false;
 		}
 
-		primitiveResource->tangentAttributeIndex = attributeIndex;
+		primitiveResource->tangentAttributeIndex = primitiveResource->attributeIndex;
 	}
 	else if (prefix == "TEXCOORD_0")
 	{
@@ -138,7 +138,7 @@ bool AllocationManager::addPrimitiveResource(uint64_t primitiveHandle, uint32_t 
 			return false;
 		}
 
-		primitiveResource->texCoord0AttributeIndex = attributeIndex;
+		primitiveResource->texCoord0AttributeIndex = primitiveResource->attributeIndex;
 	}
 	else if (prefix == "TEXCOORD_1")
 	{
@@ -151,7 +151,7 @@ bool AllocationManager::addPrimitiveResource(uint64_t primitiveHandle, uint32_t 
 			return false;
 		}
 
-		primitiveResource->texCoord1AttributeIndex = attributeIndex;
+		primitiveResource->texCoord1AttributeIndex = primitiveResource->attributeIndex;
 	}
 	else if (prefix == "COLOR_0")
 	{
@@ -168,7 +168,7 @@ bool AllocationManager::addPrimitiveResource(uint64_t primitiveHandle, uint32_t 
 			return false;
 		}
 
-		primitiveResource->color0AttributeIndex = attributeIndex;
+		primitiveResource->color0AttributeIndex = primitiveResource->attributeIndex;
 	}
 	else if (prefix == "JOINTS_0")
 	{
@@ -181,7 +181,7 @@ bool AllocationManager::addPrimitiveResource(uint64_t primitiveHandle, uint32_t 
 			return false;
 		}
 
-		primitiveResource->joints0AttributeIndex = attributeIndex;
+		primitiveResource->joints0AttributeIndex = primitiveResource->attributeIndex;
 	}
 	else if (prefix == "JOINTS_1")
 	{
@@ -194,7 +194,7 @@ bool AllocationManager::addPrimitiveResource(uint64_t primitiveHandle, uint32_t 
 			return false;
 		}
 
-		primitiveResource->joints1AttributeIndex = attributeIndex;
+		primitiveResource->joints1AttributeIndex = primitiveResource->attributeIndex;
 	}
 	else if (prefix == "WEIGHTS_0")
 	{
@@ -207,7 +207,7 @@ bool AllocationManager::addPrimitiveResource(uint64_t primitiveHandle, uint32_t 
 			return false;
 		}
 
-		primitiveResource->weights0AttributeIndex = attributeIndex;
+		primitiveResource->weights0AttributeIndex = primitiveResource->attributeIndex;
 	}
 	else if (prefix == "WEIGHTS_1")
 	{
@@ -220,30 +220,32 @@ bool AllocationManager::addPrimitiveResource(uint64_t primitiveHandle, uint32_t 
 			return false;
 		}
 
-		primitiveResource->weights1AttributeIndex = attributeIndex;
+		primitiveResource->weights1AttributeIndex = primitiveResource->attributeIndex;
 	}
 	else
 	{
 		return false;
 	}
 
-	macros[prefix + "_LOC"] = std::to_string(attributeIndex);
+	macros[prefix + "_LOC"] = std::to_string(primitiveResource->attributeIndex);
 
-	primitiveResource->vertexInputBindingDescriptions[attributeIndex].binding = attributeIndex;
-	primitiveResource->vertexInputBindingDescriptions[attributeIndex].stride = stride;
-	primitiveResource->vertexInputBindingDescriptions[attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+	primitiveResource->vertexInputBindingDescriptions[primitiveResource->attributeIndex].binding = primitiveResource->attributeIndex;
+	primitiveResource->vertexInputBindingDescriptions[primitiveResource->attributeIndex].stride = stride;
+	primitiveResource->vertexInputBindingDescriptions[primitiveResource->attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-	primitiveResource->vertexInputAttributeDescriptions[attributeIndex].binding = attributeIndex;
-	primitiveResource->vertexInputAttributeDescriptions[attributeIndex].location = attributeIndex;
-	primitiveResource->vertexInputAttributeDescriptions[attributeIndex].format = format;
-	primitiveResource->vertexInputAttributeDescriptions[attributeIndex].offset = 0;
+	primitiveResource->vertexInputAttributeDescriptions[primitiveResource->attributeIndex].binding = primitiveResource->attributeIndex;
+	primitiveResource->vertexInputAttributeDescriptions[primitiveResource->attributeIndex].location = primitiveResource->attributeIndex;
+	primitiveResource->vertexInputAttributeDescriptions[primitiveResource->attributeIndex].format = format;
+	primitiveResource->vertexInputAttributeDescriptions[primitiveResource->attributeIndex].offset = 0;
+
+	//
+
+	primitiveResource->vertexBuffers[primitiveResource->attributeIndex] = buffer;
+	primitiveResource->vertexBuffersOffsets[primitiveResource->attributeIndex] = offset;
 
 	//
 
-	primitiveResource->vertexBuffers[attributeIndex] = buffer;
-	primitiveResource->vertexBuffersOffsets[attributeIndex] = offset;
-
-	//
+	primitiveResource->attributeIndex++;
 
 	return true;
 }

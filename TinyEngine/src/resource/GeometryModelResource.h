@@ -9,6 +9,8 @@
 struct GeometryModelResource {
 	// Mapper helper
 
+	uint32_t attributeIndex = 0;
+
 	uint64_t materialHandle = 0;
 
 	VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR;
