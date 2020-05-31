@@ -348,8 +348,6 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 			if (primitive.position >= 0)
 			{
-				primitiveResource->positionAttributeIndex = attributeIndex;
-
 				const Accessor& accessor = glTF.accessors[primitive.position];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
@@ -372,8 +370,6 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 			if (primitive.normal >= 0)
 			{
-				primitiveResource->normalAttributeIndex = attributeIndex;
-
 				const Accessor& accessor = glTF.accessors[primitive.normal];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
@@ -396,8 +392,6 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 			if (primitive.tangent >= 0)
 			{
-				primitiveResource->tangentAttributeIndex = attributeIndex;
-
 				const Accessor& accessor = glTF.accessors[primitive.tangent];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
@@ -420,8 +414,6 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 			if (primitive.texCoord0 >= 0)
 			{
-				primitiveResource->texCoord0AttributeIndex = attributeIndex;
-
 				const Accessor& accessor = glTF.accessors[primitive.texCoord0];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
@@ -444,8 +436,6 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 			if (primitive.texCoord1 >= 0)
 			{
-				primitiveResource->texCoord1AttributeIndex = attributeIndex;
-
 				const Accessor& accessor = glTF.accessors[primitive.texCoord1];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
@@ -468,8 +458,6 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 			if (primitive.color0 >= 0)
 			{
-				primitiveResource->color0AttributeIndex = attributeIndex;
-
 				const Accessor& accessor = glTF.accessors[primitive.color0];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
@@ -492,8 +480,6 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 			if (primitive.joints0 >= 0)
 			{
-				primitiveResource->joints0AttributeIndex = attributeIndex;
-
 				const Accessor& accessor = glTF.accessors[primitive.joints0];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
@@ -516,8 +502,6 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 			if (primitive.joints1 >= 0)
 			{
-				primitiveResource->joints1AttributeIndex = attributeIndex;
-
 				const Accessor& accessor = glTF.accessors[primitive.joints1];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
@@ -540,8 +524,6 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 			if (primitive.weights0 >= 0)
 			{
-				primitiveResource->weights0AttributeIndex = attributeIndex;
-
 				const Accessor& accessor = glTF.accessors[primitive.weights0];
 
 				uint32_t stride = HelperAccess::getStride(accessor);
@@ -564,8 +546,6 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 
 			if (primitive.weights1 >= 0)
 			{
-				primitiveResource->weights1AttributeIndex = attributeIndex;
-
 				const Accessor& accessor = glTF.accessors[primitive.weights1];
 
 				uint32_t stride = HelperAccess::getStride(accessor);

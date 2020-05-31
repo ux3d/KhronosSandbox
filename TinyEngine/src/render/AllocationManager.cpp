@@ -88,17 +88,139 @@ bool AllocationManager::addPrimitiveResource(uint64_t primitiveHandle, uint32_t 
 
 	//
 
-	if (typeCount == 2)
+	if (prefix == "POSITION")
 	{
-		macros[prefix + "_VEC2"] = "";
+		if (typeCount == 3)
+		{
+			macros[prefix + "_VEC3"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		primitiveResource->positionAttributeIndex = attributeIndex;
 	}
-	else if (typeCount == 3)
+	else if (prefix == "NORMAL")
 	{
-		macros[prefix + "_VEC3"] = "";
+		if (typeCount == 3)
+		{
+			macros[prefix + "_VEC3"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		primitiveResource->normalAttributeIndex = attributeIndex;
 	}
-	else if (typeCount == 4)
+	else if (prefix == "TANGENT")
 	{
-		macros[prefix + "_VEC4"] = "";
+		if (typeCount == 4)
+		{
+			macros[prefix + "_VEC4"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		primitiveResource->tangentAttributeIndex = attributeIndex;
+	}
+	else if (prefix == "TEXCOORD_0")
+	{
+		if (typeCount == 2)
+		{
+			macros[prefix + "_VEC2"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		primitiveResource->texCoord0AttributeIndex = attributeIndex;
+	}
+	else if (prefix == "TEXCOORD_1")
+	{
+		if (typeCount == 2)
+		{
+			macros[prefix + "_VEC2"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		primitiveResource->texCoord1AttributeIndex = attributeIndex;
+	}
+	else if (prefix == "COLOR_0")
+	{
+		if (typeCount == 3)
+		{
+			macros[prefix + "_VEC3"] = "";
+		}
+		else if (typeCount == 4)
+		{
+			macros[prefix + "_VEC4"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		primitiveResource->color0AttributeIndex = attributeIndex;
+	}
+	else if (prefix == "JOINTS_0")
+	{
+		if (typeCount == 4)
+		{
+			macros[prefix + "_VEC4"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		primitiveResource->joints0AttributeIndex = attributeIndex;
+	}
+	else if (prefix == "JOINTS_1")
+	{
+		if (typeCount == 4)
+		{
+			macros[prefix + "_VEC4"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		primitiveResource->joints1AttributeIndex = attributeIndex;
+	}
+	else if (prefix == "WEIGHTS_0")
+	{
+		if (typeCount == 4)
+		{
+			macros[prefix + "_VEC4"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		primitiveResource->weights0AttributeIndex = attributeIndex;
+	}
+	else if (prefix == "WEIGHTS_1")
+	{
+		if (typeCount == 4)
+		{
+			macros[prefix + "_VEC4"] = "";
+		}
+		else
+		{
+			return false;
+		}
+
+		primitiveResource->weights1AttributeIndex = attributeIndex;
 	}
 	else
 	{
