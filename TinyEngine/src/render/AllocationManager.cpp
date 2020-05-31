@@ -37,6 +37,8 @@ ResourceManager& AllocationManager::getResourceManager()
 
 bool AllocationManager::createSharedDataResource(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
 {
+	uint64_t sharedDataHandle = (uint64_t)&bufferView;
+
 	VkBufferUsageFlags usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	if (bufferView.target == 34963) // ELEMENT_ARRAY_BUFFER
 	{
@@ -46,8 +48,11 @@ bool AllocationManager::createSharedDataResource(const BufferView& bufferView, V
 	{
 		usage |= (VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 	}
+	resourceManager.sharedDataSetUsage(sharedDataHandle, usage);
 
-	if (!resourceManager.finalizeSharedDataResource((uint64_t)&bufferView, bufferView.byteLength, HelperAccess::accessData(bufferView), usage, physicalDevice, device, queue, commandPool))
+	resourceManager.sharedDataSetData(sharedDataHandle, bufferView.byteLength, HelperAccess::accessData(bufferView));
+
+	if (!resourceManager.finalizeSharedDataResource(sharedDataHandle, physicalDevice, device, queue, commandPool))
 	{
 		return false;
 	}

@@ -4,6 +4,11 @@
 #include "../composite/Composite.h"
 
 struct SharedDataResource {
+
+	// Mapper helper
+
+	VertexBufferResourceCreateInfo vertexBufferResourceCreateInfo = {};
+
 	// Rasterize helper
 
 	VertexBufferResource vertexBufferResource = {};

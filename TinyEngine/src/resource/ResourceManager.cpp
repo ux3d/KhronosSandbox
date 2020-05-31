@@ -242,6 +242,25 @@ WorldResource* ResourceManager::getWorldResource(uint64_t worldHandle)
 	return &result->second;
 }
 
+bool ResourceManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize size, const void* data)
+{
+	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
+
+	sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.size = size;
+	sharedDataResource->vertexBufferResourceCreateInfo.data = data;
+
+	return true;
+}
+
+bool ResourceManager::sharedDataSetUsage(uint64_t sharedDataHandle, VkBufferUsageFlags usage)
+{
+	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
+
+	sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.usage = usage;
+
+	return true;
+}
+
 bool ResourceManager::instanceResourceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix)
 {
 	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
@@ -260,29 +279,16 @@ bool ResourceManager::instanceResourceSetGroupResource(uint64_t instanceHandle, 
 	return true;
 }
 
-bool ResourceManager::finalizeSharedDataResource(uint64_t externalHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool ResourceManager::finalizeSharedDataResource(uint64_t externalHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
-	auto it = sharedDataResources.find(externalHandle);
-	if (it == sharedDataResources.end())
-	{
-		sharedDataResources[externalHandle] = SharedDataResource();
-	}
+	SharedDataResource* sharedDataResource = getSharedDataResource(externalHandle);
 
-	//
+	sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 
-	VertexBufferResourceCreateInfo vertexBufferResourceCreateInfo = {};
-
-	vertexBufferResourceCreateInfo.bufferResourceCreateInfo.size = size;
-	vertexBufferResourceCreateInfo.bufferResourceCreateInfo.usage = usage;
-	vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-	vertexBufferResourceCreateInfo.data = data;
-
-	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, sharedDataResources[externalHandle].vertexBufferResource, vertexBufferResourceCreateInfo))
+	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, sharedDataResource->vertexBufferResource, sharedDataResource->vertexBufferResourceCreateInfo))
 	{
 		return false;
 	}
-
-	//
 
 	return true;
 }

@@ -36,6 +36,8 @@ private:
 	void terminate(InstanceResource& instanceResource, VkDevice device);
 	void terminate(WorldResource& worldResource, VkDevice device);
 
+	SharedDataResource* getSharedDataResource(uint64_t sharedDataHandle);
+
 public:
 
 	ResourceManager();
@@ -48,7 +50,6 @@ public:
 
 	//
 
-	SharedDataResource* getSharedDataResource(uint64_t sharedDataHandle);
 	TextureResource* getTextureResource(uint64_t textureHandle);
 	MaterialResource* getMaterialResource(uint64_t materialHandle);
 	GeometryResource* getGeometryResource(uint64_t geometryHandle);
@@ -59,12 +60,15 @@ public:
 
 	//
 
+	bool sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize size, const void* data);
+	bool sharedDataSetUsage(uint64_t sharedDataHandle, VkBufferUsageFlags usage);
+
 	bool instanceResourceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix);
 	bool instanceResourceSetGroupResource(uint64_t instanceHandle, uint64_t groupHandle);
 
 	//
 
-	bool finalizeSharedDataResource(uint64_t externalHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+	bool finalizeSharedDataResource(uint64_t externalHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
 	bool finalizeTextureResource(uint64_t externalHandle, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
 	bool finalizeMaterialResource(uint64_t externalHandle, VkDevice device);
 	bool finalizeGeometryResource(uint64_t externalHandle);
