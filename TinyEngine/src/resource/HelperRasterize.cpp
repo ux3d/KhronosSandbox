@@ -42,7 +42,7 @@ void HelperRasterize::draw(ResourceManager& resourceManager, WorldResource& worl
 				vkCmdBindIndexBuffer(commandBuffer, primitiveResource->indexBuffer, primitiveResource->indexOffset, primitiveResource->indexType);
 			}
 
-			vkCmdBindVertexBuffers(commandBuffer, 0, primitiveResource->vertexBuffers.size(), primitiveResource->vertexBuffers.data(), primitiveResource->vertexBuffersOffsets.data());
+			vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<uint32_t>(primitiveResource->vertexBuffers.size()), primitiveResource->vertexBuffers.data(), primitiveResource->vertexBuffersOffsets.data());
 
 			if (primitiveResource->indexBuffer != VK_NULL_HANDLE)
 			{
