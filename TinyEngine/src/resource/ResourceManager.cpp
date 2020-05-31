@@ -242,6 +242,24 @@ WorldResource* ResourceManager::getWorldResource(uint64_t worldHandle)
 	return &result->second;
 }
 
+bool ResourceManager::instanceResourceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix)
+{
+	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
+
+	instanceResource->worldMatrix = worldMatrix;
+
+	return true;
+}
+
+bool ResourceManager::instanceResourceSetGroupResource(uint64_t instanceHandle, uint64_t groupHandle)
+{
+	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
+
+	instanceResource->groupHandle = groupHandle;
+
+	return true;
+}
+
 bool ResourceManager::finalizeSharedDataResource(uint64_t externalHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
 	auto it = sharedDataResources.find(externalHandle);

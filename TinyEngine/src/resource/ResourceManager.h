@@ -53,9 +53,14 @@ public:
 	MaterialResource* getMaterialResource(uint64_t materialHandle);
 	GeometryResource* getGeometryResource(uint64_t geometryHandle);
 	GeometryModelResource* getGeometryModelResource(uint64_t geometryModelHandle);
-	GroupResource* getGroupResource(uint64_t sceneHandle);
-	InstanceResource* getInstanceResource(uint64_t sceneHandle);
+	GroupResource* getGroupResource(uint64_t groupHandle);
+	InstanceResource* getInstanceResource(uint64_t instanceHandle);
 	WorldResource* getWorldResource(uint64_t worldHandle);
+
+	//
+
+	bool instanceResourceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix);
+	bool instanceResourceSetGroupResource(uint64_t instanceHandle, uint64_t groupHandle);
 
 	//
 
