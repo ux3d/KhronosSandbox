@@ -489,6 +489,15 @@ bool ResourceManager::geometryModelResourceSetGeometryResource(uint64_t geometry
 	return true;
 }
 
+bool ResourceManager::groupResourceAddGeometryModelResource(uint64_t groupHandle, uint64_t geometryModelHandle)
+{
+	GroupResource* groupResource = getGroupResource(groupHandle);
+
+	groupResource->geometryModelHandles.push_back(geometryModelHandle);
+
+	return true;
+}
+
 bool ResourceManager::instanceResourceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix)
 {
 	InstanceResource* instanceResource = getInstanceResource(instanceHandle);

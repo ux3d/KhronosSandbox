@@ -73,6 +73,8 @@ public:
 
 	bool geometryModelResourceSetGeometryResource(uint64_t geometryModelHandle, uint64_t geometryHandle);
 
+	bool groupResourceAddGeometryModelResource(uint64_t groupHandle, uint64_t geometryModelHandle);
+
 	bool instanceResourceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix);
 	bool instanceResourceSetGroupResource(uint64_t instanceHandle, uint64_t groupHandle);
 

@@ -317,9 +317,9 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 	{
 		const Mesh& mesh = glTF.meshes[i];
 
-		meshHandles.push_back((uint64_t)&mesh);
+		uint64_t groupHandle = (uint64_t)&mesh;
 
-		GroupResource* groupResource = allocationManager.getResourceManager().getGroupResource(meshHandles[i]);
+		meshHandles.push_back(groupHandle);
 
 		for (size_t k = 0; k < mesh.primitives.size(); k++)
 		{
@@ -328,11 +328,9 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 			uint64_t geometryHandle = (uint64_t)&primitive;
 			uint64_t geometryModelHandle = (uint64_t)&primitive;
 
-			GeometryModelResource* geometryModelResource = allocationManager.getResourceManager().getGeometryModelResource(geometryModelHandle);
+			allocationManager.getResourceManager().geometryModelResourceSetGeometryResource(geometryModelHandle, geometryHandle);
 
-			geometryModelResource->geometryHandle = geometryHandle;
-
-			groupResource->primitiveHandles.push_back(geometryModelHandle);
+			allocationManager.getResourceManager().groupResourceAddGeometryModelResource(groupHandle, geometryModelHandle);
 
 			std::map<std::string, std::string> macros;
 
@@ -544,6 +542,8 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 			{
 				return false;
 			}
+
+			GeometryModelResource* geometryModelResource = allocationManager.getResourceManager().getGeometryModelResource(geometryModelHandle);
 
 			if (!VulkanResource::createShaderModule(geometryModelResource->vertexShaderModule, device, vertexShaderCode))
 			{
