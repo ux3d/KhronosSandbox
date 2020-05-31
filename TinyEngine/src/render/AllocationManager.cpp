@@ -82,7 +82,7 @@ bool AllocationManager::createTextureResource(const Texture& texture, const Text
 	return true;
 }
 
-bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
+bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF& glTF, std::map<std::string, std::string>& macros, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
 {
 	GeometryModelResource* geometryModelResource = resourceManager.getGeometryModelResource((uint64_t)&primitive);
 
@@ -92,6 +92,46 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 	}
 
 	GeometryResource* geometryResource = resourceManager.getGeometryResource(geometryModelResource->geometryHandle);
+
+	//
+	// Load the shader code.
+	//
+
+	std::string vertexShaderSource = "";
+	if (!FileIO::open(vertexShaderSource, "../Resources/shaders/gltf.vert"))
+	{
+		return false;
+	}
+
+	std::string fragmentShaderSource = "";
+	if (!FileIO::open(fragmentShaderSource, "../Resources/shaders/gltf.frag"))
+	{
+		return false;
+	}
+
+	//
+
+	std::vector<uint32_t> vertexShaderCode;
+	if (!Compiler::buildShader(vertexShaderCode, vertexShaderSource, macros, shaderc_vertex_shader))
+	{
+		return false;
+	}
+
+	std::vector<uint32_t> fragmentShaderCode;
+	if (!Compiler::buildShader(fragmentShaderCode, fragmentShaderSource, macros, shaderc_fragment_shader))
+	{
+		return false;
+	}
+
+	if (!VulkanResource::createShaderModule(geometryModelResource->vertexShaderModule, device, vertexShaderCode))
+	{
+		return false;
+	}
+
+	if (!VulkanResource::createShaderModule(geometryModelResource->fragmentShaderModule, device, fragmentShaderCode))
+	{
+		return false;
+	}
 
 	//
 

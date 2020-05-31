@@ -297,22 +297,6 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
 {
-	//
-	// Load the shader code.
-	//
-
-	std::string vertexShaderSource = "";
-	if (!FileIO::open(vertexShaderSource, "../Resources/shaders/gltf.vert"))
-	{
-		return false;
-	}
-
-	std::string fragmentShaderSource = "";
-	if (!FileIO::open(fragmentShaderSource, "../Resources/shaders/gltf.frag"))
-	{
-		return false;
-	}
-
 	for (size_t i = 0; i < glTF.meshes.size(); i++)
 	{
 		const Mesh& mesh = glTF.meshes[i];
@@ -529,33 +513,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 				return false;
 			}
 
-			//
-
-			std::vector<uint32_t> vertexShaderCode;
-			if (!Compiler::buildShader(vertexShaderCode, vertexShaderSource, macros, shaderc_vertex_shader))
-			{
-				return false;
-			}
-
-			std::vector<uint32_t> fragmentShaderCode;
-			if (!Compiler::buildShader(fragmentShaderCode, fragmentShaderSource, macros, shaderc_fragment_shader))
-			{
-				return false;
-			}
-
-			GeometryModelResource* geometryModelResource = allocationManager.getResourceManager().getGeometryModelResource(geometryModelHandle);
-
-			if (!VulkanResource::createShaderModule(geometryModelResource->vertexShaderModule, device, vertexShaderCode))
-			{
-				return false;
-			}
-
-			if (!VulkanResource::createShaderModule(geometryModelResource->fragmentShaderModule, device, fragmentShaderCode))
-			{
-				return false;
-			}
-
-			if (!allocationManager.finalizePrimitive(primitive, glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &allocationManager.getResourceManager().getMaterialResource(materialHandles[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
+			if (!allocationManager.finalizePrimitive(primitive, glTF, macros, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &allocationManager.getResourceManager().getMaterialResource(materialHandles[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
 			{
 				return false;
 			}
