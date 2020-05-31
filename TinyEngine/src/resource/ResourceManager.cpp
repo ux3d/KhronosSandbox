@@ -502,6 +502,15 @@ bool ResourceManager::geometryModelResourceSetGeometryResource(uint64_t geometry
 	return true;
 }
 
+bool ResourceManager::geometryModelResourceSetMaterialResource(uint64_t geometryModelHandle, uint64_t materialHandle)
+{
+	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+
+	geometryModelResource->materialHandle = materialHandle;
+
+	return true;
+}
+
 bool ResourceManager::groupResourceAddGeometryModelResource(uint64_t groupHandle, uint64_t geometryModelHandle)
 {
 	GroupResource* groupResource = getGroupResource(groupHandle);

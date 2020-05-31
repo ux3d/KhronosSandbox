@@ -325,8 +325,6 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 		geometryModelResource->count = glTF.accessors[primitive.position].count;
 	}
 
-	geometryModelResource->materialHandle = (uint64_t)&glTF.materials[primitive.material];
-
 	if (useRaytrace)
 	{
 		//

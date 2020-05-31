@@ -138,7 +138,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		//
 		//
 
-		WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource(glTFHandle);
+		WorldResource* worldResource = allocationManager.getResourceManager().getWorldResource(glTFHandle);
 
 		MaterialResource* materialResource = allocationManager.getResourceManager().getMaterialResource(materialHandles[i]);
 
@@ -154,8 +154,8 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 		VkDescriptorImageInfo descriptorImageInfo = {};
-		descriptorImageInfo.sampler = gltfResource->diffuse.samplerResource.sampler;
-		descriptorImageInfo.imageView = gltfResource->diffuse.imageViewResource.imageView;
+		descriptorImageInfo.sampler = worldResource->diffuse.samplerResource.sampler;
+		descriptorImageInfo.imageView = worldResource->diffuse.imageViewResource.imageView;
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
@@ -173,8 +173,8 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 		descriptorImageInfo = {};
-		descriptorImageInfo.sampler = gltfResource->specular.samplerResource.sampler;
-		descriptorImageInfo.imageView = gltfResource->specular.imageViewResource.imageView;
+		descriptorImageInfo.sampler = worldResource->specular.samplerResource.sampler;
+		descriptorImageInfo.imageView = worldResource->specular.imageViewResource.imageView;
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
@@ -192,8 +192,8 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 		descriptorImageInfo = {};
-		descriptorImageInfo.sampler = gltfResource->lut.samplerResource.sampler;
-		descriptorImageInfo.imageView = gltfResource->lut.imageViewResource.imageView;
+		descriptorImageInfo.sampler = worldResource->lut.samplerResource.sampler;
+		descriptorImageInfo.imageView = worldResource->lut.imageViewResource.imageView;
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
@@ -482,6 +482,10 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 			{
 				return false;
 			}
+
+			//
+
+			allocationManager.getResourceManager().geometryModelResourceSetMaterialResource(geometryModelHandle, materialHandles[primitive.material]);
 
 			if (!allocationManager.finalizePrimitive(primitive, glTF, macros, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &allocationManager.getResourceManager().getMaterialResource(materialHandles[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
 			{
