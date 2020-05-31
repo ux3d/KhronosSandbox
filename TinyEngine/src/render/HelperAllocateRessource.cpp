@@ -91,77 +91,58 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		materialHandles.push_back((uint64_t)&material);
 
-		MaterialResource* materialResource = allocationManager.getResourceManager().getMaterialResource(materialHandles[i]);
-		materialResource->alphaMode = material.alphaMode;
-
-		uint32_t binding = 0;
+		allocationManager.getResourceManager().materialResourceSetAlphaMode(materialHandles[i], material.alphaMode);
 
 		// Metallic Roughness
 		if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
 		{
-			if (!allocationManager.getResourceManager().materialResourceSetTextureResource(materialHandles[i], textureHandles[material.pbrMetallicRoughness.baseColorTexture.index], material.pbrMetallicRoughness.baseColorTexture.texCoord, binding, "BASECOLOR"))
+			if (!allocationManager.getResourceManager().materialResourceSetTextureResource(materialHandles[i], textureHandles[material.pbrMetallicRoughness.baseColorTexture.index], material.pbrMetallicRoughness.baseColorTexture.texCoord, "BASECOLOR"))
 			{
 				return false;
 			}
-
-			//
-
-			binding++;
 		}
 
 		if (material.pbrMetallicRoughness.metallicRoughnessTexture.index >= 0)
 		{
-			if (!allocationManager.getResourceManager().materialResourceSetTextureResource(materialHandles[i], textureHandles[material.pbrMetallicRoughness.metallicRoughnessTexture.index], material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord, binding, "METALLICROUGHNESS"))
+			if (!allocationManager.getResourceManager().materialResourceSetTextureResource(materialHandles[i], textureHandles[material.pbrMetallicRoughness.metallicRoughnessTexture.index], material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord, "METALLICROUGHNESS"))
 			{
 				return false;
 			}
-
-			//
-
-			binding++;
 		}
 
 		// Base Material
 		if (material.emissiveTexture.index >= 0)
 		{
-			if (!allocationManager.getResourceManager().materialResourceSetTextureResource(materialHandles[i], textureHandles[material.emissiveTexture.index], material.emissiveTexture.texCoord, binding, "EMISSIVE"))
+			if (!allocationManager.getResourceManager().materialResourceSetTextureResource(materialHandles[i], textureHandles[material.emissiveTexture.index], material.emissiveTexture.texCoord, "EMISSIVE"))
 			{
 				return false;
 			}
-
-			//
-
-			binding++;
 		}
 
 		if (material.occlusionTexture.index >= 0)
 		{
-			if (!allocationManager.getResourceManager().materialResourceSetTextureResource(materialHandles[i], textureHandles[material.occlusionTexture.index], material.occlusionTexture.texCoord, binding, "OCCLUSION"))
+			if (!allocationManager.getResourceManager().materialResourceSetTextureResource(materialHandles[i], textureHandles[material.occlusionTexture.index], material.occlusionTexture.texCoord, "OCCLUSION"))
 			{
 				return false;
 			}
-
-			//
-
-			binding++;
 		}
 
 		if (material.normalTexture.index >= 0)
 		{
-			if (!allocationManager.getResourceManager().materialResourceSetTextureResource(materialHandles[i], textureHandles[material.normalTexture.index], material.normalTexture.texCoord, binding, "NORMAL"))
+			if (!allocationManager.getResourceManager().materialResourceSetTextureResource(materialHandles[i], textureHandles[material.normalTexture.index], material.normalTexture.texCoord, "NORMAL"))
 			{
 				return false;
 			}
-
-			//
-
-			binding++;
 		}
 
 		//
 		//
 
 		WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource(glTFHandle);
+
+		MaterialResource* materialResource = allocationManager.getResourceManager().getMaterialResource(materialHandles[i]);
+
+		uint32_t binding = materialResource->binding;
 
 		//
 

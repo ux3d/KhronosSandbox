@@ -15,6 +15,8 @@ struct MaterialResource {
 
 	std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
 
+	uint32_t binding = 0;
+
 	// Rasterize helper
 
 	VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;

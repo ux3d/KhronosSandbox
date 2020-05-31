@@ -272,13 +272,22 @@ bool ResourceManager::textureResourceSetCreateInformation(uint64_t textureHandle
 	return true;
 }
 
-bool ResourceManager::materialResourceSetTextureResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, uint32_t binding, const std::string& prefix)
+bool ResourceManager::materialResourceSetAlphaMode(uint64_t materialHandle, uint32_t alphaMode)
+{
+	MaterialResource* materialResource = getMaterialResource(materialHandle);
+
+	materialResource->alphaMode = alphaMode;
+
+	return true;
+}
+
+bool ResourceManager::materialResourceSetTextureResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, const std::string& prefix)
 {
 	MaterialResource* materialResource = getMaterialResource(materialHandle);
 	TextureDataResource* textureResource = getTextureResource(textureHandle);
 
 	VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-	descriptorSetLayoutBinding.binding = binding;
+	descriptorSetLayoutBinding.binding = materialResource->binding;
 	descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	descriptorSetLayoutBinding.descriptorCount = 1;
 	descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -293,8 +302,12 @@ bool ResourceManager::materialResourceSetTextureResource(uint64_t materialHandle
 	//
 
 	materialResource->macros[prefix + "_TEXTURE"] = "";
-	materialResource->macros[prefix + "_BINDING"] = std::to_string(binding);
+	materialResource->macros[prefix + "_BINDING"] = std::to_string(materialResource->binding);
 	materialResource->macros[prefix + "_TEXCOORD"] = HelperShader::getTexCoord(texCoord);
+
+	//
+
+	materialResource->binding++;
 
 	return true;
 }
