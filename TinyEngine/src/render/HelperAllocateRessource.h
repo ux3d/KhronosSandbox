@@ -29,15 +29,9 @@ private:
 	std::vector<uint64_t> nodeHandles;
 	uint64_t glTFHandle = 0;
 
-	bool initBuffers(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace);
-
 	bool initBufferViews(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace);
 
 	bool initAccessors(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace);
-
-	bool initImages(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace);
-
-	bool initSamplers(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace);
 
 	bool initTextures(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace);
 

@@ -7,11 +7,6 @@ HelperAllocateResource::HelperAllocateResource(uint32_t width, uint32_t height, 
 {
 }
 
-bool HelperAllocateResource::initBuffers(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
-{
-	return true;
-}
-
 bool HelperAllocateResource::initBufferViews(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.bufferViews.size(); i++)
@@ -52,23 +47,15 @@ bool HelperAllocateResource::initAccessors(AllocationManager& allocationManager,
 	return true;
 }
 
-bool HelperAllocateResource::initImages(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
-{
-	return true;
-}
-
-bool HelperAllocateResource::initSamplers(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
-{
-	return true;
-}
-
 bool HelperAllocateResource::initTextures(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.textures.size(); i++)
 	{
 		const Texture& texture = glTF.textures[i];
 
-		textureHandles.push_back((uint64_t)&texture);
+		uint64_t textureHandle = (uint64_t)&texture;
+
+		textureHandles.push_back(textureHandle);
 
 		TextureResourceCreateInfo textureResourceCreateInfo = {};
 		textureResourceCreateInfo.imageDataResources = glTF.images[texture.source].imageDataResources;
@@ -85,7 +72,9 @@ bool HelperAllocateResource::initTextures(AllocationManager& allocationManager, 
 			textureResourceCreateInfo.samplerResourceCreateInfo.maxLod = glTF.samplers[texture.sampler].maxLod;
 		}
 
-		if (!allocationManager.createTextureResource(texture, textureResourceCreateInfo, physicalDevice, device, queue, commandPool))
+		allocationManager.getResourceManager().textureResourceSetCreateInformation(textureHandle, textureResourceCreateInfo);
+
+		if (!allocationManager.getResourceManager().textureResourceFinalize(textureHandle, physicalDevice, device, queue, commandPool))
 		{
 			return false;
 		}
@@ -606,16 +595,16 @@ bool HelperAllocateResource::allocate(AllocationManager& allocationManager, cons
 	//
 	//
 
-	// Images
+	// BufferViews
 
-	if (!initImages(allocationManager, glTF, useRaytrace))
+	if (!initBufferViews(allocationManager, glTF, useRaytrace))
 	{
 		return false;
 	}
 
-	// Samplers
+	// Accessors
 
-	if (!initSamplers(allocationManager, glTF, useRaytrace))
+	if (!initAccessors(allocationManager, glTF, useRaytrace))
 	{
 		return false;
 	}
@@ -630,27 +619,6 @@ bool HelperAllocateResource::allocate(AllocationManager& allocationManager, cons
 	// Materials
 
 	if (!initMaterials(allocationManager, glTF, useRaytrace))
-	{
-		return false;
-	}
-
-	// Buffers
-
-	if (!initBuffers(allocationManager, glTF, useRaytrace))
-	{
-		return false;
-	}
-
-	// BufferViews
-
-	if (!initBufferViews(allocationManager, glTF, useRaytrace))
-	{
-		return false;
-	}
-
-	// Accessors
-
-	if (!initAccessors(allocationManager, glTF, useRaytrace))
 	{
 		return false;
 	}
