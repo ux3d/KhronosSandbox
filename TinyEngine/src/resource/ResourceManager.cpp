@@ -867,10 +867,6 @@ bool ResourceManager::sharedDataResourceDelete(uint64_t sharedDataHandle, VkDevi
 {
 	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
 
-	if (!sharedDataResource)
-	{
-		return false;
-	}
 	terminate(*sharedDataResource, device);
 	sharedDataResources.erase(sharedDataHandle);
 
@@ -881,10 +877,6 @@ bool ResourceManager::textureResourceDelete(uint64_t textureHandle, VkDevice dev
 {
 	TextureDataResource* textureResource = getTextureResource(textureHandle);
 
-	if (!textureResource)
-	{
-		return false;
-	}
 	terminate(*textureResource, device);
 	textureResources.erase(textureHandle);
 
@@ -895,10 +887,6 @@ bool ResourceManager::materialResourceDelete(uint64_t materialHandle, VkDevice d
 {
 	MaterialResource* materialResource = getMaterialResource(materialHandle);
 
-	if (!materialResource)
-	{
-		return false;
-	}
 	terminate(*materialResource, device);
 	materialResources.erase(materialHandle);
 
@@ -909,10 +897,6 @@ bool ResourceManager::geometryResourceDelete(uint64_t geometryHandle, VkDevice d
 {
 	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
 
-	if (!geometryResource)
-	{
-		return false;
-	}
 	terminate(*geometryResource, device);
 	geometryResources.erase(geometryHandle);
 
@@ -923,10 +907,6 @@ bool ResourceManager::geometryModelResourceDelete(uint64_t geometryModelHandle, 
 {
 	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
 
-	if (!geometryModelResource)
-	{
-		return false;
-	}
 	terminate(*geometryModelResource, device);
 	geometryModelResources.erase(geometryModelHandle);
 
@@ -937,10 +917,6 @@ bool ResourceManager::groupResourceDelete(uint64_t groupHandle, VkDevice device)
 {
 	GroupResource* groupResource = getGroupResource(groupHandle);
 
-	if (!groupResource)
-	{
-		return false;
-	}
 	terminate(*groupResource, device);
 	groupResources.erase(groupHandle);
 
@@ -951,10 +927,6 @@ bool ResourceManager::instanceResourceDelete(uint64_t instanceHandle, VkDevice d
 {
 	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
 
-	if (!instanceResource)
-	{
-		return false;
-	}
 	terminate(*instanceResource, device);
 	instanceResources.erase(instanceHandle);
 
@@ -965,10 +937,6 @@ bool ResourceManager::worldResourceDelete(uint64_t worldHandle, VkDevice device)
 {
 	WorldResource* worldResource = getWorldResource(worldHandle);
 
-	if (!worldResource)
-	{
-		return false;
-	}
 	terminate(*worldResource, device);
 	worldResources.erase(worldHandle);
 
