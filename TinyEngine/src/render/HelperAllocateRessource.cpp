@@ -360,7 +360,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 					return false;
 				}
 
-				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.position].typeCount, "POSITION", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.position].typeCount, "POSITION", macros, format, stride, allocationManager.getResourceManager().getBuffer(allocationManager.getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -384,7 +384,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 					return false;
 				}
 
-				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.normal].typeCount, "NORMAL", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.normal].typeCount, "NORMAL", macros, format, stride, allocationManager.getResourceManager().getBuffer(allocationManager.getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -408,7 +408,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 					return false;
 				}
 
-				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.tangent].typeCount, "TANGENT", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.tangent].typeCount, "TANGENT", macros, format, stride, allocationManager.getResourceManager().getBuffer(allocationManager.getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -432,7 +432,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 					return false;
 				}
 
-				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.texCoord0].typeCount, "TEXCOORD_0", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.texCoord0].typeCount, "TEXCOORD_0", macros, format, stride, allocationManager.getResourceManager().getBuffer(allocationManager.getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -456,7 +456,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 					return false;
 				}
 
-				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.texCoord1].typeCount, "TEXCOORD_1", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.texCoord1].typeCount, "TEXCOORD_1", macros, format, stride, allocationManager.getResourceManager().getBuffer(allocationManager.getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -480,7 +480,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 					return false;
 				}
 
-				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.color0].typeCount, "COLOR_0", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.color0].typeCount, "COLOR_0", macros, format, stride, allocationManager.getResourceManager().getBuffer(allocationManager.getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -504,7 +504,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 					return false;
 				}
 
-				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.joints0].typeCount, "JOINTS_0", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.joints0].typeCount, "JOINTS_0", macros, format, stride, allocationManager.getResourceManager().getBuffer(allocationManager.getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -528,7 +528,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 					return false;
 				}
 
-				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.joints1].typeCount, "JOINTS_1", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.joints1].typeCount, "JOINTS_1", macros, format, stride, allocationManager.getResourceManager().getBuffer(allocationManager.getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -552,7 +552,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 					return false;
 				}
 
-				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.weights0].typeCount, "WEIGHTS_0", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.weights0].typeCount, "WEIGHTS_0", macros, format, stride, allocationManager.getResourceManager().getBuffer(allocationManager.getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -576,7 +576,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 					return false;
 				}
 
-				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.weights1].typeCount, "WEIGHTS_1", macros, format, stride, allocationManager.getBuffer(accessor), HelperAccess::getOffset(accessor)))
+				if (!allocationManager.addPrimitiveResource(primitiveHandle, attributeIndex, glTF.accessors[primitive.weights1].typeCount, "WEIGHTS_1", macros, format, stride, allocationManager.getResourceManager().getBuffer(allocationManager.getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}

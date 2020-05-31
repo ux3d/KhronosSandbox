@@ -19,7 +19,7 @@ public:
 
 	~AllocationManager();
 
-	VkBuffer getBuffer(const Accessor& accessor);
+	uint64_t getBufferHandle(const Accessor& accessor);
 
 	ResourceManager& getResourceManager();
 

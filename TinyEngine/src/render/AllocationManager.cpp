@@ -10,24 +10,32 @@ AllocationManager::~AllocationManager()
 {
 }
 
-VkBuffer AllocationManager::getBuffer(const Accessor& accessor)
+uint64_t AllocationManager::getBufferHandle(const Accessor& accessor)
 {
+	uint64_t sharedDataHandle = 0;
+
 	if (accessor.aliasedBuffer.byteLength > 0)
 	{
-		return resourceManager.getBuffer((uint64_t)&accessor.aliasedBufferView);
+		sharedDataHandle = (uint64_t)&accessor.aliasedBufferView;
+
+		return sharedDataHandle;
 	}
 
 	if (accessor.sparse.count >= 1)
 	{
-		return resourceManager.getBuffer((uint64_t)&accessor.sparse.bufferView);
+		sharedDataHandle = (uint64_t)&accessor.sparse.bufferView;
+
+		return sharedDataHandle;
 	}
 
 	if (accessor.pBufferView == nullptr)
 	{
-		return VK_NULL_HANDLE;
+		return sharedDataHandle;
 	}
 
-	return resourceManager.getBuffer((uint64_t)accessor.pBufferView);
+	sharedDataHandle = (uint64_t)accessor.pBufferView;
+
+	return sharedDataHandle;
 }
 
 ResourceManager& AllocationManager::getResourceManager()
@@ -358,7 +366,7 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 		}
 
 		primitiveResource->indexType = indexType;
-		primitiveResource->indexBuffer = getBuffer(glTF.accessors[primitive.indices]);
+		primitiveResource->indexBuffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[primitive.indices]));
 		primitiveResource->indexOffset = HelperAccess::getOffset(glTF.accessors[primitive.indices]);
 
 		primitiveResource->count = glTF.accessors[primitive.indices].count;
@@ -379,7 +387,7 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 		VkBufferDeviceAddressInfo bufferDeviceAddressInfo = {};
 		bufferDeviceAddressInfo.sType  = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
 
-		bufferDeviceAddressInfo.buffer = getBuffer(glTF.accessors[primitive.position]);
+		bufferDeviceAddressInfo.buffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[primitive.position]));
 		VkDeviceAddress vertexBufferAddress = vkGetBufferDeviceAddress(device, &bufferDeviceAddressInfo);
 
 		uint32_t vertexCount = glTF.accessors[primitive.position].count;
@@ -388,7 +396,7 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 		VkDeviceAddress vertexIndexBufferAddress = 0;
 		if (primitive.indices >= 0)
 		{
-			bufferDeviceAddressInfo.buffer = getBuffer(glTF.accessors[primitive.indices]);
+			bufferDeviceAddressInfo.buffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[primitive.indices]));
 
 			vertexIndexBufferAddress = vkGetBufferDeviceAddress(device, &bufferDeviceAddressInfo);
 
@@ -521,7 +529,7 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = getBuffer(glTF.accessors[currentPrimitive.indices]);
+						currentDescriptorBufferInfo.buffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[currentPrimitive.indices]));
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.indices]);
 						currentDescriptorBufferInfo.range = HelperAccess::getRange(glTF.accessors[currentPrimitive.indices]);
 
@@ -532,7 +540,7 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = getBuffer(glTF.accessors[currentPrimitive.position]);
+						currentDescriptorBufferInfo.buffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[currentPrimitive.position]));
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.position]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.position]);
 
@@ -543,7 +551,7 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = getBuffer(glTF.accessors[currentPrimitive.normal]);
+						currentDescriptorBufferInfo.buffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[currentPrimitive.normal]));
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.normal]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.normal]);
 
@@ -554,7 +562,7 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = getBuffer(glTF.accessors[currentPrimitive.tangent]);
+						currentDescriptorBufferInfo.buffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[currentPrimitive.tangent]));
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.tangent]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.tangent]);
 
@@ -565,7 +573,7 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = getBuffer(glTF.accessors[currentPrimitive.texCoord0]);
+						currentDescriptorBufferInfo.buffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[currentPrimitive.texCoord0]));
 						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.texCoord0]);
 						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.texCoord0]);
 
