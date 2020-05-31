@@ -142,6 +142,45 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		MaterialResource* materialResource = allocationManager.getResourceManager().getMaterialResource(materialHandles[i]);
 
+		//
+		//
+
+		UniformBufferResourceCreateInfo uniformBufferResourceCreateInfo = {};
+
+		uniformBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(MaterialUniformBuffer);
+		uniformBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+
+		if (!VulkanResource::createUniformBufferResource(physicalDevice, device, materialResource->uniformBufferResource, uniformBufferResourceCreateInfo))
+		{
+			return false;
+		}
+
+		MaterialUniformBuffer uniformBuffer = {};
+
+		uniformBuffer.baseColorFactor = material.pbrMetallicRoughness.baseColorFactor;
+
+		uniformBuffer.metallicFactor = material.pbrMetallicRoughness.metallicFactor;
+		uniformBuffer.roughnessFactor = material.pbrMetallicRoughness.roughnessFactor;
+
+		uniformBuffer.normalScale = material.normalTexture.scale;
+
+		uniformBuffer.occlusionStrength = material.occlusionTexture.strength;
+
+		uniformBuffer.emissiveFactor = material.emissiveFactor;
+
+		uniformBuffer.alphaMode = material.alphaMode;
+		uniformBuffer.alphaCutoff = material.alphaCutoff;
+
+		uniformBuffer.doubleSided = material.doubleSided;
+
+		if (!VulkanResource::copyHostToDevice(device, materialResource->uniformBufferResource.bufferResource, &uniformBuffer, sizeof(uniformBuffer)))
+		{
+			return false;
+		}
+
+		//
+		//
+
 		uint32_t binding = materialResource->binding;
 
 		//
@@ -202,17 +241,6 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		binding++;
 
 		//
-		//
-
-		UniformBufferResourceCreateInfo uniformBufferResourceCreateInfo = {};
-
-		uniformBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(MaterialUniformBuffer);
-		uniformBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-
-		if (!VulkanResource::createUniformBufferResource(physicalDevice, device, materialResource->uniformBufferResource, uniformBufferResourceCreateInfo))
-		{
-			return false;
-		}
 
 		descriptorSetLayoutBinding = {};
 		descriptorSetLayoutBinding.binding = binding;
@@ -232,31 +260,6 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		//
 
 		if (!allocationManager.getResourceManager().materialResourceFinalize(materialHandles[i], device))
-		{
-			return false;
-		}
-
-		//
-
-		MaterialUniformBuffer uniformBuffer = {};
-
-		uniformBuffer.baseColorFactor = material.pbrMetallicRoughness.baseColorFactor;
-
-		uniformBuffer.metallicFactor = material.pbrMetallicRoughness.metallicFactor;
-		uniformBuffer.roughnessFactor = material.pbrMetallicRoughness.roughnessFactor;
-
-		uniformBuffer.normalScale = material.normalTexture.scale;
-
-		uniformBuffer.occlusionStrength = material.occlusionTexture.strength;
-
-		uniformBuffer.emissiveFactor = material.emissiveFactor;
-
-		uniformBuffer.alphaMode = material.alphaMode;
-		uniformBuffer.alphaCutoff = material.alphaCutoff;
-
-		uniformBuffer.doubleSided = material.doubleSided;
-
-		if (!VulkanResource::copyHostToDevice(device, materialResource->uniformBufferResource.bufferResource, &uniformBuffer, sizeof(uniformBuffer)))
 		{
 			return false;
 		}
