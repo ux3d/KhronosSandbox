@@ -68,50 +68,13 @@ bool AllocationManager::createSharedDataResource(const BufferView& bufferView, V
 	return true;
 }
 
-bool AllocationManager::createTextureResource(uint64_t textureHandle, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool AllocationManager::createTextureResource(const Texture& texture, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
+	uint64_t textureHandle = (uint64_t)&texture;
+
 	resourceManager.textureResourceSetCreateInformation(textureHandle, textureResourceCreateInfo);
 
 	if (!resourceManager.textureResourceFinalize(textureHandle, physicalDevice, device, queue, commandPool))
-	{
-		return false;
-	}
-
-	return true;
-}
-
-bool AllocationManager::addMaterialResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, uint32_t binding, const std::string& prefix)
-{
-	MaterialResource* materialResource = resourceManager.getMaterialResource(materialHandle);
-	TextureDataResource* textureResource = resourceManager.getTextureResource(textureHandle);
-
-	//
-
-	VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-	descriptorSetLayoutBinding.binding = binding;
-	descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	descriptorSetLayoutBinding.descriptorCount = 1;
-	descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-	VkDescriptorImageInfo descriptorImageInfo = {};
-	descriptorImageInfo.sampler = textureResource->textureResource.samplerResource.sampler;
-	descriptorImageInfo.imageView = textureResource->textureResource.imageViewResource.imageView;
-	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-	//
-
-	materialResource->macros[prefix + "_TEXTURE"] = "";
-	materialResource->macros[prefix + "_BINDING"] = std::to_string(binding);
-	materialResource->macros[prefix + "_TEXCOORD"] = HelperShader::getTexCoord(texCoord);
-
-	return true;
-}
-
-bool AllocationManager::finalizeMaterialResource(uint64_t materialHandle, VkDevice device)
-{
-	if (!resourceManager.materialResourceFinalize(materialHandle, device))
 	{
 		return false;
 	}

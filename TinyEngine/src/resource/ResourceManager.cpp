@@ -1,5 +1,7 @@
 #include "ResourceManager.h"
 
+#include "../shader/Shader.h"
+
 void ResourceManager::terminate(SharedDataResource& sharedDataResource, VkDevice device)
 {
 	VulkanResource::destroyVertexBufferResource(device, sharedDataResource.vertexBufferResource);
@@ -266,6 +268,33 @@ bool ResourceManager::textureResourceSetCreateInformation(uint64_t textureHandle
 	TextureDataResource* textureDataResource = getTextureResource(textureHandle);
 
 	textureDataResource->textureResourceCreateInfo = textureResourceCreateInfo;
+
+	return true;
+}
+
+bool ResourceManager::materialResourceSetTextureResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, uint32_t binding, const std::string& prefix)
+{
+	MaterialResource* materialResource = getMaterialResource(materialHandle);
+	TextureDataResource* textureResource = getTextureResource(textureHandle);
+
+	VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+	descriptorSetLayoutBinding.binding = binding;
+	descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	descriptorSetLayoutBinding.descriptorCount = 1;
+	descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+	VkDescriptorImageInfo descriptorImageInfo = {};
+	descriptorImageInfo.sampler = textureResource->textureResource.samplerResource.sampler;
+	descriptorImageInfo.imageView = textureResource->textureResource.imageViewResource.imageView;
+	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
+
+	//
+
+	materialResource->macros[prefix + "_TEXTURE"] = "";
+	materialResource->macros[prefix + "_BINDING"] = std::to_string(binding);
+	materialResource->macros[prefix + "_TEXCOORD"] = HelperShader::getTexCoord(texCoord);
 
 	return true;
 }
