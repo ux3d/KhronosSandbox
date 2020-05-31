@@ -2,6 +2,7 @@
 #define RENDER_HELPERALLOCATERESSOURCE_H_
 
 #include <cstdint>
+#include <vector>
 
 #include "../common/Common.h"
 #include "../gltf/GLTF.h"
@@ -21,6 +22,11 @@ private:
 	VkRenderPass renderPass;
 	VkSampleCountFlagBits samples;
 	VkImageView imageView;
+
+	std::vector<uint64_t> materialHandles;
+	std::vector<uint64_t> meshHandles;
+	std::vector<uint64_t> nodeHandles;
+	uint64_t glTFHandle = 0;
 
 	bool initBuffers(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace);
 

@@ -98,7 +98,9 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 	{
 		const Material& material = glTF.materials[i];
 
-		MaterialResource* materialResource = allocationManager.getResourceManager().getMaterialResource((uint64_t)&material);
+		materialHandles.push_back((uint64_t)&material);
+
+		MaterialResource* materialResource = allocationManager.getResourceManager().getMaterialResource(materialHandles[i]);
 		materialResource->alphaMode = material.alphaMode;
 
 		uint32_t binding = 0;
@@ -168,7 +170,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		//
 		//
 
-		WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource((uint64_t)&glTF);
+		WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource(glTFHandle);
 
 		//
 
@@ -313,21 +315,25 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 	{
 		const Mesh& mesh = glTF.meshes[i];
 
-		GroupResource* groupResource = allocationManager.getResourceManager().getGroupResource((uint64_t)&mesh);
+		meshHandles.push_back((uint64_t)&mesh);
+
+		GroupResource* groupResource = allocationManager.getResourceManager().getGroupResource(meshHandles[i]);
 
 		for (size_t k = 0; k < mesh.primitives.size(); k++)
 		{
 			const Primitive& primitive = mesh.primitives[k];
 
-			GeometryModelResource* primitiveResource = allocationManager.getResourceManager().getGeometryModelResource((uint64_t)&primitive);
-			groupResource->primitiveHandles.push_back((uint64_t)&primitive);
+			uint64_t primitiveHandle = (uint64_t)&primitive;
+
+			GeometryModelResource* primitiveResource = allocationManager.getResourceManager().getGeometryModelResource(primitiveHandle);
+			groupResource->primitiveHandles.push_back(primitiveHandle);
 
 			std::map<std::string, std::string> macros;
 
 			VkCullModeFlags cullMode = VK_CULL_MODE_NONE;
 			if (primitive.material >= 0)
 			{
-				macros = allocationManager.getResourceManager().getMaterialResource((uint64_t)&glTF.materials[primitive.material])->macros;
+				macros = allocationManager.getResourceManager().getMaterialResource(materialHandles[primitive.material])->macros;
 			}
 
 			primitiveResource->vertexBuffers.resize(primitive.attributesCount);
@@ -609,7 +615,7 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 				return false;
 			}
 
-			if (!allocationManager.finalizePrimitive(primitive, glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &allocationManager.getResourceManager().getMaterialResource((uint64_t)&glTF.materials[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
+			if (!allocationManager.finalizePrimitive(primitive, glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &allocationManager.getResourceManager().getMaterialResource(materialHandles[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
 			{
 				return false;
 			}
@@ -625,13 +631,13 @@ bool HelperAllocateResource::initNodes(AllocationManager& allocationManager, con
 	{
 		const Node& node = glTF.nodes[i];
 
+		nodeHandles.push_back((uint64_t)&node);
+
 		if (node.mesh >= 0)
 		{
-			const Mesh& mesh = glTF.meshes[node.mesh];
-
-			InstanceResource* instanceResource = allocationManager.getResourceManager().getInstanceResource((uint64_t)&node);
+			InstanceResource* instanceResource = allocationManager.getResourceManager().getInstanceResource(nodeHandles[i]);
 			instanceResource->worldMatrix = node.worldMatrix;
-			instanceResource->groupHandle = (uint64_t)&mesh;
+			instanceResource->groupHandle = meshHandles[node.mesh];
 		}
 	}
 
@@ -640,7 +646,9 @@ bool HelperAllocateResource::initNodes(AllocationManager& allocationManager, con
 
 bool HelperAllocateResource::allocate(AllocationManager& allocationManager, const GLTF& glTF, const std::string& environment, bool useRaytrace)
 {
-	WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource((uint64_t)&glTF);
+	glTFHandle = (uint64_t)&glTF;
+
+	WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource(glTFHandle);
 
 	// Diffuse
 
@@ -768,11 +776,11 @@ bool HelperAllocateResource::allocate(AllocationManager& allocationManager, cons
 
 	if (glTF.defaultScene < glTF.scenes.size())
 	{
-		WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource((uint64_t)&glTF);
+		WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource(glTFHandle);
 
 		for (size_t i = 0; i < glTF.scenes[glTF.defaultScene].nodes.size(); i++)
 		{
-			gltfResource->instanceHandles.push_back((uint64_t)&glTF.nodes[glTF.scenes[glTF.defaultScene].nodes[i]]);
+			gltfResource->instanceHandles.push_back(nodeHandles[glTF.scenes[glTF.defaultScene].nodes[i]]);
 		}
 
 		if (!allocationManager.finalizeWorld(glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
