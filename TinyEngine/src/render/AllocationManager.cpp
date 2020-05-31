@@ -60,7 +60,7 @@ bool AllocationManager::createSharedDataResource(const BufferView& bufferView, V
 
 	resourceManager.sharedDataSetData(sharedDataHandle, bufferView.byteLength, HelperAccess::accessData(bufferView));
 
-	if (!resourceManager.finalizeSharedDataResource(sharedDataHandle, physicalDevice, device, queue, commandPool))
+	if (!resourceManager.sharedDataResourceFinalize(sharedDataHandle, physicalDevice, device, queue, commandPool))
 	{
 		return false;
 	}
@@ -70,7 +70,9 @@ bool AllocationManager::createSharedDataResource(const BufferView& bufferView, V
 
 bool AllocationManager::createTextureResource(uint64_t textureHandle, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
-	if (!resourceManager.finalizeTextureResource(textureHandle, textureResourceCreateInfo, physicalDevice, device, queue, commandPool))
+	resourceManager.textureResourceSetCreateInformation(textureHandle, textureResourceCreateInfo);
+
+	if (!resourceManager.textureResourceFinalize(textureHandle, physicalDevice, device, queue, commandPool))
 	{
 		return false;
 	}
@@ -81,7 +83,7 @@ bool AllocationManager::createTextureResource(uint64_t textureHandle, const Text
 bool AllocationManager::addMaterialResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, uint32_t binding, const std::string& prefix)
 {
 	MaterialResource* materialResource = resourceManager.getMaterialResource(materialHandle);
-	TextureResource* textureResource = resourceManager.getTextureResource(textureHandle);
+	TextureDataResource* textureResource = resourceManager.getTextureResource(textureHandle);
 
 	//
 
@@ -93,8 +95,8 @@ bool AllocationManager::addMaterialResource(uint64_t materialHandle, uint64_t te
 	materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 	VkDescriptorImageInfo descriptorImageInfo = {};
-	descriptorImageInfo.sampler = textureResource->samplerResource.sampler;
-	descriptorImageInfo.imageView = textureResource->imageViewResource.imageView;
+	descriptorImageInfo.sampler = textureResource->textureResource.samplerResource.sampler;
+	descriptorImageInfo.imageView = textureResource->textureResource.imageViewResource.imageView;
 	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
@@ -109,7 +111,7 @@ bool AllocationManager::addMaterialResource(uint64_t materialHandle, uint64_t te
 
 bool AllocationManager::finalizeMaterialResource(uint64_t materialHandle, VkDevice device)
 {
-	if (!resourceManager.finalizeMaterialResource(materialHandle, device))
+	if (!resourceManager.materialResourceFinalize(materialHandle, device))
 	{
 		return false;
 	}
@@ -678,12 +680,12 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 		std::vector<VkDescriptorImageInfo> descriptorImageInfoTextures;
 		for (const Texture& currentTexture : glTF.textures)
 		{
-			TextureResource* currentTextureResource = resourceManager.getTextureResource((uint64_t)&currentTexture);
+			TextureDataResource* currentTextureResource = resourceManager.getTextureResource((uint64_t)&currentTexture);
 
 			VkDescriptorImageInfo descriptorImageInfo = {};
 
-			descriptorImageInfo.sampler = currentTextureResource->samplerResource.sampler;
-			descriptorImageInfo.imageView = currentTextureResource->imageViewResource.imageView;
+			descriptorImageInfo.sampler = currentTextureResource->textureResource.samplerResource.sampler;
+			descriptorImageInfo.imageView = currentTextureResource->textureResource.imageViewResource.imageView;
 			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 			descriptorImageInfoTextures.push_back(descriptorImageInfo);

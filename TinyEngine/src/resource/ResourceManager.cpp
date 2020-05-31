@@ -5,9 +5,9 @@ void ResourceManager::terminate(SharedDataResource& sharedDataResource, VkDevice
 	VulkanResource::destroyVertexBufferResource(device, sharedDataResource.vertexBufferResource);
 }
 
-void ResourceManager::terminate(TextureResource& textureResource, VkDevice device)
+void ResourceManager::terminate(TextureDataResource& textureResource, VkDevice device)
 {
-	VulkanResource::destroyTextureResource(device, textureResource);
+	VulkanResource::destroyTextureResource(device, textureResource.textureResource);
 }
 
 void ResourceManager::terminate(MaterialResource& materialResource, VkDevice device)
@@ -165,12 +165,12 @@ SharedDataResource* ResourceManager::getSharedDataResource(uint64_t sharedDataHa
 	return &result->second;
 }
 
-TextureResource* ResourceManager::getTextureResource(uint64_t textureHandle)
+TextureDataResource* ResourceManager::getTextureResource(uint64_t textureHandle)
 {
 	auto result = textureResources.find(textureHandle);
 	if (result == textureResources.end())
 	{
-		textureResources[textureHandle] = TextureResource();
+		textureResources[textureHandle] = TextureDataResource();
 		return &textureResources[textureHandle];
 	}
 	return &result->second;
@@ -261,6 +261,15 @@ bool ResourceManager::sharedDataSetUsage(uint64_t sharedDataHandle, VkBufferUsag
 	return true;
 }
 
+bool ResourceManager::textureResourceSetCreateInformation(uint64_t textureHandle, const TextureResourceCreateInfo& textureResourceCreateInfo)
+{
+	TextureDataResource* textureDataResource = getTextureResource(textureHandle);
+
+	textureDataResource->textureResourceCreateInfo = textureResourceCreateInfo;
+
+	return true;
+}
+
 bool ResourceManager::instanceResourceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix)
 {
 	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
@@ -279,7 +288,7 @@ bool ResourceManager::instanceResourceSetGroupResource(uint64_t instanceHandle, 
 	return true;
 }
 
-bool ResourceManager::finalizeSharedDataResource(uint64_t externalHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool ResourceManager::sharedDataResourceFinalize(uint64_t externalHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
 	SharedDataResource* sharedDataResource = getSharedDataResource(externalHandle);
 
@@ -293,17 +302,13 @@ bool ResourceManager::finalizeSharedDataResource(uint64_t externalHandle, VkPhys
 	return true;
 }
 
-bool ResourceManager::finalizeTextureResource(uint64_t externalHandle, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool ResourceManager::textureResourceFinalize(uint64_t externalHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
-	auto it = textureResources.find(externalHandle);
-	if (it == textureResources.end())
-	{
-		textureResources[externalHandle] = TextureResource();
-	}
+	TextureDataResource* textureDataResource = getTextureResource(externalHandle);
 
 	//
 
-	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, textureResources[externalHandle], textureResourceCreateInfo))
+	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, textureDataResource->textureResource, textureDataResource->textureResourceCreateInfo))
 	{
 		return false;
 	}
@@ -313,7 +318,7 @@ bool ResourceManager::finalizeTextureResource(uint64_t externalHandle, const Tex
 	return true;
 }
 
-bool ResourceManager::finalizeMaterialResource(uint64_t externalHandle, VkDevice device)
+bool ResourceManager::materialResourceFinalize(uint64_t externalHandle, VkDevice device)
 {
 	auto it = materialResources.find(externalHandle);
 	if (it == materialResources.end())
@@ -408,7 +413,7 @@ bool ResourceManager::finalizeMaterialResource(uint64_t externalHandle, VkDevice
 	return true;
 }
 
-bool ResourceManager::finalizeGeometryResource(uint64_t externalHandle)
+bool ResourceManager::geometryResourceFinalize(uint64_t externalHandle)
 {
 	auto it = geometryResources.find(externalHandle);
 	if (it == geometryResources.end())
@@ -418,7 +423,7 @@ bool ResourceManager::finalizeGeometryResource(uint64_t externalHandle)
 	return true;
 }
 
-bool ResourceManager::finalizeGeometryModelResource(uint64_t externalHandle)
+bool ResourceManager::geometryModelResourceFinalize(uint64_t externalHandle)
 {
 	auto it = geometryModelResources.find(externalHandle);
 	if (it == geometryModelResources.end())
@@ -428,7 +433,7 @@ bool ResourceManager::finalizeGeometryModelResource(uint64_t externalHandle)
 	return true;
 }
 
-bool ResourceManager::finalizeGroupResource(uint64_t externalHandle)
+bool ResourceManager::groupResourceFinalize(uint64_t externalHandle)
 {
 	auto it = groupResources.find(externalHandle);
 	if (it == groupResources.end())
@@ -438,7 +443,7 @@ bool ResourceManager::finalizeGroupResource(uint64_t externalHandle)
 	return true;
 }
 
-bool ResourceManager::finalizeInstanceResource(uint64_t externalHandle)
+bool ResourceManager::instanceResourceFinalize(uint64_t externalHandle)
 {
 	auto it = instanceResources.find(externalHandle);
 	if (it == instanceResources.end())
@@ -448,7 +453,7 @@ bool ResourceManager::finalizeInstanceResource(uint64_t externalHandle)
 	return true;
 }
 
-bool ResourceManager::finalizeWorldResource(uint64_t externalHandle)
+bool ResourceManager::worldResourceFinalize(uint64_t externalHandle)
 {
 	auto it = worldResources.find(externalHandle);
 	if (it == worldResources.end())
@@ -458,7 +463,7 @@ bool ResourceManager::finalizeWorldResource(uint64_t externalHandle)
 	return true;
 }
 
-bool ResourceManager::deleteSharedDataResource(uint64_t sharedDataHandle, VkDevice device)
+bool ResourceManager::sharedDataResourceDelete(uint64_t sharedDataHandle, VkDevice device)
 {
 	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
 
@@ -472,9 +477,9 @@ bool ResourceManager::deleteSharedDataResource(uint64_t sharedDataHandle, VkDevi
 	return true;
 }
 
-bool ResourceManager::deleteTextureResource(uint64_t textureHandle, VkDevice device)
+bool ResourceManager::textureResourceDelete(uint64_t textureHandle, VkDevice device)
 {
-	TextureResource* textureResource = getTextureResource(textureHandle);
+	TextureDataResource* textureResource = getTextureResource(textureHandle);
 
 	if (!textureResource)
 	{
@@ -486,7 +491,7 @@ bool ResourceManager::deleteTextureResource(uint64_t textureHandle, VkDevice dev
 	return true;
 }
 
-bool ResourceManager::deleteMaterialResource(uint64_t materialHandle, VkDevice device)
+bool ResourceManager::materialResourceDelete(uint64_t materialHandle, VkDevice device)
 {
 	MaterialResource* materialResource = getMaterialResource(materialHandle);
 
@@ -500,7 +505,7 @@ bool ResourceManager::deleteMaterialResource(uint64_t materialHandle, VkDevice d
 	return true;
 }
 
-bool ResourceManager::deleteGeometryResource(uint64_t geometryHandle, VkDevice device)
+bool ResourceManager::geometryResourceDelete(uint64_t geometryHandle, VkDevice device)
 {
 	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
 
@@ -514,7 +519,7 @@ bool ResourceManager::deleteGeometryResource(uint64_t geometryHandle, VkDevice d
 	return true;
 }
 
-bool ResourceManager::deleteGeometryModelResource(uint64_t geometryModelHandle, VkDevice device)
+bool ResourceManager::geometryModelResourceDelete(uint64_t geometryModelHandle, VkDevice device)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
 
@@ -528,7 +533,7 @@ bool ResourceManager::deleteGeometryModelResource(uint64_t geometryModelHandle, 
 	return true;
 }
 
-bool ResourceManager::deleteGroupResource(uint64_t groupHandle, VkDevice device)
+bool ResourceManager::groupResourceDelete(uint64_t groupHandle, VkDevice device)
 {
 	GroupResource* groupResource = getGroupResource(groupHandle);
 
@@ -542,7 +547,7 @@ bool ResourceManager::deleteGroupResource(uint64_t groupHandle, VkDevice device)
 	return true;
 }
 
-bool ResourceManager::deleteInstanceResource(uint64_t instanceHandle, VkDevice device)
+bool ResourceManager::instanceResourceDelete(uint64_t instanceHandle, VkDevice device)
 {
 	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
 
@@ -556,7 +561,7 @@ bool ResourceManager::deleteInstanceResource(uint64_t instanceHandle, VkDevice d
 	return true;
 }
 
-bool ResourceManager::deleteWorldResource(uint64_t worldHandle, VkDevice device)
+bool ResourceManager::worldResourceDelete(uint64_t worldHandle, VkDevice device)
 {
 	WorldResource* worldResource = getWorldResource(worldHandle);
 
