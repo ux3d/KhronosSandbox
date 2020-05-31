@@ -23,6 +23,7 @@ private:
 	VkSampleCountFlagBits samples;
 	VkImageView imageView;
 
+	std::vector<uint64_t> textureHandles;
 	std::vector<uint64_t> materialHandles;
 	std::vector<uint64_t> meshHandles;
 	std::vector<uint64_t> nodeHandles;

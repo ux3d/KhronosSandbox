@@ -68,6 +68,8 @@ bool HelperAllocateResource::initTextures(AllocationManager& allocationManager, 
 	{
 		const Texture& texture = glTF.textures[i];
 
+		textureHandles.push_back((uint64_t)&texture);
+
 		TextureResourceCreateInfo textureResourceCreateInfo = {};
 		textureResourceCreateInfo.imageDataResources = glTF.images[texture.source].imageDataResources;
 		textureResourceCreateInfo.mipMap = true;
@@ -83,7 +85,7 @@ bool HelperAllocateResource::initTextures(AllocationManager& allocationManager, 
 			textureResourceCreateInfo.samplerResourceCreateInfo.maxLod = glTF.samplers[texture.sampler].maxLod;
 		}
 
-		if (!allocationManager.createTextureResource(texture, textureResourceCreateInfo, physicalDevice, device, queue, commandPool))
+		if (!allocationManager.createTextureResource(textureHandles[i], textureResourceCreateInfo, physicalDevice, device, queue, commandPool))
 		{
 			return false;
 		}
@@ -108,7 +110,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		// Metallic Roughness
 		if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
 		{
-			if (!allocationManager.addMaterialResource(material, glTF.textures[material.pbrMetallicRoughness.baseColorTexture.index], material.pbrMetallicRoughness.baseColorTexture.texCoord, binding, "BASECOLOR"))
+			if (!allocationManager.addMaterialResource(materialHandles[i], textureHandles[material.pbrMetallicRoughness.baseColorTexture.index], material.pbrMetallicRoughness.baseColorTexture.texCoord, binding, "BASECOLOR"))
 			{
 				return false;
 			}
@@ -120,7 +122,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		if (material.pbrMetallicRoughness.metallicRoughnessTexture.index >= 0)
 		{
-			if (!allocationManager.addMaterialResource(material, glTF.textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index], material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord, binding, "METALLICROUGHNESS"))
+			if (!allocationManager.addMaterialResource(materialHandles[i], textureHandles[material.pbrMetallicRoughness.metallicRoughnessTexture.index], material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord, binding, "METALLICROUGHNESS"))
 			{
 				return false;
 			}
@@ -133,7 +135,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		// Base Material
 		if (material.emissiveTexture.index >= 0)
 		{
-			if (!allocationManager.addMaterialResource(material, glTF.textures[material.emissiveTexture.index], material.emissiveTexture.texCoord, binding, "EMISSIVE"))
+			if (!allocationManager.addMaterialResource(materialHandles[i], textureHandles[material.emissiveTexture.index], material.emissiveTexture.texCoord, binding, "EMISSIVE"))
 			{
 				return false;
 			}
@@ -145,7 +147,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		if (material.occlusionTexture.index >= 0)
 		{
-			if (!allocationManager.addMaterialResource(material, glTF.textures[material.occlusionTexture.index], material.occlusionTexture.texCoord, binding, "OCCLUSION"))
+			if (!allocationManager.addMaterialResource(materialHandles[i], textureHandles[material.occlusionTexture.index], material.occlusionTexture.texCoord, binding, "OCCLUSION"))
 			{
 				return false;
 			}
@@ -157,7 +159,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		if (material.normalTexture.index >= 0)
 		{
-			if (!allocationManager.addMaterialResource(material, glTF.textures[material.normalTexture.index], material.normalTexture.texCoord, binding, "NORMAL"))
+			if (!allocationManager.addMaterialResource(materialHandles[i], textureHandles[material.normalTexture.index], material.normalTexture.texCoord, binding, "NORMAL"))
 			{
 				return false;
 			}
@@ -259,7 +261,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		//
 
-		if (!allocationManager.finalizeMaterialResource(material, device))
+		if (!allocationManager.finalizeMaterialResource(materialHandles[i], device))
 		{
 			return false;
 		}

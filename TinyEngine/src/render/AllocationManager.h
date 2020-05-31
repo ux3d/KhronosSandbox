@@ -25,11 +25,11 @@ public:
 
 	bool createSharedDataResource(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace);
 
-	bool createTextureResource(const Texture& texture, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+	bool createTextureResource(uint64_t textureHandle, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
 
-	bool addMaterialResource(const Material& material, const Texture& texture, uint32_t texCoord, uint32_t binding, const std::string& prefix);
+	bool addMaterialResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, uint32_t binding, const std::string& prefix);
 
-	bool finalizeMaterialResource(const Material& material, VkDevice device);
+	bool finalizeMaterialResource(uint64_t materialHandle, VkDevice device);
 
 	bool addPrimitiveResource(const Primitive& primitive, uint32_t attributeIndex, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset);
 

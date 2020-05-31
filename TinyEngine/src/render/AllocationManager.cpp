@@ -55,9 +55,9 @@ bool AllocationManager::createSharedDataResource(const BufferView& bufferView, V
 	return true;
 }
 
-bool AllocationManager::createTextureResource(const Texture& texture, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool AllocationManager::createTextureResource(uint64_t textureHandle, const TextureResourceCreateInfo& textureResourceCreateInfo, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
-	if (!resourceManager.finalizeTextureResource((uint64_t)&texture, textureResourceCreateInfo, physicalDevice, device, queue, commandPool))
+	if (!resourceManager.finalizeTextureResource(textureHandle, textureResourceCreateInfo, physicalDevice, device, queue, commandPool))
 	{
 		return false;
 	}
@@ -65,10 +65,10 @@ bool AllocationManager::createTextureResource(const Texture& texture, const Text
 	return true;
 }
 
-bool AllocationManager::addMaterialResource(const Material& material, const Texture& texture, uint32_t texCoord, uint32_t binding, const std::string& prefix)
+bool AllocationManager::addMaterialResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, uint32_t binding, const std::string& prefix)
 {
-	MaterialResource* materialResource = resourceManager.getMaterialResource((uint64_t)&material);
-	TextureResource* textureResource = resourceManager.getTextureResource((uint64_t)&texture);
+	MaterialResource* materialResource = resourceManager.getMaterialResource(materialHandle);
+	TextureResource* textureResource = resourceManager.getTextureResource(textureHandle);
 
 	//
 
@@ -94,9 +94,9 @@ bool AllocationManager::addMaterialResource(const Material& material, const Text
 	return true;
 }
 
-bool AllocationManager::finalizeMaterialResource(const Material& material, VkDevice device)
+bool AllocationManager::finalizeMaterialResource(uint64_t materialHandle, VkDevice device)
 {
-	if (!resourceManager.finalizeMaterialResource((uint64_t)&material, device))
+	if (!resourceManager.finalizeMaterialResource(materialHandle, device))
 	{
 		return false;
 	}
