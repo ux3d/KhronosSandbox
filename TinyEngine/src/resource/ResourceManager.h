@@ -50,7 +50,7 @@ public:
 
 	VkBuffer getBuffer(uint64_t bufferViewHandle);
 
-	//
+	// TODO: SHould become private.
 
 	TextureDataResource* getTextureResource(uint64_t textureHandle);
 	MaterialResource* getMaterialResource(uint64_t materialHandle);
@@ -60,7 +60,7 @@ public:
 	InstanceResource* getInstanceResource(uint64_t instanceHandle);
 	WorldResource* getWorldResource(uint64_t worldHandle);
 
-	//
+	// One time setup before finalization.
 
 	bool sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize size, const void* data);
 	bool sharedDataSetUsage(uint64_t sharedDataHandle, VkBufferUsageFlags usage);
@@ -81,7 +81,7 @@ public:
 	bool instanceResourceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix);
 	bool instanceResourceSetGroupResource(uint64_t instanceHandle, uint64_t groupHandle);
 
-	//
+	// Finalization and setup not allowed anymore.
 
 	bool sharedDataResourceFinalize(uint64_t externalHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
 	bool textureResourceFinalize(uint64_t externalHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
@@ -92,7 +92,11 @@ public:
 	bool instanceResourceFinalize(uint64_t externalHandle);
 	bool worldResourceFinalize(uint64_t externalHandle);
 
-	//
+	// Update also after finalization.
+
+	bool instanceResourceUpdateWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix);
+
+	// Delete and free data.
 
 	bool sharedDataResourceDelete(uint64_t sharedDataHandle, VkDevice device);
 	bool textureResourceDelete(uint64_t textureHandle, VkDevice device);

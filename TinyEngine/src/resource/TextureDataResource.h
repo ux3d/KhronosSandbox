@@ -3,7 +3,9 @@
 
 #include "../composite/Composite.h"
 
-struct TextureDataResource {
+#include "BaseResource.h"
+
+struct TextureDataResource : BaseResource {
 
 	TextureResourceCreateInfo textureResourceCreateInfo = {};
 

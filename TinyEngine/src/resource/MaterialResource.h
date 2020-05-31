@@ -9,6 +9,8 @@
 #include "../composite/Composite.h"
 #include "../math/Math.h"
 
+#include "BaseResource.h"
+
 struct MaterialUniformBuffer {
 	glm::vec4 baseColorFactor = glm::vec4(1.0f);
 
@@ -41,7 +43,7 @@ struct RaytraceMaterialUniformBuffer {
 	int32_t padding;
 };
 
-struct MaterialResource {
+struct MaterialResource : BaseResource {
 	// Mapper helper
 
 	MaterialUniformBuffer materialUniformBuffer;

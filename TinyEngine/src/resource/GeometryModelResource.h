@@ -6,7 +6,9 @@
 
 #include "../composite/Composite.h"
 
-struct GeometryModelResource {
+#include "BaseResource.h"
+
+struct GeometryModelResource : BaseResource {
 	// Mapper helper
 
 	uint64_t geometryHandle = 0;

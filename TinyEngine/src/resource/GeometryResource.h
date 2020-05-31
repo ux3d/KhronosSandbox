@@ -6,7 +6,9 @@
 
 #include "../composite/Composite.h"
 
-struct GeometryResource {
+#include "BaseResource.h"
+
+struct GeometryResource : BaseResource {
 	// Mapper helper
 
 	uint32_t attributeIndex = 0;

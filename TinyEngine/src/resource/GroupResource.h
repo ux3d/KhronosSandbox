@@ -4,7 +4,9 @@
 #include <cstdint>
 #include <vector>
 
-struct GroupResource {
+#include "BaseResource.h"
+
+struct GroupResource : BaseResource {
 
 	// Mapper helper
 

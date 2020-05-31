@@ -479,6 +479,7 @@ bool HelperAllocateResource::initNodes(AllocationManager& allocationManager, con
 		{
 			allocationManager.getResourceManager().instanceResourceSetWorldMatrix(nodeHandles[i], node.worldMatrix);
 			allocationManager.getResourceManager().instanceResourceSetGroupResource(nodeHandles[i], meshHandles[node.mesh]);
+			allocationManager.getResourceManager().instanceResourceFinalize(nodeHandles[i]);
 		}
 	}
 

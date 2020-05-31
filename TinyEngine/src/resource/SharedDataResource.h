@@ -3,7 +3,9 @@
 
 #include "../composite/Composite.h"
 
-struct SharedDataResource {
+#include "BaseResource.h"
+
+struct SharedDataResource : BaseResource {
 
 	// Mapper helper
 

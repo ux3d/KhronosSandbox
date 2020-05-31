@@ -248,6 +248,11 @@ bool ResourceManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize 
 {
 	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
 
+	if (sharedDataResource->finalized)
+	{
+		return false;
+	}
+
 	sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.size = size;
 	sharedDataResource->vertexBufferResourceCreateInfo.data = data;
 
@@ -258,6 +263,11 @@ bool ResourceManager::sharedDataSetUsage(uint64_t sharedDataHandle, VkBufferUsag
 {
 	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
 
+	if (sharedDataResource->finalized)
+	{
+		return false;
+	}
+
 	sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.usage = usage;
 
 	return true;
@@ -267,6 +277,11 @@ bool ResourceManager::textureResourceSetCreateInformation(uint64_t textureHandle
 {
 	TextureDataResource* textureDataResource = getTextureResource(textureHandle);
 
+	if (textureDataResource->finalized)
+	{
+		return false;
+	}
+
 	textureDataResource->textureResourceCreateInfo = textureResourceCreateInfo;
 
 	return true;
@@ -275,6 +290,11 @@ bool ResourceManager::textureResourceSetCreateInformation(uint64_t textureHandle
 bool ResourceManager::materialResourceSetMaterialParameters(uint64_t materialHandle, const MaterialUniformBuffer& materialUniformBuffer, VkPhysicalDevice physicalDevice, VkDevice device)
 {
 	MaterialResource* materialResource = getMaterialResource(materialHandle);
+
+	if (materialResource->finalized)
+	{
+		return false;
+	}
 
 	materialResource->materialUniformBuffer = materialUniformBuffer;
 
@@ -321,6 +341,12 @@ bool ResourceManager::materialResourceSetMaterialParameters(uint64_t materialHan
 bool ResourceManager::materialResourceSetTextureResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, const std::string& prefix)
 {
 	MaterialResource* materialResource = getMaterialResource(materialHandle);
+
+	if (materialResource->finalized)
+	{
+		return false;
+	}
+
 	TextureDataResource* textureResource = getTextureResource(textureHandle);
 
 	VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
@@ -353,6 +379,11 @@ bool ResourceManager::geometryResourceSetAttributesCount(uint64_t geometryHandle
 {
 	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
 
+	if (geometryResource->finalized)
+	{
+		return false;
+	}
+
 	geometryResource->vertexBuffers.resize(attributesCount);
 	geometryResource->vertexBuffersOffsets.resize(attributesCount);
 
@@ -366,7 +397,10 @@ bool ResourceManager::geometryResourceSetPrimitiveResource(uint64_t geometryHand
 {
 	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
 
-	//
+	if (geometryResource->finalized)
+	{
+		return false;
+	}
 
 	if (prefix == "POSITION")
 	{
@@ -534,6 +568,11 @@ bool ResourceManager::geometryModelResourceSetGeometryResource(uint64_t geometry
 {
 	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
 
+	if (geometryModelResource->finalized)
+	{
+		return false;
+	}
+
 	geometryModelResource->geometryHandle = geometryHandle;
 
 	return true;
@@ -542,6 +581,11 @@ bool ResourceManager::geometryModelResourceSetGeometryResource(uint64_t geometry
 bool ResourceManager::geometryModelResourceSetMaterialResource(uint64_t geometryModelHandle, uint64_t materialHandle)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+
+	if (geometryModelResource->finalized)
+	{
+		return false;
+	}
 
 	geometryModelResource->materialHandle = materialHandle;
 
@@ -552,6 +596,11 @@ bool ResourceManager::groupResourceAddGeometryModelResource(uint64_t groupHandle
 {
 	GroupResource* groupResource = getGroupResource(groupHandle);
 
+	if (groupResource->finalized)
+	{
+		return false;
+	}
+
 	groupResource->geometryModelHandles.push_back(geometryModelHandle);
 
 	return true;
@@ -560,6 +609,11 @@ bool ResourceManager::groupResourceAddGeometryModelResource(uint64_t groupHandle
 bool ResourceManager::instanceResourceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix)
 {
 	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
+
+	if (instanceResource->finalized)
+	{
+		return false;
+	}
 
 	instanceResource->worldMatrix = worldMatrix;
 
@@ -570,6 +624,11 @@ bool ResourceManager::instanceResourceSetGroupResource(uint64_t instanceHandle, 
 {
 	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
 
+	if (instanceResource->finalized)
+	{
+		return false;
+	}
+
 	instanceResource->groupHandle = groupHandle;
 
 	return true;
@@ -579,12 +638,19 @@ bool ResourceManager::sharedDataResourceFinalize(uint64_t externalHandle, VkPhys
 {
 	SharedDataResource* sharedDataResource = getSharedDataResource(externalHandle);
 
+	if (sharedDataResource->finalized)
+	{
+		return false;
+	}
+
 	sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 
 	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, sharedDataResource->vertexBufferResource, sharedDataResource->vertexBufferResourceCreateInfo))
 	{
 		return false;
 	}
+
+	sharedDataResource->finalized = true;
 
 	return true;
 }
@@ -593,20 +659,30 @@ bool ResourceManager::textureResourceFinalize(uint64_t externalHandle, VkPhysica
 {
 	TextureDataResource* textureDataResource = getTextureResource(externalHandle);
 
-	//
+	if (textureDataResource->finalized)
+	{
+		return false;
+	}
 
 	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, textureDataResource->textureResource, textureDataResource->textureResourceCreateInfo))
 	{
 		return false;
 	}
 
-	//
+	textureDataResource->finalized = true;
 
 	return true;
 }
 
 bool ResourceManager::materialResourceFinalize(uint64_t externalHandle, VkDevice device)
 {
+	MaterialResource* materialResource = getMaterialResource(externalHandle);
+
+	if (materialResource->finalized)
+	{
+		return false;
+	}
+
 	VkResult result = VK_SUCCESS;
 
 	//
@@ -698,56 +774,92 @@ bool ResourceManager::materialResourceFinalize(uint64_t externalHandle, VkDevice
 
 	vkUpdateDescriptorSets(device, descriptorImageInfosSize + descriptorBufferInfosSize, writeDescriptorSets.data(), 0, nullptr);
 
+	materialResource->finalized = true;
+
 	return true;
 }
 
 bool ResourceManager::geometryResourceFinalize(uint64_t externalHandle)
 {
-	auto it = geometryResources.find(externalHandle);
-	if (it == geometryResources.end())
+	GeometryResource* geometryResource = getGeometryResource(externalHandle);
+
+	if (geometryResource->finalized)
 	{
-		geometryResources[externalHandle] = GeometryResource();
+		return false;
 	}
+
+	geometryResource->finalized = true;
+
 	return true;
 }
 
 bool ResourceManager::geometryModelResourceFinalize(uint64_t externalHandle)
 {
-	auto it = geometryModelResources.find(externalHandle);
-	if (it == geometryModelResources.end())
+	GeometryModelResource* geometryModelResource = getGeometryModelResource(externalHandle);
+
+	if (geometryModelResource->finalized)
 	{
-		geometryModelResources[externalHandle] = GeometryModelResource();
+		return false;
 	}
+
+	geometryModelResource->finalized = true;
+
 	return true;
 }
 
 bool ResourceManager::groupResourceFinalize(uint64_t externalHandle)
 {
-	auto it = groupResources.find(externalHandle);
-	if (it == groupResources.end())
+	GroupResource* groupResource = getGroupResource(externalHandle);
+
+	if (groupResource->finalized)
 	{
-		groupResources[externalHandle] = GroupResource();
+		return false;
 	}
+
+	groupResource->finalized = true;
+
 	return true;
 }
 
 bool ResourceManager::instanceResourceFinalize(uint64_t externalHandle)
 {
-	auto it = instanceResources.find(externalHandle);
-	if (it == instanceResources.end())
+	InstanceResource* instanceResource = getInstanceResource(externalHandle);
+
+	if (instanceResource->finalized)
 	{
-		instanceResources[externalHandle] = InstanceResource();
+		return false;
 	}
+
+	instanceResource->finalized = true;
+
 	return true;
 }
 
 bool ResourceManager::worldResourceFinalize(uint64_t externalHandle)
 {
-	auto it = worldResources.find(externalHandle);
-	if (it == worldResources.end())
+	WorldResource* worldResource = getWorldResource(externalHandle);
+
+	if (worldResource->finalized)
 	{
-		worldResources[externalHandle] = WorldResource();
+		return false;
 	}
+
+	worldResource->finalized = true;
+
+	return true;
+}
+
+bool ResourceManager::instanceResourceUpdateWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix)
+{
+	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
+
+	if (!instanceResource->finalized)
+	{
+		return false;
+	}
+
+	instanceResource->worldMatrix = worldMatrix;
+
 	return true;
 }
 

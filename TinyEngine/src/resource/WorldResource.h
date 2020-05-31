@@ -7,6 +7,8 @@
 #include "../composite/Composite.h"
 #include "../math/Math.h"
 
+#include "BaseResource.h"
+
 struct ViewProjectionUniformPushConstant {
 	glm::mat4 projection = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
@@ -44,7 +46,7 @@ struct RaytracePrimitiveUniformBuffer {
 	int32_t padding[3];
 };
 
-struct WorldResource {
+struct WorldResource : BaseResource {
 	// Mapper helper
 
 	std::vector<uint64_t> instanceHandles;

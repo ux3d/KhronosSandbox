@@ -5,7 +5,9 @@
 
 #include "../math/Math.h"
 
-struct InstanceResource {
+#include "BaseResource.h"
+
+struct InstanceResource : BaseResource {
 
 	// Mapper helper
 

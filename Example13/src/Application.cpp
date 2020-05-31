@@ -48,7 +48,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	for (size_t i = 0; i < glTF.nodes.size(); i++)
 	{
 		const Node& node = glTF.nodes[i];
-		allocationManager.getResourceManager().instanceResourceSetWorldMatrix((uint64_t)&node, node.worldMatrix);
+		allocationManager.getResourceManager().instanceResourceUpdateWorldMatrix((uint64_t)&node, node.worldMatrix);
 	}
 
 	//
