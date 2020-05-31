@@ -50,7 +50,7 @@ public:
 
 	VkBuffer getBuffer(uint64_t bufferViewHandle);
 
-	// TODO: SHould become private.
+	// TODO: Should become private.
 
 	TextureDataResource* getTextureResource(uint64_t textureHandle);
 	MaterialResource* getMaterialResource(uint64_t materialHandle);
@@ -83,14 +83,14 @@ public:
 
 	// Finalization and setup not allowed anymore.
 
-	bool sharedDataResourceFinalize(uint64_t externalHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
-	bool textureResourceFinalize(uint64_t externalHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
-	bool materialResourceFinalize(uint64_t externalHandle, VkDevice device);
-	bool geometryResourceFinalize(uint64_t externalHandle);
-	bool geometryModelResourceFinalize(uint64_t externalHandle);
-	bool groupResourceFinalize(uint64_t externalHandle);
-	bool instanceResourceFinalize(uint64_t externalHandle);
-	bool worldResourceFinalize(uint64_t externalHandle);
+	bool sharedDataResourceFinalize(uint64_t sharedDataHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+	bool textureResourceFinalize(uint64_t textureHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+	bool materialResourceFinalize(uint64_t materialHandle, VkDevice device);
+	bool geometryResourceFinalize(uint64_t geometryHandle);
+	bool geometryModelResourceFinalize(uint64_t geometryModelHandle);
+	bool groupResourceFinalize(uint64_t groupHandle);
+	bool instanceResourceFinalize(uint64_t instanceHandle);
+	bool worldResourceFinalize(uint64_t worldHandle);
 
 	// Update also after finalization.
 

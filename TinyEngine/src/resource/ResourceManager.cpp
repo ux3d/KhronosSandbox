@@ -634,9 +634,9 @@ bool ResourceManager::instanceResourceSetGroupResource(uint64_t instanceHandle, 
 	return true;
 }
 
-bool ResourceManager::sharedDataResourceFinalize(uint64_t externalHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool ResourceManager::sharedDataResourceFinalize(uint64_t sharedDataHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
-	SharedDataResource* sharedDataResource = getSharedDataResource(externalHandle);
+	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
 
 	if (sharedDataResource->finalized)
 	{
@@ -655,9 +655,9 @@ bool ResourceManager::sharedDataResourceFinalize(uint64_t externalHandle, VkPhys
 	return true;
 }
 
-bool ResourceManager::textureResourceFinalize(uint64_t externalHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool ResourceManager::textureResourceFinalize(uint64_t textureHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
-	TextureDataResource* textureDataResource = getTextureResource(externalHandle);
+	TextureDataResource* textureDataResource = getTextureResource(textureHandle);
 
 	if (textureDataResource->finalized)
 	{
@@ -674,9 +674,9 @@ bool ResourceManager::textureResourceFinalize(uint64_t externalHandle, VkPhysica
 	return true;
 }
 
-bool ResourceManager::materialResourceFinalize(uint64_t externalHandle, VkDevice device)
+bool ResourceManager::materialResourceFinalize(uint64_t materialHandle, VkDevice device)
 {
-	MaterialResource* materialResource = getMaterialResource(externalHandle);
+	MaterialResource* materialResource = getMaterialResource(materialHandle);
 
 	if (materialResource->finalized)
 	{
@@ -689,10 +689,10 @@ bool ResourceManager::materialResourceFinalize(uint64_t externalHandle, VkDevice
 
 	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = {};
 	descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	descriptorSetLayoutCreateInfo.bindingCount = static_cast<uint32_t>(materialResources[externalHandle].descriptorSetLayoutBindings.size());
-	descriptorSetLayoutCreateInfo.pBindings = materialResources[externalHandle].descriptorSetLayoutBindings.data();
+	descriptorSetLayoutCreateInfo.bindingCount = static_cast<uint32_t>(materialResource->descriptorSetLayoutBindings.size());
+	descriptorSetLayoutCreateInfo.pBindings = materialResource->descriptorSetLayoutBindings.data();
 
-	result = vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &materialResources[externalHandle].descriptorSetLayout);
+	result = vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &materialResource->descriptorSetLayout);
 	if (result != VK_SUCCESS)
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
@@ -703,15 +703,15 @@ bool ResourceManager::materialResourceFinalize(uint64_t externalHandle, VkDevice
 	//
 
 	std::vector<VkDescriptorPoolSize> descriptorPoolSizes;
-	descriptorPoolSizes.resize(materialResources[externalHandle].descriptorSetLayoutBindings.size(), {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1});
+	descriptorPoolSizes.resize(materialResource->descriptorSetLayoutBindings.size(), {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1});
 
 	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
 	descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(materialResources[externalHandle].descriptorSetLayoutBindings.size());
+	descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(materialResource->descriptorSetLayoutBindings.size());
 	descriptorPoolCreateInfo.pPoolSizes = descriptorPoolSizes.data();
 	descriptorPoolCreateInfo.maxSets = 1;
 
-	result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &materialResources[externalHandle].descriptorPool);
+	result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &materialResource->descriptorPool);
 	if (result != VK_SUCCESS)
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
@@ -721,11 +721,11 @@ bool ResourceManager::materialResourceFinalize(uint64_t externalHandle, VkDevice
 
 	VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = {};
 	descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	descriptorSetAllocateInfo.descriptorPool = materialResources[externalHandle].descriptorPool;
+	descriptorSetAllocateInfo.descriptorPool = materialResource->descriptorPool;
 	descriptorSetAllocateInfo.descriptorSetCount = 1;
-	descriptorSetAllocateInfo.pSetLayouts = &materialResources[externalHandle].descriptorSetLayout;
+	descriptorSetAllocateInfo.pSetLayouts = &materialResource->descriptorSetLayout;
 
-	result = vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &materialResources[externalHandle].descriptorSet);
+	result = vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &materialResource->descriptorSet);
 	if (result != VK_SUCCESS)
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
@@ -733,7 +733,7 @@ bool ResourceManager::materialResourceFinalize(uint64_t externalHandle, VkDevice
 		return false;
 	}
 
-	uint32_t descriptorImageInfosSize = static_cast<uint32_t>(materialResources[externalHandle].descriptorImageInfos.size());
+	uint32_t descriptorImageInfosSize = static_cast<uint32_t>(materialResource->descriptorImageInfos.size());
 	uint32_t descriptorBufferInfosSize = 1;
 
 	std::vector<VkWriteDescriptorSet> writeDescriptorSets(descriptorImageInfosSize + descriptorBufferInfosSize);
@@ -742,27 +742,27 @@ bool ResourceManager::materialResourceFinalize(uint64_t externalHandle, VkDevice
 	uint32_t bufferIndex = 0;
 	for (uint32_t k = 0; k < descriptorImageInfosSize + descriptorBufferInfosSize; k++)
 	{
-		if (materialResources[externalHandle].descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+		if (materialResource->descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
 		{
 			writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			writeDescriptorSets[k].dstSet = materialResources[externalHandle].descriptorSet;
+			writeDescriptorSets[k].dstSet = materialResource->descriptorSet;
 			writeDescriptorSets[k].dstBinding = k;
 			writeDescriptorSets[k].dstArrayElement = 0;
 			writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			writeDescriptorSets[k].descriptorCount = 1;
-			writeDescriptorSets[k].pImageInfo = &materialResources[externalHandle].descriptorImageInfos[imageIndex];
+			writeDescriptorSets[k].pImageInfo = &materialResource->descriptorImageInfos[imageIndex];
 
 			imageIndex++;
 		}
-		else if (materialResources[externalHandle].descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+		else if (materialResource->descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
 		{
 			writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			writeDescriptorSets[k].dstSet = materialResources[externalHandle].descriptorSet;
+			writeDescriptorSets[k].dstSet = materialResource->descriptorSet;
 			writeDescriptorSets[k].dstBinding = k;
 			writeDescriptorSets[k].dstArrayElement = 0;
 			writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			writeDescriptorSets[k].descriptorCount = 1;
-			writeDescriptorSets[k].pBufferInfo = &materialResources[externalHandle].descriptorBufferInfos[bufferIndex];
+			writeDescriptorSets[k].pBufferInfo = &materialResource->descriptorBufferInfos[bufferIndex];
 
 			bufferIndex++;
 		}
@@ -779,9 +779,9 @@ bool ResourceManager::materialResourceFinalize(uint64_t externalHandle, VkDevice
 	return true;
 }
 
-bool ResourceManager::geometryResourceFinalize(uint64_t externalHandle)
+bool ResourceManager::geometryResourceFinalize(uint64_t geometryHandle)
 {
-	GeometryResource* geometryResource = getGeometryResource(externalHandle);
+	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
 
 	if (geometryResource->finalized)
 	{
@@ -793,9 +793,9 @@ bool ResourceManager::geometryResourceFinalize(uint64_t externalHandle)
 	return true;
 }
 
-bool ResourceManager::geometryModelResourceFinalize(uint64_t externalHandle)
+bool ResourceManager::geometryModelResourceFinalize(uint64_t geometryModelHandle)
 {
-	GeometryModelResource* geometryModelResource = getGeometryModelResource(externalHandle);
+	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
 
 	if (geometryModelResource->finalized)
 	{
@@ -807,9 +807,9 @@ bool ResourceManager::geometryModelResourceFinalize(uint64_t externalHandle)
 	return true;
 }
 
-bool ResourceManager::groupResourceFinalize(uint64_t externalHandle)
+bool ResourceManager::groupResourceFinalize(uint64_t groupHandle)
 {
-	GroupResource* groupResource = getGroupResource(externalHandle);
+	GroupResource* groupResource = getGroupResource(groupHandle);
 
 	if (groupResource->finalized)
 	{
@@ -821,9 +821,9 @@ bool ResourceManager::groupResourceFinalize(uint64_t externalHandle)
 	return true;
 }
 
-bool ResourceManager::instanceResourceFinalize(uint64_t externalHandle)
+bool ResourceManager::instanceResourceFinalize(uint64_t instanceHandle)
 {
-	InstanceResource* instanceResource = getInstanceResource(externalHandle);
+	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
 
 	if (instanceResource->finalized)
 	{
@@ -835,9 +835,9 @@ bool ResourceManager::instanceResourceFinalize(uint64_t externalHandle)
 	return true;
 }
 
-bool ResourceManager::worldResourceFinalize(uint64_t externalHandle)
+bool ResourceManager::worldResourceFinalize(uint64_t worldHandle)
 {
-	WorldResource* worldResource = getWorldResource(externalHandle);
+	WorldResource* worldResource = getWorldResource(worldHandle);
 
 	if (worldResource->finalized)
 	{
