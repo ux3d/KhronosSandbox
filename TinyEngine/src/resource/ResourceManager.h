@@ -14,6 +14,7 @@
 #include "GeometryModelResource.h"
 #include "GroupResource.h"
 #include "InstanceResource.h"
+#include "LightResource.h"
 #include "WorldResource.h"
 
 class ResourceManager {
@@ -27,6 +28,7 @@ private:
 	std::map<uint64_t, GeometryModelResource> geometryModelResources;
 	std::map<uint64_t, GroupResource> groupResources;
 	std::map<uint64_t, InstanceResource> instanceResources;
+	std::map<uint64_t, LightResource> lightResources;
 	std::map<uint64_t, WorldResource> worldResources;
 
 	void terminate(SharedDataResource& sharedDataResource, VkDevice device);
@@ -36,6 +38,7 @@ private:
 	void terminate(GeometryModelResource& geometryModelResource, VkDevice device);
 	void terminate(GroupResource& groupResource, VkDevice device);
 	void terminate(InstanceResource& instanceResource, VkDevice device);
+	void terminate(LightResource& lightResource, VkDevice device);
 	void terminate(WorldResource& worldResource, VkDevice device);
 
 	SharedDataResource* getSharedDataResource(uint64_t sharedDataHandle);
@@ -58,6 +61,7 @@ public:
 	GeometryModelResource* getGeometryModelResource(uint64_t geometryModelHandle);
 	GroupResource* getGroupResource(uint64_t groupHandle);
 	InstanceResource* getInstanceResource(uint64_t instanceHandle);
+	LightResource* getLightResource(uint64_t lightHandle);
 	WorldResource* getWorldResource(uint64_t worldHandle);
 
 	// One time setup before finalization.
@@ -82,6 +86,7 @@ public:
 	bool instanceResourceSetGroupResource(uint64_t instanceHandle, uint64_t groupHandle);
 
 	bool worldResourceAddInstanceResource(uint64_t worldHandle, uint64_t instanceHandle);
+	bool worldResourceSetLightResource(uint64_t worldHandle, uint64_t lightHandle);
 
 	// Finalization and setup not allowed anymore.
 
@@ -92,6 +97,7 @@ public:
 	bool geometryModelResourceFinalize(uint64_t geometryModelHandle);
 	bool groupResourceFinalize(uint64_t groupHandle);
 	bool instanceResourceFinalize(uint64_t instanceHandle);
+	bool lightResourceFinalize(uint64_t lightHandle);
 	bool worldResourceFinalize(uint64_t worldHandle);
 
 	// Update also after finalization.
@@ -107,6 +113,7 @@ public:
 	bool geometryModelResourceDelete(uint64_t geometryModelHandle, VkDevice device);
 	bool groupResourceDelete(uint64_t groupHandle, VkDevice device);
 	bool instanceResourceDelete(uint64_t instanceHandle, VkDevice device);
+	bool lightResourceDelete(uint64_t lightHandle, VkDevice device);
 	bool worldResourceDelete(uint64_t worldHandle, VkDevice device);
 
 	//

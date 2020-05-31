@@ -51,6 +51,8 @@ struct WorldResource : BaseResource {
 
 	std::vector<uint64_t> instanceHandles;
 
+	uint64_t lightHandle;
+
 	// Rasterize helper
 
 	ViewProjectionUniformPushConstant viewProjection = {};

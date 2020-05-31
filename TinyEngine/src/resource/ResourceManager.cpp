@@ -81,6 +81,10 @@ void ResourceManager::terminate(InstanceResource& instanceResource, VkDevice dev
 {
 }
 
+void ResourceManager::terminate(LightResource& lightResource, VkDevice device)
+{
+}
+
 void ResourceManager::terminate(WorldResource& worldResource, VkDevice device)
 {
 	VulkanResource::destroyTextureResource(device, worldResource.diffuse);
@@ -229,6 +233,17 @@ InstanceResource* ResourceManager::getInstanceResource(uint64_t instanceHandle)
 	{
 		instanceResources[instanceHandle] = InstanceResource();
 		return &instanceResources[instanceHandle];
+	}
+	return &result->second;
+}
+
+LightResource* ResourceManager::getLightResource(uint64_t lightHandle)
+{
+	auto result = lightResources.find(lightHandle);
+	if (result == lightResources.end())
+	{
+		lightResources[lightHandle] = LightResource();
+		return &lightResources[lightHandle];
 	}
 	return &result->second;
 }
@@ -648,6 +663,20 @@ bool ResourceManager::worldResourceAddInstanceResource(uint64_t worldHandle, uin
 	return true;
 }
 
+bool ResourceManager::worldResourceSetLightResource(uint64_t worldHandle, uint64_t lightHandle)
+{
+	WorldResource* worldResource = getWorldResource(worldHandle);
+
+	if (worldResource->finalized)
+	{
+		return false;
+	}
+
+	worldResource->lightHandle = lightHandle;
+
+	return true;
+}
+
 bool ResourceManager::sharedDataResourceFinalize(uint64_t sharedDataHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
 	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
@@ -849,6 +878,20 @@ bool ResourceManager::instanceResourceFinalize(uint64_t instanceHandle)
 	return true;
 }
 
+bool ResourceManager::lightResourceFinalize(uint64_t lightHandle)
+{
+	LightResource* lightResource = getLightResource(lightHandle);
+
+	if (lightResource->finalized)
+	{
+		return false;
+	}
+
+	lightResource->finalized = true;
+
+	return true;
+}
+
 bool ResourceManager::worldResourceFinalize(uint64_t worldHandle)
 {
 	WorldResource* worldResource = getWorldResource(worldHandle);
@@ -947,6 +990,16 @@ bool ResourceManager::instanceResourceDelete(uint64_t instanceHandle, VkDevice d
 	return true;
 }
 
+bool ResourceManager::lightResourceDelete(uint64_t lightHandle, VkDevice device)
+{
+	LightResource* lightResource = getLightResource(lightHandle);
+
+	terminate(*lightResource, device);
+	lightResources.erase(lightHandle);
+
+	return true;
+}
+
 bool ResourceManager::worldResourceDelete(uint64_t worldHandle, VkDevice device)
 {
 	WorldResource* worldResource = getWorldResource(worldHandle);
@@ -964,6 +1017,12 @@ void ResourceManager::terminate(VkDevice device)
 		terminate(it.second, device);
 	}
 	worldResources.clear();
+
+	for (auto it : lightResources)
+	{
+		terminate(it.second, device);
+	}
+	lightResources.clear();
 
 	for (auto it : instanceResources)
 	{
