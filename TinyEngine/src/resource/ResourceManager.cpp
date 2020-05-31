@@ -272,11 +272,48 @@ bool ResourceManager::textureResourceSetCreateInformation(uint64_t textureHandle
 	return true;
 }
 
-bool ResourceManager::materialResourceSetAlphaMode(uint64_t materialHandle, uint32_t alphaMode)
+bool ResourceManager::materialResourceSetMaterialParameters(uint64_t materialHandle, const MaterialUniformBuffer& materialUniformBuffer, VkPhysicalDevice physicalDevice, VkDevice device)
 {
 	MaterialResource* materialResource = getMaterialResource(materialHandle);
 
-	materialResource->alphaMode = alphaMode;
+	materialResource->materialUniformBuffer = materialUniformBuffer;
+
+	//
+
+	UniformBufferResourceCreateInfo uniformBufferResourceCreateInfo = {};
+
+	uniformBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(MaterialUniformBuffer);
+	uniformBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+
+	if (!VulkanResource::createUniformBufferResource(physicalDevice, device, materialResource->uniformBufferResource, uniformBufferResourceCreateInfo))
+	{
+		return false;
+	}
+
+	if (!VulkanResource::copyHostToDevice(device, materialResource->uniformBufferResource.bufferResource, &materialResource->materialUniformBuffer, sizeof(materialResource->materialUniformBuffer)))
+	{
+		return false;
+	}
+
+	//
+
+	VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+	descriptorSetLayoutBinding = {};
+	descriptorSetLayoutBinding.binding = materialResource->binding;
+	descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	descriptorSetLayoutBinding.descriptorCount = 1;
+	descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+	VkDescriptorBufferInfo descriptorBufferInfo = {};
+	descriptorBufferInfo.buffer = materialResource->uniformBufferResource.bufferResource.buffer;
+	descriptorBufferInfo.offset = 0;
+	descriptorBufferInfo.range = sizeof(MaterialUniformBuffer);
+	materialResource->descriptorBufferInfos.push_back(descriptorBufferInfo);
+
+	materialResource->macros["UNIFORMBUFFER_BINDING"] = std::to_string(materialResource->binding);
+
+	materialResource->binding++;
 
 	return true;
 }
@@ -570,14 +607,6 @@ bool ResourceManager::textureResourceFinalize(uint64_t externalHandle, VkPhysica
 
 bool ResourceManager::materialResourceFinalize(uint64_t externalHandle, VkDevice device)
 {
-	auto it = materialResources.find(externalHandle);
-	if (it == materialResources.end())
-	{
-		materialResources[externalHandle] = MaterialResource();
-	}
-
-	//
-
 	VkResult result = VK_SUCCESS;
 
 	//
@@ -633,29 +662,38 @@ bool ResourceManager::materialResourceFinalize(uint64_t externalHandle, VkDevice
 
 	std::vector<VkWriteDescriptorSet> writeDescriptorSets(descriptorImageInfosSize + descriptorBufferInfosSize);
 
-	for (uint32_t k = 0; k < descriptorImageInfosSize; k++)
+	uint32_t imageIndex = 0;
+	uint32_t bufferIndex = 0;
+	for (uint32_t k = 0; k < descriptorImageInfosSize + descriptorBufferInfosSize; k++)
 	{
-		writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		writeDescriptorSets[k].dstSet = materialResources[externalHandle].descriptorSet;
-		writeDescriptorSets[k].dstBinding = k;
-		writeDescriptorSets[k].dstArrayElement = 0;
-		writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		writeDescriptorSets[k].descriptorCount = 1;
-		writeDescriptorSets[k].pImageInfo = &materialResources[externalHandle].descriptorImageInfos[k];
-	}
+		if (materialResources[externalHandle].descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+		{
+			writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			writeDescriptorSets[k].dstSet = materialResources[externalHandle].descriptorSet;
+			writeDescriptorSets[k].dstBinding = k;
+			writeDescriptorSets[k].dstArrayElement = 0;
+			writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			writeDescriptorSets[k].descriptorCount = 1;
+			writeDescriptorSets[k].pImageInfo = &materialResources[externalHandle].descriptorImageInfos[imageIndex];
 
-	for (uint32_t k = descriptorImageInfosSize; k < descriptorImageInfosSize + descriptorBufferInfosSize; k++)
-	{
-		writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		writeDescriptorSets[k].dstSet = materialResources[externalHandle].descriptorSet;
-		writeDescriptorSets[k].dstBinding = k;
-		writeDescriptorSets[k].dstArrayElement = 0;
-		writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		writeDescriptorSets[k].descriptorCount = 1;
-		writeDescriptorSets[k].pBufferInfo = &materialResources[externalHandle].descriptorBufferInfo;
+			imageIndex++;
+		}
+		else if (materialResources[externalHandle].descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+		{
+			writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			writeDescriptorSets[k].dstSet = materialResources[externalHandle].descriptorSet;
+			writeDescriptorSets[k].dstBinding = k;
+			writeDescriptorSets[k].dstArrayElement = 0;
+			writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			writeDescriptorSets[k].descriptorCount = 1;
+			writeDescriptorSets[k].pBufferInfo = &materialResources[externalHandle].descriptorBufferInfos[bufferIndex];
 
-		// No more at this point of time.
-		break;
+			bufferIndex++;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	vkUpdateDescriptorSets(device, descriptorImageInfosSize + descriptorBufferInfosSize, writeDescriptorSets.data(), 0, nullptr);

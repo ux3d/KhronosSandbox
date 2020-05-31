@@ -18,11 +18,11 @@ void HelperRasterize::draw(ResourceManager& resourceManager, WorldResource& worl
 
 			//
 
-			if (materialResource->alphaMode == 2 && drawMode == OPAQUE)
+			if (materialResource->materialUniformBuffer.alphaMode == 2 && drawMode == OPAQUE)
 			{
 				return;
 			}
-			else if (materialResource->alphaMode != 2 && drawMode == TRANSPARENT)
+			else if (materialResource->materialUniformBuffer.alphaMode != 2 && drawMode == TRANSPARENT)
 			{
 				return;
 			}

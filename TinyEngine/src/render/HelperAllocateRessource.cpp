@@ -91,8 +91,6 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		materialHandles.push_back((uint64_t)&material);
 
-		allocationManager.getResourceManager().materialResourceSetAlphaMode(materialHandles[i], material.alphaMode);
-
 		// Metallic Roughness
 		if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
 		{
@@ -136,47 +134,33 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		}
 
 		//
+
+		MaterialUniformBuffer materialUniformBuffer = {};
+
+		materialUniformBuffer.baseColorFactor = material.pbrMetallicRoughness.baseColorFactor;
+
+		materialUniformBuffer.metallicFactor = material.pbrMetallicRoughness.metallicFactor;
+		materialUniformBuffer.roughnessFactor = material.pbrMetallicRoughness.roughnessFactor;
+
+		materialUniformBuffer.normalScale = material.normalTexture.scale;
+
+		materialUniformBuffer.occlusionStrength = material.occlusionTexture.strength;
+
+		materialUniformBuffer.emissiveFactor = material.emissiveFactor;
+
+		materialUniformBuffer.alphaMode = material.alphaMode;
+		materialUniformBuffer.alphaCutoff = material.alphaCutoff;
+
+		materialUniformBuffer.doubleSided = material.doubleSided;
+
+		allocationManager.getResourceManager().materialResourceSetMaterialParameters(materialHandles[i], materialUniformBuffer, physicalDevice, device);
+
+		//
 		//
 
 		WorldResource* worldResource = allocationManager.getResourceManager().getWorldResource(glTFHandle);
 
 		MaterialResource* materialResource = allocationManager.getResourceManager().getMaterialResource(materialHandles[i]);
-
-		//
-		//
-
-		UniformBufferResourceCreateInfo uniformBufferResourceCreateInfo = {};
-
-		uniformBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(MaterialUniformBuffer);
-		uniformBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-
-		if (!VulkanResource::createUniformBufferResource(physicalDevice, device, materialResource->uniformBufferResource, uniformBufferResourceCreateInfo))
-		{
-			return false;
-		}
-
-		MaterialUniformBuffer uniformBuffer = {};
-
-		uniformBuffer.baseColorFactor = material.pbrMetallicRoughness.baseColorFactor;
-
-		uniformBuffer.metallicFactor = material.pbrMetallicRoughness.metallicFactor;
-		uniformBuffer.roughnessFactor = material.pbrMetallicRoughness.roughnessFactor;
-
-		uniformBuffer.normalScale = material.normalTexture.scale;
-
-		uniformBuffer.occlusionStrength = material.occlusionTexture.strength;
-
-		uniformBuffer.emissiveFactor = material.emissiveFactor;
-
-		uniformBuffer.alphaMode = material.alphaMode;
-		uniformBuffer.alphaCutoff = material.alphaCutoff;
-
-		uniformBuffer.doubleSided = material.doubleSided;
-
-		if (!VulkanResource::copyHostToDevice(device, materialResource->uniformBufferResource.bufferResource, &uniformBuffer, sizeof(uniformBuffer)))
-		{
-			return false;
-		}
 
 		//
 		//
@@ -237,23 +221,6 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
 		materialResource->macros["LUT_BINDING"] = std::to_string(binding);
-
-		binding++;
-
-		//
-
-		descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = binding;
-		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorSetLayoutBinding.descriptorCount = 1;
-		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-		materialResource->descriptorBufferInfo.buffer = materialResource->uniformBufferResource.bufferResource.buffer;
-		materialResource->descriptorBufferInfo.offset = 0;
-		materialResource->descriptorBufferInfo.range = sizeof(MaterialUniformBuffer);
-
-		materialResource->macros["UNIFORMBUFFER_BINDING"] = std::to_string(binding);
 
 		binding++;
 
