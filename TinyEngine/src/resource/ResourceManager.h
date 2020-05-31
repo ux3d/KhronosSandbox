@@ -73,6 +73,7 @@ public:
 
 	bool materialResourceSetMaterialParameters(uint64_t materialHandle, const MaterialUniformBuffer& materialUniformBuffer, VkPhysicalDevice physicalDevice, VkDevice device);
 	bool materialResourceSetTextureResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, const std::string& prefix);
+	bool materialResourceSetLightResource(uint64_t materialHandle, uint64_t lightHandle);
 
 	bool geometryResourceSetAttributesCount(uint64_t geometryHandle, uint32_t attributesCount);
 	bool geometryResourceSetPrimitiveResource(uint64_t geometryHandle, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset);

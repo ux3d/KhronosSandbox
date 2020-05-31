@@ -389,6 +389,75 @@ bool ResourceManager::materialResourceSetTextureResource(uint64_t materialHandle
 	return true;
 }
 
+bool ResourceManager::materialResourceSetLightResource(uint64_t materialHandle, uint64_t lightHandle)
+{
+	MaterialResource* materialResource = getMaterialResource(materialHandle);
+
+	if (materialResource->finalized)
+	{
+		return false;
+	}
+
+	LightResource* lightResource = getLightResource(lightHandle);
+
+	VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+	descriptorSetLayoutBinding.binding = materialResource->binding;
+	descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	descriptorSetLayoutBinding.descriptorCount = 1;
+	descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+	VkDescriptorImageInfo descriptorImageInfo = {};
+	descriptorImageInfo.sampler = lightResource->diffuse.samplerResource.sampler;
+	descriptorImageInfo.imageView = lightResource->diffuse.imageViewResource.imageView;
+	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
+
+	materialResource->macros["DIFFUSE_BINDING"] = std::to_string(materialResource->binding);
+
+	materialResource->binding++;
+
+	//
+
+	descriptorSetLayoutBinding = {};
+	descriptorSetLayoutBinding.binding = materialResource->binding;
+	descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	descriptorSetLayoutBinding.descriptorCount = 1;
+	descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+	descriptorImageInfo = {};
+	descriptorImageInfo.sampler = lightResource->specular.samplerResource.sampler;
+	descriptorImageInfo.imageView = lightResource->specular.imageViewResource.imageView;
+	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
+
+	materialResource->macros["SPECULAR_BINDING"] = std::to_string(materialResource->binding);
+
+	materialResource->binding++;
+
+	//
+
+	descriptorSetLayoutBinding = {};
+	descriptorSetLayoutBinding.binding = materialResource->binding;
+	descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	descriptorSetLayoutBinding.descriptorCount = 1;
+	descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+	descriptorImageInfo = {};
+	descriptorImageInfo.sampler = lightResource->lut.samplerResource.sampler;
+	descriptorImageInfo.imageView = lightResource->lut.imageViewResource.imageView;
+	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
+
+	materialResource->macros["LUT_BINDING"] = std::to_string(materialResource->binding);
+
+	materialResource->binding++;
+
+	return true;
+}
+
 bool ResourceManager::geometryResourceSetAttributesCount(uint64_t geometryHandle, uint32_t attributesCount)
 {
 	GeometryResource* geometryResource = getGeometryResource(geometryHandle);

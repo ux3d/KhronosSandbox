@@ -156,73 +156,10 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		allocationManager.getResourceManager().materialResourceSetMaterialParameters(materialHandles[i], materialUniformBuffer, physicalDevice, device);
 
 		//
-		//
 
-		LightResource* lightResource = allocationManager.getResourceManager().getLightResource(glTFHandle);
+		uint64_t lightHandle = (uint64_t)&glTF;
 
-		MaterialResource* materialResource = allocationManager.getResourceManager().getMaterialResource(materialHandles[i]);
-
-		//
-		//
-
-		uint32_t binding = materialResource->binding;
-
-		//
-
-		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = binding;
-		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorSetLayoutBinding.descriptorCount = 1;
-		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-		VkDescriptorImageInfo descriptorImageInfo = {};
-		descriptorImageInfo.sampler = lightResource->diffuse.samplerResource.sampler;
-		descriptorImageInfo.imageView = lightResource->diffuse.imageViewResource.imageView;
-		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-		materialResource->macros["DIFFUSE_BINDING"] = std::to_string(binding);
-
-		binding++;
-
-		//
-
-		descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = binding;
-		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorSetLayoutBinding.descriptorCount = 1;
-		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-		descriptorImageInfo = {};
-		descriptorImageInfo.sampler = lightResource->specular.samplerResource.sampler;
-		descriptorImageInfo.imageView = lightResource->specular.imageViewResource.imageView;
-		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-		materialResource->macros["SPECULAR_BINDING"] = std::to_string(binding);
-
-		binding++;
-
-		//
-
-		descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = binding;
-		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorSetLayoutBinding.descriptorCount = 1;
-		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-		descriptorImageInfo = {};
-		descriptorImageInfo.sampler = lightResource->lut.samplerResource.sampler;
-		descriptorImageInfo.imageView = lightResource->lut.imageViewResource.imageView;
-		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-		materialResource->macros["LUT_BINDING"] = std::to_string(binding);
-
-		binding++;
+		allocationManager.getResourceManager().materialResourceSetLightResource(materialHandles[i], lightHandle);
 
 		//
 
