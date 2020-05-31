@@ -414,12 +414,12 @@ resource</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>1644</x>
-      <y>72</y>
+      <y>216</y>
       <w>132</w>
-      <h>396</h>
+      <h>252</h>
     </coordinates>
     <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>90.0;310.0;90.0;30.0;10.0;30.0;10.0;10.0</additional_attributes>
+    <additional_attributes>90.0;190.0;90.0;30.0;10.0;30.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLGeneric</id>
@@ -476,7 +476,7 @@ bg=gray</panel_attributes>
       <h>108</h>
     </coordinates>
     <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>10.0;70.0;10.0;30.0;330.0;30.0;330.0;10.0</additional_attributes>
+    <additional_attributes>10.0;70.0;10.0;50.0;330.0;50.0;330.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLGeneric</id>
