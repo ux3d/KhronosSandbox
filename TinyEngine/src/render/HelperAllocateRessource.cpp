@@ -158,7 +158,7 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		//
 		//
 
-		WorldResource* worldResource = allocationManager.getResourceManager().getWorldResource(glTFHandle);
+		LightResource* lightResource = allocationManager.getResourceManager().getLightResource(glTFHandle);
 
 		MaterialResource* materialResource = allocationManager.getResourceManager().getMaterialResource(materialHandles[i]);
 
@@ -177,8 +177,8 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 		VkDescriptorImageInfo descriptorImageInfo = {};
-		descriptorImageInfo.sampler = worldResource->diffuse.samplerResource.sampler;
-		descriptorImageInfo.imageView = worldResource->diffuse.imageViewResource.imageView;
+		descriptorImageInfo.sampler = lightResource->diffuse.samplerResource.sampler;
+		descriptorImageInfo.imageView = lightResource->diffuse.imageViewResource.imageView;
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
@@ -196,8 +196,8 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 		descriptorImageInfo = {};
-		descriptorImageInfo.sampler = worldResource->specular.samplerResource.sampler;
-		descriptorImageInfo.imageView = worldResource->specular.imageViewResource.imageView;
+		descriptorImageInfo.sampler = lightResource->specular.samplerResource.sampler;
+		descriptorImageInfo.imageView = lightResource->specular.imageViewResource.imageView;
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
@@ -215,8 +215,8 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 		descriptorImageInfo = {};
-		descriptorImageInfo.sampler = worldResource->lut.samplerResource.sampler;
-		descriptorImageInfo.imageView = worldResource->lut.imageViewResource.imageView;
+		descriptorImageInfo.sampler = lightResource->lut.samplerResource.sampler;
+		descriptorImageInfo.imageView = lightResource->lut.imageViewResource.imageView;
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
@@ -490,66 +490,10 @@ bool HelperAllocateResource::allocate(AllocationManager& allocationManager, cons
 {
 	glTFHandle = (uint64_t)&glTF;
 
-	WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource(glTFHandle);
+	allocationManager.getResourceManager().lightResourceSetEnvironmentLight(glTFHandle, environment);
+	allocationManager.getResourceManager().lightResourceFinalize(glTFHandle, physicalDevice, device, queue, commandPool);
 
-	// Diffuse
-
-	std::string diffuseFilename = environment + "/" + "diffuse.ktx2";
-	TextureResourceCreateInfo diffuseMap = {};
-	diffuseMap.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
-	diffuseMap.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
-	diffuseMap.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
-
-	if(!ImageDataIO::open(diffuseMap.imageDataResources, diffuseFilename))
-	{
-		return false;
-	}
-
-	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, gltfResource->diffuse, diffuseMap))
-	{
-		return false;
-	}
-
-	// Specular
-
-	std::string specularFilename = environment + "/" + "specular.ktx2";
-	TextureResourceCreateInfo specularMap = {};
-	specularMap.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
-	specularMap.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
-	specularMap.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-
-	if(!ImageDataIO::open(specularMap.imageDataResources, specularFilename))
-	{
-		return false;
-	}
-
-	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, gltfResource->specular, specularMap))
-	{
-		return false;
-	}
-
-	// LUT
-
-	std::string lutFilename = "../Resources/brdf/lut_ggx.png";
-	TextureResourceCreateInfo lutMap = {};
-	lutMap.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
-	lutMap.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
-	lutMap.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
-	lutMap.samplerResourceCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-	lutMap.samplerResourceCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-
-	if(!ImageDataIO::open(lutMap.imageDataResources, lutFilename))
-	{
-		return false;
-	}
-
-	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, gltfResource->lut, lutMap))
-	{
-		return false;
-	}
-
-	//
-	//
+	allocationManager.getResourceManager().worldResourceSetLightResource(glTFHandle, glTFHandle);
 
 	// BufferViews
 

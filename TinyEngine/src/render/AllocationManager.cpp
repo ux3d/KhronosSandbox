@@ -908,19 +908,21 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 		descriptorBufferInfo2.offset = 0;
 		descriptorBufferInfo2.range = sizeof(RaytracePrimitiveUniformBuffer) * worldResource->instanceResources.size();
 
+		LightResource* lightResource = resourceManager.getLightResource(worldResource->lightHandle);
+
 		VkDescriptorImageInfo descriptorImageInfoDiffuse = {};
-		descriptorImageInfoDiffuse.sampler = worldResource->diffuse.samplerResource.sampler;
-		descriptorImageInfoDiffuse.imageView = worldResource->diffuse.imageViewResource.imageView;
+		descriptorImageInfoDiffuse.sampler = lightResource->diffuse.samplerResource.sampler;
+		descriptorImageInfoDiffuse.imageView = lightResource->diffuse.imageViewResource.imageView;
 		descriptorImageInfoDiffuse.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		VkDescriptorImageInfo descriptorImageInfoSpecular = {};
-		descriptorImageInfoSpecular.sampler = worldResource->specular.samplerResource.sampler;
-		descriptorImageInfoSpecular.imageView = worldResource->specular.imageViewResource.imageView;
+		descriptorImageInfoSpecular.sampler = lightResource->specular.samplerResource.sampler;
+		descriptorImageInfoSpecular.imageView = lightResource->specular.imageViewResource.imageView;
 		descriptorImageInfoSpecular.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		VkDescriptorImageInfo descriptorImageInfoLut = {};
-		descriptorImageInfoLut.sampler = worldResource->lut.samplerResource.sampler;
-		descriptorImageInfoLut.imageView = worldResource->lut.imageViewResource.imageView;
+		descriptorImageInfoLut.sampler = lightResource->lut.samplerResource.sampler;
+		descriptorImageInfoLut.imageView = lightResource->lut.imageViewResource.imageView;
 		descriptorImageInfoLut.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		std::vector<VkWriteDescriptorSet> writeDescriptorSets;

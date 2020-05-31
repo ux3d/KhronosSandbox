@@ -83,14 +83,13 @@ void ResourceManager::terminate(InstanceResource& instanceResource, VkDevice dev
 
 void ResourceManager::terminate(LightResource& lightResource, VkDevice device)
 {
+	VulkanResource::destroyTextureResource(device, lightResource.diffuse);
+	VulkanResource::destroyTextureResource(device, lightResource.specular);
+	VulkanResource::destroyTextureResource(device, lightResource.lut);
 }
 
 void ResourceManager::terminate(WorldResource& worldResource, VkDevice device)
 {
-	VulkanResource::destroyTextureResource(device, worldResource.diffuse);
-	VulkanResource::destroyTextureResource(device, worldResource.specular);
-	VulkanResource::destroyTextureResource(device, worldResource.lut);
-
 	VulkanResource::destroyStorageBufferResource(device, worldResource.instanceResourcesStorageBufferResource);
 	VulkanResource::destroyStorageBufferResource(device, worldResource.materialStorageBufferResource);
 
@@ -649,6 +648,20 @@ bool ResourceManager::instanceResourceSetGroupResource(uint64_t instanceHandle, 
 	return true;
 }
 
+bool ResourceManager::lightResourceSetEnvironmentLight(uint64_t lightHandle, const std::string& environment)
+{
+	LightResource* lightResource = getLightResource(lightHandle);
+
+	if (lightResource->finalized)
+	{
+		return false;
+	}
+
+	lightResource->environment = environment;
+
+	return true;
+}
+
 bool ResourceManager::worldResourceAddInstanceResource(uint64_t worldHandle, uint64_t instanceHandle)
 {
 	WorldResource* worldResource = getWorldResource(worldHandle);
@@ -878,7 +891,7 @@ bool ResourceManager::instanceResourceFinalize(uint64_t instanceHandle)
 	return true;
 }
 
-bool ResourceManager::lightResourceFinalize(uint64_t lightHandle)
+bool ResourceManager::lightResourceFinalize(uint64_t lightHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
 	LightResource* lightResource = getLightResource(lightHandle);
 
@@ -886,6 +899,63 @@ bool ResourceManager::lightResourceFinalize(uint64_t lightHandle)
 	{
 		return false;
 	}
+
+	// Diffuse
+
+	std::string diffuseFilename = lightResource->environment + "/" + "diffuse.ktx2";
+	TextureResourceCreateInfo diffuseMap = {};
+	diffuseMap.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
+	diffuseMap.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
+	diffuseMap.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+
+	if(!ImageDataIO::open(diffuseMap.imageDataResources, diffuseFilename))
+	{
+		return false;
+	}
+
+	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, lightResource->diffuse, diffuseMap))
+	{
+		return false;
+	}
+
+	// Specular
+
+	std::string specularFilename = lightResource->environment + "/" + "specular.ktx2";
+	TextureResourceCreateInfo specularMap = {};
+	specularMap.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
+	specularMap.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
+	specularMap.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+
+	if(!ImageDataIO::open(specularMap.imageDataResources, specularFilename))
+	{
+		return false;
+	}
+
+	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, lightResource->specular, specularMap))
+	{
+		return false;
+	}
+
+	// LUT
+
+	std::string lutFilename = "../Resources/brdf/lut_ggx.png";
+	TextureResourceCreateInfo lutMap = {};
+	lutMap.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
+	lutMap.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
+	lutMap.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+	lutMap.samplerResourceCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+	lutMap.samplerResourceCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+
+	if(!ImageDataIO::open(lutMap.imageDataResources, lutFilename))
+	{
+		return false;
+	}
+
+	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, lightResource->lut, lutMap))
+	{
+		return false;
+	}
+
 
 	lightResource->finalized = true;
 

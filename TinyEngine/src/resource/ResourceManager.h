@@ -85,6 +85,8 @@ public:
 	bool instanceResourceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix);
 	bool instanceResourceSetGroupResource(uint64_t instanceHandle, uint64_t groupHandle);
 
+	bool lightResourceSetEnvironmentLight(uint64_t lightHandle, const std::string& environment);
+
 	bool worldResourceAddInstanceResource(uint64_t worldHandle, uint64_t instanceHandle);
 	bool worldResourceSetLightResource(uint64_t worldHandle, uint64_t lightHandle);
 
@@ -97,7 +99,7 @@ public:
 	bool geometryModelResourceFinalize(uint64_t geometryModelHandle);
 	bool groupResourceFinalize(uint64_t groupHandle);
 	bool instanceResourceFinalize(uint64_t instanceHandle);
-	bool lightResourceFinalize(uint64_t lightHandle);
+	bool lightResourceFinalize(uint64_t lightHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
 	bool worldResourceFinalize(uint64_t worldHandle);
 
 	// Update also after finalization.

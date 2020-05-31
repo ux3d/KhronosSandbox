@@ -57,10 +57,6 @@ struct WorldResource : BaseResource {
 
 	ViewProjectionUniformPushConstant viewProjection = {};
 
-	TextureResource diffuse;
-	TextureResource specular;
-	TextureResource lut;
-
 	// Raytrace helper
 
 	RaytraceUniformPushConstant raytrace = {};
