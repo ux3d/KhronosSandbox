@@ -81,6 +81,8 @@ public:
 	bool instanceResourceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix);
 	bool instanceResourceSetGroupResource(uint64_t instanceHandle, uint64_t groupHandle);
 
+	bool worldResourceAddInstanceResource(uint64_t worldHandle, uint64_t instanceHandle);
+
 	// Finalization and setup not allowed anymore.
 
 	bool sharedDataResourceFinalize(uint64_t sharedDataHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);

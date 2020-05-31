@@ -597,11 +597,9 @@ bool HelperAllocateResource::allocate(AllocationManager& allocationManager, cons
 
 	if (glTF.defaultScene < glTF.scenes.size())
 	{
-		WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource(glTFHandle);
-
 		for (size_t i = 0; i < glTF.scenes[glTF.defaultScene].nodes.size(); i++)
 		{
-			gltfResource->instanceHandles.push_back(nodeHandles[glTF.scenes[glTF.defaultScene].nodes[i]]);
+			allocationManager.getResourceManager().worldResourceAddInstanceResource(glTFHandle, nodeHandles[glTF.scenes[glTF.defaultScene].nodes[i]]);
 		}
 
 		if (!allocationManager.finalizeWorld(glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))

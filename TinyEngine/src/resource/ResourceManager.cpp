@@ -634,6 +634,20 @@ bool ResourceManager::instanceResourceSetGroupResource(uint64_t instanceHandle, 
 	return true;
 }
 
+bool ResourceManager::worldResourceAddInstanceResource(uint64_t worldHandle, uint64_t instanceHandle)
+{
+	WorldResource* worldResource = getWorldResource(worldHandle);
+
+	if (worldResource->finalized)
+	{
+		return false;
+	}
+
+	worldResource->instanceHandles.push_back(instanceHandle);
+
+	return true;
+}
+
 bool ResourceManager::sharedDataResourceFinalize(uint64_t sharedDataHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
 	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
