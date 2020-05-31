@@ -104,9 +104,9 @@ bool AllocationManager::finalizeMaterialResource(uint64_t materialHandle, VkDevi
 	return true;
 }
 
-bool AllocationManager::addPrimitiveResource(const Primitive& primitive, uint32_t attributeIndex, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset)
+bool AllocationManager::addPrimitiveResource(uint64_t primitiveHandle, uint32_t attributeIndex, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset)
 {
-	GeometryModelResource* primitiveResource = resourceManager.getGeometryModelResource((uint64_t)&primitive);
+	GeometryModelResource* primitiveResource = resourceManager.getGeometryModelResource(primitiveHandle);
 
 	//
 
@@ -422,7 +422,9 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 
 bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
 {
-	WorldResource* worldResource = resourceManager.getWorldResource((uint64_t)&glTF);
+	uint64_t glTFHandle = (uint64_t)&glTF;
+
+	WorldResource* worldResource = resourceManager.getWorldResource(glTFHandle);
 
 	if (!worldResource)
 	{
@@ -924,13 +926,6 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 
 		//
 		//
-		//
-
-		WorldResource* gltfResource = resourceManager.getWorldResource((uint64_t)&glTF);
-
-		//
-		//
-		//
 
 		VkWriteDescriptorSetAccelerationStructureKHR writeDescriptorSetAccelerationStructure = {};
 		writeDescriptorSetAccelerationStructure.sType                      = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
@@ -953,18 +948,18 @@ bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physica
 		descriptorBufferInfo2.range = sizeof(RaytracePrimitiveUniformBuffer) * worldResource->instanceResources.size();
 
 		VkDescriptorImageInfo descriptorImageInfoDiffuse = {};
-		descriptorImageInfoDiffuse.sampler = gltfResource->diffuse.samplerResource.sampler;
-		descriptorImageInfoDiffuse.imageView = gltfResource->diffuse.imageViewResource.imageView;
+		descriptorImageInfoDiffuse.sampler = worldResource->diffuse.samplerResource.sampler;
+		descriptorImageInfoDiffuse.imageView = worldResource->diffuse.imageViewResource.imageView;
 		descriptorImageInfoDiffuse.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		VkDescriptorImageInfo descriptorImageInfoSpecular = {};
-		descriptorImageInfoSpecular.sampler = gltfResource->specular.samplerResource.sampler;
-		descriptorImageInfoSpecular.imageView = gltfResource->specular.imageViewResource.imageView;
+		descriptorImageInfoSpecular.sampler = worldResource->specular.samplerResource.sampler;
+		descriptorImageInfoSpecular.imageView = worldResource->specular.imageViewResource.imageView;
 		descriptorImageInfoSpecular.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		VkDescriptorImageInfo descriptorImageInfoLut = {};
-		descriptorImageInfoLut.sampler = gltfResource->lut.samplerResource.sampler;
-		descriptorImageInfoLut.imageView = gltfResource->lut.imageViewResource.imageView;
+		descriptorImageInfoLut.sampler = worldResource->lut.samplerResource.sampler;
+		descriptorImageInfoLut.imageView = worldResource->lut.imageViewResource.imageView;
 		descriptorImageInfoLut.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		std::vector<VkWriteDescriptorSet> writeDescriptorSets;
