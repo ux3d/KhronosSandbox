@@ -382,9 +382,7 @@ bool AllocationManager::finalizePrimitive(const Primitive& primitive, const GLTF
 
 bool AllocationManager::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
 {
-	uint64_t glTFHandle = (uint64_t)&glTF;
-
-	WorldResource* worldResource = resourceManager.getWorldResource(glTFHandle);
+	WorldResource* worldResource = resourceManager.getWorldResource();
 
 	if (!worldResource)
 	{

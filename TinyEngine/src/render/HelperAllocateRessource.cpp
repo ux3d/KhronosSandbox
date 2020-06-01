@@ -155,20 +155,6 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		allocationManager.getResourceManager().materialResourceSetMaterialParameters(materialHandles[i], materialUniformBuffer, physicalDevice, device);
 
-		// TODO: Remove later.
-
-		uint64_t worldHandlde = (uint64_t)&glTF;
-
-		WorldResource* worldResource = allocationManager.getResourceManager().getWorldResource(worldHandlde);
-
-		if (worldResource->lightHandle > 0)
-		{
-			if (!allocationManager.getResourceManager().materialResourceSetLightResource(materialHandles[i], worldResource->lightHandle))
-			{
-				return false;
-			}
-		}
-
 		if (!allocationManager.getResourceManager().materialResourceFinalize(materialHandles[i], device))
 		{
 			return false;
@@ -441,7 +427,7 @@ bool HelperAllocateResource::initScene(AllocationManager& allocationManager, con
 	{
 		for (size_t i = 0; i < glTF.scenes[glTF.defaultScene].nodes.size(); i++)
 		{
-			allocationManager.getResourceManager().worldResourceAddInstanceResource(glTFHandle, nodeHandles[glTF.scenes[glTF.defaultScene].nodes[i]]);
+			allocationManager.getResourceManager().worldResourceAddInstanceResource(nodeHandles[glTF.scenes[glTF.defaultScene].nodes[i]]);
 		}
 
 		if (!allocationManager.finalizeWorld(glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
@@ -449,7 +435,7 @@ bool HelperAllocateResource::initScene(AllocationManager& allocationManager, con
 			return false;
 		}
 
-		if (!allocationManager.getResourceManager().worldResourceFinalize(glTFHandle, device))
+		if (!allocationManager.getResourceManager().worldResourceFinalize(device))
 		{
 			return false;
 		}
@@ -469,7 +455,7 @@ bool HelperAllocateResource::allocate(AllocationManager& allocationManager, cons
 	allocationManager.getResourceManager().lightResourceSetEnvironmentLight(glTFHandle, environment);
 	allocationManager.getResourceManager().lightResourceFinalize(glTFHandle, physicalDevice, device, queue, commandPool);
 
-	allocationManager.getResourceManager().worldResourceSetLightResource(glTFHandle, glTFHandle);
+	allocationManager.getResourceManager().worldResourceSetLightResource(glTFHandle);
 
 	// BufferViews
 

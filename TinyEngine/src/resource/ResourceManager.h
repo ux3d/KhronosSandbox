@@ -29,7 +29,7 @@ private:
 	std::map<uint64_t, GroupResource> groupResources;
 	std::map<uint64_t, InstanceResource> instanceResources;
 	std::map<uint64_t, LightResource> lightResources;
-	std::map<uint64_t, WorldResource> worldResources;
+	WorldResource worldResource;
 
 	void terminate(SharedDataResource& sharedDataResource, VkDevice device);
 	void terminate(TextureDataResource& textureResource, VkDevice device);
@@ -62,7 +62,7 @@ public:
 	GroupResource* getGroupResource(uint64_t groupHandle);
 	InstanceResource* getInstanceResource(uint64_t instanceHandle);
 	LightResource* getLightResource(uint64_t lightHandle);
-	WorldResource* getWorldResource(uint64_t worldHandle);
+	WorldResource* getWorldResource();
 
 	// One time setup before finalization.
 
@@ -73,7 +73,6 @@ public:
 
 	bool materialResourceSetMaterialParameters(uint64_t materialHandle, const MaterialUniformBuffer& materialUniformBuffer, VkPhysicalDevice physicalDevice, VkDevice device);
 	bool materialResourceSetTextureResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, const std::string& prefix);
-	bool materialResourceSetLightResource(uint64_t materialHandle, uint64_t lightHandle);
 
 	bool geometryResourceSetAttributesCount(uint64_t geometryHandle, uint32_t attributesCount);
 	bool geometryResourceSetPrimitiveResource(uint64_t geometryHandle, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset);
@@ -88,8 +87,8 @@ public:
 
 	bool lightResourceSetEnvironmentLight(uint64_t lightHandle, const std::string& environment);
 
-	bool worldResourceAddInstanceResource(uint64_t worldHandle, uint64_t instanceHandle);
-	bool worldResourceSetLightResource(uint64_t worldHandle, uint64_t lightHandle);
+	bool worldResourceAddInstanceResource(uint64_t instanceHandle);
+	bool worldResourceSetLightResource(uint64_t lightHandle);
 
 	// Finalization and setup not allowed anymore.
 
@@ -101,7 +100,7 @@ public:
 	bool groupResourceFinalize(uint64_t groupHandle);
 	bool instanceResourceFinalize(uint64_t instanceHandle);
 	bool lightResourceFinalize(uint64_t lightHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
-	bool worldResourceFinalize(uint64_t worldHandle, VkDevice device);
+	bool worldResourceFinalize(VkDevice device);
 
 	// Update also after finalization.
 
@@ -117,7 +116,7 @@ public:
 	bool groupResourceDelete(uint64_t groupHandle, VkDevice device);
 	bool instanceResourceDelete(uint64_t instanceHandle, VkDevice device);
 	bool lightResourceDelete(uint64_t lightHandle, VkDevice device);
-	bool worldResourceDelete(uint64_t worldHandle, VkDevice device);
+	bool worldResourceDelete(VkDevice device);
 
 	//
 

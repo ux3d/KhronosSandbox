@@ -247,15 +247,9 @@ LightResource* ResourceManager::getLightResource(uint64_t lightHandle)
 	return &result->second;
 }
 
-WorldResource* ResourceManager::getWorldResource(uint64_t worldHandle)
+WorldResource* ResourceManager::getWorldResource()
 {
-	auto result = worldResources.find(worldHandle);
-	if (result == worldResources.end())
-	{
-		worldResources[worldHandle] = WorldResource();
-		return &worldResources[worldHandle];
-	}
-	return &result->second;
+	return &worldResource;
 }
 
 bool ResourceManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize size, const void* data)
@@ -383,75 +377,6 @@ bool ResourceManager::materialResourceSetTextureResource(uint64_t materialHandle
 	materialResource->macros[prefix + "_TEXCOORD"] = HelperShader::getTexCoord(texCoord);
 
 	//
-
-	materialResource->binding++;
-
-	return true;
-}
-
-bool ResourceManager::materialResourceSetLightResource(uint64_t materialHandle, uint64_t lightHandle)
-{
-	MaterialResource* materialResource = getMaterialResource(materialHandle);
-
-	if (materialResource->finalized)
-	{
-		return false;
-	}
-
-	LightResource* lightResource = getLightResource(lightHandle);
-
-	VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-	descriptorSetLayoutBinding.binding = materialResource->binding;
-	descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	descriptorSetLayoutBinding.descriptorCount = 1;
-	descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-	VkDescriptorImageInfo descriptorImageInfo = {};
-	descriptorImageInfo.sampler = lightResource->diffuse.samplerResource.sampler;
-	descriptorImageInfo.imageView = lightResource->diffuse.imageViewResource.imageView;
-	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-	materialResource->macros["DIFFUSE_BINDING"] = std::to_string(materialResource->binding);
-
-	materialResource->binding++;
-
-	//
-
-	descriptorSetLayoutBinding = {};
-	descriptorSetLayoutBinding.binding = materialResource->binding;
-	descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	descriptorSetLayoutBinding.descriptorCount = 1;
-	descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-	descriptorImageInfo = {};
-	descriptorImageInfo.sampler = lightResource->specular.samplerResource.sampler;
-	descriptorImageInfo.imageView = lightResource->specular.imageViewResource.imageView;
-	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-	materialResource->macros["SPECULAR_BINDING"] = std::to_string(materialResource->binding);
-
-	materialResource->binding++;
-
-	//
-
-	descriptorSetLayoutBinding = {};
-	descriptorSetLayoutBinding.binding = materialResource->binding;
-	descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	descriptorSetLayoutBinding.descriptorCount = 1;
-	descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-	descriptorImageInfo = {};
-	descriptorImageInfo.sampler = lightResource->lut.samplerResource.sampler;
-	descriptorImageInfo.imageView = lightResource->lut.imageViewResource.imageView;
-	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-	materialResource->macros["LUT_BINDING"] = std::to_string(materialResource->binding);
 
 	materialResource->binding++;
 
@@ -731,9 +656,9 @@ bool ResourceManager::lightResourceSetEnvironmentLight(uint64_t lightHandle, con
 	return true;
 }
 
-bool ResourceManager::worldResourceAddInstanceResource(uint64_t worldHandle, uint64_t instanceHandle)
+bool ResourceManager::worldResourceAddInstanceResource(uint64_t instanceHandle)
 {
-	WorldResource* worldResource = getWorldResource(worldHandle);
+	WorldResource* worldResource = getWorldResource();
 
 	if (worldResource->finalized)
 	{
@@ -745,9 +670,9 @@ bool ResourceManager::worldResourceAddInstanceResource(uint64_t worldHandle, uin
 	return true;
 }
 
-bool ResourceManager::worldResourceSetLightResource(uint64_t worldHandle, uint64_t lightHandle)
+bool ResourceManager::worldResourceSetLightResource(uint64_t lightHandle)
 {
-	WorldResource* worldResource = getWorldResource(worldHandle);
+	WorldResource* worldResource = getWorldResource();
 
 	if (worldResource->finalized)
 	{
@@ -807,6 +732,71 @@ bool ResourceManager::materialResourceFinalize(uint64_t materialHandle, VkDevice
 	{
 		return false;
 	}
+
+	//
+
+	WorldResource* worldResource = getWorldResource();
+
+	if (worldResource->lightHandle > 0)
+	{
+		LightResource* lightResource = getLightResource(worldResource->lightHandle);
+
+		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+		descriptorSetLayoutBinding.binding = materialResource->binding;
+		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorSetLayoutBinding.descriptorCount = 1;
+		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+		VkDescriptorImageInfo descriptorImageInfo = {};
+		descriptorImageInfo.sampler = lightResource->diffuse.samplerResource.sampler;
+		descriptorImageInfo.imageView = lightResource->diffuse.imageViewResource.imageView;
+		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
+
+		materialResource->macros["DIFFUSE_BINDING"] = std::to_string(materialResource->binding);
+
+		materialResource->binding++;
+
+		//
+
+		descriptorSetLayoutBinding = {};
+		descriptorSetLayoutBinding.binding = materialResource->binding;
+		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorSetLayoutBinding.descriptorCount = 1;
+		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+		descriptorImageInfo = {};
+		descriptorImageInfo.sampler = lightResource->specular.samplerResource.sampler;
+		descriptorImageInfo.imageView = lightResource->specular.imageViewResource.imageView;
+		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
+
+		materialResource->macros["SPECULAR_BINDING"] = std::to_string(materialResource->binding);
+
+		materialResource->binding++;
+
+		//
+
+		descriptorSetLayoutBinding = {};
+		descriptorSetLayoutBinding.binding = materialResource->binding;
+		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorSetLayoutBinding.descriptorCount = 1;
+		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+		descriptorImageInfo = {};
+		descriptorImageInfo.sampler = lightResource->lut.samplerResource.sampler;
+		descriptorImageInfo.imageView = lightResource->lut.imageViewResource.imageView;
+		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
+
+		materialResource->macros["LUT_BINDING"] = std::to_string(materialResource->binding);
+
+		materialResource->binding++;
+	}
+	//
 
 	VkResult result = VK_SUCCESS;
 
@@ -1031,9 +1021,9 @@ bool ResourceManager::lightResourceFinalize(uint64_t lightHandle, VkPhysicalDevi
 	return true;
 }
 
-bool ResourceManager::worldResourceFinalize(uint64_t worldHandle, VkDevice device)
+bool ResourceManager::worldResourceFinalize(VkDevice device)
 {
-	WorldResource* worldResource = getWorldResource(worldHandle);
+	WorldResource* worldResource = getWorldResource();
 
 	if (worldResource->finalized)
 	{
@@ -1069,20 +1059,21 @@ bool ResourceManager::worldResourceFinalize(uint64_t worldHandle, VkDevice devic
 				return false;
 			}
 
-			// TODO: Activate later.
+			//
 
-			/*if (worldResource->lightHandle > 0)
-			{
-				if (!materialResourceSetLightResource(geometryModelResource->materialHandle, worldResource->lightHandle))
-				{
-					return false;
-				}
-			}
+			GeometryResource* geometryResource = getGeometryResource(geometryModelResource->geometryHandle);
 
-			if (!materialResourceFinalize(geometryModelResource->materialHandle, device))
+			if (!geometryResource->finalized)
 			{
 				return false;
-			}*/
+			}
+
+			MaterialResource* materialResource = getMaterialResource(geometryModelResource->materialHandle);
+
+			if (!materialResource->finalized)
+			{
+				return false;
+			}
 		}
 	}
 
@@ -1187,23 +1178,18 @@ bool ResourceManager::lightResourceDelete(uint64_t lightHandle, VkDevice device)
 	return true;
 }
 
-bool ResourceManager::worldResourceDelete(uint64_t worldHandle, VkDevice device)
+bool ResourceManager::worldResourceDelete(VkDevice device)
 {
-	WorldResource* worldResource = getWorldResource(worldHandle);
+	WorldResource* worldResource = getWorldResource();
 
 	terminate(*worldResource, device);
-	worldResources.erase(worldHandle);
 
 	return true;
 }
 
 void ResourceManager::terminate(VkDevice device)
 {
-	for (auto it : worldResources)
-	{
-		terminate(it.second, device);
-	}
-	worldResources.clear();
+	terminate(worldResource, device);
 
 	for (auto it : lightResources)
 	{
