@@ -155,13 +155,19 @@ bool HelperAllocateResource::initMaterials(AllocationManager& allocationManager,
 
 		allocationManager.getResourceManager().materialResourceSetMaterialParameters(materialHandles[i], materialUniformBuffer, physicalDevice, device);
 
-		//
+		// TODO: Remove later.
 
-		uint64_t lightHandle = (uint64_t)&glTF;
+		uint64_t worldHandlde = (uint64_t)&glTF;
 
-		allocationManager.getResourceManager().materialResourceSetLightResource(materialHandles[i], lightHandle);
+		WorldResource* worldResource = allocationManager.getResourceManager().getWorldResource(worldHandlde);
 
-		//
+		if (worldResource->lightHandle > 0)
+		{
+			if (!allocationManager.getResourceManager().materialResourceSetLightResource(materialHandles[i], worldResource->lightHandle))
+			{
+				return false;
+			}
+		}
 
 		if (!allocationManager.getResourceManager().materialResourceFinalize(materialHandles[i], device))
 		{
@@ -398,7 +404,13 @@ bool HelperAllocateResource::initMeshes(AllocationManager& allocationManager, co
 			{
 				return false;
 			}
+
+			allocationManager.getResourceManager().geometryResourceFinalize(geometryHandle);
+
+			allocationManager.getResourceManager().geometryModelResourceFinalize(geometryModelHandle);
 		}
+
+		allocationManager.getResourceManager().groupResourceFinalize(groupHandle);
 	}
 
 	return true;
@@ -418,6 +430,33 @@ bool HelperAllocateResource::initNodes(AllocationManager& allocationManager, con
 			allocationManager.getResourceManager().instanceResourceSetGroupResource(nodeHandles[i], meshHandles[node.mesh]);
 			allocationManager.getResourceManager().instanceResourceFinalize(nodeHandles[i]);
 		}
+	}
+
+	return true;
+}
+
+bool HelperAllocateResource::initScene(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace)
+{
+	if (glTF.defaultScene < glTF.scenes.size())
+	{
+		for (size_t i = 0; i < glTF.scenes[glTF.defaultScene].nodes.size(); i++)
+		{
+			allocationManager.getResourceManager().worldResourceAddInstanceResource(glTFHandle, nodeHandles[glTF.scenes[glTF.defaultScene].nodes[i]]);
+		}
+
+		if (!allocationManager.finalizeWorld(glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
+		{
+			return false;
+		}
+
+		if (!allocationManager.getResourceManager().worldResourceFinalize(glTFHandle, device))
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
 	}
 
 	return true;
@@ -476,19 +515,7 @@ bool HelperAllocateResource::allocate(AllocationManager& allocationManager, cons
 
 	// Scene
 
-	if (glTF.defaultScene < glTF.scenes.size())
-	{
-		for (size_t i = 0; i < glTF.scenes[glTF.defaultScene].nodes.size(); i++)
-		{
-			allocationManager.getResourceManager().worldResourceAddInstanceResource(glTFHandle, nodeHandles[glTF.scenes[glTF.defaultScene].nodes[i]]);
-		}
-
-		if (!allocationManager.finalizeWorld(glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
-		{
-			return false;
-		}
-	}
-	else
+	if (!initScene(allocationManager, glTF, useRaytrace))
 	{
 		return false;
 	}

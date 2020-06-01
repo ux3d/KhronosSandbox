@@ -1031,7 +1031,7 @@ bool ResourceManager::lightResourceFinalize(uint64_t lightHandle, VkPhysicalDevi
 	return true;
 }
 
-bool ResourceManager::worldResourceFinalize(uint64_t worldHandle)
+bool ResourceManager::worldResourceFinalize(uint64_t worldHandle, VkDevice device)
 {
 	WorldResource* worldResource = getWorldResource(worldHandle);
 
@@ -1039,6 +1039,54 @@ bool ResourceManager::worldResourceFinalize(uint64_t worldHandle)
 	{
 		return false;
 	}
+
+	//
+
+	for (uint64_t instanceHandle : worldResource->instanceHandles)
+	{
+		InstanceResource* instanceResource = getInstanceResource(instanceHandle);
+
+		if (!instanceResource->finalized)
+		{
+			return false;
+		}
+
+		//
+
+		GroupResource* groupResource = getGroupResource(instanceResource->groupHandle);
+
+		if (!groupResource->finalized)
+		{
+			return false;
+		}
+
+		for (uint64_t geometryModelHandle : groupResource->geometryModelHandles)
+		{
+			GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+
+			if (!geometryModelResource->finalized)
+			{
+				return false;
+			}
+
+			// TODO: Activate later.
+
+			/*if (worldResource->lightHandle > 0)
+			{
+				if (!materialResourceSetLightResource(geometryModelResource->materialHandle, worldResource->lightHandle))
+				{
+					return false;
+				}
+			}
+
+			if (!materialResourceFinalize(geometryModelResource->materialHandle, device))
+			{
+				return false;
+			}*/
+		}
+	}
+
+	//
 
 	worldResource->finalized = true;
 

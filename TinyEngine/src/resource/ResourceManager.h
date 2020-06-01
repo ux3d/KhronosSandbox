@@ -101,7 +101,7 @@ public:
 	bool groupResourceFinalize(uint64_t groupHandle);
 	bool instanceResourceFinalize(uint64_t instanceHandle);
 	bool lightResourceFinalize(uint64_t lightHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
-	bool worldResourceFinalize(uint64_t worldHandle);
+	bool worldResourceFinalize(uint64_t worldHandle, VkDevice device);
 
 	// Update also after finalization.
 

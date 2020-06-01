@@ -41,6 +41,8 @@ private:
 
 	bool initNodes(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace);
 
+	bool initScene(AllocationManager& allocationManager, const GLTF& glTF, bool useRaytrace);
+
 public:
 
 	HelperAllocateResource(uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView = VK_NULL_HANDLE);
