@@ -180,10 +180,6 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 			uint64_t geometryHandle = (uint64_t)&primitive;
 			uint64_t geometryModelHandle = (uint64_t)&primitive;
 
-			resourceManager.geometryModelResourceSetGeometryResource(geometryModelHandle, geometryHandle);
-
-			resourceManager.groupResourceAddGeometryModelResource(groupHandle, geometryModelHandle);
-
 			std::map<std::string, std::string> macros;
 
 			VkCullModeFlags cullMode = VK_CULL_MODE_NONE;
@@ -376,6 +372,10 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 
 			//
 
+			resourceManager.geometryResourceFinalize(geometryHandle);
+
+			//
+
 			if (primitive.position < 0)
 			{
 				return false;
@@ -407,7 +407,7 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 				}
 			}
 
-			//
+			resourceManager.geometryModelResourceSetGeometryResource(geometryModelHandle, geometryHandle);
 
 			resourceManager.geometryModelResourceSetMaterialResource(geometryModelHandle, materialHandles[primitive.material]);
 
@@ -417,9 +417,11 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 				return false;
 			}
 
-			resourceManager.geometryResourceFinalize(geometryHandle);
-
 			resourceManager.geometryModelResourceFinalize(geometryModelHandle);
+
+			//
+
+			resourceManager.groupResourceAddGeometryModelResource(groupHandle, geometryModelHandle);
 		}
 
 		resourceManager.groupResourceFinalize(groupHandle);
