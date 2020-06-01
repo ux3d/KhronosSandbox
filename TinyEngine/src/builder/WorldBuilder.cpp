@@ -381,6 +381,32 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 				return false;
 			}
 
+			VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR;
+			if (primitive.indices >= 0)
+			{
+				indexType = VK_INDEX_TYPE_UINT8_EXT;
+				if (glTF.accessors[primitive.indices].componentTypeSize == 2)
+				{
+					indexType = VK_INDEX_TYPE_UINT16;
+				}
+				else if (glTF.accessors[primitive.indices].componentTypeSize == 4)
+				{
+					indexType = VK_INDEX_TYPE_UINT32;
+				}
+
+				if (!resourceManager.geometryModelResourceSetIndices(geometryModelHandle, glTF.accessors[primitive.indices].count, indexType, resourceManager.getBuffer(getBufferHandle(glTF.accessors[primitive.indices])), HelperAccess::getOffset(glTF.accessors[primitive.indices])))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				if (!resourceManager.geometryModelResourceSetVertexCount(geometryModelHandle, glTF.accessors[primitive.position].count))
+				{
+					return false;
+				}
+			}
+
 			//
 
 			resourceManager.geometryModelResourceSetMaterialResource(geometryModelHandle, materialHandles[primitive.material]);
@@ -800,34 +826,6 @@ bool WorldBuilder::finalizePrimitive(const Primitive& primitive, const GLTF& glT
 		return false;
 	}
 
-	//
-
-	VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR;
-	if (primitive.indices >= 0)
-	{
-		indexType = VK_INDEX_TYPE_UINT8_EXT;
-		if (glTF.accessors[primitive.indices].componentTypeSize == 2)
-		{
-			indexType = VK_INDEX_TYPE_UINT16;
-		}
-		else if (glTF.accessors[primitive.indices].componentTypeSize == 4)
-		{
-			indexType = VK_INDEX_TYPE_UINT32;
-		}
-
-		if (!resourceManager.geometryModelResourceSetIndices(geometryModelHandle, glTF.accessors[primitive.indices].count, indexType, resourceManager.getBuffer(getBufferHandle(glTF.accessors[primitive.indices])), HelperAccess::getOffset(glTF.accessors[primitive.indices])))
-		{
-			return false;
-		}
-	}
-	else
-	{
-		if (!resourceManager.geometryModelResourceSetVertexCount(geometryModelHandle, glTF.accessors[primitive.position].count))
-		{
-			return false;
-		}
-	}
-
 	if (useRaytrace)
 	{
 		//
@@ -865,12 +863,12 @@ bool WorldBuilder::finalizePrimitive(const Primitive& primitive, const GLTF& glT
 		}
 
 		BottomLevelResourceCreateInfo bottomLevelResourceCreateInfo = {};
-		bottomLevelResourceCreateInfo.indexType = indexType;
+		bottomLevelResourceCreateInfo.indexType = geometryModelResource->indexType;
 		bottomLevelResourceCreateInfo.vertexIndexBufferAddress = vertexIndexBufferAddress;
 		bottomLevelResourceCreateInfo.vertexCount = vertexCount;
 		bottomLevelResourceCreateInfo.vertexFormat = positionFormat;
 		bottomLevelResourceCreateInfo.vertexBufferAddress = vertexBufferAddress;
-		bottomLevelResourceCreateInfo.vertexStride = glTF.accessors[primitive.position].typeCount * glTF.accessors[primitive.position].componentTypeSize;;
+		bottomLevelResourceCreateInfo.vertexStride = glTF.accessors[primitive.position].typeCount * glTF.accessors[primitive.position].componentTypeSize;
 		bottomLevelResourceCreateInfo.primitiveCount = primitiveCount;
 		bottomLevelResourceCreateInfo.useHostCommand = false;
 
