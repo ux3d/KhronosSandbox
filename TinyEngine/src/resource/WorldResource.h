@@ -53,6 +53,8 @@ struct WorldResource : BaseResource {
 
 	uint64_t lightHandle;
 
+	uint64_t cameraHandle;
+
 	// Rasterize helper
 
 	ViewProjectionUniformPushConstant viewProjection = {};

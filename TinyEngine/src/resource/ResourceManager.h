@@ -15,6 +15,7 @@
 #include "GroupResource.h"
 #include "InstanceResource.h"
 #include "LightResource.h"
+#include "CameraResource.h"
 #include "WorldResource.h"
 
 class ResourceManager {
@@ -29,6 +30,7 @@ private:
 	std::map<uint64_t, GroupResource> groupResources;
 	std::map<uint64_t, InstanceResource> instanceResources;
 	std::map<uint64_t, LightResource> lightResources;
+	std::map<uint64_t, CameraResource> cameraResources;
 	WorldResource worldResource;
 
 	void terminate(SharedDataResource& sharedDataResource, VkDevice device);
@@ -39,6 +41,7 @@ private:
 	void terminate(GroupResource& groupResource, VkDevice device);
 	void terminate(InstanceResource& instanceResource, VkDevice device);
 	void terminate(LightResource& lightResource, VkDevice device);
+	void terminate(CameraResource& cameraResource, VkDevice device);
 	void terminate(WorldResource& worldResource, VkDevice device);
 
 	SharedDataResource* getSharedDataResource(uint64_t sharedDataHandle);
@@ -62,6 +65,7 @@ public:
 	GroupResource* getGroupResource(uint64_t groupHandle);
 	InstanceResource* getInstanceResource(uint64_t instanceHandle);
 	LightResource* getLightResource(uint64_t lightHandle);
+	CameraResource* getCameraResource(uint64_t cameraHandle);
 	WorldResource* getWorldResource();
 
 	// One time setup before finalization.
@@ -89,6 +93,7 @@ public:
 
 	bool worldResourceAddInstanceResource(uint64_t instanceHandle);
 	bool worldResourceSetLightResource(uint64_t lightHandle);
+	bool worldResourceSetCameraResource(uint64_t cameraHandle);
 
 	// Finalization and setup not allowed anymore.
 
@@ -100,6 +105,7 @@ public:
 	bool groupResourceFinalize(uint64_t groupHandle);
 	bool instanceResourceFinalize(uint64_t instanceHandle);
 	bool lightResourceFinalize(uint64_t lightHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+	bool cameraResourceFinalize(uint64_t cameraHandle);
 	bool worldResourceFinalize(VkDevice device);
 
 	// Update also after finalization.
@@ -116,6 +122,7 @@ public:
 	bool groupResourceDelete(uint64_t groupHandle, VkDevice device);
 	bool instanceResourceDelete(uint64_t instanceHandle, VkDevice device);
 	bool lightResourceDelete(uint64_t lightHandle, VkDevice device);
+	bool cameraResourceDelete(uint64_t cameraHandle, VkDevice device);
 	bool worldResourceDelete(VkDevice device);
 
 	//

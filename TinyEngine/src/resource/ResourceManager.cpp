@@ -88,6 +88,10 @@ void ResourceManager::terminate(LightResource& lightResource, VkDevice device)
 	VulkanResource::destroyTextureResource(device, lightResource.lut);
 }
 
+void ResourceManager::terminate(CameraResource& cameraResource, VkDevice device)
+{
+}
+
 void ResourceManager::terminate(WorldResource& worldResource, VkDevice device)
 {
 	VulkanResource::destroyStorageBufferResource(device, worldResource.instanceResourcesStorageBufferResource);
@@ -243,6 +247,17 @@ LightResource* ResourceManager::getLightResource(uint64_t lightHandle)
 	{
 		lightResources[lightHandle] = LightResource();
 		return &lightResources[lightHandle];
+	}
+	return &result->second;
+}
+
+CameraResource* ResourceManager::getCameraResource(uint64_t cameraHandle)
+{
+	auto result = cameraResources.find(cameraHandle);
+	if (result == cameraResources.end())
+	{
+		cameraResources[cameraHandle] = CameraResource();
+		return &cameraResources[cameraHandle];
 	}
 	return &result->second;
 }
@@ -684,6 +699,20 @@ bool ResourceManager::worldResourceSetLightResource(uint64_t lightHandle)
 	return true;
 }
 
+bool ResourceManager::worldResourceSetCameraResource(uint64_t cameraHandle)
+{
+	WorldResource* worldResource = getWorldResource();
+
+	if (worldResource->finalized)
+	{
+		return false;
+	}
+
+	worldResource->cameraHandle = cameraHandle;
+
+	return true;
+}
+
 bool ResourceManager::sharedDataResourceFinalize(uint64_t sharedDataHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
 	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
@@ -1021,6 +1050,20 @@ bool ResourceManager::lightResourceFinalize(uint64_t lightHandle, VkPhysicalDevi
 	return true;
 }
 
+bool ResourceManager::cameraResourceFinalize(uint64_t cameraHandle)
+{
+	CameraResource* cameraResource = getCameraResource(cameraHandle);
+
+	if (cameraResource->finalized)
+	{
+		return false;
+	}
+
+	cameraResource->finalized = true;
+
+	return true;
+}
+
 bool ResourceManager::worldResourceFinalize(VkDevice device)
 {
 	WorldResource* worldResource = getWorldResource();
@@ -1178,6 +1221,16 @@ bool ResourceManager::lightResourceDelete(uint64_t lightHandle, VkDevice device)
 	return true;
 }
 
+bool ResourceManager::cameraResourceDelete(uint64_t cameraHandle, VkDevice device)
+{
+	CameraResource* cameraResource = getCameraResource(cameraHandle);
+
+	terminate(*cameraResource, device);
+	cameraResources.erase(cameraHandle);
+
+	return true;
+}
+
 bool ResourceManager::worldResourceDelete(VkDevice device)
 {
 	WorldResource* worldResource = getWorldResource();
@@ -1190,6 +1243,12 @@ bool ResourceManager::worldResourceDelete(VkDevice device)
 void ResourceManager::terminate(VkDevice device)
 {
 	terminate(worldResource, device);
+
+	for (auto it : cameraResources)
+	{
+		terminate(it.second, device);
+	}
+	cameraResources.clear();
 
 	for (auto it : lightResources)
 	{
