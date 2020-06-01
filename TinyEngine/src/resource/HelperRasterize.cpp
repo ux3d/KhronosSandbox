@@ -1,10 +1,12 @@
 #include "HelperRasterize.h"
 
-void HelperRasterize::draw(ResourceManager& resourceManager, WorldResource& worldResource, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
+void HelperRasterize::draw(ResourceManager& resourceManager, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
 {
-	for (size_t i = 0; i < worldResource.instanceHandles.size(); i++)
+	WorldResource* worldResource = resourceManager.getWorldResource();
+
+	for (size_t i = 0; i < worldResource->instanceHandles.size(); i++)
 	{
-		InstanceResource* instanceResource = resourceManager.getInstanceResource(worldResource.instanceHandles[i]);
+		InstanceResource* instanceResource = resourceManager.getInstanceResource(worldResource->instanceHandles[i]);
 
 		GroupResource* groupResource = resourceManager.getGroupResource(instanceResource->groupHandle);
 
@@ -36,8 +38,8 @@ void HelperRasterize::draw(ResourceManager& resourceManager, WorldResource& worl
 				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->pipelineLayout, 0, 1, &materialResource->descriptorSet, 0, nullptr);
 			}
 
-			vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(worldResource.viewProjection), &worldResource.viewProjection);
-			vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(worldResource.viewProjection), sizeof(instanceResource->worldMatrix), &instanceResource->worldMatrix);
+			vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(worldResource->viewProjection), &worldResource->viewProjection);
+			vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(worldResource->viewProjection), sizeof(instanceResource->worldMatrix), &instanceResource->worldMatrix);
 
 			if (primitiveResource->indexBuffer != VK_NULL_HANDLE)
 			{

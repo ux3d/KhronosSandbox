@@ -125,7 +125,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 		gltfResource->raytrace.specularSamples = specularSamples;
 		gltfResource->raytrace.diffuseSamples = diffuseSamples;
 
-		HelperRaytrace::draw(resourceManager, *resourceManager.getWorldResource(), commandBuffers[frameIndex], frameIndex, width, height);
+		HelperRaytrace::draw(resourceManager, commandBuffers[frameIndex], frameIndex, width, height);
 
 		//
 		// Prepare to to copy raytraced image.
@@ -220,8 +220,8 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 		gltfResource->viewProjection.view = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		HelperRasterize::draw(resourceManager, *resourceManager.getWorldResource(), commandBuffers[frameIndex], frameIndex, OPAQUE);
-		HelperRasterize::draw(resourceManager, *resourceManager.getWorldResource(), commandBuffers[frameIndex], frameIndex, TRANSPARENT);
+		HelperRasterize::draw(resourceManager, commandBuffers[frameIndex], frameIndex, OPAQUE);
+		HelperRasterize::draw(resourceManager, commandBuffers[frameIndex], frameIndex, TRANSPARENT);
 
 		vkCmdEndRenderPass(commandBuffers[frameIndex]);
 	}

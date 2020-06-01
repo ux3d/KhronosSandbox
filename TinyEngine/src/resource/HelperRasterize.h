@@ -14,7 +14,7 @@ enum DrawMode {
 class HelperRasterize {
 public:
 
-	static void draw(ResourceManager& resourceManager, WorldResource& worldResource, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode);
+	static void draw(ResourceManager& resourceManager, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode);
 };
 
 #endif /* RESOURCE_HELPERRASTERIZE_H_ */

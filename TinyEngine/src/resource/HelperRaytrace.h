@@ -10,7 +10,7 @@
 class HelperRaytrace {
 public:
 
-	static void draw(ResourceManager& resourceManager, WorldResource& worldResource, VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height);
+	static void draw(ResourceManager& resourceManager, VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height);
 
 };
 
