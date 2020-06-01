@@ -381,6 +381,60 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 				return false;
 			}
 
+			//
+
+			resourceManager.geometryModelResourceSetGeometryResource(geometryModelHandle, geometryHandle);
+
+			resourceManager.geometryModelResourceSetMaterialResource(geometryModelHandle, materialHandles[primitive.material]);
+
+			//
+
+			if (primitive.targetsCount > 0)
+			{
+				// TODO: Resolve
+				uint64_t geometryModelHandle = (uint64_t)&primitive;
+				GeometryModelResource* geometryModelResource = resourceManager.getGeometryModelResource(geometryModelHandle);
+
+				StorageBufferResourceCreateInfo storageBufferResourceCreateInfo = {};
+				storageBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+				storageBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+
+				if (primitive.targetPositionData.size() > 0)
+				{
+					storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(glm::vec3) * primitive.targetPositionData.size();
+					storageBufferResourceCreateInfo.data = primitive.targetPositionData.data();
+
+					if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, geometryModelResource->targetPosition, storageBufferResourceCreateInfo))
+					{
+						return false;
+					}
+				}
+
+				if (primitive.targetNormalData.size() > 0)
+				{
+					storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(glm::vec3) * primitive.targetNormalData.size();
+					storageBufferResourceCreateInfo.data = primitive.targetNormalData.data();
+
+					if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, geometryModelResource->targetNormal, storageBufferResourceCreateInfo))
+					{
+						return false;
+					}
+				}
+
+				if (primitive.targetTangentData.size() > 0)
+				{
+					storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(glm::vec3) * primitive.targetTangentData.size();
+					storageBufferResourceCreateInfo.data = primitive.targetTangentData.data();
+
+					if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, geometryModelResource->targetTangent, storageBufferResourceCreateInfo))
+					{
+						return false;
+					}
+				}
+			}
+
+			//
+
 			VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR;
 			if (primitive.indices >= 0)
 			{
@@ -406,10 +460,6 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 			}
-
-			resourceManager.geometryModelResourceSetGeometryResource(geometryModelHandle, geometryHandle);
-
-			resourceManager.geometryModelResourceSetMaterialResource(geometryModelHandle, materialHandles[primitive.material]);
 
 			// TODO: Resolve
 			if (!finalizePrimitive(primitive, glTF, macros, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &resourceManager.getMaterialResource(materialHandles[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
@@ -644,48 +694,6 @@ bool WorldBuilder::finalizePrimitive(const Primitive& primitive, const GLTF& glT
 	if (!VulkanResource::createShaderModule(geometryModelResource->fragmentShaderModule, device, fragmentShaderCode))
 	{
 		return false;
-	}
-
-	//
-
-	if (primitive.targetsCount > 0)
-	{
-		StorageBufferResourceCreateInfo storageBufferResourceCreateInfo = {};
-		storageBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-		storageBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-
-		if (primitive.targetPositionData.size() > 0)
-		{
-			storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(glm::vec3) * primitive.targetPositionData.size();
-			storageBufferResourceCreateInfo.data = primitive.targetPositionData.data();
-
-			if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, geometryModelResource->targetPosition, storageBufferResourceCreateInfo))
-			{
-				return false;
-			}
-		}
-
-		if (primitive.targetNormalData.size() > 0)
-		{
-			storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(glm::vec3) * primitive.targetNormalData.size();
-			storageBufferResourceCreateInfo.data = primitive.targetNormalData.data();
-
-			if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, geometryModelResource->targetNormal, storageBufferResourceCreateInfo))
-			{
-				return false;
-			}
-		}
-
-		if (primitive.targetTangentData.size() > 0)
-		{
-			storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(glm::vec3) * primitive.targetTangentData.size();
-			storageBufferResourceCreateInfo.data = primitive.targetTangentData.data();
-
-			if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, geometryModelResource->targetTangent, storageBufferResourceCreateInfo))
-			{
-				return false;
-			}
-		}
 	}
 
 	//

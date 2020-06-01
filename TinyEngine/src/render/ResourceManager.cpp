@@ -5,6 +5,7 @@
 void ResourceManager::terminate(SharedDataResource& sharedDataResource, VkDevice device)
 {
 	VulkanResource::destroyVertexBufferResource(device, sharedDataResource.vertexBufferResource);
+	VulkanResource::destroyStorageBufferResource(device, sharedDataResource.storageBufferResource);
 }
 
 void ResourceManager::terminate(TextureDataResource& textureResource, VkDevice device)
@@ -279,6 +280,9 @@ bool ResourceManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize 
 	sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.size = size;
 	sharedDataResource->vertexBufferResourceCreateInfo.data = data;
 
+	sharedDataResource->storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = size;
+	sharedDataResource->storageBufferResourceCreateInfo.data = data;
+
 	return true;
 }
 
@@ -291,7 +295,14 @@ bool ResourceManager::sharedDataSetUsage(uint64_t sharedDataHandle, VkBufferUsag
 		return false;
 	}
 
-	sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.usage = usage;
+	if (((usage & VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) == VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) || ((usage & VK_BUFFER_USAGE_INDEX_BUFFER_BIT) == VK_BUFFER_USAGE_INDEX_BUFFER_BIT))
+	{
+		sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.usage = usage;
+	}
+	else
+	{
+		sharedDataResource->storageBufferResourceCreateInfo.bufferResourceCreateInfo.usage = usage;
+	}
 
 	return true;
 }
@@ -755,11 +766,25 @@ bool ResourceManager::sharedDataResourceFinalize(uint64_t sharedDataHandle, VkPh
 		return false;
 	}
 
-	sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	VkBufferUsageFlags usage = sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.usage;
 
-	if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, sharedDataResource->vertexBufferResource, sharedDataResource->vertexBufferResourceCreateInfo))
+	if (((usage & VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) == VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) || ((usage & VK_BUFFER_USAGE_INDEX_BUFFER_BIT) == VK_BUFFER_USAGE_INDEX_BUFFER_BIT))
 	{
-		return false;
+		sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+
+		if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, sharedDataResource->vertexBufferResource, sharedDataResource->vertexBufferResourceCreateInfo))
+		{
+			return false;
+		}
+	}
+	else
+	{
+		sharedDataResource->storageBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+
+		if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, sharedDataResource->storageBufferResource, sharedDataResource->storageBufferResourceCreateInfo))
+		{
+			return false;
+		}
 	}
 
 	sharedDataResource->finalized = true;

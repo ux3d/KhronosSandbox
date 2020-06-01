@@ -10,10 +10,12 @@ struct SharedDataResource : BaseResource {
 	// Mapper helper
 
 	VertexBufferResourceCreateInfo vertexBufferResourceCreateInfo = {};
+	StorageBufferResourceCreateInfo storageBufferResourceCreateInfo = {};
 
 	// Rasterize helper
 
 	VertexBufferResource vertexBufferResource = {};
+	StorageBufferResource storageBufferResource = {};
 };
 
 #endif /* RENDER_SHAREDDATARENDER_H_ */
