@@ -31,27 +31,19 @@ private:
 	std::vector<uint64_t> nodeHandles;
 	uint64_t glTFHandle = 0;
 
-	bool initBufferViews(const GLTF& glTF, bool useRaytrace);
+	bool buildBufferViews(const GLTF& glTF, bool useRaytrace);
 
-	bool initAccessors(const GLTF& glTF, bool useRaytrace);
+	bool buildAccessors(const GLTF& glTF, bool useRaytrace);
 
-	bool initTextures(const GLTF& glTF, bool useRaytrace);
+	bool buildTextures(const GLTF& glTF, bool useRaytrace);
 
-	bool initMaterials(const GLTF& glTF, bool useRaytrace);
+	bool buildMaterials(const GLTF& glTF, bool useRaytrace);
 
-	bool initMeshes(const GLTF& glTF, bool useRaytrace);
+	bool buildMeshes(const GLTF& glTF, bool useRaytrace);
 
-	bool initNodes(const GLTF& glTF, bool useRaytrace);
+	bool buildNodes(const GLTF& glTF, bool useRaytrace);
 
-	bool initScene(const GLTF& glTF, bool useRaytrace);
-
-public:
-
-	WorldBuilder(ResourceManager& resourceManager, uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView = VK_NULL_HANDLE);
-
-	bool allocate(const GLTF& glTF, const std::string& diffuseFilename, bool useRaytrace = false);
-
-	//
+	bool buildScene(const GLTF& glTF, bool useRaytrace);
 
 	uint64_t getBufferHandle(const Accessor& accessor);
 
@@ -60,6 +52,12 @@ public:
 	bool finalizePrimitive(const Primitive& primitive, const GLTF& glTF, std::map<std::string, std::string>& macros, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace = false);
 
 	bool finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace = false);
+
+public:
+
+	WorldBuilder(ResourceManager& resourceManager, uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView = VK_NULL_HANDLE);
+
+	bool build(const GLTF& glTF, const std::string& diffuseFilename, bool useRaytrace = false);
 
 	void terminate(VkDevice device);
 

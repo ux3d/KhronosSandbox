@@ -15,8 +15,8 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	WorldBuilder helperAllocateResource(resourceManager, width, height, physicalDevice, device, queue, commandPool, renderPass, samples);
-	if(!helperAllocateResource.allocate(glTF, environment))
+	WorldBuilder worldBuilder(resourceManager, width, height, physicalDevice, device, queue, commandPool, renderPass, samples);
+	if(!worldBuilder.build(glTF, environment))
 	{
 		return false;
 	}

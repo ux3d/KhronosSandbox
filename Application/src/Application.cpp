@@ -32,8 +32,8 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	WorldBuilder helperAllocateResource(resourceManager, width, height, physicalDevice, device, queue, commandPool, renderPass, samples, raytraceImageViewResource.imageView);
-	if(!helperAllocateResource.allocate(glTF, environment, true))
+	WorldBuilder worldBuilder(resourceManager, width, height, physicalDevice, device, queue, commandPool, renderPass, samples, raytraceImageViewResource.imageView);
+	if(!worldBuilder.build(glTF, environment, true))
 	{
 		return false;
 	}

@@ -6,7 +6,7 @@ WorldBuilder::WorldBuilder(ResourceManager& resourceManager, uint32_t width, uin
 {
 }
 
-bool WorldBuilder::initBufferViews(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::buildBufferViews(const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.bufferViews.size(); i++)
 	{
@@ -21,7 +21,7 @@ bool WorldBuilder::initBufferViews(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool WorldBuilder::initAccessors(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::buildAccessors(const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.accessors.size(); i++)
 	{
@@ -46,7 +46,7 @@ bool WorldBuilder::initAccessors(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool WorldBuilder::initTextures(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::buildTextures(const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.textures.size(); i++)
 	{
@@ -82,7 +82,7 @@ bool WorldBuilder::initTextures(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool WorldBuilder::initMaterials(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.materials.size(); i++)
 	{
@@ -163,7 +163,7 @@ bool WorldBuilder::initMaterials(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.meshes.size(); i++)
 	{
@@ -430,7 +430,7 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool WorldBuilder::initNodes(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::buildNodes(const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.nodes.size(); i++)
 	{
@@ -449,7 +449,7 @@ bool WorldBuilder::initNodes(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool WorldBuilder::initScene(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::buildScene(const GLTF& glTF, bool useRaytrace)
 {
 	if (glTF.defaultScene < glTF.scenes.size())
 	{
@@ -477,7 +477,7 @@ bool WorldBuilder::initScene(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool WorldBuilder::allocate(const GLTF& glTF, const std::string& environment, bool useRaytrace)
+bool WorldBuilder::build(const GLTF& glTF, const std::string& environment, bool useRaytrace)
 {
 	glTFHandle = (uint64_t)&glTF;
 
@@ -491,49 +491,49 @@ bool WorldBuilder::allocate(const GLTF& glTF, const std::string& environment, bo
 
 	// BufferViews
 
-	if (!initBufferViews(glTF, useRaytrace))
+	if (!buildBufferViews(glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Accessors
 
-	if (!initAccessors(glTF, useRaytrace))
+	if (!buildAccessors(glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Textures
 
-	if (!initTextures(glTF, useRaytrace))
+	if (!buildTextures(glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Materials
 
-	if (!initMaterials(glTF, useRaytrace))
+	if (!buildMaterials(glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Meshes
 
-	if (!initMeshes(glTF, useRaytrace))
+	if (!buildMeshes(glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Nodes
 
-	if (!initNodes(glTF, useRaytrace))
+	if (!buildNodes(glTF, useRaytrace))
 	{
 		return false;
 	}
 
 	// Scene
 
-	if (!initScene(glTF, useRaytrace))
+	if (!buildScene(glTF, useRaytrace))
 	{
 		return false;
 	}
@@ -605,8 +605,6 @@ bool WorldBuilder::finalizePrimitive(const Primitive& primitive, const GLTF& glT
 	{
 		return false;
 	}
-
-	GeometryResource* geometryResource = resourceManager.getGeometryResource(geometryModelResource->geometryHandle);
 
 	//
 	// Load the shader code.
@@ -707,14 +705,18 @@ bool WorldBuilder::finalizePrimitive(const Primitive& primitive, const GLTF& glT
 	pipelineShaderStageCreateInfo[1].pName = "main";
 
 	//
+	//
+
+	GeometryResource* geometryResource = resourceManager.getGeometryResource(geometryModelResource->geometryHandle);
 
 	VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo = {};
 	pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = primitive.attributesCount;
+	pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(geometryResource->vertexInputBindingDescriptions.size());
 	pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = geometryResource->vertexInputBindingDescriptions.data();
-	pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = primitive.attributesCount;
+	pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(geometryResource->vertexInputAttributeDescriptions.size());
 	pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = geometryResource->vertexInputAttributeDescriptions.data();
 
+	//
 	//
 
 	VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo = {};
