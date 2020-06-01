@@ -15,8 +15,8 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	HelperAllocateResource helperAllocateResource(width, height, physicalDevice, device, queue, commandPool, renderPass, samples);
-	if(!helperAllocateResource.allocate(allocationManager, glTF, environment))
+	HelperAllocateResource helperAllocateResource(resourceManager, width, height, physicalDevice, device, queue, commandPool, renderPass, samples);
+	if(!helperAllocateResource.allocate(glTF, environment))
 	{
 		return false;
 	}
@@ -42,13 +42,13 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	//
 
-	WorldResource* gltfResource = allocationManager.getResourceManager().getWorldResource();
+	WorldResource* gltfResource = resourceManager.getWorldResource();
 
 	// Update the animations to the renderer.
 	for (size_t i = 0; i < glTF.nodes.size(); i++)
 	{
 		const Node& node = glTF.nodes[i];
-		allocationManager.getResourceManager().instanceResourceUpdateWorldMatrix((uint64_t)&node, node.worldMatrix);
+		resourceManager.instanceResourceUpdateWorldMatrix((uint64_t)&node, node.worldMatrix);
 	}
 
 	//
@@ -102,8 +102,8 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	gltfResource->viewProjection.view = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	HelperRasterize::draw(allocationManager.getResourceManager(), *allocationManager.getResourceManager().getWorldResource(), commandBuffers[frameIndex], frameIndex, OPAQUE);
-	HelperRasterize::draw(allocationManager.getResourceManager(), *allocationManager.getResourceManager().getWorldResource(), commandBuffers[frameIndex], frameIndex, TRANSPARENT);
+	HelperRasterize::draw(resourceManager, *resourceManager.getWorldResource(), commandBuffers[frameIndex], frameIndex, OPAQUE);
+	HelperRasterize::draw(resourceManager, *resourceManager.getWorldResource(), commandBuffers[frameIndex], frameIndex, TRANSPARENT);
 
 	vkCmdEndRenderPass(commandBuffers[frameIndex]);
 
@@ -112,7 +112,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 void Application::applicationTerminate()
 {
-	allocationManager.terminate(device);
+	resourceManager.terminate(device);
 }
 
 // Public

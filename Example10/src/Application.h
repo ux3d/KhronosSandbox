@@ -7,7 +7,7 @@ class Application: public TinyEngine
 {
 private:
 
-	AllocationManager allocationManager;
+	ResourceManager resourceManager;
 	GLTF glTF;
 
 	std::string filename = "";
