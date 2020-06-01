@@ -427,7 +427,7 @@ bool ResourceManager::geometryResourceSetAttributesCount(uint64_t geometryHandle
 	return true;
 }
 
-bool ResourceManager::geometryResourceSetPrimitiveResource(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset)
+bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset)
 {
 	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
 
