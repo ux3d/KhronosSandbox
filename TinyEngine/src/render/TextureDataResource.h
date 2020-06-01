@@ -1,5 +1,5 @@
-#ifndef RESOURCE_TEXTUREDATARESOURCE_H_
-#define RESOURCE_TEXTUREDATARESOURCE_H_
+#ifndef RENDER_TEXTUREDATARENDER_H_
+#define RENDER_TEXTUREDATARENDER_H_
 
 #include "../composite/Composite.h"
 
@@ -12,4 +12,4 @@ struct TextureDataResource : BaseResource {
 	TextureResource textureResource = {};
 };
 
-#endif /* RESOURCE_TEXTUREDATARESOURCE_H_ */
+#endif /* RENDER_TEXTUREDATARENDER_H_ */

@@ -385,7 +385,7 @@ gltf</panel_attributes>
       <h>72</h>
     </coordinates>
     <panel_attributes>symbol=component
-resource</panel_attributes>
+render</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -533,7 +533,7 @@ wsi</panel_attributes>
       <h>72</h>
     </coordinates>
     <panel_attributes>symbol=component
-render</panel_attributes>
+builder</panel_attributes>
     <additional_attributes/>
   </element>
   <element>

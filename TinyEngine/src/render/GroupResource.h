@@ -1,5 +1,5 @@
-#ifndef RESOURCE_GROUPRESOURCE_H_
-#define RESOURCE_GROUPRESOURCE_H_
+#ifndef RENDER_GROUPRENDER_H_
+#define RENDER_GROUPRENDER_H_
 
 #include <cstdint>
 #include <vector>
@@ -14,4 +14,4 @@ struct GroupResource : BaseResource {
 
 };
 
-#endif /* RESOURCE_GROUPRESOURCE_H_ */
+#endif /* RENDER_GROUPRENDER_H_ */

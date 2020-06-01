@@ -1,13 +1,12 @@
-#include "HelperAllocateRessource.h"
-
 #include "../shader/Shader.h"
+#include "WorldBuilder.h"
 
-HelperAllocateResource::HelperAllocateResource(ResourceManager& resourceManager, uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView) :
+WorldBuilder::WorldBuilder(ResourceManager& resourceManager, uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView) :
 	resourceManager(resourceManager), width(width), height(height), physicalDevice(physicalDevice), device(device), queue(queue), commandPool(commandPool), renderPass(renderPass), samples(samples), imageView(imageView)
 {
 }
 
-bool HelperAllocateResource::initBufferViews(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::initBufferViews(const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.bufferViews.size(); i++)
 	{
@@ -22,7 +21,7 @@ bool HelperAllocateResource::initBufferViews(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool HelperAllocateResource::initAccessors(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::initAccessors(const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.accessors.size(); i++)
 	{
@@ -47,7 +46,7 @@ bool HelperAllocateResource::initAccessors(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool HelperAllocateResource::initTextures(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::initTextures(const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.textures.size(); i++)
 	{
@@ -83,7 +82,7 @@ bool HelperAllocateResource::initTextures(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool HelperAllocateResource::initMaterials(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::initMaterials(const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.materials.size(); i++)
 	{
@@ -164,7 +163,7 @@ bool HelperAllocateResource::initMaterials(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool HelperAllocateResource::initMeshes(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.meshes.size(); i++)
 	{
@@ -403,7 +402,7 @@ bool HelperAllocateResource::initMeshes(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool HelperAllocateResource::initNodes(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::initNodes(const GLTF& glTF, bool useRaytrace)
 {
 	for (size_t i = 0; i < glTF.nodes.size(); i++)
 	{
@@ -422,7 +421,7 @@ bool HelperAllocateResource::initNodes(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool HelperAllocateResource::initScene(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::initScene(const GLTF& glTF, bool useRaytrace)
 {
 	if (glTF.defaultScene < glTF.scenes.size())
 	{
@@ -450,7 +449,7 @@ bool HelperAllocateResource::initScene(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool HelperAllocateResource::allocate(const GLTF& glTF, const std::string& environment, bool useRaytrace)
+bool WorldBuilder::allocate(const GLTF& glTF, const std::string& environment, bool useRaytrace)
 {
 	glTFHandle = (uint64_t)&glTF;
 
@@ -515,7 +514,7 @@ bool HelperAllocateResource::allocate(const GLTF& glTF, const std::string& envir
 }
 
 
-uint64_t HelperAllocateResource::getBufferHandle(const Accessor& accessor)
+uint64_t WorldBuilder::getBufferHandle(const Accessor& accessor)
 {
 	uint64_t sharedDataHandle = 0;
 
@@ -543,12 +542,12 @@ uint64_t HelperAllocateResource::getBufferHandle(const Accessor& accessor)
 	return sharedDataHandle;
 }
 
-ResourceManager& HelperAllocateResource::getResourceManager()
+ResourceManager& WorldBuilder::getResourceManager()
 {
 	return resourceManager;
 }
 
-bool HelperAllocateResource::createSharedDataResource(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
+bool WorldBuilder::createSharedDataResource(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
 {
 	uint64_t sharedDataHandle = (uint64_t)&bufferView;
 
@@ -573,7 +572,7 @@ bool HelperAllocateResource::createSharedDataResource(const BufferView& bufferVi
 	return true;
 }
 
-bool HelperAllocateResource::finalizePrimitive(const Primitive& primitive, const GLTF& glTF, std::map<std::string, std::string>& macros, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
+bool WorldBuilder::finalizePrimitive(const Primitive& primitive, const GLTF& glTF, std::map<std::string, std::string>& macros, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
 {
 	GeometryModelResource* geometryModelResource = resourceManager.getGeometryModelResource((uint64_t)&primitive);
 
@@ -885,7 +884,7 @@ bool HelperAllocateResource::finalizePrimitive(const Primitive& primitive, const
 	return true;
 }
 
-bool HelperAllocateResource::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
+bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
 {
 	WorldResource* worldResource = resourceManager.getWorldResource();
 
@@ -1779,7 +1778,7 @@ bool HelperAllocateResource::finalizeWorld(const GLTF& glTF, VkPhysicalDevice ph
 	return true;
 }
 
-void HelperAllocateResource::terminate(VkDevice device)
+void WorldBuilder::terminate(VkDevice device)
 {
 	resourceManager.terminate(device);
 }

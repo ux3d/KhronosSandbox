@@ -1,5 +1,5 @@
-#ifndef RESOURCE_RESOURCEMANAGER_H_
-#define RESOURCE_RESOURCEMANAGER_H_
+#ifndef RENDER_RESOURCEMANAGER_H_
+#define RENDER_RESOURCEMANAGER_H_
 
 #include <cstdint>
 #include <map>
@@ -138,4 +138,4 @@ public:
 
 };
 
-#endif /* RESOURCE_RESOURCEMANAGER_H_ */
+#endif /* RENDER_RESOURCEMANAGER_H_ */

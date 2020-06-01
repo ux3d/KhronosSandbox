@@ -1,5 +1,5 @@
-#ifndef RESOURCE_GEOMETRYMODELRESOURCE_H_
-#define RESOURCE_GEOMETRYMODELRESOURCE_H_
+#ifndef RENDER_GEOMETRYMODELRENDER_H_
+#define RENDER_GEOMETRYMODELRENDER_H_
 
 #include <cstdint>
 #include <vector>
@@ -38,4 +38,4 @@ struct GeometryModelResource : BaseResource {
 	BottomLevelResource bottomLevelResource = {};
 };
 
-#endif /* RESOURCE_GEOMETRYMODELRESOURCE_H_ */
+#endif /* RENDER_GEOMETRYMODELRENDER_H_ */

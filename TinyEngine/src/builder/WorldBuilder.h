@@ -1,14 +1,15 @@
-#ifndef RENDER_HELPERALLOCATERESSOURCE_H_
-#define RENDER_HELPERALLOCATERESSOURCE_H_
+#ifndef BUILDER_WORLDBUILDER_H_
+#define BUILDER_WORLDBUILDER_H_
 
 #include <cstdint>
 #include <vector>
 
 #include "../composite/Composite.h"
 #include "../gltf/GLTF.h"
-#include "../resource/Resource.h"
 
-class HelperAllocateResource {
+#include "../render/Render.h"
+
+class WorldBuilder {
 
 private:
 
@@ -46,7 +47,7 @@ private:
 
 public:
 
-	HelperAllocateResource(ResourceManager& resourceManager, uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView = VK_NULL_HANDLE);
+	WorldBuilder(ResourceManager& resourceManager, uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView = VK_NULL_HANDLE);
 
 	bool allocate(const GLTF& glTF, const std::string& diffuseFilename, bool useRaytrace = false);
 
@@ -66,4 +67,4 @@ public:
 
 };
 
-#endif /* RENDER_HELPERALLOCATERESSOURCE_H_ */
+#endif /* BUILDER_WORLDBUILDER_H_ */

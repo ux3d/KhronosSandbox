@@ -1,5 +1,5 @@
-#ifndef RESOURCE_CAMERARESOURCE_H_
-#define RESOURCE_CAMERARESOURCE_H_
+#ifndef RENDER_CAMERARENDER_H_
+#define RENDER_CAMERARENDER_H_
 
 #include "../math/Math.h"
 
@@ -12,4 +12,4 @@ struct CameraResource : BaseResource {
 
 };
 
-#endif /* RESOURCE_CAMERARESOURCE_H_ */
+#endif /* RENDER_CAMERARENDER_H_ */

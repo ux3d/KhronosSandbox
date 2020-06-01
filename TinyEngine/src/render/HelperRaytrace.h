@@ -1,5 +1,5 @@
-#ifndef RESOURCE_HELPERRAYTRACE_H_
-#define RESOURCE_HELPERRAYTRACE_H_
+#ifndef RENDER_HELPERRAYTRACE_H_
+#define RENDER_HELPERRAYTRACE_H_
 
 #include <cstdint>
 
@@ -14,4 +14,4 @@ public:
 
 };
 
-#endif /* RESOURCE_HELPERRAYTRACE_H_ */
+#endif /* RENDER_HELPERRAYTRACE_H_ */

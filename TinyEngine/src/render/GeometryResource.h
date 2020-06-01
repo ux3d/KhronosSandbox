@@ -1,5 +1,5 @@
-#ifndef RESOURCE_GEOMETRYRESOURCE_H_
-#define RESOURCE_GEOMETRYRESOURCE_H_
+#ifndef RENDER_GEOMETRYRENDER_H_
+#define RENDER_GEOMETRYRENDER_H_
 
 #include <cstdint>
 #include <vector>
@@ -34,4 +34,4 @@ struct GeometryResource : BaseResource {
 	int32_t weights1AttributeIndex = -1;
 };
 
-#endif /* RESOURCE_GEOMETRYRESOURCE_H_ */
+#endif /* RENDER_GEOMETRYRENDER_H_ */

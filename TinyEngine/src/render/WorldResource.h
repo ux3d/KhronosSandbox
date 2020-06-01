@@ -1,5 +1,5 @@
-#ifndef RESOURCE_WORLDRESOURCE_H_
-#define RESOURCE_WORLDRESOURCE_H_
+#ifndef RENDER_WORLDRENDER_H_
+#define RENDER_WORLDRENDER_H_
 
 #include <cstdint>
 #include <vector>
@@ -88,4 +88,4 @@ struct WorldResource : BaseResource {
 	VkDeviceSize size = 0;
 };
 
-#endif /* RESOURCE_WORLDRESOURCE_H_ */
+#endif /* RENDER_WORLDRENDER_H_ */

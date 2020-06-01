@@ -1,5 +1,5 @@
-#ifndef RESOURCE_HELPERRASTERIZE_H_
-#define RESOURCE_HELPERRASTERIZE_H_
+#ifndef RENDER_HELPERRASTERIZE_H_
+#define RENDER_HELPERRASTERIZE_H_
 
 #include <cstdint>
 
@@ -17,4 +17,4 @@ public:
 	static void draw(ResourceManager& resourceManager, VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode);
 };
 
-#endif /* RESOURCE_HELPERRASTERIZE_H_ */
+#endif /* RENDER_HELPERRASTERIZE_H_ */

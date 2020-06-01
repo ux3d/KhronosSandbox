@@ -1,5 +1,5 @@
-#ifndef RESOURCE_LIGHTRESOURCE_H_
-#define RESOURCE_LIGHTRESOURCE_H_
+#ifndef RENDER_LIGHTRENDER_H_
+#define RENDER_LIGHTRENDER_H_
 
 #include <string>
 
@@ -15,4 +15,4 @@ struct LightResource : BaseResource {
 
 };
 
-#endif /* RESOURCE_LIGHTRESOURCE_H_ */
+#endif /* RENDER_LIGHTRENDER_H_ */

@@ -1,5 +1,5 @@
-#ifndef RESOURCE_SHAREDDATARESOURCE_H_
-#define RESOURCE_SHAREDDATARESOURCE_H_
+#ifndef RENDER_SHAREDDATARENDER_H_
+#define RENDER_SHAREDDATARENDER_H_
 
 #include "../composite/Composite.h"
 
@@ -16,4 +16,4 @@ struct SharedDataResource : BaseResource {
 	VertexBufferResource vertexBufferResource = {};
 };
 
-#endif /* RESOURCE_SHAREDDATARESOURCE_H_ */
+#endif /* RENDER_SHAREDDATARENDER_H_ */

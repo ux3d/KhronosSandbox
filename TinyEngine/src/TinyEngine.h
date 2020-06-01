@@ -16,10 +16,11 @@
 
 #include "composite/Composite.h"
 #include "gltf/GLTF.h"
-#include "resource/Resource.h"
-#include "wsi/Wsi.h"
 
 #include "render/Render.h"
+#include "wsi/Wsi.h"
+
+#include "builder/Builder.h"
 
 class TinyEngine
 {

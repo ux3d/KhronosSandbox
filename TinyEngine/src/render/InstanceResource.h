@@ -1,5 +1,5 @@
-#ifndef RESOURCE_INSTANCERESOURCE_H_
-#define RESOURCE_INSTANCERESOURCE_H_
+#ifndef RENDER_INSTANCERENDER_H_
+#define RENDER_INSTANCERENDER_H_
 
 #include <cstdint>
 
@@ -17,4 +17,4 @@ struct InstanceResource : BaseResource {
 
 };
 
-#endif /* RESOURCE_INSTANCERESOURCE_H_ */
+#endif /* RENDER_INSTANCERENDER_H_ */
