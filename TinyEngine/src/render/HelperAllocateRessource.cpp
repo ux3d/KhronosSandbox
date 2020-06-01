@@ -457,7 +457,10 @@ bool HelperAllocateResource::allocate(const GLTF& glTF, const std::string& envir
 	resourceManager.lightResourceSetEnvironmentLight(glTFHandle, environment);
 	resourceManager.lightResourceFinalize(glTFHandle, physicalDevice, device, queue, commandPool);
 
+	resourceManager.cameraResourceFinalize(glTFHandle);
+
 	resourceManager.worldResourceSetLightResource(glTFHandle);
+	resourceManager.worldResourceSetCameraResource(glTFHandle);
 
 	// BufferViews
 

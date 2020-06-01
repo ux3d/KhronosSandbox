@@ -1127,6 +1127,20 @@ bool ResourceManager::worldResourceFinalize(VkDevice device)
 	return true;
 }
 
+bool ResourceManager::worldResourceGetCameraResource(uint64_t& cameraHandle)
+{
+	WorldResource* worldResource = getWorldResource();
+
+	if (worldResource->cameraHandle > 0)
+	{
+		cameraHandle = worldResource->cameraHandle;
+
+		return true;
+	}
+
+	return false;
+}
+
 bool ResourceManager::instanceResourceUpdateWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix)
 {
 	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
@@ -1137,6 +1151,34 @@ bool ResourceManager::instanceResourceUpdateWorldMatrix(uint64_t instanceHandle,
 	}
 
 	instanceResource->worldMatrix = worldMatrix;
+
+	return true;
+}
+
+bool ResourceManager::cameraResourceUpdateProjectionMatrix(uint64_t cameraHandle, const glm::mat4& projectionMatrix)
+{
+	CameraResource* cameraResource = getCameraResource(cameraHandle);
+
+	if (!cameraResource->finalized)
+	{
+		return false;
+	}
+
+	cameraResource->projection = projectionMatrix;
+
+	return true;
+}
+
+bool ResourceManager::cameraResourceUpdateViewMatrix(uint64_t cameraHandle, const glm::mat4& viewMatrix)
+{
+	CameraResource* cameraResource = getCameraResource(cameraHandle);
+
+	if (!cameraResource->finalized)
+	{
+		return false;
+	}
+
+	cameraResource->view = viewMatrix;
 
 	return true;
 }

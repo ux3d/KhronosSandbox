@@ -108,9 +108,16 @@ public:
 	bool cameraResourceFinalize(uint64_t cameraHandle);
 	bool worldResourceFinalize(VkDevice device);
 
+	// Getters
+
+	bool worldResourceGetCameraResource(uint64_t& cameraHandle);
+
 	// Update also after finalization.
 
 	bool instanceResourceUpdateWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix);
+
+	bool cameraResourceUpdateProjectionMatrix(uint64_t cameraHandle, const glm::mat4& projectionMatrix);
+	bool cameraResourceUpdateViewMatrix(uint64_t cameraHandle, const glm::mat4& viewMatrix);
 
 	// Delete and free data.
 
