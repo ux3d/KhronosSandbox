@@ -2,6 +2,7 @@
 #define RENDER_GEOMETRYRENDER_H_
 
 #include <cstdint>
+#include <map>
 #include <vector>
 
 #include "../composite/Composite.h"
@@ -14,6 +15,8 @@ struct GeometryResource : BaseResource {
 	uint32_t attributeIndex = 0;
 
 	uint32_t count = 0;
+
+	std::map<std::string, std::string> macros;
 
 	// Rasterize helper
 

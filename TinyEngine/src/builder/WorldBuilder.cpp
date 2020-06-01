@@ -180,13 +180,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 			uint64_t geometryHandle = (uint64_t)&primitive;
 			uint64_t geometryModelHandle = (uint64_t)&primitive;
 
-			std::map<std::string, std::string> macros;
-
 			VkCullModeFlags cullMode = VK_CULL_MODE_NONE;
-			if (primitive.material >= 0)
-			{
-				macros = resourceManager.getMaterialResource(materialHandles[primitive.material])->macros;
-			}
 
 			resourceManager.geometryResourceSetAttributesCount(geometryHandle, primitive.attributesCount);
 
@@ -202,7 +196,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.position].count, glTF.accessors[primitive.position].typeCount, "POSITION", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.position].count, glTF.accessors[primitive.position].typeCount, "POSITION", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -220,7 +214,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.normal].count, glTF.accessors[primitive.normal].typeCount, "NORMAL", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.normal].count, glTF.accessors[primitive.normal].typeCount, "NORMAL", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -238,7 +232,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.tangent].count, glTF.accessors[primitive.tangent].typeCount, "TANGENT", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.tangent].count, glTF.accessors[primitive.tangent].typeCount, "TANGENT", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -256,7 +250,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.texCoord0].count, glTF.accessors[primitive.texCoord0].typeCount, "TEXCOORD_0", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.texCoord0].count, glTF.accessors[primitive.texCoord0].typeCount, "TEXCOORD_0", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -274,7 +268,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.texCoord1].count, glTF.accessors[primitive.texCoord1].typeCount, "TEXCOORD_1", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.texCoord1].count, glTF.accessors[primitive.texCoord1].typeCount, "TEXCOORD_1", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -292,7 +286,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.color0].count, glTF.accessors[primitive.color0].typeCount, "COLOR_0", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.color0].count, glTF.accessors[primitive.color0].typeCount, "COLOR_0", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -310,7 +304,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.joints0].count, glTF.accessors[primitive.joints0].typeCount, "JOINTS_0", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.joints0].count, glTF.accessors[primitive.joints0].typeCount, "JOINTS_0", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -328,7 +322,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.joints1].count, glTF.accessors[primitive.joints1].typeCount, "JOINTS_1", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.joints1].count, glTF.accessors[primitive.joints1].typeCount, "JOINTS_1", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -346,7 +340,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.weights0].count, glTF.accessors[primitive.weights0].typeCount, "WEIGHTS_0", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.weights0].count, glTF.accessors[primitive.weights0].typeCount, "WEIGHTS_0", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -364,7 +358,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.weights1].count, glTF.accessors[primitive.weights1].typeCount, "WEIGHTS_1", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.weights1].count, glTF.accessors[primitive.weights1].typeCount, "WEIGHTS_1", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -462,7 +456,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 			}
 
 			// TODO: Resolve
-			if (!finalizePrimitive(primitive, glTF, macros, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &resourceManager.getMaterialResource(materialHandles[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
+			if (!finalizePrimitive(primitive, glTF, physicalDevice, device, queue, commandPool, width, height, renderPass, samples, &resourceManager.getMaterialResource(materialHandles[primitive.material])->descriptorSetLayout, cullMode, useRaytrace))
 			{
 				return false;
 			}
@@ -666,7 +660,7 @@ bool WorldBuilder::createSharedDataResource(VkDeviceSize size, const void* data,
 	return true;
 }
 
-bool WorldBuilder::finalizePrimitive(const Primitive& primitive, const GLTF& glTF, std::map<std::string, std::string>& macros, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
+bool WorldBuilder::finalizePrimitive(const Primitive& primitive, const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
 {
 	uint64_t geometryModelHandle = (uint64_t)&primitive;
 
@@ -675,6 +669,17 @@ bool WorldBuilder::finalizePrimitive(const Primitive& primitive, const GLTF& glT
 	if (!geometryModelResource)
 	{
 		return false;
+	}
+
+	GeometryResource* geometryResource = resourceManager.getGeometryResource(geometryModelResource->geometryHandle);
+
+	std::map<std::string, std::string> macros = geometryResource->macros;
+
+	if (geometryModelResource->materialHandle > 0)
+	{
+		MaterialResource* materialResource = resourceManager.getMaterialResource(geometryModelResource->materialHandle);
+
+		macros.insert(materialResource->macros.begin(), materialResource->macros.end());
 	}
 
 	//
@@ -735,8 +740,6 @@ bool WorldBuilder::finalizePrimitive(const Primitive& primitive, const GLTF& glT
 
 	//
 	//
-
-	GeometryResource* geometryResource = resourceManager.getGeometryResource(geometryModelResource->geometryHandle);
 
 	VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo = {};
 	pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;

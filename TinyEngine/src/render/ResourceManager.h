@@ -79,7 +79,7 @@ public:
 	bool materialResourceSetTextureResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, const std::string& prefix);
 
 	bool geometryResourceSetAttributesCount(uint64_t geometryHandle, uint32_t attributesCount);
-	bool geometryResourceSetAttribute(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset);
+	bool geometryResourceSetAttribute(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset);
 
 	bool geometryModelResourceSetGeometryResource(uint64_t geometryModelHandle, uint64_t geometryHandle);
 	bool geometryModelResourceSetMaterialResource(uint64_t geometryModelHandle, uint64_t materialHandle);

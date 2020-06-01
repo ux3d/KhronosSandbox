@@ -427,7 +427,7 @@ bool ResourceManager::geometryResourceSetAttributesCount(uint64_t geometryHandle
 	return true;
 }
 
-bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset)
+bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset)
 {
 	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
 
@@ -440,7 +440,7 @@ bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint
 	{
 		if (typeCount == 3)
 		{
-			macros[prefix + "_VEC3"] = "";
+			geometryResource->macros[prefix + "_VEC3"] = "";
 		}
 		else
 		{
@@ -453,7 +453,7 @@ bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint
 	{
 		if (typeCount == 3)
 		{
-			macros[prefix + "_VEC3"] = "";
+			geometryResource->macros[prefix + "_VEC3"] = "";
 		}
 		else
 		{
@@ -466,7 +466,7 @@ bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint
 	{
 		if (typeCount == 4)
 		{
-			macros[prefix + "_VEC4"] = "";
+			geometryResource->macros[prefix + "_VEC4"] = "";
 		}
 		else
 		{
@@ -479,7 +479,7 @@ bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint
 	{
 		if (typeCount == 2)
 		{
-			macros[prefix + "_VEC2"] = "";
+			geometryResource->macros[prefix + "_VEC2"] = "";
 		}
 		else
 		{
@@ -492,7 +492,7 @@ bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint
 	{
 		if (typeCount == 2)
 		{
-			macros[prefix + "_VEC2"] = "";
+			geometryResource->macros[prefix + "_VEC2"] = "";
 		}
 		else
 		{
@@ -505,11 +505,11 @@ bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint
 	{
 		if (typeCount == 3)
 		{
-			macros[prefix + "_VEC3"] = "";
+			geometryResource->macros[prefix + "_VEC3"] = "";
 		}
 		else if (typeCount == 4)
 		{
-			macros[prefix + "_VEC4"] = "";
+			geometryResource->macros[prefix + "_VEC4"] = "";
 		}
 		else
 		{
@@ -522,7 +522,7 @@ bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint
 	{
 		if (typeCount == 4)
 		{
-			macros[prefix + "_VEC4"] = "";
+			geometryResource->macros[prefix + "_VEC4"] = "";
 		}
 		else
 		{
@@ -535,7 +535,7 @@ bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint
 	{
 		if (typeCount == 4)
 		{
-			macros[prefix + "_VEC4"] = "";
+			geometryResource->macros[prefix + "_VEC4"] = "";
 		}
 		else
 		{
@@ -548,7 +548,7 @@ bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint
 	{
 		if (typeCount == 4)
 		{
-			macros[prefix + "_VEC4"] = "";
+			geometryResource->macros[prefix + "_VEC4"] = "";
 		}
 		else
 		{
@@ -561,7 +561,7 @@ bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint
 	{
 		if (typeCount == 4)
 		{
-			macros[prefix + "_VEC4"] = "";
+			geometryResource->macros[prefix + "_VEC4"] = "";
 		}
 		else
 		{
@@ -575,7 +575,7 @@ bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint
 		return false;
 	}
 
-	macros[prefix + "_LOC"] = std::to_string(geometryResource->attributeIndex);
+	geometryResource->macros[prefix + "_LOC"] = std::to_string(geometryResource->attributeIndex);
 
 	geometryResource->vertexInputBindingDescriptions[geometryResource->attributeIndex].binding = geometryResource->attributeIndex;
 	geometryResource->vertexInputBindingDescriptions[geometryResource->attributeIndex].stride = stride;
