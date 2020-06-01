@@ -542,11 +542,6 @@ uint64_t WorldBuilder::getBufferHandle(const Accessor& accessor)
 	return sharedDataHandle;
 }
 
-ResourceManager& WorldBuilder::getResourceManager()
-{
-	return resourceManager;
-}
-
 bool WorldBuilder::createSharedDataResource(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
 {
 	uint64_t sharedDataHandle = (uint64_t)&bufferView;
