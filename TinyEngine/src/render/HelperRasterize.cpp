@@ -12,11 +12,11 @@ void HelperRasterize::draw(ResourceManager& resourceManager, VkCommandBuffer com
 
 		for (size_t k = 0; k < groupResource->geometryModelHandles.size(); k++)
 		{
-			GeometryModelResource* primitiveResource = resourceManager.getGeometryModelResource(groupResource->geometryModelHandles[k]);
+			GeometryModelResource* geometryModelResource = resourceManager.getGeometryModelResource(groupResource->geometryModelHandles[k]);
 
-			GeometryResource* geometryResource = resourceManager.getGeometryResource(primitiveResource->geometryHandle);
+			GeometryResource* geometryResource = resourceManager.getGeometryResource(geometryModelResource->geometryHandle);
 
-			MaterialResource* materialResource = resourceManager.getMaterialResource(primitiveResource->materialHandle);
+			MaterialResource* materialResource = resourceManager.getMaterialResource(geometryModelResource->materialHandle);
 
 			//
 
@@ -31,30 +31,30 @@ void HelperRasterize::draw(ResourceManager& resourceManager, VkCommandBuffer com
 
 			//
 
-			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->graphicsPipeline);
+			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, geometryModelResource->graphicsPipeline);
 
 			if (materialResource->descriptorSet != VK_NULL_HANDLE)
 			{
-				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, primitiveResource->pipelineLayout, 0, 1, &materialResource->descriptorSet, 0, nullptr);
+				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, geometryModelResource->pipelineLayout, 0, 1, &materialResource->descriptorSet, 0, nullptr);
 			}
 
-			vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(worldResource->viewProjection), &worldResource->viewProjection);
-			vkCmdPushConstants(commandBuffer, primitiveResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(worldResource->viewProjection), sizeof(instanceResource->worldMatrix), &instanceResource->worldMatrix);
+			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(worldResource->viewProjection), &worldResource->viewProjection);
+			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(worldResource->viewProjection), sizeof(instanceResource->worldMatrix), &instanceResource->worldMatrix);
 
-			if (primitiveResource->indexBuffer != VK_NULL_HANDLE)
+			if (geometryModelResource->indexBuffer != VK_NULL_HANDLE)
 			{
-				vkCmdBindIndexBuffer(commandBuffer, primitiveResource->indexBuffer, primitiveResource->indexOffset, primitiveResource->indexType);
+				vkCmdBindIndexBuffer(commandBuffer, geometryModelResource->indexBuffer, geometryModelResource->indexOffset, geometryModelResource->indexType);
 			}
 
 			vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<uint32_t>(geometryResource->vertexBuffers.size()), geometryResource->vertexBuffers.data(), geometryResource->vertexBuffersOffsets.data());
 
-			if (primitiveResource->indexBuffer != VK_NULL_HANDLE)
+			if (geometryModelResource->indexBuffer != VK_NULL_HANDLE)
 			{
-				vkCmdDrawIndexed(commandBuffer, primitiveResource->count, 1, 0, 0, 0);
+				vkCmdDrawIndexed(commandBuffer, geometryModelResource->indicesCount, 1, 0, 0, 0);
 			}
 			else
 			{
-				vkCmdDraw(commandBuffer, primitiveResource->count, 1, 0, 0);
+				vkCmdDraw(commandBuffer, geometryModelResource->verticesCount, 1, 0, 0);
 			}
 		}
 	}

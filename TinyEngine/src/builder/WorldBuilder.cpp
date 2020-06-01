@@ -206,7 +206,7 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.position].typeCount, "POSITION", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.position].count, glTF.accessors[primitive.position].typeCount, "POSITION", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -224,7 +224,7 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.normal].typeCount, "NORMAL", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.normal].count, glTF.accessors[primitive.normal].typeCount, "NORMAL", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -242,7 +242,7 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.tangent].typeCount, "TANGENT", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.tangent].count, glTF.accessors[primitive.tangent].typeCount, "TANGENT", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -260,7 +260,7 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.texCoord0].typeCount, "TEXCOORD_0", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.texCoord0].count, glTF.accessors[primitive.texCoord0].typeCount, "TEXCOORD_0", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -278,7 +278,7 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.texCoord1].typeCount, "TEXCOORD_1", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.texCoord1].count, glTF.accessors[primitive.texCoord1].typeCount, "TEXCOORD_1", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -296,7 +296,7 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.color0].typeCount, "COLOR_0", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.color0].count, glTF.accessors[primitive.color0].typeCount, "COLOR_0", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -314,7 +314,7 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.joints0].typeCount, "JOINTS_0", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.joints0].count, glTF.accessors[primitive.joints0].typeCount, "JOINTS_0", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -332,7 +332,7 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.joints1].typeCount, "JOINTS_1", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.joints1].count, glTF.accessors[primitive.joints1].typeCount, "JOINTS_1", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -350,7 +350,7 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.weights0].typeCount, "WEIGHTS_0", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.weights0].count, glTF.accessors[primitive.weights0].typeCount, "WEIGHTS_0", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -368,7 +368,7 @@ bool WorldBuilder::initMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.weights1].typeCount, "WEIGHTS_1", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetPrimitiveResource(geometryHandle, glTF.accessors[primitive.weights1].count, glTF.accessors[primitive.weights1].typeCount, "WEIGHTS_1", macros, format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
 				{
 					return false;
 				}
@@ -569,7 +569,9 @@ bool WorldBuilder::createSharedDataResource(const BufferView& bufferView, VkPhys
 
 bool WorldBuilder::finalizePrimitive(const Primitive& primitive, const GLTF& glTF, std::map<std::string, std::string>& macros, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, const VkDescriptorSetLayout* pSetLayouts, VkCullModeFlags cullMode, bool useRaytrace)
 {
-	GeometryModelResource* geometryModelResource = resourceManager.getGeometryModelResource((uint64_t)&primitive);
+	uint64_t geometryModelHandle = (uint64_t)&primitive;
+
+	GeometryModelResource* geometryModelResource = resourceManager.getGeometryModelResource(geometryModelHandle);
 
 	if (!geometryModelResource)
 	{
@@ -813,15 +815,17 @@ bool WorldBuilder::finalizePrimitive(const Primitive& primitive, const GLTF& glT
 			indexType = VK_INDEX_TYPE_UINT32;
 		}
 
-		geometryModelResource->indexType = indexType;
-		geometryModelResource->indexBuffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[primitive.indices]));
-		geometryModelResource->indexOffset = HelperAccess::getOffset(glTF.accessors[primitive.indices]);
-
-		geometryModelResource->count = glTF.accessors[primitive.indices].count;
+		if (!resourceManager.geometryModelResourceSetIndices(geometryModelHandle, glTF.accessors[primitive.indices].count, indexType, resourceManager.getBuffer(getBufferHandle(glTF.accessors[primitive.indices])), HelperAccess::getOffset(glTF.accessors[primitive.indices])))
+		{
+			return false;
+		}
 	}
 	else
 	{
-		geometryModelResource->count = glTF.accessors[primitive.position].count;
+		if (!resourceManager.geometryModelResourceSetVertexCount(geometryModelHandle, glTF.accessors[primitive.position].count))
+		{
+			return false;
+		}
 	}
 
 	if (useRaytrace)

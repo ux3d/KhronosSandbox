@@ -416,7 +416,7 @@ bool ResourceManager::geometryResourceSetAttributesCount(uint64_t geometryHandle
 	return true;
 }
 
-bool ResourceManager::geometryResourceSetPrimitiveResource(uint64_t geometryHandle, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset)
+bool ResourceManager::geometryResourceSetPrimitiveResource(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset)
 {
 	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
 
@@ -580,6 +580,8 @@ bool ResourceManager::geometryResourceSetPrimitiveResource(uint64_t geometryHand
 	geometryResource->vertexBuffers[geometryResource->attributeIndex] = buffer;
 	geometryResource->vertexBuffersOffsets[geometryResource->attributeIndex] = offset;
 
+	geometryResource->count = count;
+
 	//
 
 	geometryResource->attributeIndex++;
@@ -611,6 +613,37 @@ bool ResourceManager::geometryModelResourceSetMaterialResource(uint64_t geometry
 	}
 
 	geometryModelResource->materialHandle = materialHandle;
+
+	return true;
+}
+
+bool ResourceManager::geometryModelResourceSetVertexCount(uint64_t geometryModelHandle, uint32_t verticesCount)
+{
+	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+
+	if (geometryModelResource->finalized)
+	{
+		return false;
+	}
+
+	geometryModelResource->verticesCount = verticesCount;
+
+	return true;
+}
+
+bool ResourceManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint32_t indicesCount, VkIndexType indexType, VkBuffer indexBuffer, uint32_t indexOffset)
+{
+	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+
+	if (geometryModelResource->finalized)
+	{
+		return false;
+	}
+
+	geometryModelResource->indicesCount = indicesCount;
+	geometryModelResource->indexType = indexType;
+	geometryModelResource->indexBuffer = indexBuffer;
+	geometryModelResource->indexOffset = indexOffset;
 
 	return true;
 }

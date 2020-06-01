@@ -13,6 +13,8 @@ struct GeometryResource : BaseResource {
 
 	uint32_t attributeIndex = 0;
 
+	uint32_t count = 0;
+
 	// Rasterize helper
 
 	std::vector<VkVertexInputBindingDescription> vertexInputBindingDescriptions;

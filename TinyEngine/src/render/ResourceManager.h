@@ -79,10 +79,12 @@ public:
 	bool materialResourceSetTextureResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, const std::string& prefix);
 
 	bool geometryResourceSetAttributesCount(uint64_t geometryHandle, uint32_t attributesCount);
-	bool geometryResourceSetPrimitiveResource(uint64_t geometryHandle, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset);
+	bool geometryResourceSetPrimitiveResource(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, std::map<std::string, std::string>& macros, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset);
 
 	bool geometryModelResourceSetGeometryResource(uint64_t geometryModelHandle, uint64_t geometryHandle);
 	bool geometryModelResourceSetMaterialResource(uint64_t geometryModelHandle, uint64_t materialHandle);
+	bool geometryModelResourceSetVertexCount(uint64_t geometryModelHandle, uint32_t verticesCount);
+	bool geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint32_t indicesCount, VkIndexType indexType, VkBuffer indexBuffer, uint32_t indexOffset);
 
 	bool groupResourceAddGeometryModelResource(uint64_t groupHandle, uint64_t geometryModelHandle);
 
