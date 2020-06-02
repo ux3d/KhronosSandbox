@@ -85,6 +85,7 @@ public:
 	bool geometryModelResourceSetMaterialResource(uint64_t geometryModelHandle, uint64_t materialHandle);
 	bool geometryModelResourceSetVertexCount(uint64_t geometryModelHandle, uint32_t verticesCount);
 	bool geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint32_t indicesCount, VkIndexType indexType, VkBuffer indexBuffer, uint32_t indexOffset);
+	bool geometryModelResourceSetTargetData(uint64_t geometryModelHandle, const std::string& targetName, uint64_t sharedDataHandle);
 
 	bool groupResourceAddGeometryModelResource(uint64_t groupHandle, uint64_t geometryModelHandle);
 

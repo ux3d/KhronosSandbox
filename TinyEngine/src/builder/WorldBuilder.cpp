@@ -385,20 +385,16 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 
 			if (primitive.targetsCount > 0)
 			{
-				// TODO: Resolve
-				uint64_t geometryModelHandle = (uint64_t)&primitive;
-				GeometryModelResource* geometryModelResource = resourceManager.getGeometryModelResource(geometryModelHandle);
-
-				StorageBufferResourceCreateInfo storageBufferResourceCreateInfo = {};
-				storageBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-				storageBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-
 				if (primitive.targetPositionData.size() > 0)
 				{
-					storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(glm::vec3) * primitive.targetPositionData.size();
-					storageBufferResourceCreateInfo.data = primitive.targetPositionData.data();
+					uint64_t sharedDataHandle = (uint64_t)primitive.targetPositionData.data();
 
-					if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, geometryModelResource->targetPosition, storageBufferResourceCreateInfo))
+					if (!createSharedDataResource(sizeof(glm::vec3) * primitive.targetPositionData.size(), primitive.targetPositionData.data(), physicalDevice, device, queue, commandPool, useRaytrace))
+					{
+						return false;
+					}
+
+					if (!resourceManager.geometryModelResourceSetTargetData(geometryModelHandle, "POSITION", sharedDataHandle))
 					{
 						return false;
 					}
@@ -406,10 +402,14 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 
 				if (primitive.targetNormalData.size() > 0)
 				{
-					storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(glm::vec3) * primitive.targetNormalData.size();
-					storageBufferResourceCreateInfo.data = primitive.targetNormalData.data();
+					uint64_t sharedDataHandle = (uint64_t)primitive.targetNormalData.data();
 
-					if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, geometryModelResource->targetNormal, storageBufferResourceCreateInfo))
+					if (!createSharedDataResource(sizeof(glm::vec3) * primitive.targetNormalData.size(), primitive.targetNormalData.data(), physicalDevice, device, queue, commandPool, useRaytrace))
+					{
+						return false;
+					}
+
+					if (!resourceManager.geometryModelResourceSetTargetData(geometryModelHandle, "NORMAL", sharedDataHandle))
 					{
 						return false;
 					}
@@ -417,10 +417,14 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 
 				if (primitive.targetTangentData.size() > 0)
 				{
-					storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(glm::vec3) * primitive.targetTangentData.size();
-					storageBufferResourceCreateInfo.data = primitive.targetTangentData.data();
+					uint64_t sharedDataHandle = (uint64_t)primitive.targetTangentData.data();
 
-					if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, geometryModelResource->targetTangent, storageBufferResourceCreateInfo))
+					if (!createSharedDataResource(sizeof(glm::vec3) * primitive.targetTangentData.size(), primitive.targetTangentData.data(), physicalDevice, device, queue, commandPool, useRaytrace))
+					{
+						return false;
+					}
+
+					if (!resourceManager.geometryModelResourceSetTargetData(geometryModelHandle, "TANGENT", sharedDataHandle))
 					{
 						return false;
 					}

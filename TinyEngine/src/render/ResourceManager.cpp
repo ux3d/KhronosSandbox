@@ -65,9 +65,7 @@ void ResourceManager::terminate(GeometryModelResource& geometryModelResource, Vk
 
 	//
 
-	VulkanResource::destroyStorageBufferResource(device, geometryModelResource.targetPosition);
-	VulkanResource::destroyStorageBufferResource(device, geometryModelResource.targetNormal);
-	VulkanResource::destroyStorageBufferResource(device, geometryModelResource.targetTangent);
+	// Shared data is not destroyed here.
 
 	//
 
@@ -655,6 +653,42 @@ bool ResourceManager::geometryModelResourceSetIndices(uint64_t geometryModelHand
 	geometryModelResource->indexType = indexType;
 	geometryModelResource->indexBuffer = indexBuffer;
 	geometryModelResource->indexOffset = indexOffset;
+
+	return true;
+}
+
+bool ResourceManager::geometryModelResourceSetTargetData(uint64_t geometryModelHandle, const std::string& targetName, uint64_t sharedDataHandle)
+{
+	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+
+	if (geometryModelResource->finalized)
+	{
+		return false;
+	}
+
+	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
+
+	if (!sharedDataResource->finalized)
+	{
+		return false;
+	}
+
+	if (targetName == "POSITION")
+	{
+		geometryModelResource->targetPosition = &sharedDataResource->storageBufferResource;
+	}
+	else if (targetName == "NORMAL")
+	{
+		geometryModelResource->targetNormal = &sharedDataResource->storageBufferResource;
+	}
+	else if (targetName == "TANGENT")
+	{
+		geometryModelResource->targetTangent = &sharedDataResource->storageBufferResource;
+	}
+	else
+	{
+		return false;
+	}
 
 	return true;
 }

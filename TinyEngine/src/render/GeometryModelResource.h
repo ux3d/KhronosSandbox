@@ -30,9 +30,9 @@ struct GeometryModelResource : BaseResource {
 	VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
 	VkPipeline graphicsPipeline = VK_NULL_HANDLE;
 
-	StorageBufferResource targetPosition;
-	StorageBufferResource targetNormal;
-	StorageBufferResource targetTangent;
+	StorageBufferResource* targetPosition = nullptr;
+	StorageBufferResource* targetNormal = nullptr;
+	StorageBufferResource* targetTangent = nullptr;
 
 	// Raytrace helper
 
