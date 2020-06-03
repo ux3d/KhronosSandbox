@@ -104,7 +104,7 @@ public:
 	bool textureResourceFinalize(uint64_t textureHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
 	bool materialResourceFinalize(uint64_t materialHandle, VkDevice device);
 	bool geometryResourceFinalize(uint64_t geometryHandle);
-	bool geometryModelResourceFinalize(uint64_t geometryModelHandle);
+	bool geometryModelResourceFinalize(uint64_t geometryModelHandle, uint32_t width, uint32_t height, VkRenderPass renderPass, VkCullModeFlags cullMode, VkSampleCountFlagBits samples, bool useRaytrace, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
 	bool groupResourceFinalize(uint64_t groupHandle);
 	bool instanceResourceFinalize(uint64_t instanceHandle);
 	bool lightResourceFinalize(uint64_t lightHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);

@@ -1047,7 +1047,7 @@ bool ResourceManager::geometryResourceFinalize(uint64_t geometryHandle)
 	return true;
 }
 
-bool ResourceManager::geometryModelResourceFinalize(uint64_t geometryModelHandle)
+bool ResourceManager::geometryModelResourceFinalize(uint64_t geometryModelHandle, uint32_t width, uint32_t height, VkRenderPass renderPass, VkCullModeFlags cullMode, VkSampleCountFlagBits samples, bool useRaytrace, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
 
@@ -1057,6 +1057,263 @@ bool ResourceManager::geometryModelResourceFinalize(uint64_t geometryModelHandle
 	}
 
 	geometryModelResource->finalized = true;
+
+	//
+	// Load the shader code.
+	//
+
+	std::string vertexShaderSource = "";
+	if (!FileIO::open(vertexShaderSource, "../Resources/shaders/gltf.vert"))
+	{
+		return false;
+	}
+
+	std::string fragmentShaderSource = "";
+	if (!FileIO::open(fragmentShaderSource, "../Resources/shaders/gltf.frag"))
+	{
+		return false;
+	}
+
+	//
+
+	std::vector<uint32_t> vertexShaderCode;
+	if (!Compiler::buildShader(vertexShaderCode, vertexShaderSource, geometryModelResource->macros, shaderc_vertex_shader))
+	{
+		return false;
+	}
+
+	std::vector<uint32_t> fragmentShaderCode;
+	if (!Compiler::buildShader(fragmentShaderCode, fragmentShaderSource, geometryModelResource->macros, shaderc_fragment_shader))
+	{
+		return false;
+	}
+
+	if (!VulkanResource::createShaderModule(geometryModelResource->vertexShaderModule, device, vertexShaderCode))
+	{
+		return false;
+	}
+
+	if (!VulkanResource::createShaderModule(geometryModelResource->fragmentShaderModule, device, fragmentShaderCode))
+	{
+		return false;
+	}
+
+	//
+
+	VkResult result = VK_SUCCESS;
+
+	VkPipelineShaderStageCreateInfo pipelineShaderStageCreateInfo[2] = {};
+
+	pipelineShaderStageCreateInfo[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	pipelineShaderStageCreateInfo[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
+	pipelineShaderStageCreateInfo[0].module = geometryModelResource->vertexShaderModule;
+	pipelineShaderStageCreateInfo[0].pName = "main";
+
+	pipelineShaderStageCreateInfo[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	pipelineShaderStageCreateInfo[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+	pipelineShaderStageCreateInfo[1].module = geometryModelResource->fragmentShaderModule;
+	pipelineShaderStageCreateInfo[1].pName = "main";
+
+	//
+	//
+
+	GeometryResource* geometryResource = getGeometryResource(geometryModelResource->geometryHandle);
+
+	if (!geometryResource->finalized)
+	{
+		return false;
+	}
+
+	VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo = {};
+	pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(geometryResource->vertexInputBindingDescriptions.size());
+	pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = geometryResource->vertexInputBindingDescriptions.data();
+	pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(geometryResource->vertexInputAttributeDescriptions.size());
+	pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = geometryResource->vertexInputAttributeDescriptions.data();
+
+	//
+	//
+
+	VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo = {};
+	pipelineInputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+	pipelineInputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+	//
+
+	VkViewport viewport = {};
+	viewport.x = 0.0f;
+	viewport.y = 0.0f;
+	viewport.width = (float)width;
+	viewport.height = (float)height;
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+
+	VkRect2D scissor = {};
+	scissor.offset = {0, 0};
+	scissor.extent = {width, height};
+
+	VkPipelineViewportStateCreateInfo pipelineViewportStateCreateInfo = {};
+	pipelineViewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+	pipelineViewportStateCreateInfo.viewportCount = 1;
+	pipelineViewportStateCreateInfo.pViewports = &viewport;
+	pipelineViewportStateCreateInfo.scissorCount = 1;
+	pipelineViewportStateCreateInfo.pScissors = &scissor;
+
+	//
+
+	VkPipelineRasterizationStateCreateInfo pipelineRasterizationStateCreateInfo = {};
+	pipelineRasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	pipelineRasterizationStateCreateInfo.cullMode = cullMode;
+	pipelineRasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+	pipelineRasterizationStateCreateInfo.lineWidth = 1.0f;
+
+	//
+
+	VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo = {};
+	pipelineMultisampleStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	pipelineMultisampleStateCreateInfo.rasterizationSamples = samples;
+	pipelineMultisampleStateCreateInfo.minSampleShading = 1.0f;
+
+	//
+
+	VkPipelineDepthStencilStateCreateInfo pipelineDepthStencilStateCreateInfo = {};
+	pipelineDepthStencilStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	pipelineDepthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
+	pipelineDepthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
+	pipelineDepthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+
+	//
+
+	VkPipelineColorBlendAttachmentState pipelineColorBlendAttachmentState = {};
+	pipelineColorBlendAttachmentState.blendEnable = VK_TRUE;
+	pipelineColorBlendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+	pipelineColorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+	pipelineColorBlendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
+	pipelineColorBlendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+	pipelineColorBlendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+	pipelineColorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
+	pipelineColorBlendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+
+	VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo = {};
+	pipelineColorBlendStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+	pipelineColorBlendStateCreateInfo.attachmentCount = 1;
+	pipelineColorBlendStateCreateInfo.pAttachments = &pipelineColorBlendAttachmentState;
+
+	//
+
+	uint32_t setLayoutCount = 0;
+	const VkDescriptorSetLayout* pSetLayouts = nullptr;
+
+	if (geometryModelResource->materialHandle > 0)
+	{
+		MaterialResource* materialResource = getMaterialResource(geometryModelResource->materialHandle);
+
+		if (!geometryResource->finalized)
+		{
+			return false;
+		}
+
+		if (materialResource->descriptorSetLayout != VK_NULL_HANDLE)
+		{
+			setLayoutCount = 1;
+			pSetLayouts = &materialResource->descriptorSetLayout;
+		}
+	}
+
+	VkPushConstantRange pushConstantRange = {};
+    pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    pushConstantRange.offset = 0;
+    pushConstantRange.size = sizeof(ModelViewProjectionUniformPushConstant);
+
+	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
+	pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	pipelineLayoutCreateInfo.setLayoutCount = setLayoutCount;
+	pipelineLayoutCreateInfo.pSetLayouts = pSetLayouts;
+	pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
+	pipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;
+
+	result = vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &geometryModelResource->pipelineLayout);
+	if (result != VK_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+		return false;
+	}
+
+	//
+
+	VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo = {};
+	graphicsPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	graphicsPipelineCreateInfo.stageCount = 2;
+	graphicsPipelineCreateInfo.pStages = pipelineShaderStageCreateInfo;
+	graphicsPipelineCreateInfo.pVertexInputState = &pipelineVertexInputStateCreateInfo;
+	graphicsPipelineCreateInfo.pInputAssemblyState = &pipelineInputAssemblyStateCreateInfo;
+	graphicsPipelineCreateInfo.pViewportState = &pipelineViewportStateCreateInfo;
+	graphicsPipelineCreateInfo.pRasterizationState = &pipelineRasterizationStateCreateInfo;
+	graphicsPipelineCreateInfo.pMultisampleState = &pipelineMultisampleStateCreateInfo;
+	graphicsPipelineCreateInfo.pDepthStencilState = &pipelineDepthStencilStateCreateInfo;
+	graphicsPipelineCreateInfo.pColorBlendState = &pipelineColorBlendStateCreateInfo;
+	graphicsPipelineCreateInfo.layout = geometryModelResource->pipelineLayout;
+	graphicsPipelineCreateInfo.renderPass = renderPass;
+
+	result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &geometryModelResource->graphicsPipeline);
+	if (result != VK_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+		return false;
+	}
+
+	if (useRaytrace)
+	{
+		//
+		// Bottom level.
+		//
+
+		VkBufferDeviceAddressInfo bufferDeviceAddressInfo = {};
+		bufferDeviceAddressInfo.sType  = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+
+		bufferDeviceAddressInfo.buffer = geometryResource->vertexBuffers[geometryResource->positionAttributeIndex];
+		VkDeviceAddress vertexBufferAddress = vkGetBufferDeviceAddress(device, &bufferDeviceAddressInfo);
+
+		uint32_t vertexCount = geometryResource->count;
+		uint32_t primitiveCount = vertexCount / 3;
+
+		VkDeviceAddress vertexIndexBufferAddress = 0;
+		if (geometryModelResource->indicesCount >= 0)
+		{
+			bufferDeviceAddressInfo.buffer = geometryModelResource->indexBuffer;
+
+			vertexIndexBufferAddress = vkGetBufferDeviceAddress(device, &bufferDeviceAddressInfo);
+
+			primitiveCount = geometryModelResource->indicesCount / 3;
+		}
+
+		//
+		// Bottom level acceleration
+		//
+
+		VkFormat positionFormat = geometryResource->vertexInputAttributeDescriptions[geometryResource->positionAttributeIndex].format;
+		VkDeviceSize vertexStride = geometryResource->vertexInputBindingDescriptions[geometryResource->positionAttributeIndex].stride;
+
+		BottomLevelResourceCreateInfo bottomLevelResourceCreateInfo = {};
+		bottomLevelResourceCreateInfo.indexType = geometryModelResource->indexType;
+		bottomLevelResourceCreateInfo.vertexIndexBufferAddress = vertexIndexBufferAddress;
+		bottomLevelResourceCreateInfo.vertexCount = vertexCount;
+		bottomLevelResourceCreateInfo.vertexFormat = positionFormat;
+		bottomLevelResourceCreateInfo.vertexBufferAddress = vertexBufferAddress;
+		bottomLevelResourceCreateInfo.vertexStride = vertexStride;
+		bottomLevelResourceCreateInfo.primitiveCount = primitiveCount;
+		bottomLevelResourceCreateInfo.useHostCommand = false;
+
+		if (!VulkanRaytraceResource::createBottomLevelResource(physicalDevice, device, queue, commandPool, geometryModelResource->bottomLevelResource, bottomLevelResourceCreateInfo))
+		{
+			return false;
+		}
+	}
+
+
+	//
 
 	return true;
 }
