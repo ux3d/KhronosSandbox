@@ -675,17 +675,6 @@ bool WorldBuilder::finalizePrimitive(const Primitive& primitive, const GLTF& glT
 		return false;
 	}
 
-	GeometryResource* geometryResource = resourceManager.getGeometryResource(geometryModelResource->geometryHandle);
-
-	std::map<std::string, std::string> macros = geometryResource->macros;
-
-	if (geometryModelResource->materialHandle > 0)
-	{
-		MaterialResource* materialResource = resourceManager.getMaterialResource(geometryModelResource->materialHandle);
-
-		macros.insert(materialResource->macros.begin(), materialResource->macros.end());
-	}
-
 	//
 	// Load the shader code.
 	//
@@ -705,13 +694,13 @@ bool WorldBuilder::finalizePrimitive(const Primitive& primitive, const GLTF& glT
 	//
 
 	std::vector<uint32_t> vertexShaderCode;
-	if (!Compiler::buildShader(vertexShaderCode, vertexShaderSource, macros, shaderc_vertex_shader))
+	if (!Compiler::buildShader(vertexShaderCode, vertexShaderSource, geometryModelResource->macros, shaderc_vertex_shader))
 	{
 		return false;
 	}
 
 	std::vector<uint32_t> fragmentShaderCode;
-	if (!Compiler::buildShader(fragmentShaderCode, fragmentShaderSource, macros, shaderc_fragment_shader))
+	if (!Compiler::buildShader(fragmentShaderCode, fragmentShaderSource, geometryModelResource->macros, shaderc_fragment_shader))
 	{
 		return false;
 	}
@@ -744,6 +733,13 @@ bool WorldBuilder::finalizePrimitive(const Primitive& primitive, const GLTF& glT
 
 	//
 	//
+
+	GeometryResource* geometryResource = resourceManager.getGeometryResource(geometryModelResource->geometryHandle);
+
+	if (!geometryResource)
+	{
+		return false;
+	}
 
 	VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo = {};
 	pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;

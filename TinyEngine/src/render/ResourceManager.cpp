@@ -607,7 +607,16 @@ bool ResourceManager::geometryModelResourceSetGeometryResource(uint64_t geometry
 		return false;
 	}
 
+	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
+
+	if (!geometryResource->finalized)
+	{
+		return false;
+	}
+
 	geometryModelResource->geometryHandle = geometryHandle;
+
+	geometryModelResource->macros.insert(geometryResource->macros.begin(), geometryResource->macros.end());
 
 	return true;
 }
@@ -621,7 +630,16 @@ bool ResourceManager::geometryModelResourceSetMaterialResource(uint64_t geometry
 		return false;
 	}
 
+	MaterialResource* materialResource = getMaterialResource(materialHandle);
+
+	if (!materialResource->finalized)
+	{
+		return false;
+	}
+
 	geometryModelResource->materialHandle = materialHandle;
+
+	geometryModelResource->macros.insert(materialResource->macros.begin(), materialResource->macros.end());
 
 	return true;
 }
