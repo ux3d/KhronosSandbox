@@ -24,6 +24,7 @@ struct GeometryResource : BaseResource {
 	std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
 	std::vector<VkBuffer> vertexBuffers;
 	std::vector<VkDeviceSize> vertexBuffersOffsets;
+	std::vector<VkDeviceSize> vertexBuffersRanges;
 
 	// Raytrace helper
 

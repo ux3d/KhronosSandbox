@@ -196,7 +196,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.position].count, glTF.accessors[primitive.position].typeCount, "POSITION", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.position].count, glTF.accessors[primitive.position].typeCount, "POSITION", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -214,7 +214,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.normal].count, glTF.accessors[primitive.normal].typeCount, "NORMAL", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.normal].count, glTF.accessors[primitive.normal].typeCount, "NORMAL", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -232,7 +232,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.tangent].count, glTF.accessors[primitive.tangent].typeCount, "TANGENT", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.tangent].count, glTF.accessors[primitive.tangent].typeCount, "TANGENT", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -250,7 +250,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.texCoord0].count, glTF.accessors[primitive.texCoord0].typeCount, "TEXCOORD_0", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.texCoord0].count, glTF.accessors[primitive.texCoord0].typeCount, "TEXCOORD_0", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -268,7 +268,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.texCoord1].count, glTF.accessors[primitive.texCoord1].typeCount, "TEXCOORD_1", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.texCoord1].count, glTF.accessors[primitive.texCoord1].typeCount, "TEXCOORD_1", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -286,7 +286,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.color0].count, glTF.accessors[primitive.color0].typeCount, "COLOR_0", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.color0].count, glTF.accessors[primitive.color0].typeCount, "COLOR_0", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -304,7 +304,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.joints0].count, glTF.accessors[primitive.joints0].typeCount, "JOINTS_0", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.joints0].count, glTF.accessors[primitive.joints0].typeCount, "JOINTS_0", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -322,7 +322,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.joints1].count, glTF.accessors[primitive.joints1].typeCount, "JOINTS_1", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.joints1].count, glTF.accessors[primitive.joints1].typeCount, "JOINTS_1", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -340,7 +340,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.weights0].count, glTF.accessors[primitive.weights0].typeCount, "WEIGHTS_0", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.weights0].count, glTF.accessors[primitive.weights0].typeCount, "WEIGHTS_0", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -358,7 +358,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.weights1].count, glTF.accessors[primitive.weights1].typeCount, "WEIGHTS_1", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor)))
+				if (!resourceManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.weights1].count, glTF.accessors[primitive.weights1].typeCount, "WEIGHTS_1", format, stride, resourceManager.getBuffer(getBufferHandle(accessor)), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -446,7 +446,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					indexType = VK_INDEX_TYPE_UINT32;
 				}
 
-				if (!resourceManager.geometryModelResourceSetIndices(geometryModelHandle, glTF.accessors[primitive.indices].count, indexType, resourceManager.getBuffer(getBufferHandle(glTF.accessors[primitive.indices])), HelperAccess::getOffset(glTF.accessors[primitive.indices])))
+				if (!resourceManager.geometryModelResourceSetIndices(geometryModelHandle, glTF.accessors[primitive.indices].count, indexType, resourceManager.getBuffer(getBufferHandle(glTF.accessors[primitive.indices])), HelperAccess::getOffset(glTF.accessors[primitive.indices]), HelperAccess::getRange(glTF.accessors[primitive.indices])))
 				{
 					return false;
 				}
@@ -689,21 +689,26 @@ bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevi
 
 		for (const Node& node : glTF.nodes)
 		{
-			if (node.mesh >= 0)
+			InstanceResource* instanceResource = resourceManager.getInstanceResource((uint64_t)&node);
+
+			if (instanceResource->groupHandle > 0)
 			{
+				GroupResource* groupResource = resourceManager.getGroupResource(instanceResource->groupHandle);
+
 				VkAccelerationStructureDeviceAddressInfoKHR accelerationStructureDeviceAddressInfo = {};
 				accelerationStructureDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
 
 				VkTransformMatrixKHR transformMatrix = {
-					node.worldMatrix[0][0], node.worldMatrix[1][0], node.worldMatrix[2][0], node.worldMatrix[3][0],
-					node.worldMatrix[0][1], node.worldMatrix[1][1], node.worldMatrix[2][1], node.worldMatrix[3][1],
-					node.worldMatrix[0][2], node.worldMatrix[1][2], node.worldMatrix[2][2], node.worldMatrix[3][2]
+					instanceResource->worldMatrix[0][0], instanceResource->worldMatrix[1][0], instanceResource->worldMatrix[2][0], instanceResource->worldMatrix[3][0],
+					instanceResource->worldMatrix[0][1], instanceResource->worldMatrix[1][1], instanceResource->worldMatrix[2][1], instanceResource->worldMatrix[3][1],
+					instanceResource->worldMatrix[0][2], instanceResource->worldMatrix[1][2], instanceResource->worldMatrix[2][2], instanceResource->worldMatrix[3][2]
 				};
 
 				for (const Primitive& currentPrimitive : glTF.meshes[node.mesh].primitives)
 				{
 					GeometryModelResource* geometryModelResource = resourceManager.getGeometryModelResource((uint64_t)&currentPrimitive);
-					GeometryResource* geometryResource = resourceManager.getGeometryResource((uint64_t)&currentPrimitive);
+
+					GeometryResource* geometryResource = resourceManager.getGeometryResource(geometryModelResource->geometryHandle);
 
 					//
 
@@ -723,7 +728,7 @@ bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevi
 					RaytracePrimitiveUniformBuffer primitiveInformation = {};
 					primitiveInformation.materialIndex = currentPrimitive.material;
 					primitiveInformation.componentTypeSize = glTF.accessors[currentPrimitive.indices].componentTypeSize;
-					primitiveInformation.worldMatrix = node.worldMatrix;
+					primitiveInformation.worldMatrix = instanceResource->worldMatrix;
 
 					if (geometryResource->normalAttributeIndex >= 0)
 					{
@@ -752,13 +757,13 @@ bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevi
 					// Gather descriptor buffer info.
 					//
 
-					if (currentPrimitive.indices >= 0)
+					if (geometryModelResource->indicesCount > 0)
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[currentPrimitive.indices]));
-						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.indices]);
-						currentDescriptorBufferInfo.range = HelperAccess::getRange(glTF.accessors[currentPrimitive.indices]);
+						currentDescriptorBufferInfo.buffer = geometryModelResource->indexBuffer;
+						currentDescriptorBufferInfo.offset = geometryModelResource->indexOffset;
+						currentDescriptorBufferInfo.range = geometryModelResource->indexRange;
 
 						descriptorBufferInfoIndices.push_back(currentDescriptorBufferInfo);
 					}
@@ -767,9 +772,9 @@ bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevi
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[currentPrimitive.position]));
-						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.position]);
-						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.position]);
+						currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->positionAttributeIndex];
+						currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->positionAttributeIndex];
+						currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->positionAttributeIndex];
 
 						descriptorBufferInfoPosition.push_back(currentDescriptorBufferInfo);
 					}
@@ -778,9 +783,9 @@ bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevi
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[currentPrimitive.normal]));
-						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.normal]);
-						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.normal]);
+						currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->normalAttributeIndex];
+						currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->normalAttributeIndex];
+						currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->normalAttributeIndex];
 
 						descriptorBufferInfoNormal.push_back(currentDescriptorBufferInfo);
 					}
@@ -789,9 +794,9 @@ bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevi
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[currentPrimitive.tangent]));
-						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.tangent]);
-						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.tangent]);
+						currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->tangentAttributeIndex];
+						currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->tangentAttributeIndex];
+						currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->tangentAttributeIndex];
 
 						descriptorBufferInfoTangent.push_back(currentDescriptorBufferInfo);
 					}
@@ -800,9 +805,9 @@ bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevi
 					{
 						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
 
-						currentDescriptorBufferInfo.buffer = resourceManager.getBuffer(getBufferHandle(glTF.accessors[currentPrimitive.texCoord0]));
-						currentDescriptorBufferInfo.offset = HelperAccess::getOffset(glTF.accessors[currentPrimitive.texCoord0]);
-						currentDescriptorBufferInfo.range =  HelperAccess::getRange(glTF.accessors[currentPrimitive.texCoord0]);
+						currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->texCoord0AttributeIndex];
+						currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->texCoord0AttributeIndex];
+						currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->texCoord0AttributeIndex];
 
 						descriptorBufferInfoTexCoord0.push_back(currentDescriptorBufferInfo);
 					}

@@ -418,6 +418,7 @@ bool ResourceManager::geometryResourceSetAttributesCount(uint64_t geometryHandle
 
 	geometryResource->vertexBuffers.resize(attributesCount);
 	geometryResource->vertexBuffersOffsets.resize(attributesCount);
+	geometryResource->vertexBuffersRanges.resize(attributesCount);
 
 	geometryResource->vertexInputBindingDescriptions.resize(attributesCount);
 	geometryResource->vertexInputAttributeDescriptions.resize(attributesCount);
@@ -425,7 +426,7 @@ bool ResourceManager::geometryResourceSetAttributesCount(uint64_t geometryHandle
 	return true;
 }
 
-bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset)
+bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset, VkDeviceSize range)
 {
 	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
 
@@ -588,6 +589,7 @@ bool ResourceManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint
 
 	geometryResource->vertexBuffers[geometryResource->attributeIndex] = buffer;
 	geometryResource->vertexBuffersOffsets[geometryResource->attributeIndex] = offset;
+	geometryResource->vertexBuffersRanges[geometryResource->attributeIndex] = range;
 
 	geometryResource->count = count;
 
@@ -658,7 +660,7 @@ bool ResourceManager::geometryModelResourceSetVertexCount(uint64_t geometryModel
 	return true;
 }
 
-bool ResourceManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint32_t indicesCount, VkIndexType indexType, VkBuffer indexBuffer, uint32_t indexOffset)
+bool ResourceManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint32_t indicesCount, VkIndexType indexType, VkBuffer indexBuffer, uint32_t indexOffset, uint32_t indexRange)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
 
@@ -671,6 +673,7 @@ bool ResourceManager::geometryModelResourceSetIndices(uint64_t geometryModelHand
 	geometryModelResource->indexType = indexType;
 	geometryModelResource->indexBuffer = indexBuffer;
 	geometryModelResource->indexOffset = indexOffset;
+	geometryModelResource->indexRange = indexRange;
 
 	return true;
 }
