@@ -319,7 +319,7 @@ bool ResourceManager::textureResourceSetCreateInformation(uint64_t textureHandle
 	return true;
 }
 
-bool ResourceManager::materialResourceSetMaterialParameters(uint64_t materialHandle, const MaterialUniformBuffer& materialUniformBuffer, VkPhysicalDevice physicalDevice, VkDevice device)
+bool ResourceManager::materialResourceSetMaterialParameters(uint64_t materialHandle, int32_t materialIndex, const MaterialUniformBuffer& materialUniformBuffer, VkPhysicalDevice physicalDevice, VkDevice device)
 {
 	MaterialResource* materialResource = getMaterialResource(materialHandle);
 
@@ -329,6 +329,7 @@ bool ResourceManager::materialResourceSetMaterialParameters(uint64_t materialHan
 	}
 
 	materialResource->materialUniformBuffer = materialUniformBuffer;
+	materialResource->materialIndex = materialIndex;
 
 	//
 
@@ -660,7 +661,7 @@ bool ResourceManager::geometryModelResourceSetVertexCount(uint64_t geometryModel
 	return true;
 }
 
-bool ResourceManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint32_t indicesCount, VkIndexType indexType, VkBuffer indexBuffer, uint32_t indexOffset, uint32_t indexRange)
+bool ResourceManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint32_t indicesCount, VkIndexType indexType, VkBuffer indexBuffer, uint32_t indexOffset, uint32_t indexRange, uint32_t componentTypeSize)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
 
@@ -674,6 +675,7 @@ bool ResourceManager::geometryModelResourceSetIndices(uint64_t geometryModelHand
 	geometryModelResource->indexBuffer = indexBuffer;
 	geometryModelResource->indexOffset = indexOffset;
 	geometryModelResource->indexRange = indexRange;
+	geometryModelResource->componentTypeSize = componentTypeSize;
 
 	return true;
 }

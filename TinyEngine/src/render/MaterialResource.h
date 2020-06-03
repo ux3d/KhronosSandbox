@@ -65,6 +65,10 @@ struct MaterialResource : BaseResource {
 
 	std::map<std::string, std::string> macros;
 
+	// Raytracer helper
+
+	int32_t materialIndex = -1;
+
 };
 
 #endif /* RENDER_MATERIALRENDER_H_ */

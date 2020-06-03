@@ -21,6 +21,7 @@ struct GeometryModelResource : BaseResource {
 	VkBuffer indexBuffer = VK_NULL_HANDLE;
 	uint32_t indexOffset = 0;
 	uint32_t indexRange = 0;
+	uint32_t componentTypeSize = 0;
 
 	uint32_t indicesCount = 0;
 	uint32_t verticesCount = 0;

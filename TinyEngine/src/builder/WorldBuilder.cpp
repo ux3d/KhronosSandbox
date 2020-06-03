@@ -152,7 +152,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
 
 		materialUniformBuffer.doubleSided = material.doubleSided;
 
-		resourceManager.materialResourceSetMaterialParameters(materialHandles[i], materialUniformBuffer, physicalDevice, device);
+		resourceManager.materialResourceSetMaterialParameters(materialHandles[i], static_cast<int32_t>(i), materialUniformBuffer, physicalDevice, device);
 
 		if (!resourceManager.materialResourceFinalize(materialHandles[i], device))
 		{
@@ -446,7 +446,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					indexType = VK_INDEX_TYPE_UINT32;
 				}
 
-				if (!resourceManager.geometryModelResourceSetIndices(geometryModelHandle, glTF.accessors[primitive.indices].count, indexType, resourceManager.getBuffer(getBufferHandle(glTF.accessors[primitive.indices])), HelperAccess::getOffset(glTF.accessors[primitive.indices]), HelperAccess::getRange(glTF.accessors[primitive.indices])))
+				if (!resourceManager.geometryModelResourceSetIndices(geometryModelHandle, glTF.accessors[primitive.indices].count, indexType, resourceManager.getBuffer(getBufferHandle(glTF.accessors[primitive.indices])), HelperAccess::getOffset(glTF.accessors[primitive.indices]), HelperAccess::getRange(glTF.accessors[primitive.indices]), glTF.accessors[primitive.indices].componentTypeSize))
 				{
 					return false;
 				}
@@ -704,11 +704,13 @@ bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevi
 					instanceResource->worldMatrix[0][2], instanceResource->worldMatrix[1][2], instanceResource->worldMatrix[2][2], instanceResource->worldMatrix[3][2]
 				};
 
-				for (const Primitive& currentPrimitive : glTF.meshes[node.mesh].primitives)
+				for (uint64_t geometryModelHandle : groupResource->geometryModelHandles)
 				{
-					GeometryModelResource* geometryModelResource = resourceManager.getGeometryModelResource((uint64_t)&currentPrimitive);
+					GeometryModelResource* geometryModelResource = resourceManager.getGeometryModelResource(geometryModelHandle);
 
 					GeometryResource* geometryResource = resourceManager.getGeometryResource(geometryModelResource->geometryHandle);
+
+					MaterialResource* materialResource = resourceManager.getMaterialResource(geometryModelResource->materialHandle);
 
 					//
 
@@ -726,8 +728,8 @@ bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevi
 					worldResource->accelerationStructureInstances.push_back(accelerationStructureInstance);
 
 					RaytracePrimitiveUniformBuffer primitiveInformation = {};
-					primitiveInformation.materialIndex = currentPrimitive.material;
-					primitiveInformation.componentTypeSize = glTF.accessors[currentPrimitive.indices].componentTypeSize;
+					primitiveInformation.materialIndex = materialResource->materialIndex;
+					primitiveInformation.componentTypeSize = geometryModelResource->componentTypeSize;
 					primitiveInformation.worldMatrix = instanceResource->worldMatrix;
 
 					if (geometryResource->normalAttributeIndex >= 0)
