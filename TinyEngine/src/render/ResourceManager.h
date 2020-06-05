@@ -109,7 +109,7 @@ public:
 	bool instanceResourceFinalize(uint64_t instanceHandle);
 	bool lightResourceFinalize(uint64_t lightHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
 	bool cameraResourceFinalize(uint64_t cameraHandle);
-	bool worldResourceFinalize(VkDevice device);
+	bool worldResourceFinalize(VkImageView imageView, bool useRaytrace, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
 
 	// Getters
 
