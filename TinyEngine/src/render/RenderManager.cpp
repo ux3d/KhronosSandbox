@@ -284,6 +284,14 @@ bool RenderManager::renderSetupVulkan(VkPhysicalDevice physicalDevice, VkDevice 
 	return true;
 }
 
+bool RenderManager::renderSetDimension(uint32_t width, uint32_t height)
+{
+	this->width = width;
+	this->height = height;
+
+	return true;
+}
+
 bool RenderManager::renderUseRaytrace(bool useRaytrace)
 {
 	this->useRaytrace = useRaytrace;
@@ -1135,7 +1143,7 @@ bool RenderManager::geometryFinalize(uint64_t geometryHandle)
 	return true;
 }
 
-bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle, uint32_t width, uint32_t height, VkRenderPass renderPass, VkCullModeFlags cullMode, VkSampleCountFlagBits samples)
+bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle, VkRenderPass renderPass, VkCullModeFlags cullMode, VkSampleCountFlagBits samples)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
@@ -2655,6 +2663,9 @@ void RenderManager::terminate()
 
 	//
 
+	width = 0;
+	height = 0;
+
 	useRaytrace = false;
 
 	physicalDevice = VK_NULL_HANDLE;
@@ -2723,7 +2734,7 @@ void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex
 	}
 }
 
-void RenderManager::raytrace(VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height)
+void RenderManager::raytrace(VkCommandBuffer commandBuffer, uint32_t frameIndex)
 {
 	WorldResource* worldResource = getWorld();
 

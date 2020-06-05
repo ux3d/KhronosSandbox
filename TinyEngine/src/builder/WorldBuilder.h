@@ -15,8 +15,6 @@ private:
 
 	RenderManager& renderManager;
 
-	uint32_t width;
-	uint32_t height;
 	VkRenderPass renderPass;
 	VkSampleCountFlagBits samples;
 	VkImageView imageView;
@@ -48,7 +46,7 @@ private:
 
 public:
 
-	WorldBuilder(RenderManager& resourceManager, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView = VK_NULL_HANDLE);
+	WorldBuilder(RenderManager& resourceManager, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView = VK_NULL_HANDLE);
 
 	bool build(const GLTF& glTF, const std::string& diffuseFilename);
 

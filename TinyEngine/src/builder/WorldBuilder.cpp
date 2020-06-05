@@ -1,8 +1,8 @@
 #include "../shader/Shader.h"
 #include "WorldBuilder.h"
 
-WorldBuilder::WorldBuilder(RenderManager& resourceManager, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView) :
-	renderManager(resourceManager), width(width), height(height), renderPass(renderPass), samples(samples), imageView(imageView)
+WorldBuilder::WorldBuilder(RenderManager& resourceManager, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView) :
+	renderManager(resourceManager), renderPass(renderPass), samples(samples), imageView(imageView)
 {
 }
 
@@ -457,7 +457,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 				}
 			}
 
-			if (!renderManager.geometryModelFinalize(geometryModelHandle, width, height, renderPass, cullMode, samples))
+			if (!renderManager.geometryModelFinalize(geometryModelHandle, renderPass, cullMode, samples))
 			{
 				return false;
 			}

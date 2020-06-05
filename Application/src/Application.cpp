@@ -5,6 +5,7 @@
 bool Application::applicationInit()
 {
 	renderManager.renderSetupVulkan(physicalDevice, device, queue, commandPool);
+	renderManager.renderSetDimension(width, height);
 	renderManager.renderUseRaytrace(true);
 
 	//
@@ -35,7 +36,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	WorldBuilder worldBuilder(renderManager, width, height, renderPass, samples, raytraceImageViewResource.imageView);
+	WorldBuilder worldBuilder(renderManager, renderPass, samples, raytraceImageViewResource.imageView);
 	if(!worldBuilder.build(glTF, environment))
 	{
 		return false;
@@ -137,7 +138,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 		renderManager.renderUpdateRaytraceSettings(maxDepth, specularSamples, diffuseSamples);
 
-		renderManager.raytrace(commandBuffers[frameIndex], frameIndex, width, height);
+		renderManager.raytrace(commandBuffers[frameIndex], frameIndex);
 
 		//
 		// Prepare to to copy raytraced image.

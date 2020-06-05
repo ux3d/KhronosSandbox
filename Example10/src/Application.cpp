@@ -5,6 +5,7 @@
 bool Application::applicationInit()
 {
 	renderManager.renderSetupVulkan(physicalDevice, device, queue, commandPool);
+	renderManager.renderSetDimension(width, height);
 
 	HelperLoad helperLoad(true);
 	if(!helperLoad.open(glTF, filename))
@@ -17,7 +18,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	WorldBuilder worldBuilder(renderManager, width, height, renderPass, samples);
+	WorldBuilder worldBuilder(renderManager, renderPass, samples);
 	if(!worldBuilder.build(glTF, environment))
 	{
 		return false;

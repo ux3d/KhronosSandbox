@@ -35,6 +35,9 @@ private:
 	VkQueue queue = VK_NULL_HANDLE;
 	VkCommandPool commandPool = VK_NULL_HANDLE;
 
+	uint32_t width = 0;
+	uint32_t height = 0;
+
 	bool useRaytrace = false;
 
 	std::map<uint64_t, SharedDataResource> sharedDataResources;
@@ -82,6 +85,8 @@ public:
 
 	bool renderSetupVulkan(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
 
+	bool renderSetDimension(uint32_t width, uint32_t height);
+
 	bool renderUseRaytrace(bool useRaytrace);
 
 	bool renderUpdateRaytraceSettings(uint32_t maxDepth, uint32_t specularSamples, uint32_t diffuseSamples);
@@ -124,7 +129,7 @@ public:
 
 	bool geometryFinalize(uint64_t geometryHandle);
 
-	bool geometryModelFinalize(uint64_t geometryModelHandle, uint32_t width, uint32_t height, VkRenderPass renderPass, VkCullModeFlags cullMode, VkSampleCountFlagBits samples);
+	bool geometryModelFinalize(uint64_t geometryModelHandle, VkRenderPass renderPass, VkCullModeFlags cullMode, VkSampleCountFlagBits samples);
 
 	bool groupFinalize(uint64_t groupHandle);
 
@@ -179,7 +184,7 @@ public:
 
 	void rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode);
 
-	void raytrace(VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height);
+	void raytrace(VkCommandBuffer commandBuffer, uint32_t frameIndex);
 
 };
 
