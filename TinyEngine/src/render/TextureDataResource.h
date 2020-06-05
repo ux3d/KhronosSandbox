@@ -10,6 +10,8 @@ struct TextureDataResource : BaseResource {
 	TextureResourceCreateInfo textureResourceCreateInfo = {};
 
 	TextureResource textureResource = {};
+
+	uint32_t textureIndex = 0;
 };
 
 #endif /* RENDER_TEXTUREDATARENDER_H_ */

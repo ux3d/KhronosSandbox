@@ -93,7 +93,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF)
 		// Metallic Roughness
 		if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
 		{
-			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.pbrMetallicRoughness.baseColorTexture.index], material.pbrMetallicRoughness.baseColorTexture.texCoord, "BASECOLOR", material.pbrMetallicRoughness.baseColorTexture.index))
+			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.pbrMetallicRoughness.baseColorTexture.index], material.pbrMetallicRoughness.baseColorTexture.texCoord, "BASECOLOR"))
 			{
 				return false;
 			}
@@ -101,7 +101,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF)
 
 		if (material.pbrMetallicRoughness.metallicRoughnessTexture.index >= 0)
 		{
-			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.pbrMetallicRoughness.metallicRoughnessTexture.index], material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord, "METALLICROUGHNESS", material.pbrMetallicRoughness.metallicRoughnessTexture.index))
+			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.pbrMetallicRoughness.metallicRoughnessTexture.index], material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord, "METALLICROUGHNESS"))
 			{
 				return false;
 			}
@@ -110,7 +110,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF)
 		// Base Material
 		if (material.emissiveTexture.index >= 0)
 		{
-			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.emissiveTexture.index], material.emissiveTexture.texCoord, "EMISSIVE", material.emissiveTexture.index))
+			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.emissiveTexture.index], material.emissiveTexture.texCoord, "EMISSIVE"))
 			{
 				return false;
 			}
@@ -118,7 +118,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF)
 
 		if (material.occlusionTexture.index >= 0)
 		{
-			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.occlusionTexture.index], material.occlusionTexture.texCoord, "OCCLUSION", material.occlusionTexture.index))
+			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.occlusionTexture.index], material.occlusionTexture.texCoord, "OCCLUSION"))
 			{
 				return false;
 			}
@@ -126,7 +126,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF)
 
 		if (material.normalTexture.index >= 0)
 		{
-			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.normalTexture.index], material.normalTexture.texCoord, "NORMAL", material.normalTexture.index))
+			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.normalTexture.index], material.normalTexture.texCoord, "NORMAL"))
 			{
 				return false;
 			}
@@ -152,7 +152,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF)
 
 		materialUniformBuffer.doubleSided = material.doubleSided;
 
-		renderManager.materialSetFactorParameters(materialHandles[i], static_cast<int32_t>(i), materialUniformBuffer);
+		renderManager.materialSetFactorParameters(materialHandles[i], materialUniformBuffer);
 
 		if (!renderManager.materialFinalize(materialHandles[i]))
 		{

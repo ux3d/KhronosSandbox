@@ -389,7 +389,7 @@ bool RenderManager::textureSetParameters(uint64_t textureHandle, const TextureRe
 	return true;
 }
 
-bool RenderManager::materialSetFactorParameters(uint64_t materialHandle, int32_t materialIndex, const MaterialUniformBuffer& materialUniformBuffer)
+bool RenderManager::materialSetFactorParameters(uint64_t materialHandle, const MaterialUniformBuffer& materialUniformBuffer)
 {
 	MaterialResource* materialResource = getMaterial(materialHandle);
 
@@ -399,12 +399,11 @@ bool RenderManager::materialSetFactorParameters(uint64_t materialHandle, int32_t
 	}
 
 	materialResource->materialUniformBuffer = materialUniformBuffer;
-	materialResource->materialIndex = materialIndex;
 
 	return true;
 }
 
-bool RenderManager::materialSetTexture(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, const std::string& prefix, uint32_t textureIndex)
+bool RenderManager::materialSetTexture(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, const std::string& prefix)
 {
 	MaterialResource* materialResource = getMaterial(materialHandle);
 
@@ -438,23 +437,23 @@ bool RenderManager::materialSetTexture(uint64_t materialHandle, uint64_t texture
 
 	if (prefix == "BASECOLOR")
 	{
-		materialResource->baseColorTexture = textureIndex;
+		materialResource->baseColorTexture = textureResource->textureIndex;
 	}
 	else if (prefix == "METALLICROUGHNESS")
 	{
-		materialResource->metallicRoughnessTexture = textureIndex;
+		materialResource->metallicRoughnessTexture = textureResource->textureIndex;
 	}
 	else if (prefix == "EMISSIVE")
 	{
-		materialResource->emissiveTexture = textureIndex;
+		materialResource->emissiveTexture = textureResource->textureIndex;
 	}
 	else if (prefix == "OCCLUSION")
 	{
-		materialResource->occlusionTexture = textureIndex;
+		materialResource->occlusionTexture = textureResource->textureIndex;
 	}
 	else if (prefix == "NORMAL")
 	{
-		materialResource->normalTexture = textureIndex;
+		materialResource->normalTexture = textureResource->textureIndex;
 	}
 
 	//
@@ -925,6 +924,8 @@ bool RenderManager::textureFinalize(uint64_t textureHandle)
 
 	WorldResource* worldResource = getWorld();
 
+	textureDataResource->textureIndex = static_cast<uint32_t>(worldResource->descriptorImageInfoTextures.size());
+
 	VkDescriptorImageInfo descriptorImageInfo = {};
 
 	descriptorImageInfo.sampler = textureDataResource->textureResource.samplerResource.sampler;
@@ -1144,6 +1145,8 @@ bool RenderManager::materialFinalize(uint64_t materialHandle)
 	vkUpdateDescriptorSets(device, descriptorImageInfosSize + descriptorBufferInfosSize, writeDescriptorSets.data(), 0, nullptr);
 
 	//
+
+	materialResource->materialIndex = static_cast<int32_t>(worldResource->materialBuffers.size());
 
 	RaytraceMaterialUniformBuffer uniformBufferRaytrace = {};
 
