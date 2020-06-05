@@ -266,6 +266,47 @@ WorldResource* RenderManager::getWorld()
 	return &worldResource;
 }
 
+bool RenderManager::renderSetupVulkan(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+{
+	if (this->physicalDevice != VK_NULL_HANDLE ||
+		this->device != VK_NULL_HANDLE ||
+		this->queue != VK_NULL_HANDLE ||
+		this->commandPool != VK_NULL_HANDLE)
+	{
+		return false;
+	}
+
+	this->physicalDevice = physicalDevice;
+	this->device = device;
+	this->queue = queue;
+	this->commandPool = commandPool;
+
+	return true;
+}
+
+bool RenderManager::renderUseRaytrace(bool useRaytrace)
+{
+	this->useRaytrace = useRaytrace;
+
+	return true;
+}
+
+bool RenderManager::renderUpdateRaytraceSettings(uint32_t maxDepth, uint32_t specularSamples, uint32_t diffuseSamples)
+{
+	WorldResource* worldResource = getWorld();
+
+	if (!worldResource->finalized)
+	{
+		return false;
+	}
+
+	worldResource->raytrace.maxDepth = maxDepth;
+	worldResource->raytrace.specularSamples = specularSamples;
+	worldResource->raytrace.diffuseSamples = diffuseSamples;
+
+	return true;
+}
+
 bool RenderManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage)
 {
 	SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
@@ -280,6 +321,18 @@ bool RenderManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize si
 
 	sharedDataResource->storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = size;
 	sharedDataResource->storageBufferResourceCreateInfo.data = data;
+
+	if (useRaytrace)
+	{
+		if ((usage & VK_BUFFER_USAGE_STORAGE_BUFFER_BIT) == VK_BUFFER_USAGE_STORAGE_BUFFER_BIT)
+		{
+			usage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+		}
+		else
+		{
+			usage |= (VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+		}
+	}
 
 	if (((usage & VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) == VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) || ((usage & VK_BUFFER_USAGE_INDEX_BUFFER_BIT) == VK_BUFFER_USAGE_INDEX_BUFFER_BIT))
 	{
@@ -776,7 +829,7 @@ bool RenderManager::worldSetCamera(uint64_t cameraHandle)
 	return true;
 }
 
-bool RenderManager::sharedDataFinalize(uint64_t sharedDataHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool RenderManager::sharedDataFinalize(uint64_t sharedDataHandle)
 {
 	SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
 
@@ -811,7 +864,7 @@ bool RenderManager::sharedDataFinalize(uint64_t sharedDataHandle, VkPhysicalDevi
 	return true;
 }
 
-bool RenderManager::textureFinalize(uint64_t textureHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool RenderManager::textureFinalize(uint64_t textureHandle)
 {
 	TextureDataResource* textureDataResource = getTexture(textureHandle);
 
@@ -844,7 +897,7 @@ bool RenderManager::textureFinalize(uint64_t textureHandle, VkPhysicalDevice phy
 	return true;
 }
 
-bool RenderManager::materialFinalize(uint64_t materialHandle, VkPhysicalDevice physicalDevice, VkDevice device)
+bool RenderManager::materialFinalize(uint64_t materialHandle)
 {
 	MaterialResource* materialResource = getMaterial(materialHandle);
 
@@ -1082,7 +1135,7 @@ bool RenderManager::geometryFinalize(uint64_t geometryHandle)
 	return true;
 }
 
-bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle, uint32_t width, uint32_t height, VkRenderPass renderPass, VkCullModeFlags cullMode, VkSampleCountFlagBits samples, bool useRaytrace, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle, uint32_t width, uint32_t height, VkRenderPass renderPass, VkCullModeFlags cullMode, VkSampleCountFlagBits samples)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
@@ -1381,7 +1434,7 @@ bool RenderManager::instanceFinalize(uint64_t instanceHandle)
 	return true;
 }
 
-bool RenderManager::lightFinalize(uint64_t lightHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool RenderManager::lightFinalize(uint64_t lightHandle)
 {
 	LightResource* lightResource = getLight(lightHandle);
 
@@ -1466,7 +1519,7 @@ bool RenderManager::cameraFinalize(uint64_t cameraHandle)
 	return true;
 }
 
-bool RenderManager::worldFinalize(VkImageView imageView, bool useRaytrace, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool RenderManager::worldFinalize(VkImageView imageView)
 {
 	WorldResource* worldResource = getWorld();
 
@@ -2443,23 +2496,7 @@ bool RenderManager::cameraUpdateViewMatrix(uint64_t cameraHandle, const glm::mat
 	return true;
 }
 
-bool RenderManager::worldUpdateRenderSettings(uint32_t maxDepth, uint32_t specularSamples, uint32_t diffuseSamples)
-{
-	WorldResource* worldResource = getWorld();
-
-	if (!worldResource->finalized)
-	{
-		return false;
-	}
-
-	worldResource->raytrace.maxDepth = maxDepth;
-	worldResource->raytrace.specularSamples = specularSamples;
-	worldResource->raytrace.diffuseSamples = diffuseSamples;
-
-	return true;
-}
-
-bool RenderManager::sharedDataDelete(uint64_t sharedDataHandle, VkDevice device)
+bool RenderManager::sharedDataDelete(uint64_t sharedDataHandle)
 {
 	SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
 
@@ -2469,7 +2506,7 @@ bool RenderManager::sharedDataDelete(uint64_t sharedDataHandle, VkDevice device)
 	return true;
 }
 
-bool RenderManager::textureDelete(uint64_t textureHandle, VkDevice device)
+bool RenderManager::textureDelete(uint64_t textureHandle)
 {
 	TextureDataResource* textureResource = getTexture(textureHandle);
 
@@ -2479,7 +2516,7 @@ bool RenderManager::textureDelete(uint64_t textureHandle, VkDevice device)
 	return true;
 }
 
-bool RenderManager::materialDelete(uint64_t materialHandle, VkDevice device)
+bool RenderManager::materialDelete(uint64_t materialHandle)
 {
 	MaterialResource* materialResource = getMaterial(materialHandle);
 
@@ -2489,7 +2526,7 @@ bool RenderManager::materialDelete(uint64_t materialHandle, VkDevice device)
 	return true;
 }
 
-bool RenderManager::geometryDelete(uint64_t geometryHandle, VkDevice device)
+bool RenderManager::geometryDelete(uint64_t geometryHandle)
 {
 	GeometryResource* geometryResource = getGeometry(geometryHandle);
 
@@ -2499,7 +2536,7 @@ bool RenderManager::geometryDelete(uint64_t geometryHandle, VkDevice device)
 	return true;
 }
 
-bool RenderManager::geometryModelDelete(uint64_t geometryModelHandle, VkDevice device)
+bool RenderManager::geometryModelDelete(uint64_t geometryModelHandle)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
@@ -2509,7 +2546,7 @@ bool RenderManager::geometryModelDelete(uint64_t geometryModelHandle, VkDevice d
 	return true;
 }
 
-bool RenderManager::groupDelete(uint64_t groupHandle, VkDevice device)
+bool RenderManager::groupDelete(uint64_t groupHandle)
 {
 	GroupResource* groupResource = getGroup(groupHandle);
 
@@ -2519,7 +2556,7 @@ bool RenderManager::groupDelete(uint64_t groupHandle, VkDevice device)
 	return true;
 }
 
-bool RenderManager::instanceDelete(uint64_t instanceHandle, VkDevice device)
+bool RenderManager::instanceDelete(uint64_t instanceHandle)
 {
 	InstanceResource* instanceResource = getInstance(instanceHandle);
 
@@ -2529,7 +2566,7 @@ bool RenderManager::instanceDelete(uint64_t instanceHandle, VkDevice device)
 	return true;
 }
 
-bool RenderManager::lightDelete(uint64_t lightHandle, VkDevice device)
+bool RenderManager::lightDelete(uint64_t lightHandle)
 {
 	LightResource* lightResource = getLight(lightHandle);
 
@@ -2539,7 +2576,7 @@ bool RenderManager::lightDelete(uint64_t lightHandle, VkDevice device)
 	return true;
 }
 
-bool RenderManager::cameraDelete(uint64_t cameraHandle, VkDevice device)
+bool RenderManager::cameraDelete(uint64_t cameraHandle)
 {
 	CameraResource* cameraResource = getCamera(cameraHandle);
 
@@ -2549,7 +2586,7 @@ bool RenderManager::cameraDelete(uint64_t cameraHandle, VkDevice device)
 	return true;
 }
 
-bool RenderManager::worldDelete(VkDevice device)
+bool RenderManager::worldDelete()
 {
 	WorldResource* worldResource = getWorld();
 
@@ -2558,7 +2595,7 @@ bool RenderManager::worldDelete(VkDevice device)
 	return true;
 }
 
-void RenderManager::terminate(VkDevice device)
+void RenderManager::terminate()
 {
 	terminate(worldResource, device);
 
@@ -2615,6 +2652,15 @@ void RenderManager::terminate(VkDevice device)
 		terminate(it.second, device);
 	}
 	sharedDataResources.clear();
+
+	//
+
+	useRaytrace = false;
+
+	physicalDevice = VK_NULL_HANDLE;
+	device = VK_NULL_HANDLE;
+	queue = VK_NULL_HANDLE;
+	commandPool = VK_NULL_HANDLE;
 }
 
 void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)

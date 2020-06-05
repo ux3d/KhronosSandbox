@@ -4,6 +4,9 @@
 
 bool Application::applicationInit()
 {
+	renderManager.renderSetupVulkan(physicalDevice, device, queue, commandPool);
+	renderManager.renderUseRaytrace(true);
+
 	//
 	// Raytracing output buffer
 	//
@@ -32,8 +35,8 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	WorldBuilder worldBuilder(renderManager, width, height, physicalDevice, device, queue, commandPool, renderPass, samples, raytraceImageViewResource.imageView);
-	if(!worldBuilder.build(glTF, environment, true))
+	WorldBuilder worldBuilder(renderManager, width, height, renderPass, samples, raytraceImageViewResource.imageView);
+	if(!worldBuilder.build(glTF, environment))
 	{
 		return false;
 	}
@@ -132,7 +135,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 		// Update view & projection
 		//
 
-		renderManager.worldUpdateRenderSettings(maxDepth, specularSamples, diffuseSamples);
+		renderManager.renderUpdateRaytraceSettings(maxDepth, specularSamples, diffuseSamples);
 
 		renderManager.raytrace(commandBuffers[frameIndex], frameIndex, width, height);
 
@@ -252,7 +255,7 @@ void Application::applicationTerminate()
 {
 	VulkanResource::destroyImageViewResource(device, raytraceImageViewResource);
 
-	renderManager.terminate(device);
+	renderManager.terminate();
 }
 
 // Public

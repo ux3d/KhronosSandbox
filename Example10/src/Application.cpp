@@ -4,6 +4,8 @@
 
 bool Application::applicationInit()
 {
+	renderManager.renderSetupVulkan(physicalDevice, device, queue, commandPool);
+
 	HelperLoad helperLoad(true);
 	if(!helperLoad.open(glTF, filename))
 	{
@@ -15,7 +17,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	WorldBuilder worldBuilder(renderManager, width, height, physicalDevice, device, queue, commandPool, renderPass, samples);
+	WorldBuilder worldBuilder(renderManager, width, height, renderPass, samples);
 	if(!worldBuilder.build(glTF, environment))
 	{
 		return false;
@@ -97,7 +99,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 void Application::applicationTerminate()
 {
-	renderManager.terminate(device);
+	renderManager.terminate();
 }
 
 // Public

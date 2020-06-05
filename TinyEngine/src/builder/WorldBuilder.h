@@ -17,10 +17,6 @@ private:
 
 	uint32_t width;
 	uint32_t height;
-	VkPhysicalDevice physicalDevice;
-	VkDevice device;
-	VkQueue queue;
-	VkCommandPool commandPool;
 	VkRenderPass renderPass;
 	VkSampleCountFlagBits samples;
 	VkImageView imageView;
@@ -31,32 +27,32 @@ private:
 	std::vector<uint64_t> nodeHandles;
 	uint64_t glTFHandle = 0;
 
-	bool buildBufferViews(const GLTF& glTF, bool useRaytrace);
+	bool buildBufferViews(const GLTF& glTF);
 
-	bool buildAccessors(const GLTF& glTF, bool useRaytrace);
+	bool buildAccessors(const GLTF& glTF);
 
-	bool buildTextures(const GLTF& glTF, bool useRaytrace);
+	bool buildTextures(const GLTF& glTF);
 
-	bool buildMaterials(const GLTF& glTF, bool useRaytrace);
+	bool buildMaterials(const GLTF& glTF);
 
-	bool buildMeshes(const GLTF& glTF, bool useRaytrace);
+	bool buildMeshes(const GLTF& glTF);
 
-	bool buildNodes(const GLTF& glTF, bool useRaytrace);
+	bool buildNodes(const GLTF& glTF);
 
-	bool buildScene(const GLTF& glTF, bool useRaytrace);
+	bool buildScene(const GLTF& glTF);
 
 	uint64_t getBufferHandle(const Accessor& accessor);
 
-	bool createSharedDataResource(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace);
-	bool createSharedDataResource(VkDeviceSize size, const void* data, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace);
+	bool createSharedDataResource(const BufferView& bufferView);
+	bool createSharedDataResource(VkDeviceSize size, const void* data);
 
 public:
 
-	WorldBuilder(RenderManager& resourceManager, uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView = VK_NULL_HANDLE);
+	WorldBuilder(RenderManager& resourceManager, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView = VK_NULL_HANDLE);
 
-	bool build(const GLTF& glTF, const std::string& diffuseFilename, bool useRaytrace = false);
+	bool build(const GLTF& glTF, const std::string& diffuseFilename);
 
-	void terminate(VkDevice device);
+	void terminate();
 
 };
 

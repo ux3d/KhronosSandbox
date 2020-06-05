@@ -1,18 +1,18 @@
 #include "../shader/Shader.h"
 #include "WorldBuilder.h"
 
-WorldBuilder::WorldBuilder(RenderManager& resourceManager, uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView) :
-	renderManager(resourceManager), width(width), height(height), physicalDevice(physicalDevice), device(device), queue(queue), commandPool(commandPool), renderPass(renderPass), samples(samples), imageView(imageView)
+WorldBuilder::WorldBuilder(RenderManager& resourceManager, uint32_t width, uint32_t height, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView) :
+	renderManager(resourceManager), width(width), height(height), renderPass(renderPass), samples(samples), imageView(imageView)
 {
 }
 
-bool WorldBuilder::buildBufferViews(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::buildBufferViews(const GLTF& glTF)
 {
 	for (size_t i = 0; i < glTF.bufferViews.size(); i++)
 	{
 		const BufferView& bufferView = glTF.bufferViews[i];
 
-		if (!createSharedDataResource(bufferView, physicalDevice, device, queue, commandPool, useRaytrace))
+		if (!createSharedDataResource(bufferView))
 		{
 			return false;
 		}
@@ -21,7 +21,7 @@ bool WorldBuilder::buildBufferViews(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool WorldBuilder::buildAccessors(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::buildAccessors(const GLTF& glTF)
 {
 	for (size_t i = 0; i < glTF.accessors.size(); i++)
 	{
@@ -29,14 +29,14 @@ bool WorldBuilder::buildAccessors(const GLTF& glTF, bool useRaytrace)
 
 		if (accessor.aliasedBuffer.byteLength > 0)
 		{
-			if (!createSharedDataResource(accessor.aliasedBufferView, physicalDevice, device, queue, commandPool, useRaytrace))
+			if (!createSharedDataResource(accessor.aliasedBufferView))
 			{
 				return false;
 			}
 		}
 		else if (accessor.sparse.count >= 1)
 		{
-			if (!createSharedDataResource(accessor.sparse.bufferView, physicalDevice, device, queue, commandPool, useRaytrace))
+			if (!createSharedDataResource(accessor.sparse.bufferView))
 			{
 				return false;
 			}
@@ -46,7 +46,7 @@ bool WorldBuilder::buildAccessors(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool WorldBuilder::buildTextures(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::buildTextures(const GLTF& glTF)
 {
 	for (size_t i = 0; i < glTF.textures.size(); i++)
 	{
@@ -73,7 +73,7 @@ bool WorldBuilder::buildTextures(const GLTF& glTF, bool useRaytrace)
 
 		renderManager.textureSetParameters(textureHandle, textureResourceCreateInfo);
 
-		if (!renderManager.textureFinalize(textureHandle, physicalDevice, device, queue, commandPool))
+		if (!renderManager.textureFinalize(textureHandle))
 		{
 			return false;
 		}
@@ -82,7 +82,7 @@ bool WorldBuilder::buildTextures(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::buildMaterials(const GLTF& glTF)
 {
 	for (size_t i = 0; i < glTF.materials.size(); i++)
 	{
@@ -154,7 +154,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
 
 		renderManager.materialSetFactorParameters(materialHandles[i], static_cast<int32_t>(i), materialUniformBuffer);
 
-		if (!renderManager.materialFinalize(materialHandles[i], physicalDevice, device))
+		if (!renderManager.materialFinalize(materialHandles[i]))
 		{
 			return false;
 		}
@@ -163,7 +163,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::buildMeshes(const GLTF& glTF)
 {
 	for (size_t i = 0; i < glTF.meshes.size(); i++)
 	{
@@ -387,7 +387,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 				{
 					uint64_t sharedDataHandle = (uint64_t)primitive.targetPositionData.data();
 
-					if (!createSharedDataResource(sizeof(glm::vec3) * primitive.targetPositionData.size(), primitive.targetPositionData.data(), physicalDevice, device, queue, commandPool, useRaytrace))
+					if (!createSharedDataResource(sizeof(glm::vec3) * primitive.targetPositionData.size(), primitive.targetPositionData.data()))
 					{
 						return false;
 					}
@@ -402,7 +402,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 				{
 					uint64_t sharedDataHandle = (uint64_t)primitive.targetNormalData.data();
 
-					if (!createSharedDataResource(sizeof(glm::vec3) * primitive.targetNormalData.size(), primitive.targetNormalData.data(), physicalDevice, device, queue, commandPool, useRaytrace))
+					if (!createSharedDataResource(sizeof(glm::vec3) * primitive.targetNormalData.size(), primitive.targetNormalData.data()))
 					{
 						return false;
 					}
@@ -417,7 +417,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 				{
 					uint64_t sharedDataHandle = (uint64_t)primitive.targetTangentData.data();
 
-					if (!createSharedDataResource(sizeof(glm::vec3) * primitive.targetTangentData.size(), primitive.targetTangentData.data(), physicalDevice, device, queue, commandPool, useRaytrace))
+					if (!createSharedDataResource(sizeof(glm::vec3) * primitive.targetTangentData.size(), primitive.targetTangentData.data()))
 					{
 						return false;
 					}
@@ -457,7 +457,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 				}
 			}
 
-			if (!renderManager.geometryModelFinalize(geometryModelHandle, width, height, renderPass, cullMode, samples, useRaytrace, physicalDevice, device, queue, commandPool))
+			if (!renderManager.geometryModelFinalize(geometryModelHandle, width, height, renderPass, cullMode, samples))
 			{
 				return false;
 			}
@@ -473,7 +473,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool WorldBuilder::buildNodes(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::buildNodes(const GLTF& glTF)
 {
 	for (size_t i = 0; i < glTF.nodes.size(); i++)
 	{
@@ -492,7 +492,7 @@ bool WorldBuilder::buildNodes(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool WorldBuilder::buildScene(const GLTF& glTF, bool useRaytrace)
+bool WorldBuilder::buildScene(const GLTF& glTF)
 {
 	if (glTF.defaultScene < glTF.scenes.size())
 	{
@@ -501,7 +501,7 @@ bool WorldBuilder::buildScene(const GLTF& glTF, bool useRaytrace)
 			renderManager.worldAddInstance(nodeHandles[glTF.scenes[glTF.defaultScene].nodes[i]]);
 		}
 
-		if (!renderManager.worldFinalize(imageView, useRaytrace, physicalDevice, device, queue, commandPool))
+		if (!renderManager.worldFinalize(imageView))
 		{
 			return false;
 		}
@@ -514,12 +514,12 @@ bool WorldBuilder::buildScene(const GLTF& glTF, bool useRaytrace)
 	return true;
 }
 
-bool WorldBuilder::build(const GLTF& glTF, const std::string& environment, bool useRaytrace)
+bool WorldBuilder::build(const GLTF& glTF, const std::string& environment)
 {
 	glTFHandle = (uint64_t)&glTF;
 
 	renderManager.lightSetEnvironment(glTFHandle, environment);
-	renderManager.lightFinalize(glTFHandle, physicalDevice, device, queue, commandPool);
+	renderManager.lightFinalize(glTFHandle);
 
 	renderManager.cameraFinalize(glTFHandle);
 
@@ -528,49 +528,49 @@ bool WorldBuilder::build(const GLTF& glTF, const std::string& environment, bool 
 
 	// BufferViews
 
-	if (!buildBufferViews(glTF, useRaytrace))
+	if (!buildBufferViews(glTF))
 	{
 		return false;
 	}
 
 	// Accessors
 
-	if (!buildAccessors(glTF, useRaytrace))
+	if (!buildAccessors(glTF))
 	{
 		return false;
 	}
 
 	// Textures
 
-	if (!buildTextures(glTF, useRaytrace))
+	if (!buildTextures(glTF))
 	{
 		return false;
 	}
 
 	// Materials
 
-	if (!buildMaterials(glTF, useRaytrace))
+	if (!buildMaterials(glTF))
 	{
 		return false;
 	}
 
 	// Meshes
 
-	if (!buildMeshes(glTF, useRaytrace))
+	if (!buildMeshes(glTF))
 	{
 		return false;
 	}
 
 	// Nodes
 
-	if (!buildNodes(glTF, useRaytrace))
+	if (!buildNodes(glTF))
 	{
 		return false;
 	}
 
 	// Scene
 
-	if (!buildScene(glTF, useRaytrace))
+	if (!buildScene(glTF))
 	{
 		return false;
 	}
@@ -607,7 +607,7 @@ uint64_t WorldBuilder::getBufferHandle(const Accessor& accessor)
 	return sharedDataHandle;
 }
 
-bool WorldBuilder::createSharedDataResource(const BufferView& bufferView, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
+bool WorldBuilder::createSharedDataResource(const BufferView& bufferView)
 {
 	uint64_t sharedDataHandle = (uint64_t)&bufferView;
 
@@ -616,13 +616,9 @@ bool WorldBuilder::createSharedDataResource(const BufferView& bufferView, VkPhys
 	{
 		usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 	}
-	if (useRaytrace)
-	{
-		usage |= (VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
-	}
 	renderManager.sharedDataSetData(sharedDataHandle, bufferView.byteLength, HelperAccess::accessData(bufferView), usage);
 
-	if (!renderManager.sharedDataFinalize(sharedDataHandle, physicalDevice, device, queue, commandPool))
+	if (!renderManager.sharedDataFinalize(sharedDataHandle))
 	{
 		return false;
 	}
@@ -630,18 +626,13 @@ bool WorldBuilder::createSharedDataResource(const BufferView& bufferView, VkPhys
 	return true;
 }
 
-bool WorldBuilder::createSharedDataResource(VkDeviceSize size, const void* data, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, bool useRaytrace)
+bool WorldBuilder::createSharedDataResource(VkDeviceSize size, const void* data)
 {
 	uint64_t sharedDataHandle = (uint64_t)data;
 
-	VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-	if (useRaytrace)
-	{
-		usage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
-	}
-	renderManager.sharedDataSetData(sharedDataHandle, size, data, usage);
+	renderManager.sharedDataSetData(sharedDataHandle, size, data, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
-	if (!renderManager.sharedDataFinalize(sharedDataHandle, physicalDevice, device, queue, commandPool))
+	if (!renderManager.sharedDataFinalize(sharedDataHandle))
 	{
 		return false;
 	}
@@ -649,8 +640,8 @@ bool WorldBuilder::createSharedDataResource(VkDeviceSize size, const void* data,
 	return true;
 }
 
-void WorldBuilder::terminate(VkDevice device)
+void WorldBuilder::terminate()
 {
-	renderManager.terminate(device);
+	renderManager.terminate();
 }
 

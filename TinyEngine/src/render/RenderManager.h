@@ -30,6 +30,13 @@ class RenderManager {
 
 private:
 
+	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+	VkDevice device = VK_NULL_HANDLE;
+	VkQueue queue = VK_NULL_HANDLE;
+	VkCommandPool commandPool = VK_NULL_HANDLE;
+
+	bool useRaytrace = false;
+
 	std::map<uint64_t, SharedDataResource> sharedDataResources;
 	std::map<uint64_t, TextureDataResource> textureResources;
 	std::map<uint64_t, MaterialResource> materialResources;
@@ -73,6 +80,12 @@ public:
 
 	~RenderManager();
 
+	bool renderSetupVulkan(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+
+	bool renderUseRaytrace(bool useRaytrace);
+
+	bool renderUpdateRaytraceSettings(uint32_t maxDepth, uint32_t specularSamples, uint32_t diffuseSamples);
+
 	// One time setup before finalization.
 
 	bool sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage);
@@ -103,25 +116,25 @@ public:
 
 	// Finalization and setup not allowed anymore.
 
-	bool sharedDataFinalize(uint64_t sharedDataHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+	bool sharedDataFinalize(uint64_t sharedDataHandle);
 
-	bool textureFinalize(uint64_t textureHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+	bool textureFinalize(uint64_t textureHandle);
 
-	bool materialFinalize(uint64_t materialHandle, VkPhysicalDevice physicalDevice, VkDevice device);
+	bool materialFinalize(uint64_t materialHandle);
 
 	bool geometryFinalize(uint64_t geometryHandle);
 
-	bool geometryModelFinalize(uint64_t geometryModelHandle, uint32_t width, uint32_t height, VkRenderPass renderPass, VkCullModeFlags cullMode, VkSampleCountFlagBits samples, bool useRaytrace, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+	bool geometryModelFinalize(uint64_t geometryModelHandle, uint32_t width, uint32_t height, VkRenderPass renderPass, VkCullModeFlags cullMode, VkSampleCountFlagBits samples);
 
 	bool groupFinalize(uint64_t groupHandle);
 
 	bool instanceFinalize(uint64_t instanceHandle);
 
-	bool lightFinalize(uint64_t lightHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+	bool lightFinalize(uint64_t lightHandle);
 
 	bool cameraFinalize(uint64_t cameraHandle);
 
-	bool worldFinalize(VkImageView imageView, bool useRaytrace, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+	bool worldFinalize(VkImageView imageView);
 
 	// Getters
 
@@ -134,33 +147,31 @@ public:
 	bool cameraUpdateProjectionMatrix(uint64_t cameraHandle, const glm::mat4& projectionMatrix);
 	bool cameraUpdateViewMatrix(uint64_t cameraHandle, const glm::mat4& viewMatrix);
 
-	bool worldUpdateRenderSettings(uint32_t maxDepth, uint32_t specularSamples, uint32_t diffuseSamples);
-
 	// Delete and free data.
 
-	bool sharedDataDelete(uint64_t sharedDataHandle, VkDevice device);
+	bool sharedDataDelete(uint64_t sharedDataHandle);
 
-	bool textureDelete(uint64_t textureHandle, VkDevice device);
+	bool textureDelete(uint64_t textureHandle);
 
-	bool materialDelete(uint64_t materialHandle, VkDevice device);
+	bool materialDelete(uint64_t materialHandle);
 
-	bool geometryDelete(uint64_t geometryHanlde, VkDevice device);
+	bool geometryDelete(uint64_t geometryHandle);
 
-	bool geometryModelDelete(uint64_t geometryModelHandle, VkDevice device);
+	bool geometryModelDelete(uint64_t geometryModelHandle);
 
-	bool groupDelete(uint64_t groupHandle, VkDevice device);
+	bool groupDelete(uint64_t groupHandle);
 
-	bool instanceDelete(uint64_t instanceHandle, VkDevice device);
+	bool instanceDelete(uint64_t instanceHandle);
 
-	bool lightDelete(uint64_t lightHandle, VkDevice device);
+	bool lightDelete(uint64_t lightHandle);
 
-	bool cameraDelete(uint64_t cameraHandle, VkDevice device);
+	bool cameraDelete(uint64_t cameraHandle);
 
-	bool worldDelete(VkDevice device);
+	bool worldDelete();
 
 	//
 
-	void terminate(VkDevice device);
+	void terminate();
 
 	//
 	// Rendering
