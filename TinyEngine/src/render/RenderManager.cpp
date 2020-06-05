@@ -450,7 +450,7 @@ bool RenderManager::geometryResourceSetAttributesCount(uint64_t geometryHandle, 
 	return true;
 }
 
-bool RenderManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset, VkDeviceSize range)
+bool RenderManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, VkFormat format, uint32_t stride, uint64_t sharedDataHandle, VkDeviceSize offset, VkDeviceSize range)
 {
 	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
 
@@ -611,7 +611,7 @@ bool RenderManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint32
 
 	//
 
-	geometryResource->vertexBuffers[geometryResource->attributeIndex] = buffer;
+	geometryResource->vertexBuffers[geometryResource->attributeIndex] = getBuffer(sharedDataHandle);
 	geometryResource->vertexBuffersOffsets[geometryResource->attributeIndex] = offset;
 	geometryResource->vertexBuffersRanges[geometryResource->attributeIndex] = range;
 
@@ -684,7 +684,7 @@ bool RenderManager::geometryModelResourceSetVertexCount(uint64_t geometryModelHa
 	return true;
 }
 
-bool RenderManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint32_t indicesCount, VkIndexType indexType, VkBuffer indexBuffer, uint32_t indexOffset, uint32_t indexRange, uint32_t componentTypeSize)
+bool RenderManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint32_t indicesCount, VkIndexType indexType, uint64_t sharedDataHandle, uint32_t indexOffset, uint32_t indexRange, uint32_t componentTypeSize)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
 
@@ -695,7 +695,7 @@ bool RenderManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle
 
 	geometryModelResource->indicesCount = indicesCount;
 	geometryModelResource->indexType = indexType;
-	geometryModelResource->indexBuffer = indexBuffer;
+	geometryModelResource->indexBuffer = getBuffer(sharedDataHandle);
 	geometryModelResource->indexOffset = indexOffset;
 	geometryModelResource->indexRange = indexRange;
 	geometryModelResource->componentTypeSize = componentTypeSize;

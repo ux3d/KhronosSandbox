@@ -63,15 +63,15 @@ private:
 	CameraResource* getCameraResource(uint64_t cameraHandle);
 	WorldResource* getWorldResource();
 
+	//
+
+	VkBuffer getBuffer(uint64_t sharedDataHandle);
+
 public:
 
 	RenderManager();
 
 	~RenderManager();
-
-	//
-
-	VkBuffer getBuffer(uint64_t bufferViewHandle);
 
 	// One time setup before finalization.
 
@@ -84,12 +84,12 @@ public:
 	bool materialResourceSetTextureResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, const std::string& prefix, uint32_t index);
 
 	bool geometryResourceSetAttributesCount(uint64_t geometryHandle, uint32_t attributesCount);
-	bool geometryResourceSetAttribute(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, VkFormat format, uint32_t stride, VkBuffer buffer, VkDeviceSize offset, VkDeviceSize range);
+	bool geometryResourceSetAttribute(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, VkFormat format, uint32_t stride, uint64_t sharedDataHandle, VkDeviceSize offset, VkDeviceSize range);
 
 	bool geometryModelResourceSetGeometryResource(uint64_t geometryModelHandle, uint64_t geometryHandle);
 	bool geometryModelResourceSetMaterialResource(uint64_t geometryModelHandle, uint64_t materialHandle);
 	bool geometryModelResourceSetVertexCount(uint64_t geometryModelHandle, uint32_t verticesCount);
-	bool geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint32_t indicesCount, VkIndexType indexType, VkBuffer indexBuffer, uint32_t indexOffset, uint32_t indexRange, uint32_t componentTypeSize);
+	bool geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint32_t indicesCount, VkIndexType indexType, uint64_t sharedDataHandle, uint32_t indexOffset, uint32_t indexRange, uint32_t componentTypeSize);
 	bool geometryModelResourceSetTargetData(uint64_t geometryModelHandle, const std::string& targetName, uint64_t sharedDataHandle);
 
 	bool groupResourceAddGeometryModelResource(uint64_t groupHandle, uint64_t geometryModelHandle);
