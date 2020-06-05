@@ -4,10 +4,6 @@
 
 bool Application::applicationInit()
 {
-	renderManager.renderSetupVulkan(physicalDevice, device, queue, commandPool);
-	renderManager.renderSetDimension(width, height);
-	renderManager.renderUseRaytrace(true);
-
 	//
 	// Raytracing output buffer
 	//
@@ -25,6 +21,13 @@ bool Application::applicationInit()
 		return false;
 	}
 
+	renderManager.renderSetupVulkan(physicalDevice, device, queue, commandPool);
+	renderManager.renderRasterizeSetRenderPass(renderPass);
+	renderManager.renderRasterizeSetSamples(samples);
+	renderManager.renderSetDimension(width, height);
+	renderManager.renderUseRaytrace(true);
+	renderManager.renderRaytraceSetImageView(raytraceImageViewResource.imageView);
+
 	HelperLoad helperLoad(false);
 	if(!helperLoad.open(glTF, filename))
 	{
@@ -36,7 +39,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	WorldBuilder worldBuilder(renderManager, renderPass, samples, raytraceImageViewResource.imageView);
+	WorldBuilder worldBuilder(renderManager);
 	if(!worldBuilder.build(glTF, environment))
 	{
 		return false;
@@ -136,7 +139,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 		// Update view & projection
 		//
 
-		renderManager.renderUpdateRaytraceSettings(maxDepth, specularSamples, diffuseSamples);
+		renderManager.renderRaytraceUpdateSettings(maxDepth, specularSamples, diffuseSamples);
 
 		renderManager.raytrace(commandBuffers[frameIndex], frameIndex);
 

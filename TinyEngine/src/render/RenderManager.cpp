@@ -299,7 +299,28 @@ bool RenderManager::renderUseRaytrace(bool useRaytrace)
 	return true;
 }
 
-bool RenderManager::renderUpdateRaytraceSettings(uint32_t maxDepth, uint32_t specularSamples, uint32_t diffuseSamples)
+bool RenderManager::renderRasterizeSetRenderPass(VkRenderPass renderPass)
+{
+	this->renderPass = renderPass;
+
+	return true;
+}
+
+bool RenderManager::renderRasterizeSetSamples(VkSampleCountFlagBits samples)
+{
+	this->samples = samples;
+
+	return true;
+}
+
+bool RenderManager::renderRaytraceSetImageView(VkImageView imageView)
+{
+	this->imageView = imageView;
+
+	return true;
+}
+
+bool RenderManager::renderRaytraceUpdateSettings(uint32_t maxDepth, uint32_t specularSamples, uint32_t diffuseSamples)
 {
 	WorldResource* worldResource = getWorld();
 
@@ -1157,7 +1178,7 @@ bool RenderManager::geometryFinalize(uint64_t geometryHandle)
 	return true;
 }
 
-bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle, VkRenderPass renderPass, VkSampleCountFlagBits samples)
+bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
@@ -1547,7 +1568,7 @@ bool RenderManager::cameraFinalize(uint64_t cameraHandle)
 	return true;
 }
 
-bool RenderManager::worldFinalize(VkImageView imageView)
+bool RenderManager::worldFinalize()
 {
 	WorldResource* worldResource = getWorld();
 
@@ -2687,6 +2708,11 @@ void RenderManager::terminate()
 	height = 0;
 
 	useRaytrace = false;
+
+	renderPass = VK_NULL_HANDLE;
+	samples = VK_SAMPLE_COUNT_1_BIT;
+
+	imageView = VK_NULL_HANDLE;
 
 	physicalDevice = VK_NULL_HANDLE;
 	device = VK_NULL_HANDLE;

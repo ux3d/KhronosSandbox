@@ -15,10 +15,6 @@ private:
 
 	RenderManager& renderManager;
 
-	VkRenderPass renderPass;
-	VkSampleCountFlagBits samples;
-	VkImageView imageView;
-
 	std::vector<uint64_t> textureHandles;
 	std::vector<uint64_t> materialHandles;
 	std::vector<uint64_t> meshHandles;
@@ -46,7 +42,7 @@ private:
 
 public:
 
-	WorldBuilder(RenderManager& resourceManager, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView = VK_NULL_HANDLE);
+	WorldBuilder(RenderManager& resourceManager);
 
 	bool build(const GLTF& glTF, const std::string& diffuseFilename);
 

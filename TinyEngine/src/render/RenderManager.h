@@ -40,6 +40,11 @@ private:
 
 	bool useRaytrace = false;
 
+	VkRenderPass renderPass = VK_NULL_HANDLE;
+	VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
+
+	VkImageView imageView = VK_NULL_HANDLE;
+
 	std::map<uint64_t, SharedDataResource> sharedDataResources;
 	std::map<uint64_t, TextureDataResource> textureResources;
 	std::map<uint64_t, MaterialResource> materialResources;
@@ -89,7 +94,12 @@ public:
 
 	bool renderUseRaytrace(bool useRaytrace);
 
-	bool renderUpdateRaytraceSettings(uint32_t maxDepth, uint32_t specularSamples, uint32_t diffuseSamples);
+	bool renderRasterizeSetRenderPass(VkRenderPass renderPass);
+	bool renderRasterizeSetSamples(VkSampleCountFlagBits samples);
+
+	bool renderRaytraceSetImageView(VkImageView imageView);
+
+	bool renderRaytraceUpdateSettings(uint32_t maxDepth, uint32_t specularSamples, uint32_t diffuseSamples);
 
 	// One time setup before finalization.
 
@@ -130,7 +140,7 @@ public:
 
 	bool geometryFinalize(uint64_t geometryHandle);
 
-	bool geometryModelFinalize(uint64_t geometryModelHandle, VkRenderPass renderPass, VkSampleCountFlagBits samples);
+	bool geometryModelFinalize(uint64_t geometryModelHandle);
 
 	bool groupFinalize(uint64_t groupHandle);
 
@@ -140,7 +150,7 @@ public:
 
 	bool cameraFinalize(uint64_t cameraHandle);
 
-	bool worldFinalize(VkImageView imageView);
+	bool worldFinalize();
 
 	// Getters
 
