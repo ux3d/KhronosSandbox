@@ -266,7 +266,7 @@ WorldResource* RenderManager::getWorldResource()
 	return &worldResource;
 }
 
-bool RenderManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize size, const void* data)
+bool RenderManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage)
 {
 	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
 
@@ -280,18 +280,6 @@ bool RenderManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize si
 
 	sharedDataResource->storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = size;
 	sharedDataResource->storageBufferResourceCreateInfo.data = data;
-
-	return true;
-}
-
-bool RenderManager::sharedDataSetUsage(uint64_t sharedDataHandle, VkBufferUsageFlags usage)
-{
-	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
-
-	if (sharedDataResource->finalized)
-	{
-		return false;
-	}
 
 	if (((usage & VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) == VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) || ((usage & VK_BUFFER_USAGE_INDEX_BUFFER_BIT) == VK_BUFFER_USAGE_INDEX_BUFFER_BIT))
 	{

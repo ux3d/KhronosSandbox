@@ -622,9 +622,7 @@ bool WorldBuilder::createSharedDataResource(const BufferView& bufferView, VkPhys
 	{
 		usage |= (VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 	}
-	renderManager.sharedDataSetUsage(sharedDataHandle, usage);
-
-	renderManager.sharedDataSetData(sharedDataHandle, bufferView.byteLength, HelperAccess::accessData(bufferView));
+	renderManager.sharedDataSetData(sharedDataHandle, bufferView.byteLength, HelperAccess::accessData(bufferView), usage);
 
 	if (!renderManager.sharedDataResourceFinalize(sharedDataHandle, physicalDevice, device, queue, commandPool))
 	{
@@ -643,9 +641,7 @@ bool WorldBuilder::createSharedDataResource(VkDeviceSize size, const void* data,
 	{
 		usage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
 	}
-	renderManager.sharedDataSetUsage(sharedDataHandle, usage);
-
-	renderManager.sharedDataSetData(sharedDataHandle, size, data);
+	renderManager.sharedDataSetData(sharedDataHandle, size, data, usage);
 
 	if (!renderManager.sharedDataResourceFinalize(sharedDataHandle, physicalDevice, device, queue, commandPool))
 	{

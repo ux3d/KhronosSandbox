@@ -75,8 +75,7 @@ public:
 
 	// One time setup before finalization.
 
-	bool sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize size, const void* data);
-	bool sharedDataSetUsage(uint64_t sharedDataHandle, VkBufferUsageFlags usage);
+	bool sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage);
 
 	bool textureResourceSetCreateInformation(uint64_t textureHandle, const TextureResourceCreateInfo& textureResourceCreateInfo);
 
