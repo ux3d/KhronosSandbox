@@ -13,7 +13,7 @@ class WorldBuilder {
 
 private:
 
-	ResourceManager& resourceManager;
+	RenderManager& resourceManager;
 
 	uint32_t width;
 	uint32_t height;
@@ -52,7 +52,7 @@ private:
 
 public:
 
-	WorldBuilder(ResourceManager& resourceManager, uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView = VK_NULL_HANDLE);
+	WorldBuilder(RenderManager& resourceManager, uint32_t width, uint32_t height, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkRenderPass renderPass, VkSampleCountFlagBits samples, VkImageView imageView = VK_NULL_HANDLE);
 
 	bool build(const GLTF& glTF, const std::string& diffuseFilename, bool useRaytrace = false);
 

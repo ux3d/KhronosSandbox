@@ -1,9 +1,11 @@
-#ifndef RENDER_RESOURCEMANAGER_H_
-#define RENDER_RESOURCEMANAGER_H_
+#ifndef RENDER_RENDERMANAGER_H_
+#define RENDER_RENDERMANAGER_H_
 
 #include <cstdint>
 #include <map>
 #include <vector>
+
+#include "../common/Common.h"
 
 #include "../composite/Composite.h"
 
@@ -18,7 +20,13 @@
 #include "CameraResource.h"
 #include "WorldResource.h"
 
-class ResourceManager {
+enum DrawMode {
+	ALL,
+	OPAQUE,
+	TRANSPARENT
+};
+
+class RenderManager {
 
 private:
 
@@ -45,19 +53,6 @@ private:
 	void terminate(WorldResource& worldResource, VkDevice device);
 
 	SharedDataResource* getSharedDataResource(uint64_t sharedDataHandle);
-
-public:
-
-	ResourceManager();
-
-	~ResourceManager();
-
-	//
-
-	VkBuffer getBuffer(uint64_t bufferViewHandle);
-
-	// TODO: Should become private.
-
 	TextureDataResource* getTextureResource(uint64_t textureHandle);
 	MaterialResource* getMaterialResource(uint64_t materialHandle);
 	GeometryResource* getGeometryResource(uint64_t geometryHandle);
@@ -67,6 +62,16 @@ public:
 	LightResource* getLightResource(uint64_t lightHandle);
 	CameraResource* getCameraResource(uint64_t cameraHandle);
 	WorldResource* getWorldResource();
+
+public:
+
+	RenderManager();
+
+	~RenderManager();
+
+	//
+
+	VkBuffer getBuffer(uint64_t bufferViewHandle);
 
 	// One time setup before finalization.
 
@@ -101,14 +106,23 @@ public:
 	// Finalization and setup not allowed anymore.
 
 	bool sharedDataResourceFinalize(uint64_t sharedDataHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+
 	bool textureResourceFinalize(uint64_t textureHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+
 	bool materialResourceFinalize(uint64_t materialHandle, VkDevice device);
+
 	bool geometryResourceFinalize(uint64_t geometryHandle);
+
 	bool geometryModelResourceFinalize(uint64_t geometryModelHandle, uint32_t width, uint32_t height, VkRenderPass renderPass, VkCullModeFlags cullMode, VkSampleCountFlagBits samples, bool useRaytrace, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+
 	bool groupResourceFinalize(uint64_t groupHandle);
+
 	bool instanceResourceFinalize(uint64_t instanceHandle);
+
 	bool lightResourceFinalize(uint64_t lightHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
+
 	bool cameraResourceFinalize(uint64_t cameraHandle);
+
 	bool worldResourceFinalize(VkImageView imageView, bool useRaytrace, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool);
 
 	// Getters
@@ -122,23 +136,42 @@ public:
 	bool cameraResourceUpdateProjectionMatrix(uint64_t cameraHandle, const glm::mat4& projectionMatrix);
 	bool cameraResourceUpdateViewMatrix(uint64_t cameraHandle, const glm::mat4& viewMatrix);
 
+	bool worldResourceUpdateSettings(uint32_t maxDepth, uint32_t specularSamples, uint32_t diffuseSamples);
+
 	// Delete and free data.
 
 	bool sharedDataResourceDelete(uint64_t sharedDataHandle, VkDevice device);
+
 	bool textureResourceDelete(uint64_t textureHandle, VkDevice device);
+
 	bool materialResourceDelete(uint64_t materialHandle, VkDevice device);
+
 	bool geometryResourceDelete(uint64_t geometryHanlde, VkDevice device);
+
 	bool geometryModelResourceDelete(uint64_t geometryModelHandle, VkDevice device);
+
 	bool groupResourceDelete(uint64_t groupHandle, VkDevice device);
+
 	bool instanceResourceDelete(uint64_t instanceHandle, VkDevice device);
+
 	bool lightResourceDelete(uint64_t lightHandle, VkDevice device);
+
 	bool cameraResourceDelete(uint64_t cameraHandle, VkDevice device);
+
 	bool worldResourceDelete(VkDevice device);
 
 	//
 
 	void terminate(VkDevice device);
 
+	//
+	// Rendering
+	//
+
+	void rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode);
+
+	void raytrace(VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height);
+
 };
 
-#endif /* RENDER_RESOURCEMANAGER_H_ */
+#endif /* RENDER_RENDERMANAGER_H_ */

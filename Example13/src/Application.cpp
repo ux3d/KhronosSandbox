@@ -15,7 +15,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	WorldBuilder worldBuilder(resourceManager, width, height, physicalDevice, device, queue, commandPool, renderPass, samples);
+	WorldBuilder worldBuilder(renderManager, width, height, physicalDevice, device, queue, commandPool, renderPass, samples);
 	if(!worldBuilder.build(glTF, environment))
 	{
 		return false;
@@ -36,19 +36,26 @@ bool Application::applicationInit()
 
 bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime)
 {
+	uint64_t cameraHandle = 0;
+
+	if (!renderManager.worldResourceGetCameraResource(cameraHandle))
+	{
+		return false;
+	}
+
+	//
+
 	animationController.updateCurrentTime(deltaTime);
 	HelperAnimate::update(glTF, 0, animationController.getCurrentTime());
 	HelperUpdate::update(glTF, glm::mat4(1.0f));
 
 	//
 
-	WorldResource* gltfResource = resourceManager.getWorldResource();
-
 	// Update the animations to the renderer.
 	for (size_t i = 0; i < glTF.nodes.size(); i++)
 	{
 		const Node& node = glTF.nodes[i];
-		resourceManager.instanceResourceUpdateWorldMatrix((uint64_t)&node, node.worldMatrix);
+		renderManager.instanceResourceUpdateWorldMatrix((uint64_t)&node, node.worldMatrix);
 	}
 
 	//
@@ -95,15 +102,18 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	vkCmdBeginRenderPass(commandBuffers[frameIndex], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	gltfResource->viewProjection.projection = Projection::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f);
+	glm::mat4 projectionMatrix = Projection::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f);
 
 	glm::mat3 orbitMatrix = glm::rotate(rotY, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(rotX, glm::vec3(1.0f, 0.0f, 0.0f));
 	glm::vec3 orbitEye = orbitMatrix * glm::vec3(0.0f, 0.0f, eyeObjectDistance);
 
-	gltfResource->viewProjection.view = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 viewMatrix = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	HelperRasterize::draw(resourceManager, commandBuffers[frameIndex], frameIndex, OPAQUE);
-	HelperRasterize::draw(resourceManager, commandBuffers[frameIndex], frameIndex, TRANSPARENT);
+	renderManager.cameraResourceUpdateProjectionMatrix(cameraHandle, projectionMatrix);
+	renderManager.cameraResourceUpdateViewMatrix(cameraHandle, viewMatrix);
+
+	renderManager.rasterize(commandBuffers[frameIndex], frameIndex, OPAQUE);
+	renderManager.rasterize(commandBuffers[frameIndex], frameIndex, TRANSPARENT);
 
 	vkCmdEndRenderPass(commandBuffers[frameIndex]);
 
@@ -112,7 +122,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 void Application::applicationTerminate()
 {
-	resourceManager.terminate(device);
+	renderManager.terminate(device);
 }
 
 // Public

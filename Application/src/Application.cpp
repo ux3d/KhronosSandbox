@@ -32,7 +32,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	WorldBuilder worldBuilder(resourceManager, width, height, physicalDevice, device, queue, commandPool, renderPass, samples, raytraceImageViewResource.imageView);
+	WorldBuilder worldBuilder(renderManager, width, height, physicalDevice, device, queue, commandPool, renderPass, samples, raytraceImageViewResource.imageView);
 	if(!worldBuilder.build(glTF, environment, true))
 	{
 		return false;
@@ -43,6 +43,15 @@ bool Application::applicationInit()
 
 bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime)
 {
+	uint64_t cameraHandle = 0;
+
+	if (!renderManager.worldResourceGetCameraResource(cameraHandle))
+	{
+		return false;
+	}
+
+	//
+
 	ImGui_ImplVulkan_NewFrame();
 	ImGui::NewFrame();
 
@@ -80,6 +89,16 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	// Rendering
 	//
 
+	glm::mat4 projectionMatrix = Projection::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f);
+
+	glm::mat3 orbitMatrix = glm::rotate(rotY, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(rotX, glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::vec3 orbitEye = orbitMatrix * glm::vec3(0.0f, 0.0f, eyeObjectDistance);
+
+	glm::mat4 viewMatrix = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	renderManager.cameraResourceUpdateProjectionMatrix(cameraHandle, projectionMatrix);
+	renderManager.cameraResourceUpdateViewMatrix(cameraHandle, viewMatrix);
+
 	if (raytrace)
 	{
 		VkImageMemoryBarrier imageMemoryBarrier[2] = {};
@@ -113,19 +132,9 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 		// Update view & projection
 		//
 
-		WorldResource* gltfResource = resourceManager.getWorldResource();
+		renderManager.worldResourceUpdateSettings(maxDepth, specularSamples, diffuseSamples);
 
-		gltfResource->raytrace.inverseViewProjection.inverseProjection = glm::inverse(Projection::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f));
-
-		glm::mat3 orbitMatrix = glm::rotate(rotY, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(rotX, glm::vec3(1.0f, 0.0f, 0.0f));
-		glm::vec3 orbitEye = orbitMatrix * glm::vec3(0.0f, 0.0f, eyeObjectDistance);
-
-		gltfResource->raytrace.inverseViewProjection.inverseView = glm::inverse(glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-		gltfResource->raytrace.maxDepth = maxDepth;
-		gltfResource->raytrace.specularSamples = specularSamples;
-		gltfResource->raytrace.diffuseSamples = diffuseSamples;
-
-		HelperRaytrace::draw(resourceManager, commandBuffers[frameIndex], frameIndex, width, height);
+		renderManager.raytrace(commandBuffers[frameIndex], frameIndex, width, height);
 
 		//
 		// Prepare to to copy raytraced image.
@@ -167,10 +176,6 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	}
 	else
 	{
-		WorldResource* gltfResource = resourceManager.getWorldResource();
-
-		//
-
 		VkClearColorValue resolveClearColorValue = {};
 		resolveClearColorValue.float32[0] = 0.0f;
 		resolveClearColorValue.float32[1] = 0.0f;
@@ -213,15 +218,8 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 		vkCmdBeginRenderPass(commandBuffers[frameIndex], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-		gltfResource->viewProjection.projection = Projection::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f);
-
-		glm::mat3 orbitMatrix = glm::rotate(rotY, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(rotX, glm::vec3(1.0f, 0.0f, 0.0f));
-		glm::vec3 orbitEye = orbitMatrix * glm::vec3(0.0f, 0.0f, eyeObjectDistance);
-
-		gltfResource->viewProjection.view = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-		HelperRasterize::draw(resourceManager, commandBuffers[frameIndex], frameIndex, OPAQUE);
-		HelperRasterize::draw(resourceManager, commandBuffers[frameIndex], frameIndex, TRANSPARENT);
+		renderManager.rasterize(commandBuffers[frameIndex], frameIndex, OPAQUE);
+		renderManager.rasterize(commandBuffers[frameIndex], frameIndex, TRANSPARENT);
 
 		vkCmdEndRenderPass(commandBuffers[frameIndex]);
 	}
@@ -254,7 +252,7 @@ void Application::applicationTerminate()
 {
 	VulkanResource::destroyImageViewResource(device, raytraceImageViewResource);
 
-	resourceManager.terminate(device);
+	renderManager.terminate(device);
 }
 
 // Public
