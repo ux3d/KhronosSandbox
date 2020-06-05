@@ -180,8 +180,6 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 			uint64_t geometryHandle = (uint64_t)&primitive;
 			uint64_t geometryModelHandle = (uint64_t)&primitive;
 
-			VkCullModeFlags cullMode = VK_CULL_MODE_NONE;
-
 			if (primitive.position >= 0)
 			{
 				const Accessor& accessor = glTF.accessors[primitive.position];
@@ -457,7 +455,12 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 				}
 			}
 
-			if (!renderManager.geometryModelFinalize(geometryModelHandle, renderPass, cullMode, samples))
+			if (!renderManager.geometryModelSetCullMode(geometryModelHandle, VK_CULL_MODE_BACK_BIT))
+			{
+				return false;
+			}
+
+			if (!renderManager.geometryModelFinalize(geometryModelHandle, renderPass, samples))
 			{
 				return false;
 			}

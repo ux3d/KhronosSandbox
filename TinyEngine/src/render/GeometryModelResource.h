@@ -28,6 +28,8 @@ struct GeometryModelResource : BaseResource {
 
 	std::map<std::string, std::string> macros;
 
+	VkCullModeFlags cullMode = VK_CULL_MODE_NONE;
+
 	// Rasterize helper
 
 	VkShaderModule vertexShaderModule = VK_NULL_HANDLE;

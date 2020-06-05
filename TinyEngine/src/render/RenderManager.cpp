@@ -739,6 +739,20 @@ bool RenderManager::geometryModelSetTarget(uint64_t geometryModelHandle, const s
 	return true;
 }
 
+bool RenderManager::geometryModelSetCullMode(uint64_t geometryModelHandle, VkCullModeFlags cullMode)
+{
+	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
+
+	if (geometryModelResource->finalized)
+	{
+		return false;
+	}
+
+	geometryModelResource->cullMode = cullMode;
+
+	return true;
+}
+
 bool RenderManager::groupAddGeometryModel(uint64_t groupHandle, uint64_t geometryModelHandle)
 {
 	GroupResource* groupResource = getGroup(groupHandle);
@@ -1143,7 +1157,7 @@ bool RenderManager::geometryFinalize(uint64_t geometryHandle)
 	return true;
 }
 
-bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle, VkRenderPass renderPass, VkCullModeFlags cullMode, VkSampleCountFlagBits samples)
+bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle, VkRenderPass renderPass, VkSampleCountFlagBits samples)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
@@ -1256,6 +1270,12 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle, VkRender
 	pipelineViewportStateCreateInfo.pScissors = &scissor;
 
 	//
+
+	VkCullModeFlags cullMode = geometryModelResource->cullMode;
+	if (useRaytrace)
+	{
+		cullMode = VK_CULL_MODE_NONE;
+	}
 
 	VkPipelineRasterizationStateCreateInfo pipelineRasterizationStateCreateInfo = {};
 	pipelineRasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
