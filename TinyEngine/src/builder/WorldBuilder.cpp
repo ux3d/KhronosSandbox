@@ -93,7 +93,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
 		// Metallic Roughness
 		if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
 		{
-			if (!resourceManager.materialResourceSetTextureResource(materialHandles[i], textureHandles[material.pbrMetallicRoughness.baseColorTexture.index], material.pbrMetallicRoughness.baseColorTexture.texCoord, "BASECOLOR"))
+			if (!resourceManager.materialResourceSetTextureResource(materialHandles[i], textureHandles[material.pbrMetallicRoughness.baseColorTexture.index], material.pbrMetallicRoughness.baseColorTexture.texCoord, "BASECOLOR", material.pbrMetallicRoughness.baseColorTexture.index))
 			{
 				return false;
 			}
@@ -101,7 +101,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
 
 		if (material.pbrMetallicRoughness.metallicRoughnessTexture.index >= 0)
 		{
-			if (!resourceManager.materialResourceSetTextureResource(materialHandles[i], textureHandles[material.pbrMetallicRoughness.metallicRoughnessTexture.index], material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord, "METALLICROUGHNESS"))
+			if (!resourceManager.materialResourceSetTextureResource(materialHandles[i], textureHandles[material.pbrMetallicRoughness.metallicRoughnessTexture.index], material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord, "METALLICROUGHNESS", material.pbrMetallicRoughness.metallicRoughnessTexture.index))
 			{
 				return false;
 			}
@@ -110,7 +110,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
 		// Base Material
 		if (material.emissiveTexture.index >= 0)
 		{
-			if (!resourceManager.materialResourceSetTextureResource(materialHandles[i], textureHandles[material.emissiveTexture.index], material.emissiveTexture.texCoord, "EMISSIVE"))
+			if (!resourceManager.materialResourceSetTextureResource(materialHandles[i], textureHandles[material.emissiveTexture.index], material.emissiveTexture.texCoord, "EMISSIVE", material.emissiveTexture.index))
 			{
 				return false;
 			}
@@ -118,7 +118,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
 
 		if (material.occlusionTexture.index >= 0)
 		{
-			if (!resourceManager.materialResourceSetTextureResource(materialHandles[i], textureHandles[material.occlusionTexture.index], material.occlusionTexture.texCoord, "OCCLUSION"))
+			if (!resourceManager.materialResourceSetTextureResource(materialHandles[i], textureHandles[material.occlusionTexture.index], material.occlusionTexture.texCoord, "OCCLUSION", material.occlusionTexture.index))
 			{
 				return false;
 			}
@@ -126,7 +126,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
 
 		if (material.normalTexture.index >= 0)
 		{
-			if (!resourceManager.materialResourceSetTextureResource(materialHandles[i], textureHandles[material.normalTexture.index], material.normalTexture.texCoord, "NORMAL"))
+			if (!resourceManager.materialResourceSetTextureResource(materialHandles[i], textureHandles[material.normalTexture.index], material.normalTexture.texCoord, "NORMAL", material.normalTexture.index))
 			{
 				return false;
 			}
@@ -687,9 +687,9 @@ bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevi
 		std::vector<VkDescriptorBufferInfo> descriptorBufferInfoTangent;
 		std::vector<VkDescriptorBufferInfo> descriptorBufferInfoTexCoord0;
 
-		for (const Node& node : glTF.nodes)
+		for (uint64_t nodeHandle : nodeHandles)
 		{
-			InstanceResource* instanceResource = resourceManager.getInstanceResource((uint64_t)&node);
+			InstanceResource* instanceResource = resourceManager.getInstanceResource(nodeHandle);
 
 			if (instanceResource->groupHandle > 0)
 			{
@@ -871,25 +871,19 @@ bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevi
 		//
 
 		std::vector<RaytraceMaterialUniformBuffer> materialBuffers;
-		for (const Material& currentMatrial : glTF.materials)
+		for (uint64_t materialHandle : materialHandles)
 		{
+			MaterialResource* materialResource = resourceManager.getMaterialResource(materialHandle);
+
 			RaytraceMaterialUniformBuffer uniformBufferRaytrace = {};
 
-			uniformBufferRaytrace.materialUniformBuffer.baseColorFactor = currentMatrial.pbrMetallicRoughness.baseColorFactor;
-			uniformBufferRaytrace.materialUniformBuffer.metallicFactor = currentMatrial.pbrMetallicRoughness.metallicFactor;
-			uniformBufferRaytrace.materialUniformBuffer.roughnessFactor = currentMatrial.pbrMetallicRoughness.roughnessFactor;
-			uniformBufferRaytrace.materialUniformBuffer.normalScale = currentMatrial.normalTexture.scale;
-			uniformBufferRaytrace.materialUniformBuffer.occlusionStrength = currentMatrial.occlusionTexture.strength;
-			uniformBufferRaytrace.materialUniformBuffer.emissiveFactor = currentMatrial.emissiveFactor;
-			uniformBufferRaytrace.materialUniformBuffer.alphaMode = currentMatrial.alphaMode;
-			uniformBufferRaytrace.materialUniformBuffer.alphaCutoff = currentMatrial.alphaCutoff;
-			uniformBufferRaytrace.materialUniformBuffer.doubleSided = currentMatrial.doubleSided;
+			uniformBufferRaytrace.materialUniformBuffer = materialResource->materialUniformBuffer;
 
-			uniformBufferRaytrace.baseColorTexture = currentMatrial.pbrMetallicRoughness.baseColorTexture.index;
-			uniformBufferRaytrace.metallicRoughnessTexture = currentMatrial.pbrMetallicRoughness.metallicRoughnessTexture.index;
-			uniformBufferRaytrace.normalTexture = currentMatrial.normalTexture.index;
-			uniformBufferRaytrace.occlusionTexture = currentMatrial.occlusionTexture.index;
-			uniformBufferRaytrace.emissiveTexture = currentMatrial.emissiveTexture.index;
+			uniformBufferRaytrace.baseColorTexture = materialResource->baseColorTexture;
+			uniformBufferRaytrace.metallicRoughnessTexture = materialResource->metallicRoughnessTexture;
+			uniformBufferRaytrace.normalTexture = materialResource->normalTexture;
+			uniformBufferRaytrace.occlusionTexture = materialResource->occlusionTexture;
+			uniformBufferRaytrace.emissiveTexture = materialResource->emissiveTexture;
 
 			materialBuffers.push_back(uniformBufferRaytrace);
 		}

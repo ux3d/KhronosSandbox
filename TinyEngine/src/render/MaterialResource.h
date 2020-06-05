@@ -48,6 +48,15 @@ struct MaterialResource : BaseResource {
 
 	MaterialUniformBuffer materialUniformBuffer;
 
+	int32_t baseColorTexture = -1;
+	int32_t metallicRoughnessTexture = -1;
+
+	int32_t emissiveTexture = -1;
+
+	int32_t occlusionTexture = -1;
+
+	int32_t normalTexture = -1;
+
 	std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
 
 	uint32_t binding = 0;

@@ -371,7 +371,7 @@ bool ResourceManager::materialResourceSetMaterialParameters(uint64_t materialHan
 	return true;
 }
 
-bool ResourceManager::materialResourceSetTextureResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, const std::string& prefix)
+bool ResourceManager::materialResourceSetTextureResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, const std::string& prefix, uint32_t index)
 {
 	MaterialResource* materialResource = getMaterialResource(materialHandle);
 
@@ -400,6 +400,29 @@ bool ResourceManager::materialResourceSetTextureResource(uint64_t materialHandle
 	materialResource->macros[prefix + "_TEXTURE"] = "";
 	materialResource->macros[prefix + "_BINDING"] = std::to_string(materialResource->binding);
 	materialResource->macros[prefix + "_TEXCOORD"] = HelperShader::getTexCoord(texCoord);
+
+	//
+
+	if (prefix == "BASECOLOR")
+	{
+		materialResource->baseColorTexture = index;
+	}
+	else if (prefix == "METALLICROUGHNESS")
+	{
+		materialResource->metallicRoughnessTexture = index;
+	}
+	else if (prefix == "EMISSIVE")
+	{
+		materialResource->emissiveTexture = index;
+	}
+	else if (prefix == "OCCLUSION")
+	{
+		materialResource->occlusionTexture = index;
+	}
+	else if (prefix == "NORMAL")
+	{
+		materialResource->normalTexture = index;
+	}
 
 	//
 
