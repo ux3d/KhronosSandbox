@@ -71,9 +71,9 @@ bool WorldBuilder::buildTextures(const GLTF& glTF, bool useRaytrace)
 			textureResourceCreateInfo.samplerResourceCreateInfo.maxLod = glTF.samplers[texture.sampler].maxLod;
 		}
 
-		renderManager.textureResourceSetCreateInformation(textureHandle, textureResourceCreateInfo);
+		renderManager.textureSetParameters(textureHandle, textureResourceCreateInfo);
 
-		if (!renderManager.textureResourceFinalize(textureHandle, physicalDevice, device, queue, commandPool))
+		if (!renderManager.textureFinalize(textureHandle, physicalDevice, device, queue, commandPool))
 		{
 			return false;
 		}
@@ -93,7 +93,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
 		// Metallic Roughness
 		if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
 		{
-			if (!renderManager.materialResourceSetTextureResource(materialHandles[i], textureHandles[material.pbrMetallicRoughness.baseColorTexture.index], material.pbrMetallicRoughness.baseColorTexture.texCoord, "BASECOLOR", material.pbrMetallicRoughness.baseColorTexture.index))
+			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.pbrMetallicRoughness.baseColorTexture.index], material.pbrMetallicRoughness.baseColorTexture.texCoord, "BASECOLOR", material.pbrMetallicRoughness.baseColorTexture.index))
 			{
 				return false;
 			}
@@ -101,7 +101,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
 
 		if (material.pbrMetallicRoughness.metallicRoughnessTexture.index >= 0)
 		{
-			if (!renderManager.materialResourceSetTextureResource(materialHandles[i], textureHandles[material.pbrMetallicRoughness.metallicRoughnessTexture.index], material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord, "METALLICROUGHNESS", material.pbrMetallicRoughness.metallicRoughnessTexture.index))
+			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.pbrMetallicRoughness.metallicRoughnessTexture.index], material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord, "METALLICROUGHNESS", material.pbrMetallicRoughness.metallicRoughnessTexture.index))
 			{
 				return false;
 			}
@@ -110,7 +110,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
 		// Base Material
 		if (material.emissiveTexture.index >= 0)
 		{
-			if (!renderManager.materialResourceSetTextureResource(materialHandles[i], textureHandles[material.emissiveTexture.index], material.emissiveTexture.texCoord, "EMISSIVE", material.emissiveTexture.index))
+			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.emissiveTexture.index], material.emissiveTexture.texCoord, "EMISSIVE", material.emissiveTexture.index))
 			{
 				return false;
 			}
@@ -118,7 +118,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
 
 		if (material.occlusionTexture.index >= 0)
 		{
-			if (!renderManager.materialResourceSetTextureResource(materialHandles[i], textureHandles[material.occlusionTexture.index], material.occlusionTexture.texCoord, "OCCLUSION", material.occlusionTexture.index))
+			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.occlusionTexture.index], material.occlusionTexture.texCoord, "OCCLUSION", material.occlusionTexture.index))
 			{
 				return false;
 			}
@@ -126,7 +126,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
 
 		if (material.normalTexture.index >= 0)
 		{
-			if (!renderManager.materialResourceSetTextureResource(materialHandles[i], textureHandles[material.normalTexture.index], material.normalTexture.texCoord, "NORMAL", material.normalTexture.index))
+			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.normalTexture.index], material.normalTexture.texCoord, "NORMAL", material.normalTexture.index))
 			{
 				return false;
 			}
@@ -152,9 +152,9 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF, bool useRaytrace)
 
 		materialUniformBuffer.doubleSided = material.doubleSided;
 
-		renderManager.materialResourceSetMaterialParameters(materialHandles[i], static_cast<int32_t>(i), materialUniformBuffer, physicalDevice, device);
+		renderManager.materialSetFactorParameters(materialHandles[i], static_cast<int32_t>(i), materialUniformBuffer);
 
-		if (!renderManager.materialResourceFinalize(materialHandles[i], device))
+		if (!renderManager.materialFinalize(materialHandles[i], physicalDevice, device))
 		{
 			return false;
 		}
@@ -182,8 +182,6 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 
 			VkCullModeFlags cullMode = VK_CULL_MODE_NONE;
 
-			renderManager.geometryResourceSetAttributesCount(geometryHandle, primitive.attributesCount);
-
 			if (primitive.position >= 0)
 			{
 				const Accessor& accessor = glTF.accessors[primitive.position];
@@ -196,7 +194,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!renderManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.position].count, glTF.accessors[primitive.position].typeCount, "POSITION", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.position].count, glTF.accessors[primitive.position].typeCount, "POSITION", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -214,7 +212,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!renderManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.normal].count, glTF.accessors[primitive.normal].typeCount, "NORMAL", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.normal].count, glTF.accessors[primitive.normal].typeCount, "NORMAL", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -232,7 +230,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!renderManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.tangent].count, glTF.accessors[primitive.tangent].typeCount, "TANGENT", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.tangent].count, glTF.accessors[primitive.tangent].typeCount, "TANGENT", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -250,7 +248,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!renderManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.texCoord0].count, glTF.accessors[primitive.texCoord0].typeCount, "TEXCOORD_0", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.texCoord0].count, glTF.accessors[primitive.texCoord0].typeCount, "TEXCOORD_0", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -268,7 +266,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!renderManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.texCoord1].count, glTF.accessors[primitive.texCoord1].typeCount, "TEXCOORD_1", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.texCoord1].count, glTF.accessors[primitive.texCoord1].typeCount, "TEXCOORD_1", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -286,7 +284,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!renderManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.color0].count, glTF.accessors[primitive.color0].typeCount, "COLOR_0", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.color0].count, glTF.accessors[primitive.color0].typeCount, "COLOR_0", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -304,7 +302,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!renderManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.joints0].count, glTF.accessors[primitive.joints0].typeCount, "JOINTS_0", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.joints0].count, glTF.accessors[primitive.joints0].typeCount, "JOINTS_0", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -322,7 +320,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!renderManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.joints1].count, glTF.accessors[primitive.joints1].typeCount, "JOINTS_1", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.joints1].count, glTF.accessors[primitive.joints1].typeCount, "JOINTS_1", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -340,7 +338,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!renderManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.weights0].count, glTF.accessors[primitive.weights0].typeCount, "WEIGHTS_0", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.weights0].count, glTF.accessors[primitive.weights0].typeCount, "WEIGHTS_0", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -358,7 +356,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 					return false;
 				}
 
-				if (!renderManager.geometryResourceSetAttribute(geometryHandle, glTF.accessors[primitive.weights1].count, glTF.accessors[primitive.weights1].typeCount, "WEIGHTS_1", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.weights1].count, glTF.accessors[primitive.weights1].typeCount, "WEIGHTS_1", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -366,7 +364,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 
 			//
 
-			renderManager.geometryResourceFinalize(geometryHandle);
+			renderManager.geometryFinalize(geometryHandle);
 
 			//
 
@@ -377,9 +375,9 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 
 			//
 
-			renderManager.geometryModelResourceSetGeometryResource(geometryModelHandle, geometryHandle);
+			renderManager.geometryModelSetGeometry(geometryModelHandle, geometryHandle);
 
-			renderManager.geometryModelResourceSetMaterialResource(geometryModelHandle, materialHandles[primitive.material]);
+			renderManager.geometryModelSetMaterial(geometryModelHandle, materialHandles[primitive.material]);
 
 			//
 
@@ -394,7 +392,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 						return false;
 					}
 
-					if (!renderManager.geometryModelResourceSetTargetData(geometryModelHandle, "POSITION", sharedDataHandle))
+					if (!renderManager.geometryModelSetTarget(geometryModelHandle, "POSITION", sharedDataHandle))
 					{
 						return false;
 					}
@@ -409,7 +407,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 						return false;
 					}
 
-					if (!renderManager.geometryModelResourceSetTargetData(geometryModelHandle, "NORMAL", sharedDataHandle))
+					if (!renderManager.geometryModelSetTarget(geometryModelHandle, "NORMAL", sharedDataHandle))
 					{
 						return false;
 					}
@@ -424,7 +422,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 						return false;
 					}
 
-					if (!renderManager.geometryModelResourceSetTargetData(geometryModelHandle, "TANGENT", sharedDataHandle))
+					if (!renderManager.geometryModelSetTarget(geometryModelHandle, "TANGENT", sharedDataHandle))
 					{
 						return false;
 					}
@@ -453,23 +451,23 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF, bool useRaytrace)
 			}
 			else
 			{
-				if (!renderManager.geometryModelResourceSetVertexCount(geometryModelHandle, glTF.accessors[primitive.position].count))
+				if (!renderManager.geometryModelSetVertexCount(geometryModelHandle, glTF.accessors[primitive.position].count))
 				{
 					return false;
 				}
 			}
 
-			if (!renderManager.geometryModelResourceFinalize(geometryModelHandle, width, height, renderPass, cullMode, samples, useRaytrace, physicalDevice, device, queue, commandPool))
+			if (!renderManager.geometryModelFinalize(geometryModelHandle, width, height, renderPass, cullMode, samples, useRaytrace, physicalDevice, device, queue, commandPool))
 			{
 				return false;
 			}
 
 			//
 
-			renderManager.groupResourceAddGeometryModelResource(groupHandle, geometryModelHandle);
+			renderManager.groupAddGeometryModel(groupHandle, geometryModelHandle);
 		}
 
-		renderManager.groupResourceFinalize(groupHandle);
+		renderManager.groupFinalize(groupHandle);
 	}
 
 	return true;
@@ -485,9 +483,9 @@ bool WorldBuilder::buildNodes(const GLTF& glTF, bool useRaytrace)
 
 		if (node.mesh >= 0)
 		{
-			renderManager.instanceResourceSetWorldMatrix(nodeHandles[i], node.worldMatrix);
-			renderManager.instanceResourceSetGroupResource(nodeHandles[i], meshHandles[node.mesh]);
-			renderManager.instanceResourceFinalize(nodeHandles[i]);
+			renderManager.instanceSetWorldMatrix(nodeHandles[i], node.worldMatrix);
+			renderManager.instanceSetGroup(nodeHandles[i], meshHandles[node.mesh]);
+			renderManager.instanceFinalize(nodeHandles[i]);
 		}
 	}
 
@@ -500,10 +498,10 @@ bool WorldBuilder::buildScene(const GLTF& glTF, bool useRaytrace)
 	{
 		for (size_t i = 0; i < glTF.scenes[glTF.defaultScene].nodes.size(); i++)
 		{
-			renderManager.worldResourceAddInstanceResource(nodeHandles[glTF.scenes[glTF.defaultScene].nodes[i]]);
+			renderManager.worldAddInstance(nodeHandles[glTF.scenes[glTF.defaultScene].nodes[i]]);
 		}
 
-		if (!renderManager.worldResourceFinalize(imageView, useRaytrace, physicalDevice, device, queue, commandPool))
+		if (!renderManager.worldFinalize(imageView, useRaytrace, physicalDevice, device, queue, commandPool))
 		{
 			return false;
 		}
@@ -520,13 +518,13 @@ bool WorldBuilder::build(const GLTF& glTF, const std::string& environment, bool 
 {
 	glTFHandle = (uint64_t)&glTF;
 
-	renderManager.lightResourceSetEnvironmentLight(glTFHandle, environment);
-	renderManager.lightResourceFinalize(glTFHandle, physicalDevice, device, queue, commandPool);
+	renderManager.lightSetEnvironment(glTFHandle, environment);
+	renderManager.lightFinalize(glTFHandle, physicalDevice, device, queue, commandPool);
 
-	renderManager.cameraResourceFinalize(glTFHandle);
+	renderManager.cameraFinalize(glTFHandle);
 
-	renderManager.worldResourceSetLightResource(glTFHandle);
-	renderManager.worldResourceSetCameraResource(glTFHandle);
+	renderManager.worldSetLight(glTFHandle);
+	renderManager.worldSetCamera(glTFHandle);
 
 	// BufferViews
 
@@ -624,7 +622,7 @@ bool WorldBuilder::createSharedDataResource(const BufferView& bufferView, VkPhys
 	}
 	renderManager.sharedDataSetData(sharedDataHandle, bufferView.byteLength, HelperAccess::accessData(bufferView), usage);
 
-	if (!renderManager.sharedDataResourceFinalize(sharedDataHandle, physicalDevice, device, queue, commandPool))
+	if (!renderManager.sharedDataFinalize(sharedDataHandle, physicalDevice, device, queue, commandPool))
 	{
 		return false;
 	}
@@ -643,7 +641,7 @@ bool WorldBuilder::createSharedDataResource(VkDeviceSize size, const void* data,
 	}
 	renderManager.sharedDataSetData(sharedDataHandle, size, data, usage);
 
-	if (!renderManager.sharedDataResourceFinalize(sharedDataHandle, physicalDevice, device, queue, commandPool))
+	if (!renderManager.sharedDataFinalize(sharedDataHandle, physicalDevice, device, queue, commandPool))
 	{
 		return false;
 	}

@@ -38,7 +38,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 {
 	uint64_t cameraHandle = 0;
 
-	if (!renderManager.worldResourceGetCameraResource(cameraHandle))
+	if (!renderManager.worldGetCamera(cameraHandle))
 	{
 		return false;
 	}
@@ -55,7 +55,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	for (size_t i = 0; i < glTF.nodes.size(); i++)
 	{
 		const Node& node = glTF.nodes[i];
-		renderManager.instanceResourceUpdateWorldMatrix((uint64_t)&node, node.worldMatrix);
+		renderManager.instanceUpdateWorldMatrix((uint64_t)&node, node.worldMatrix);
 	}
 
 	//
@@ -109,8 +109,8 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	glm::mat4 viewMatrix = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	renderManager.cameraResourceUpdateProjectionMatrix(cameraHandle, projectionMatrix);
-	renderManager.cameraResourceUpdateViewMatrix(cameraHandle, viewMatrix);
+	renderManager.cameraUpdateProjectionMatrix(cameraHandle, projectionMatrix);
+	renderManager.cameraUpdateViewMatrix(cameraHandle, viewMatrix);
 
 	renderManager.rasterize(commandBuffers[frameIndex], frameIndex, OPAQUE);
 	renderManager.rasterize(commandBuffers[frameIndex], frameIndex, TRANSPARENT);

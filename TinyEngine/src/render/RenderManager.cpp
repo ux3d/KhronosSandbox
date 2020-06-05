@@ -159,10 +159,10 @@ RenderManager::~RenderManager()
 
 VkBuffer RenderManager::getBuffer(uint64_t sharedDataHandle)
 {
-	return getSharedDataResource(sharedDataHandle)->vertexBufferResource.bufferResource.buffer;
+	return getSharedData(sharedDataHandle)->vertexBufferResource.bufferResource.buffer;
 }
 
-SharedDataResource* RenderManager::getSharedDataResource(uint64_t sharedDataHandle)
+SharedDataResource* RenderManager::getSharedData(uint64_t sharedDataHandle)
 {
 	auto result = sharedDataResources.find(sharedDataHandle);
 	if (result == sharedDataResources.end())
@@ -173,7 +173,7 @@ SharedDataResource* RenderManager::getSharedDataResource(uint64_t sharedDataHand
 	return &result->second;
 }
 
-TextureDataResource* RenderManager::getTextureResource(uint64_t textureHandle)
+TextureDataResource* RenderManager::getTexture(uint64_t textureHandle)
 {
 	auto result = textureResources.find(textureHandle);
 	if (result == textureResources.end())
@@ -184,7 +184,7 @@ TextureDataResource* RenderManager::getTextureResource(uint64_t textureHandle)
 	return &result->second;
 }
 
-MaterialResource* RenderManager::getMaterialResource(uint64_t materialHandle)
+MaterialResource* RenderManager::getMaterial(uint64_t materialHandle)
 {
 	auto result = materialResources.find(materialHandle);
 	if (result == materialResources.end())
@@ -195,7 +195,7 @@ MaterialResource* RenderManager::getMaterialResource(uint64_t materialHandle)
 	return &result->second;
 }
 
-GeometryResource* RenderManager::getGeometryResource(uint64_t geometryHandle)
+GeometryResource* RenderManager::getGeometry(uint64_t geometryHandle)
 {
 	auto result = geometryResources.find(geometryHandle);
 	if (result == geometryResources.end())
@@ -206,7 +206,7 @@ GeometryResource* RenderManager::getGeometryResource(uint64_t geometryHandle)
 	return &result->second;
 }
 
-GeometryModelResource* RenderManager::getGeometryModelResource(uint64_t geometryModelHandle)
+GeometryModelResource* RenderManager::getGeometryModel(uint64_t geometryModelHandle)
 {
 	auto result = geometryModelResources.find(geometryModelHandle);
 	if (result == geometryModelResources.end())
@@ -217,7 +217,7 @@ GeometryModelResource* RenderManager::getGeometryModelResource(uint64_t geometry
 	return &result->second;
 }
 
-GroupResource* RenderManager::getGroupResource(uint64_t groupHandle)
+GroupResource* RenderManager::getGroup(uint64_t groupHandle)
 {
 	auto result = groupResources.find(groupHandle);
 	if (result == groupResources.end())
@@ -228,7 +228,7 @@ GroupResource* RenderManager::getGroupResource(uint64_t groupHandle)
 	return &result->second;
 }
 
-InstanceResource* RenderManager::getInstanceResource(uint64_t instanceHandle)
+InstanceResource* RenderManager::getInstance(uint64_t instanceHandle)
 {
 	auto result = instanceResources.find(instanceHandle);
 	if (result == instanceResources.end())
@@ -239,7 +239,7 @@ InstanceResource* RenderManager::getInstanceResource(uint64_t instanceHandle)
 	return &result->second;
 }
 
-LightResource* RenderManager::getLightResource(uint64_t lightHandle)
+LightResource* RenderManager::getLight(uint64_t lightHandle)
 {
 	auto result = lightResources.find(lightHandle);
 	if (result == lightResources.end())
@@ -250,7 +250,7 @@ LightResource* RenderManager::getLightResource(uint64_t lightHandle)
 	return &result->second;
 }
 
-CameraResource* RenderManager::getCameraResource(uint64_t cameraHandle)
+CameraResource* RenderManager::getCamera(uint64_t cameraHandle)
 {
 	auto result = cameraResources.find(cameraHandle);
 	if (result == cameraResources.end())
@@ -261,14 +261,14 @@ CameraResource* RenderManager::getCameraResource(uint64_t cameraHandle)
 	return &result->second;
 }
 
-WorldResource* RenderManager::getWorldResource()
+WorldResource* RenderManager::getWorld()
 {
 	return &worldResource;
 }
 
 bool RenderManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage)
 {
-	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
+	SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
 
 	if (sharedDataResource->finalized)
 	{
@@ -293,9 +293,9 @@ bool RenderManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize si
 	return true;
 }
 
-bool RenderManager::textureResourceSetCreateInformation(uint64_t textureHandle, const TextureResourceCreateInfo& textureResourceCreateInfo)
+bool RenderManager::textureSetParameters(uint64_t textureHandle, const TextureResourceCreateInfo& textureResourceCreateInfo)
 {
-	TextureDataResource* textureDataResource = getTextureResource(textureHandle);
+	TextureDataResource* textureDataResource = getTexture(textureHandle);
 
 	if (textureDataResource->finalized)
 	{
@@ -307,9 +307,9 @@ bool RenderManager::textureResourceSetCreateInformation(uint64_t textureHandle, 
 	return true;
 }
 
-bool RenderManager::materialResourceSetMaterialParameters(uint64_t materialHandle, int32_t materialIndex, const MaterialUniformBuffer& materialUniformBuffer, VkPhysicalDevice physicalDevice, VkDevice device)
+bool RenderManager::materialSetFactorParameters(uint64_t materialHandle, int32_t materialIndex, const MaterialUniformBuffer& materialUniformBuffer)
 {
-	MaterialResource* materialResource = getMaterialResource(materialHandle);
+	MaterialResource* materialResource = getMaterial(materialHandle);
 
 	if (materialResource->finalized)
 	{
@@ -319,56 +319,19 @@ bool RenderManager::materialResourceSetMaterialParameters(uint64_t materialHandl
 	materialResource->materialUniformBuffer = materialUniformBuffer;
 	materialResource->materialIndex = materialIndex;
 
-	//
-
-	UniformBufferResourceCreateInfo uniformBufferResourceCreateInfo = {};
-
-	uniformBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(MaterialUniformBuffer);
-	uniformBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-
-	if (!VulkanResource::createUniformBufferResource(physicalDevice, device, materialResource->uniformBufferResource, uniformBufferResourceCreateInfo))
-	{
-		return false;
-	}
-
-	if (!VulkanResource::copyHostToDevice(device, materialResource->uniformBufferResource.bufferResource, &materialResource->materialUniformBuffer, sizeof(materialResource->materialUniformBuffer)))
-	{
-		return false;
-	}
-
-	//
-
-	VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-	descriptorSetLayoutBinding = {};
-	descriptorSetLayoutBinding.binding = materialResource->binding;
-	descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	descriptorSetLayoutBinding.descriptorCount = 1;
-	descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-	VkDescriptorBufferInfo descriptorBufferInfo = {};
-	descriptorBufferInfo.buffer = materialResource->uniformBufferResource.bufferResource.buffer;
-	descriptorBufferInfo.offset = 0;
-	descriptorBufferInfo.range = sizeof(MaterialUniformBuffer);
-	materialResource->descriptorBufferInfos.push_back(descriptorBufferInfo);
-
-	materialResource->macros["UNIFORMBUFFER_BINDING"] = std::to_string(materialResource->binding);
-
-	materialResource->binding++;
-
 	return true;
 }
 
-bool RenderManager::materialResourceSetTextureResource(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, const std::string& prefix, uint32_t index)
+bool RenderManager::materialSetTexture(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, const std::string& prefix, uint32_t textureIndex)
 {
-	MaterialResource* materialResource = getMaterialResource(materialHandle);
+	MaterialResource* materialResource = getMaterial(materialHandle);
 
 	if (materialResource->finalized)
 	{
 		return false;
 	}
 
-	TextureDataResource* textureResource = getTextureResource(textureHandle);
+	TextureDataResource* textureResource = getTexture(textureHandle);
 
 	VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
 	descriptorSetLayoutBinding.binding = materialResource->binding;
@@ -393,23 +356,23 @@ bool RenderManager::materialResourceSetTextureResource(uint64_t materialHandle, 
 
 	if (prefix == "BASECOLOR")
 	{
-		materialResource->baseColorTexture = index;
+		materialResource->baseColorTexture = textureIndex;
 	}
 	else if (prefix == "METALLICROUGHNESS")
 	{
-		materialResource->metallicRoughnessTexture = index;
+		materialResource->metallicRoughnessTexture = textureIndex;
 	}
 	else if (prefix == "EMISSIVE")
 	{
-		materialResource->emissiveTexture = index;
+		materialResource->emissiveTexture = textureIndex;
 	}
 	else if (prefix == "OCCLUSION")
 	{
-		materialResource->occlusionTexture = index;
+		materialResource->occlusionTexture = textureIndex;
 	}
 	else if (prefix == "NORMAL")
 	{
-		materialResource->normalTexture = index;
+		materialResource->normalTexture = textureIndex;
 	}
 
 	//
@@ -419,28 +382,9 @@ bool RenderManager::materialResourceSetTextureResource(uint64_t materialHandle, 
 	return true;
 }
 
-bool RenderManager::geometryResourceSetAttributesCount(uint64_t geometryHandle, uint32_t attributesCount)
+bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, VkFormat format, uint32_t stride, uint64_t sharedDataHandle, VkDeviceSize offset, VkDeviceSize range)
 {
-	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
-
-	if (geometryResource->finalized)
-	{
-		return false;
-	}
-
-	geometryResource->vertexBuffers.resize(attributesCount);
-	geometryResource->vertexBuffersOffsets.resize(attributesCount);
-	geometryResource->vertexBuffersRanges.resize(attributesCount);
-
-	geometryResource->vertexInputBindingDescriptions.resize(attributesCount);
-	geometryResource->vertexInputAttributeDescriptions.resize(attributesCount);
-
-	return true;
-}
-
-bool RenderManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, VkFormat format, uint32_t stride, uint64_t sharedDataHandle, VkDeviceSize offset, VkDeviceSize range)
-{
-	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
+	GeometryResource* geometryResource = getGeometry(geometryHandle);
 
 	if (geometryResource->finalized)
 	{
@@ -588,10 +532,12 @@ bool RenderManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint32
 
 	geometryResource->macros[prefix + "_LOC"] = std::to_string(geometryResource->attributeIndex);
 
+	geometryResource->vertexInputBindingDescriptions.resize(geometryResource->attributeIndex + 1);
 	geometryResource->vertexInputBindingDescriptions[geometryResource->attributeIndex].binding = geometryResource->attributeIndex;
 	geometryResource->vertexInputBindingDescriptions[geometryResource->attributeIndex].stride = stride;
 	geometryResource->vertexInputBindingDescriptions[geometryResource->attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
+	geometryResource->vertexInputAttributeDescriptions.resize(geometryResource->attributeIndex + 1);
 	geometryResource->vertexInputAttributeDescriptions[geometryResource->attributeIndex].binding = geometryResource->attributeIndex;
 	geometryResource->vertexInputAttributeDescriptions[geometryResource->attributeIndex].location = geometryResource->attributeIndex;
 	geometryResource->vertexInputAttributeDescriptions[geometryResource->attributeIndex].format = format;
@@ -599,8 +545,13 @@ bool RenderManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint32
 
 	//
 
+	geometryResource->vertexBuffers.resize(geometryResource->attributeIndex + 1);
 	geometryResource->vertexBuffers[geometryResource->attributeIndex] = getBuffer(sharedDataHandle);
+
+	geometryResource->vertexBuffersOffsets.resize(geometryResource->attributeIndex + 1);
 	geometryResource->vertexBuffersOffsets[geometryResource->attributeIndex] = offset;
+
+	geometryResource->vertexBuffersRanges.resize(geometryResource->attributeIndex + 1);
 	geometryResource->vertexBuffersRanges[geometryResource->attributeIndex] = range;
 
 	geometryResource->count = count;
@@ -612,16 +563,16 @@ bool RenderManager::geometryResourceSetAttribute(uint64_t geometryHandle, uint32
 	return true;
 }
 
-bool RenderManager::geometryModelResourceSetGeometryResource(uint64_t geometryModelHandle, uint64_t geometryHandle)
+bool RenderManager::geometryModelSetGeometry(uint64_t geometryModelHandle, uint64_t geometryHandle)
 {
-	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
 	if (geometryModelResource->finalized)
 	{
 		return false;
 	}
 
-	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
+	GeometryResource* geometryResource = getGeometry(geometryHandle);
 
 	if (!geometryResource->finalized)
 	{
@@ -635,16 +586,16 @@ bool RenderManager::geometryModelResourceSetGeometryResource(uint64_t geometryMo
 	return true;
 }
 
-bool RenderManager::geometryModelResourceSetMaterialResource(uint64_t geometryModelHandle, uint64_t materialHandle)
+bool RenderManager::geometryModelSetMaterial(uint64_t geometryModelHandle, uint64_t materialHandle)
 {
-	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
 	if (geometryModelResource->finalized)
 	{
 		return false;
 	}
 
-	MaterialResource* materialResource = getMaterialResource(materialHandle);
+	MaterialResource* materialResource = getMaterial(materialHandle);
 
 	if (!materialResource->finalized)
 	{
@@ -658,9 +609,9 @@ bool RenderManager::geometryModelResourceSetMaterialResource(uint64_t geometryMo
 	return true;
 }
 
-bool RenderManager::geometryModelResourceSetVertexCount(uint64_t geometryModelHandle, uint32_t verticesCount)
+bool RenderManager::geometryModelSetVertexCount(uint64_t geometryModelHandle, uint32_t verticesCount)
 {
-	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
 	if (geometryModelResource->finalized)
 	{
@@ -674,7 +625,7 @@ bool RenderManager::geometryModelResourceSetVertexCount(uint64_t geometryModelHa
 
 bool RenderManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint32_t indicesCount, VkIndexType indexType, uint64_t sharedDataHandle, uint32_t indexOffset, uint32_t indexRange, uint32_t componentTypeSize)
 {
-	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
 	if (geometryModelResource->finalized)
 	{
@@ -691,16 +642,16 @@ bool RenderManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle
 	return true;
 }
 
-bool RenderManager::geometryModelResourceSetTargetData(uint64_t geometryModelHandle, const std::string& targetName, uint64_t sharedDataHandle)
+bool RenderManager::geometryModelSetTarget(uint64_t geometryModelHandle, const std::string& targetName, uint64_t sharedDataHandle)
 {
-	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
 	if (geometryModelResource->finalized)
 	{
 		return false;
 	}
 
-	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
+	SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
 
 	if (!sharedDataResource->finalized)
 	{
@@ -727,9 +678,9 @@ bool RenderManager::geometryModelResourceSetTargetData(uint64_t geometryModelHan
 	return true;
 }
 
-bool RenderManager::groupResourceAddGeometryModelResource(uint64_t groupHandle, uint64_t geometryModelHandle)
+bool RenderManager::groupAddGeometryModel(uint64_t groupHandle, uint64_t geometryModelHandle)
 {
-	GroupResource* groupResource = getGroupResource(groupHandle);
+	GroupResource* groupResource = getGroup(groupHandle);
 
 	if (groupResource->finalized)
 	{
@@ -741,9 +692,9 @@ bool RenderManager::groupResourceAddGeometryModelResource(uint64_t groupHandle, 
 	return true;
 }
 
-bool RenderManager::instanceResourceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix)
+bool RenderManager::instanceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix)
 {
-	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
+	InstanceResource* instanceResource = getInstance(instanceHandle);
 
 	if (instanceResource->finalized)
 	{
@@ -755,9 +706,9 @@ bool RenderManager::instanceResourceSetWorldMatrix(uint64_t instanceHandle, cons
 	return true;
 }
 
-bool RenderManager::instanceResourceSetGroupResource(uint64_t instanceHandle, uint64_t groupHandle)
+bool RenderManager::instanceSetGroup(uint64_t instanceHandle, uint64_t groupHandle)
 {
-	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
+	InstanceResource* instanceResource = getInstance(instanceHandle);
 
 	if (instanceResource->finalized)
 	{
@@ -769,9 +720,9 @@ bool RenderManager::instanceResourceSetGroupResource(uint64_t instanceHandle, ui
 	return true;
 }
 
-bool RenderManager::lightResourceSetEnvironmentLight(uint64_t lightHandle, const std::string& environment)
+bool RenderManager::lightSetEnvironment(uint64_t lightHandle, const std::string& environment)
 {
-	LightResource* lightResource = getLightResource(lightHandle);
+	LightResource* lightResource = getLight(lightHandle);
 
 	if (lightResource->finalized)
 	{
@@ -783,9 +734,9 @@ bool RenderManager::lightResourceSetEnvironmentLight(uint64_t lightHandle, const
 	return true;
 }
 
-bool RenderManager::worldResourceAddInstanceResource(uint64_t instanceHandle)
+bool RenderManager::worldAddInstance(uint64_t instanceHandle)
 {
-	WorldResource* worldResource = getWorldResource();
+	WorldResource* worldResource = getWorld();
 
 	if (worldResource->finalized)
 	{
@@ -797,9 +748,9 @@ bool RenderManager::worldResourceAddInstanceResource(uint64_t instanceHandle)
 	return true;
 }
 
-bool RenderManager::worldResourceSetLightResource(uint64_t lightHandle)
+bool RenderManager::worldSetLight(uint64_t lightHandle)
 {
-	WorldResource* worldResource = getWorldResource();
+	WorldResource* worldResource = getWorld();
 
 	if (worldResource->finalized)
 	{
@@ -811,9 +762,9 @@ bool RenderManager::worldResourceSetLightResource(uint64_t lightHandle)
 	return true;
 }
 
-bool RenderManager::worldResourceSetCameraResource(uint64_t cameraHandle)
+bool RenderManager::worldSetCamera(uint64_t cameraHandle)
 {
-	WorldResource* worldResource = getWorldResource();
+	WorldResource* worldResource = getWorld();
 
 	if (worldResource->finalized)
 	{
@@ -825,9 +776,9 @@ bool RenderManager::worldResourceSetCameraResource(uint64_t cameraHandle)
 	return true;
 }
 
-bool RenderManager::sharedDataResourceFinalize(uint64_t sharedDataHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool RenderManager::sharedDataFinalize(uint64_t sharedDataHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
-	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
+	SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
 
 	if (sharedDataResource->finalized)
 	{
@@ -860,9 +811,9 @@ bool RenderManager::sharedDataResourceFinalize(uint64_t sharedDataHandle, VkPhys
 	return true;
 }
 
-bool RenderManager::textureResourceFinalize(uint64_t textureHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool RenderManager::textureFinalize(uint64_t textureHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
-	TextureDataResource* textureDataResource = getTextureResource(textureHandle);
+	TextureDataResource* textureDataResource = getTexture(textureHandle);
 
 	if (textureDataResource->finalized)
 	{
@@ -876,7 +827,7 @@ bool RenderManager::textureResourceFinalize(uint64_t textureHandle, VkPhysicalDe
 
 	//
 
-	WorldResource* worldResource = getWorldResource();
+	WorldResource* worldResource = getWorld();
 
 	VkDescriptorImageInfo descriptorImageInfo = {};
 
@@ -893,22 +844,60 @@ bool RenderManager::textureResourceFinalize(uint64_t textureHandle, VkPhysicalDe
 	return true;
 }
 
-bool RenderManager::materialResourceFinalize(uint64_t materialHandle, VkDevice device)
+bool RenderManager::materialFinalize(uint64_t materialHandle, VkPhysicalDevice physicalDevice, VkDevice device)
 {
-	MaterialResource* materialResource = getMaterialResource(materialHandle);
+	MaterialResource* materialResource = getMaterial(materialHandle);
 
 	if (materialResource->finalized)
 	{
 		return false;
 	}
 
+
 	//
 
-	WorldResource* worldResource = getWorldResource();
+	UniformBufferResourceCreateInfo uniformBufferResourceCreateInfo = {};
+
+	uniformBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(MaterialUniformBuffer);
+	uniformBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+
+	if (!VulkanResource::createUniformBufferResource(physicalDevice, device, materialResource->uniformBufferResource, uniformBufferResourceCreateInfo))
+	{
+		return false;
+	}
+
+	if (!VulkanResource::copyHostToDevice(device, materialResource->uniformBufferResource.bufferResource, &materialResource->materialUniformBuffer, sizeof(materialResource->materialUniformBuffer)))
+	{
+		return false;
+	}
+
+	//
+
+	VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+	descriptorSetLayoutBinding = {};
+	descriptorSetLayoutBinding.binding = materialResource->binding;
+	descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	descriptorSetLayoutBinding.descriptorCount = 1;
+	descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+	VkDescriptorBufferInfo descriptorBufferInfo = {};
+	descriptorBufferInfo.buffer = materialResource->uniformBufferResource.bufferResource.buffer;
+	descriptorBufferInfo.offset = 0;
+	descriptorBufferInfo.range = sizeof(MaterialUniformBuffer);
+	materialResource->descriptorBufferInfos.push_back(descriptorBufferInfo);
+
+	materialResource->macros["UNIFORMBUFFER_BINDING"] = std::to_string(materialResource->binding);
+
+	materialResource->binding++;
+
+	//
+
+	WorldResource* worldResource = getWorld();
 
 	if (worldResource->lightHandle > 0)
 	{
-		LightResource* lightResource = getLightResource(worldResource->lightHandle);
+		LightResource* lightResource = getLight(worldResource->lightHandle);
 
 		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
 		descriptorSetLayoutBinding.binding = materialResource->binding;
@@ -1079,9 +1068,9 @@ bool RenderManager::materialResourceFinalize(uint64_t materialHandle, VkDevice d
 	return true;
 }
 
-bool RenderManager::geometryResourceFinalize(uint64_t geometryHandle)
+bool RenderManager::geometryFinalize(uint64_t geometryHandle)
 {
-	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
+	GeometryResource* geometryResource = getGeometry(geometryHandle);
 
 	if (geometryResource->finalized)
 	{
@@ -1093,9 +1082,9 @@ bool RenderManager::geometryResourceFinalize(uint64_t geometryHandle)
 	return true;
 }
 
-bool RenderManager::geometryModelResourceFinalize(uint64_t geometryModelHandle, uint32_t width, uint32_t height, VkRenderPass renderPass, VkCullModeFlags cullMode, VkSampleCountFlagBits samples, bool useRaytrace, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle, uint32_t width, uint32_t height, VkRenderPass renderPass, VkCullModeFlags cullMode, VkSampleCountFlagBits samples, bool useRaytrace, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
-	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
 	if (geometryModelResource->finalized)
 	{
@@ -1163,7 +1152,7 @@ bool RenderManager::geometryModelResourceFinalize(uint64_t geometryModelHandle, 
 	//
 	//
 
-	GeometryResource* geometryResource = getGeometryResource(geometryModelResource->geometryHandle);
+	GeometryResource* geometryResource = getGeometry(geometryModelResource->geometryHandle);
 
 	if (!geometryResource->finalized)
 	{
@@ -1252,7 +1241,7 @@ bool RenderManager::geometryModelResourceFinalize(uint64_t geometryModelHandle, 
 
 	if (geometryModelResource->materialHandle > 0)
 	{
-		MaterialResource* materialResource = getMaterialResource(geometryModelResource->materialHandle);
+		MaterialResource* materialResource = getMaterial(geometryModelResource->materialHandle);
 
 		if (!geometryResource->finalized)
 		{
@@ -1364,9 +1353,9 @@ bool RenderManager::geometryModelResourceFinalize(uint64_t geometryModelHandle, 
 	return true;
 }
 
-bool RenderManager::groupResourceFinalize(uint64_t groupHandle)
+bool RenderManager::groupFinalize(uint64_t groupHandle)
 {
-	GroupResource* groupResource = getGroupResource(groupHandle);
+	GroupResource* groupResource = getGroup(groupHandle);
 
 	if (groupResource->finalized)
 	{
@@ -1378,9 +1367,9 @@ bool RenderManager::groupResourceFinalize(uint64_t groupHandle)
 	return true;
 }
 
-bool RenderManager::instanceResourceFinalize(uint64_t instanceHandle)
+bool RenderManager::instanceFinalize(uint64_t instanceHandle)
 {
-	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
+	InstanceResource* instanceResource = getInstance(instanceHandle);
 
 	if (instanceResource->finalized)
 	{
@@ -1392,9 +1381,9 @@ bool RenderManager::instanceResourceFinalize(uint64_t instanceHandle)
 	return true;
 }
 
-bool RenderManager::lightResourceFinalize(uint64_t lightHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool RenderManager::lightFinalize(uint64_t lightHandle, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
-	LightResource* lightResource = getLightResource(lightHandle);
+	LightResource* lightResource = getLight(lightHandle);
 
 	if (lightResource->finalized)
 	{
@@ -1463,9 +1452,9 @@ bool RenderManager::lightResourceFinalize(uint64_t lightHandle, VkPhysicalDevice
 	return true;
 }
 
-bool RenderManager::cameraResourceFinalize(uint64_t cameraHandle)
+bool RenderManager::cameraFinalize(uint64_t cameraHandle)
 {
-	CameraResource* cameraResource = getCameraResource(cameraHandle);
+	CameraResource* cameraResource = getCamera(cameraHandle);
 
 	if (cameraResource->finalized)
 	{
@@ -1477,9 +1466,9 @@ bool RenderManager::cameraResourceFinalize(uint64_t cameraHandle)
 	return true;
 }
 
-bool RenderManager::worldResourceFinalize(VkImageView imageView, bool useRaytrace, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
+bool RenderManager::worldFinalize(VkImageView imageView, bool useRaytrace, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool)
 {
-	WorldResource* worldResource = getWorldResource();
+	WorldResource* worldResource = getWorld();
 
 	if (worldResource->finalized)
 	{
@@ -1505,11 +1494,11 @@ bool RenderManager::worldResourceFinalize(VkImageView imageView, bool useRaytrac
 
 		for (auto it : instanceResources)
 		{
-			InstanceResource* instanceResource = getInstanceResource(it.first);
+			InstanceResource* instanceResource = getInstance(it.first);
 
 			if (instanceResource->groupHandle > 0)
 			{
-				GroupResource* groupResource = getGroupResource(instanceResource->groupHandle);
+				GroupResource* groupResource = getGroup(instanceResource->groupHandle);
 
 				VkAccelerationStructureDeviceAddressInfoKHR accelerationStructureDeviceAddressInfo = {};
 				accelerationStructureDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
@@ -1522,11 +1511,11 @@ bool RenderManager::worldResourceFinalize(VkImageView imageView, bool useRaytrac
 
 				for (uint64_t geometryModelHandle : groupResource->geometryModelHandles)
 				{
-					GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+					GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
-					GeometryResource* geometryResource = getGeometryResource(geometryModelResource->geometryHandle);
+					GeometryResource* geometryResource = getGeometry(geometryModelResource->geometryHandle);
 
-					MaterialResource* materialResource = getMaterialResource(geometryModelResource->materialHandle);
+					MaterialResource* materialResource = getMaterial(geometryModelResource->materialHandle);
 
 					//
 
@@ -1968,7 +1957,7 @@ bool RenderManager::worldResourceFinalize(VkImageView imageView, bool useRaytrac
 		descriptorBufferInfo2.offset = 0;
 		descriptorBufferInfo2.range = sizeof(RaytracePrimitiveUniformBuffer) * worldResource->instanceResources.size();
 
-		LightResource* lightResource = getLightResource(worldResource->lightHandle);
+		LightResource* lightResource = getLight(worldResource->lightHandle);
 
 		VkDescriptorImageInfo descriptorImageInfoDiffuse = {};
 		descriptorImageInfoDiffuse.sampler = lightResource->diffuse.samplerResource.sampler;
@@ -2338,7 +2327,7 @@ bool RenderManager::worldResourceFinalize(VkImageView imageView, bool useRaytrac
 
 	for (uint64_t instanceHandle : worldResource->instanceHandles)
 	{
-		InstanceResource* instanceResource = getInstanceResource(instanceHandle);
+		InstanceResource* instanceResource = getInstance(instanceHandle);
 
 		if (!instanceResource->finalized)
 		{
@@ -2347,7 +2336,7 @@ bool RenderManager::worldResourceFinalize(VkImageView imageView, bool useRaytrac
 
 		//
 
-		GroupResource* groupResource = getGroupResource(instanceResource->groupHandle);
+		GroupResource* groupResource = getGroup(instanceResource->groupHandle);
 
 		if (!groupResource->finalized)
 		{
@@ -2356,7 +2345,7 @@ bool RenderManager::worldResourceFinalize(VkImageView imageView, bool useRaytrac
 
 		for (uint64_t geometryModelHandle : groupResource->geometryModelHandles)
 		{
-			GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+			GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
 			if (!geometryModelResource->finalized)
 			{
@@ -2365,14 +2354,14 @@ bool RenderManager::worldResourceFinalize(VkImageView imageView, bool useRaytrac
 
 			//
 
-			GeometryResource* geometryResource = getGeometryResource(geometryModelResource->geometryHandle);
+			GeometryResource* geometryResource = getGeometry(geometryModelResource->geometryHandle);
 
 			if (!geometryResource->finalized)
 			{
 				return false;
 			}
 
-			MaterialResource* materialResource = getMaterialResource(geometryModelResource->materialHandle);
+			MaterialResource* materialResource = getMaterial(geometryModelResource->materialHandle);
 
 			if (!materialResource->finalized)
 			{
@@ -2388,9 +2377,9 @@ bool RenderManager::worldResourceFinalize(VkImageView imageView, bool useRaytrac
 	return true;
 }
 
-bool RenderManager::worldResourceGetCameraResource(uint64_t& cameraHandle)
+bool RenderManager::worldGetCamera(uint64_t& cameraHandle)
 {
-	WorldResource* worldResource = getWorldResource();
+	WorldResource* worldResource = getWorld();
 
 	if (worldResource->cameraHandle > 0)
 	{
@@ -2402,9 +2391,9 @@ bool RenderManager::worldResourceGetCameraResource(uint64_t& cameraHandle)
 	return false;
 }
 
-bool RenderManager::instanceResourceUpdateWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix)
+bool RenderManager::instanceUpdateWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix)
 {
-	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
+	InstanceResource* instanceResource = getInstance(instanceHandle);
 
 	if (!instanceResource->finalized)
 	{
@@ -2416,9 +2405,9 @@ bool RenderManager::instanceResourceUpdateWorldMatrix(uint64_t instanceHandle, c
 	return true;
 }
 
-bool RenderManager::cameraResourceUpdateProjectionMatrix(uint64_t cameraHandle, const glm::mat4& projectionMatrix)
+bool RenderManager::cameraUpdateProjectionMatrix(uint64_t cameraHandle, const glm::mat4& projectionMatrix)
 {
-	CameraResource* cameraResource = getCameraResource(cameraHandle);
+	CameraResource* cameraResource = getCamera(cameraHandle);
 
 	if (!cameraResource->finalized)
 	{
@@ -2427,7 +2416,7 @@ bool RenderManager::cameraResourceUpdateProjectionMatrix(uint64_t cameraHandle, 
 
 	cameraResource->projection = projectionMatrix;
 
-	WorldResource* worldResource = getWorldResource();
+	WorldResource* worldResource = getWorld();
 
 	worldResource->viewProjection.projection = projectionMatrix;
 	worldResource->raytrace.inverseViewProjection.inverseProjection = glm::inverse(projectionMatrix);
@@ -2435,9 +2424,9 @@ bool RenderManager::cameraResourceUpdateProjectionMatrix(uint64_t cameraHandle, 
 	return true;
 }
 
-bool RenderManager::cameraResourceUpdateViewMatrix(uint64_t cameraHandle, const glm::mat4& viewMatrix)
+bool RenderManager::cameraUpdateViewMatrix(uint64_t cameraHandle, const glm::mat4& viewMatrix)
 {
-	CameraResource* cameraResource = getCameraResource(cameraHandle);
+	CameraResource* cameraResource = getCamera(cameraHandle);
 
 	if (!cameraResource->finalized)
 	{
@@ -2446,7 +2435,7 @@ bool RenderManager::cameraResourceUpdateViewMatrix(uint64_t cameraHandle, const 
 
 	cameraResource->view = viewMatrix;
 
-	WorldResource* worldResource = getWorldResource();
+	WorldResource* worldResource = getWorld();
 
 	worldResource->viewProjection.view = viewMatrix;
 	worldResource->raytrace.inverseViewProjection.inverseView = glm::inverse(viewMatrix);
@@ -2454,9 +2443,9 @@ bool RenderManager::cameraResourceUpdateViewMatrix(uint64_t cameraHandle, const 
 	return true;
 }
 
-bool RenderManager::worldResourceUpdateSettings(uint32_t maxDepth, uint32_t specularSamples, uint32_t diffuseSamples)
+bool RenderManager::worldUpdateRenderSettings(uint32_t maxDepth, uint32_t specularSamples, uint32_t diffuseSamples)
 {
-	WorldResource* worldResource = getWorldResource();
+	WorldResource* worldResource = getWorld();
 
 	if (!worldResource->finalized)
 	{
@@ -2470,9 +2459,9 @@ bool RenderManager::worldResourceUpdateSettings(uint32_t maxDepth, uint32_t spec
 	return true;
 }
 
-bool RenderManager::sharedDataResourceDelete(uint64_t sharedDataHandle, VkDevice device)
+bool RenderManager::sharedDataDelete(uint64_t sharedDataHandle, VkDevice device)
 {
-	SharedDataResource* sharedDataResource = getSharedDataResource(sharedDataHandle);
+	SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
 
 	terminate(*sharedDataResource, device);
 	sharedDataResources.erase(sharedDataHandle);
@@ -2480,9 +2469,9 @@ bool RenderManager::sharedDataResourceDelete(uint64_t sharedDataHandle, VkDevice
 	return true;
 }
 
-bool RenderManager::textureResourceDelete(uint64_t textureHandle, VkDevice device)
+bool RenderManager::textureDelete(uint64_t textureHandle, VkDevice device)
 {
-	TextureDataResource* textureResource = getTextureResource(textureHandle);
+	TextureDataResource* textureResource = getTexture(textureHandle);
 
 	terminate(*textureResource, device);
 	textureResources.erase(textureHandle);
@@ -2490,9 +2479,9 @@ bool RenderManager::textureResourceDelete(uint64_t textureHandle, VkDevice devic
 	return true;
 }
 
-bool RenderManager::materialResourceDelete(uint64_t materialHandle, VkDevice device)
+bool RenderManager::materialDelete(uint64_t materialHandle, VkDevice device)
 {
-	MaterialResource* materialResource = getMaterialResource(materialHandle);
+	MaterialResource* materialResource = getMaterial(materialHandle);
 
 	terminate(*materialResource, device);
 	materialResources.erase(materialHandle);
@@ -2500,9 +2489,9 @@ bool RenderManager::materialResourceDelete(uint64_t materialHandle, VkDevice dev
 	return true;
 }
 
-bool RenderManager::geometryResourceDelete(uint64_t geometryHandle, VkDevice device)
+bool RenderManager::geometryDelete(uint64_t geometryHandle, VkDevice device)
 {
-	GeometryResource* geometryResource = getGeometryResource(geometryHandle);
+	GeometryResource* geometryResource = getGeometry(geometryHandle);
 
 	terminate(*geometryResource, device);
 	geometryResources.erase(geometryHandle);
@@ -2510,9 +2499,9 @@ bool RenderManager::geometryResourceDelete(uint64_t geometryHandle, VkDevice dev
 	return true;
 }
 
-bool RenderManager::geometryModelResourceDelete(uint64_t geometryModelHandle, VkDevice device)
+bool RenderManager::geometryModelDelete(uint64_t geometryModelHandle, VkDevice device)
 {
-	GeometryModelResource* geometryModelResource = getGeometryModelResource(geometryModelHandle);
+	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
 	terminate(*geometryModelResource, device);
 	geometryModelResources.erase(geometryModelHandle);
@@ -2520,9 +2509,9 @@ bool RenderManager::geometryModelResourceDelete(uint64_t geometryModelHandle, Vk
 	return true;
 }
 
-bool RenderManager::groupResourceDelete(uint64_t groupHandle, VkDevice device)
+bool RenderManager::groupDelete(uint64_t groupHandle, VkDevice device)
 {
-	GroupResource* groupResource = getGroupResource(groupHandle);
+	GroupResource* groupResource = getGroup(groupHandle);
 
 	terminate(*groupResource, device);
 	groupResources.erase(groupHandle);
@@ -2530,9 +2519,9 @@ bool RenderManager::groupResourceDelete(uint64_t groupHandle, VkDevice device)
 	return true;
 }
 
-bool RenderManager::instanceResourceDelete(uint64_t instanceHandle, VkDevice device)
+bool RenderManager::instanceDelete(uint64_t instanceHandle, VkDevice device)
 {
-	InstanceResource* instanceResource = getInstanceResource(instanceHandle);
+	InstanceResource* instanceResource = getInstance(instanceHandle);
 
 	terminate(*instanceResource, device);
 	instanceResources.erase(instanceHandle);
@@ -2540,9 +2529,9 @@ bool RenderManager::instanceResourceDelete(uint64_t instanceHandle, VkDevice dev
 	return true;
 }
 
-bool RenderManager::lightResourceDelete(uint64_t lightHandle, VkDevice device)
+bool RenderManager::lightDelete(uint64_t lightHandle, VkDevice device)
 {
-	LightResource* lightResource = getLightResource(lightHandle);
+	LightResource* lightResource = getLight(lightHandle);
 
 	terminate(*lightResource, device);
 	lightResources.erase(lightHandle);
@@ -2550,9 +2539,9 @@ bool RenderManager::lightResourceDelete(uint64_t lightHandle, VkDevice device)
 	return true;
 }
 
-bool RenderManager::cameraResourceDelete(uint64_t cameraHandle, VkDevice device)
+bool RenderManager::cameraDelete(uint64_t cameraHandle, VkDevice device)
 {
-	CameraResource* cameraResource = getCameraResource(cameraHandle);
+	CameraResource* cameraResource = getCamera(cameraHandle);
 
 	terminate(*cameraResource, device);
 	cameraResources.erase(cameraHandle);
@@ -2560,9 +2549,9 @@ bool RenderManager::cameraResourceDelete(uint64_t cameraHandle, VkDevice device)
 	return true;
 }
 
-bool RenderManager::worldResourceDelete(VkDevice device)
+bool RenderManager::worldDelete(VkDevice device)
 {
-	WorldResource* worldResource = getWorldResource();
+	WorldResource* worldResource = getWorld();
 
 	terminate(*worldResource, device);
 
@@ -2630,21 +2619,21 @@ void RenderManager::terminate(VkDevice device)
 
 void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
 {
-	WorldResource* worldResource = getWorldResource();
+	WorldResource* worldResource = getWorld();
 
 	for (size_t i = 0; i < worldResource->instanceHandles.size(); i++)
 	{
-		InstanceResource* instanceResource = getInstanceResource(worldResource->instanceHandles[i]);
+		InstanceResource* instanceResource = getInstance(worldResource->instanceHandles[i]);
 
-		GroupResource* groupResource = getGroupResource(instanceResource->groupHandle);
+		GroupResource* groupResource = getGroup(instanceResource->groupHandle);
 
 		for (size_t k = 0; k < groupResource->geometryModelHandles.size(); k++)
 		{
-			GeometryModelResource* geometryModelResource = getGeometryModelResource(groupResource->geometryModelHandles[k]);
+			GeometryModelResource* geometryModelResource = getGeometryModel(groupResource->geometryModelHandles[k]);
 
-			GeometryResource* geometryResource = getGeometryResource(geometryModelResource->geometryHandle);
+			GeometryResource* geometryResource = getGeometry(geometryModelResource->geometryHandle);
 
-			MaterialResource* materialResource = getMaterialResource(geometryModelResource->materialHandle);
+			MaterialResource* materialResource = getMaterial(geometryModelResource->materialHandle);
 
 			//
 
@@ -2690,7 +2679,7 @@ void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex
 
 void RenderManager::raytrace(VkCommandBuffer commandBuffer, uint32_t frameIndex, uint32_t width, uint32_t height)
 {
-	WorldResource* worldResource = getWorldResource();
+	WorldResource* worldResource = getWorld();
 
 	vkCmdPushConstants(commandBuffer, worldResource->raytracePipelineLayout, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, 0, sizeof(worldResource->raytrace), &worldResource->raytrace);
 
