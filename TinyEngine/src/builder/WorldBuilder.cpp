@@ -504,7 +504,7 @@ bool WorldBuilder::buildScene(const GLTF& glTF, bool useRaytrace)
 		}
 
 		// TODO: Resolve
-		if (!finalizeWorld(glTF, physicalDevice, device, queue, commandPool, imageView, useRaytrace))
+		if (!finalizeWorld(physicalDevice, device, queue, commandPool, imageView, useRaytrace))
 		{
 			return false;
 		}
@@ -661,7 +661,7 @@ bool WorldBuilder::createSharedDataResource(VkDeviceSize size, const void* data,
 	return true;
 }
 
-bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
+bool WorldBuilder::finalizeWorld(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImageView imageView, bool useRaytrace)
 {
 	WorldResource* worldResource = resourceManager.getWorldResource();
 
@@ -889,7 +889,7 @@ bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevi
 		}
 
 		storageBufferResourceCreateInfo = {};
-		storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(RaytraceMaterialUniformBuffer) * glTF.materials.size();
+		storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(RaytraceMaterialUniformBuffer) * materialHandles.size();
 		storageBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 		storageBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 		storageBufferResourceCreateInfo.data = materialBuffers.data();
@@ -904,9 +904,9 @@ bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevi
 		//
 
 		std::vector<VkDescriptorImageInfo> descriptorImageInfoTextures;
-		for (const Texture& currentTexture : glTF.textures)
+		for (uint64_t textureHandle : textureHandles)
 		{
-			TextureDataResource* currentTextureResource = resourceManager.getTextureResource((uint64_t)&currentTexture);
+			TextureDataResource* currentTextureResource = resourceManager.getTextureResource(textureHandle);
 
 			VkDescriptorImageInfo descriptorImageInfo = {};
 
@@ -1181,7 +1181,7 @@ bool WorldBuilder::finalizeWorld(const GLTF& glTF, VkPhysicalDevice physicalDevi
 		VkDescriptorBufferInfo descriptorBufferInfo = {};
 		descriptorBufferInfo.buffer = worldResource->materialStorageBufferResource.bufferResource.buffer;
 		descriptorBufferInfo.offset = 0;
-		descriptorBufferInfo.range = sizeof(RaytraceMaterialUniformBuffer) * glTF.materials.size();
+		descriptorBufferInfo.range = sizeof(RaytraceMaterialUniformBuffer) * materialHandles.size();
 
 		VkDescriptorBufferInfo descriptorBufferInfo2 = {};
 		descriptorBufferInfo2.buffer = worldResource->instanceResourcesStorageBufferResource.bufferResource.buffer;
