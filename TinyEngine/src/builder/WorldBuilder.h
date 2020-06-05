@@ -13,7 +13,7 @@ class WorldBuilder {
 
 private:
 
-	RenderManager& resourceManager;
+	RenderManager& renderManager;
 
 	uint32_t width;
 	uint32_t height;
