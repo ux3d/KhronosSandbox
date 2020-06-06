@@ -2459,6 +2459,11 @@ bool RenderManager::worldFinalize()
 			return false;
 		}
 
+		if (instanceResource->groupHandle == 0)
+		{
+			continue;
+		}
+
 		//
 
 		GroupResource* groupResource = getGroup(instanceResource->groupHandle);
@@ -2750,6 +2755,11 @@ void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex
 	for (size_t i = 0; i < worldResource->instanceHandles.size(); i++)
 	{
 		InstanceResource* instanceResource = getInstance(worldResource->instanceHandles[i]);
+
+		if (instanceResource->groupHandle == 0)
+		{
+			continue;
+		}
 
 		GroupResource* groupResource = getGroup(instanceResource->groupHandle);
 

@@ -500,8 +500,9 @@ bool WorldBuilder::buildNodes(const GLTF& glTF)
 		{
 			renderManager.instanceSetWorldMatrix(nodeHandles[i], node.worldMatrix);
 			renderManager.instanceSetGroup(nodeHandles[i], meshHandles[node.mesh]);
-			renderManager.instanceFinalize(nodeHandles[i]);
 		}
+
+		renderManager.instanceFinalize(nodeHandles[i]);
 	}
 
 	return true;
@@ -511,9 +512,9 @@ bool WorldBuilder::buildScene(const GLTF& glTF)
 {
 	if (glTF.defaultScene < glTF.scenes.size())
 	{
-		for (size_t i = 0; i < glTF.scenes[glTF.defaultScene].nodes.size(); i++)
+		for (uint64_t nodeHandle : nodeHandles)
 		{
-			renderManager.worldAddInstance(nodeHandles[glTF.scenes[glTF.defaultScene].nodes[i]]);
+			renderManager.worldAddInstance(nodeHandle);
 		}
 
 		if (!renderManager.worldFinalize())
