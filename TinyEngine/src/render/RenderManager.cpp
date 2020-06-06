@@ -724,11 +724,25 @@ bool RenderManager::geometryModelSetVertexCount(uint64_t geometryModelHandle, ui
 	return true;
 }
 
-bool RenderManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint32_t indicesCount, VkIndexType indexType, uint64_t sharedDataHandle, uint32_t indexOffset, uint32_t indexRange, uint32_t componentTypeSize)
+bool RenderManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint64_t sharedDataHandle, uint32_t indicesCount, VkIndexType indexType, uint32_t indexOffset, uint32_t indexRange)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
 	if (geometryModelResource->finalized)
+	{
+		return false;
+	}
+
+	uint32_t componentTypeSize = 1;
+	if (indexType == VK_INDEX_TYPE_UINT16)
+	{
+		componentTypeSize = 2;
+	}
+	else if (indexType == VK_INDEX_TYPE_UINT32)
+	{
+		componentTypeSize = 4;
+	}
+	else
 	{
 		return false;
 	}
@@ -743,7 +757,7 @@ bool RenderManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle
 	return true;
 }
 
-bool RenderManager::geometryModelSetTarget(uint64_t geometryModelHandle, const std::string& targetName, uint64_t sharedDataHandle)
+bool RenderManager::geometryModelSetTarget(uint64_t geometryModelHandle, uint64_t sharedDataHandle, const std::string& targetName)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 

@@ -119,8 +119,8 @@ public:
 	bool geometryModelSetGeometry(uint64_t geometryModelHandle, uint64_t geometryHandle);
 	bool geometryModelSetMaterial(uint64_t geometryModelHandle, uint64_t materialHandle);
 	bool geometryModelSetVertexCount(uint64_t geometryModelHandle, uint32_t verticesCount);
-	bool geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint32_t indicesCount, VkIndexType indexType, uint64_t sharedDataHandle, uint32_t indexOffset, uint32_t indexRange, uint32_t componentTypeSize);
-	bool geometryModelSetTarget(uint64_t geometryModelHandle, const std::string& targetName, uint64_t sharedDataHandle);
+	bool geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint64_t sharedDataHandle, uint32_t indicesCount, VkIndexType indexType, uint32_t indexOffset, uint32_t indexRange);
+	bool geometryModelSetTarget(uint64_t geometryModelHandle, uint64_t sharedDataHandle, const std::string& targetName);
 	bool geometryModelSetCullMode(uint64_t geometryModelHandle, VkCullModeFlags cullMode);
 
 	bool groupAddGeometryModel(uint64_t groupHandle, uint64_t geometryModelHandle);

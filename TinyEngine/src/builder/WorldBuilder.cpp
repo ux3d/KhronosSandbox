@@ -394,7 +394,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 
 					uint64_t sharedDataHandle = (uint64_t)primitive.targetPositionData.data();
 
-					if (!renderManager.geometryModelSetTarget(geometryModelHandle, "POSITION", sharedDataHandle))
+					if (!renderManager.geometryModelSetTarget(geometryModelHandle, sharedDataHandle, "POSITION"))
 					{
 						return false;
 					}
@@ -413,7 +413,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 
 					uint64_t sharedDataHandle = (uint64_t)primitive.targetNormalData.data();
 
-					if (!renderManager.geometryModelSetTarget(geometryModelHandle, "NORMAL", sharedDataHandle))
+					if (!renderManager.geometryModelSetTarget(geometryModelHandle, sharedDataHandle, "NORMAL"))
 					{
 						return false;
 					}
@@ -432,7 +432,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 
 					uint64_t sharedDataHandle = (uint64_t)primitive.targetTangentData.data();
 
-					if (!renderManager.geometryModelSetTarget(geometryModelHandle, "TANGENT", sharedDataHandle))
+					if (!renderManager.geometryModelSetTarget(geometryModelHandle, sharedDataHandle, "TANGENT"))
 					{
 						return false;
 					}
@@ -454,7 +454,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 					indexType = VK_INDEX_TYPE_UINT32;
 				}
 
-				if (!renderManager.geometryModelResourceSetIndices(geometryModelHandle, glTF.accessors[primitive.indices].count, indexType, getBufferHandle(glTF.accessors[primitive.indices]), HelperAccess::getOffset(glTF.accessors[primitive.indices]), HelperAccess::getRange(glTF.accessors[primitive.indices]), glTF.accessors[primitive.indices].componentTypeSize))
+				if (!renderManager.geometryModelResourceSetIndices(geometryModelHandle, getBufferHandle(glTF.accessors[primitive.indices]), glTF.accessors[primitive.indices].count, indexType, HelperAccess::getOffset(glTF.accessors[primitive.indices]), HelperAccess::getRange(glTF.accessors[primitive.indices])))
 				{
 					return false;
 				}
