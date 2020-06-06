@@ -383,12 +383,16 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 			{
 				if (primitive.targetPositionData.size() > 0)
 				{
-					uint64_t sharedDataHandle = (uint64_t)primitive.targetPositionData.data();
+					uint64_t targetHandle = (uint64_t)primitive.targetPositionData.data();
 
-					if (!createSharedDataResource(sizeof(glm::vec3) * primitive.targetPositionData.size(), primitive.targetPositionData.data()))
+					renderManager.sharedDataCreateStorageBuffer(targetHandle, sizeof(glm::vec3) * primitive.targetPositionData.size(), primitive.targetPositionData.data());
+
+					if (!renderManager.sharedDataFinalize(targetHandle))
 					{
 						return false;
 					}
+
+					uint64_t sharedDataHandle = (uint64_t)primitive.targetPositionData.data();
 
 					if (!renderManager.geometryModelSetTarget(geometryModelHandle, "POSITION", sharedDataHandle))
 					{
@@ -398,12 +402,16 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 
 				if (primitive.targetNormalData.size() > 0)
 				{
-					uint64_t sharedDataHandle = (uint64_t)primitive.targetNormalData.data();
+					uint64_t targetHandle = (uint64_t)primitive.targetNormalData.data();
 
-					if (!createSharedDataResource(sizeof(glm::vec3) * primitive.targetNormalData.size(), primitive.targetNormalData.data()))
+					renderManager.sharedDataCreateStorageBuffer(targetHandle, sizeof(glm::vec3) * primitive.targetNormalData.size(), primitive.targetNormalData.data());
+
+					if (!renderManager.sharedDataFinalize(targetHandle))
 					{
 						return false;
 					}
+
+					uint64_t sharedDataHandle = (uint64_t)primitive.targetNormalData.data();
 
 					if (!renderManager.geometryModelSetTarget(geometryModelHandle, "NORMAL", sharedDataHandle))
 					{
@@ -413,12 +421,16 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 
 				if (primitive.targetTangentData.size() > 0)
 				{
-					uint64_t sharedDataHandle = (uint64_t)primitive.targetTangentData.data();
+					uint64_t targetHandle = (uint64_t)primitive.targetTangentData.data();
 
-					if (!createSharedDataResource(sizeof(glm::vec3) * primitive.targetTangentData.size(), primitive.targetTangentData.data()))
+					renderManager.sharedDataCreateStorageBuffer(targetHandle, sizeof(glm::vec3) * primitive.targetTangentData.size(), primitive.targetTangentData.data());
+
+					if (!renderManager.sharedDataFinalize(targetHandle))
 					{
 						return false;
 					}
+
+					uint64_t sharedDataHandle = (uint64_t)primitive.targetTangentData.data();
 
 					if (!renderManager.geometryModelSetTarget(geometryModelHandle, "TANGENT", sharedDataHandle))
 					{
@@ -614,26 +626,14 @@ bool WorldBuilder::createSharedDataResource(const BufferView& bufferView)
 {
 	uint64_t sharedDataHandle = (uint64_t)&bufferView;
 
-	VkBufferUsageFlags usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	if (bufferView.target == 34963) // ELEMENT_ARRAY_BUFFER
 	{
-		usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+		renderManager.sharedDataCreateIndexBuffer(sharedDataHandle, bufferView.byteLength, HelperAccess::accessData(bufferView));
 	}
-	renderManager.sharedDataSetData(sharedDataHandle, bufferView.byteLength, HelperAccess::accessData(bufferView), usage);
-
-	if (!renderManager.sharedDataFinalize(sharedDataHandle))
+	else
 	{
-		return false;
+		renderManager.sharedDataCreateVertexBuffer(sharedDataHandle, bufferView.byteLength, HelperAccess::accessData(bufferView));
 	}
-
-	return true;
-}
-
-bool WorldBuilder::createSharedDataResource(VkDeviceSize size, const void* data)
-{
-	uint64_t sharedDataHandle = (uint64_t)data;
-
-	renderManager.sharedDataSetData(sharedDataHandle, size, data, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
 	if (!renderManager.sharedDataFinalize(sharedDataHandle))
 	{

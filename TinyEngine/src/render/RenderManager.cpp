@@ -375,6 +375,21 @@ bool RenderManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize si
 	return true;
 }
 
+bool RenderManager::sharedDataCreateVertexBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data)
+{
+	return sharedDataSetData(sharedDataHandle, size, data, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+}
+
+bool RenderManager::sharedDataCreateIndexBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data)
+{
+	return sharedDataSetData(sharedDataHandle, size, data, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+}
+
+bool RenderManager::sharedDataCreateStorageBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data)
+{
+	return sharedDataSetData(sharedDataHandle, size, data, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+}
+
 bool RenderManager::textureSetParameters(uint64_t textureHandle, const TextureResourceCreateInfo& textureResourceCreateInfo)
 {
 	TextureDataResource* textureDataResource = getTexture(textureHandle);

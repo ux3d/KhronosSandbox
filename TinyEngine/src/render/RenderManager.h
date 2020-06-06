@@ -82,6 +82,8 @@ private:
 
 	VkBuffer getBuffer(uint64_t sharedDataHandle);
 
+	bool sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage);
+
 public:
 
 	RenderManager();
@@ -103,7 +105,9 @@ public:
 
 	// One time setup before finalization.
 
-	bool sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage);
+	bool sharedDataCreateVertexBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data);
+	bool sharedDataCreateIndexBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data);
+	bool sharedDataCreateStorageBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data);
 
 	bool textureSetParameters(uint64_t textureHandle, const TextureResourceCreateInfo& textureResourceCreateInfo);
 

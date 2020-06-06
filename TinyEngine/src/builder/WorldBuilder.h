@@ -38,7 +38,6 @@ private:
 	uint64_t getBufferHandle(const Accessor& accessor);
 
 	bool createSharedDataResource(const BufferView& bufferView);
-	bool createSharedDataResource(VkDeviceSize size, const void* data);
 
 public:
 
