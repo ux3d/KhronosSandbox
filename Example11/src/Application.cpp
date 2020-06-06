@@ -3,7 +3,7 @@
 // Private
 
 struct VertexData {
-	glm::vec4 position;
+	glm::vec3 position;
 };
 
 struct UniformData {
@@ -38,9 +38,9 @@ bool Application::applicationInit()
 	//
 
 	std::vector<VertexData> vertexData = {
-		{glm::vec4( 0.0f, -0.5f, 0.0f, 1.0f)},
-		{glm::vec4( 0.5f,  0.5f, 0.0f, 1.0f)},
-		{glm::vec4(-0.5f,  0.5f, 0.0f, 1.0f)}
+		{glm::vec3( 0.0f, -0.5f, 0.0f)},
+		{glm::vec3( 0.5f,  0.5f, 0.0f)},
+		{glm::vec3(-0.5f,  0.5f, 0.0f)}
 	};
 
 	VertexBufferResourceCreateInfo vertexBufferResourceCreateInfo = {};
@@ -72,7 +72,7 @@ bool Application::applicationInit()
 	bottomLevelResourceCreateInfo.indexType = VK_INDEX_TYPE_UINT16;
 	bottomLevelResourceCreateInfo.vertexIndexBufferAddress = vertexIndexBufferAddress;
 	bottomLevelResourceCreateInfo.vertexCount = 3;
-	bottomLevelResourceCreateInfo.vertexFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+	bottomLevelResourceCreateInfo.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
 	bottomLevelResourceCreateInfo.vertexBufferAddress = vertexBufferAddress;
 	bottomLevelResourceCreateInfo.vertexStride = sizeof(VertexData);;
 	bottomLevelResourceCreateInfo.primitiveCount = 1;
@@ -443,8 +443,10 @@ bool Application::applicationInit()
 	// Build up shader binding table.
 	//
 
+	VkDeviceSize alignedSize = glm::max(physicalDeviceRayTracingProperties.shaderGroupHandleSize, physicalDeviceRayTracingProperties.shaderGroupBaseAlignment);
+
 	bufferResourceCreateInfo = {};
-	bufferResourceCreateInfo.size = physicalDeviceRayTracingProperties.shaderGroupHandleSize * rayTracingShaderGroupCreateInfos.size();
+	bufferResourceCreateInfo.size = alignedSize * rayTracingShaderGroupCreateInfos.size();
 	bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_RAY_TRACING_BIT_KHR;
 	bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
@@ -453,7 +455,7 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	std::vector<uint8_t> rayTracingShaderGroupHandles(bufferResourceCreateInfo.size);
+	std::vector<uint8_t> rayTracingShaderGroupHandles(physicalDeviceRayTracingProperties.shaderGroupHandleSize * rayTracingShaderGroupCreateInfos.size());
 
 	result = vkGetRayTracingShaderGroupHandlesKHR(device, pipeline, 0, static_cast<uint32_t>(rayTracingShaderGroupCreateInfos.size()), static_cast<uint32_t>(rayTracingShaderGroupHandles.size()), rayTracingShaderGroupHandles.data());
 	if (result != VK_SUCCESS)
@@ -463,9 +465,12 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	if (!VulkanResource::copyHostToDevice(device, shaderBindingBufferResource, rayTracingShaderGroupHandles.data(), rayTracingShaderGroupHandles.size()))
+	for (size_t i = 0; i < rayTracingShaderGroupCreateInfos.size(); i++)
 	{
-		return false;
+		if (!VulkanResource::copyHostToDevice(device, shaderBindingBufferResource, &rayTracingShaderGroupHandles.data()[i * physicalDeviceRayTracingProperties.shaderGroupHandleSize], physicalDeviceRayTracingProperties.shaderGroupHandleSize, i * physicalDeviceRayTracingProperties.shaderGroupBaseAlignment))
+		{
+			return false;
+		}
 	}
 
 	return true;
@@ -506,17 +511,17 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	VkStridedBufferRegionKHR rayGenStridedBufferRegion = {};
 	rayGenStridedBufferRegion.buffer = shaderBindingBufferResource.buffer;
-	rayGenStridedBufferRegion.offset = physicalDeviceRayTracingProperties.shaderGroupHandleSize * 0;
+	rayGenStridedBufferRegion.offset = physicalDeviceRayTracingProperties.shaderGroupBaseAlignment * 0;
 	rayGenStridedBufferRegion.size   = physicalDeviceRayTracingProperties.shaderGroupHandleSize;
 
 	VkStridedBufferRegionKHR missStridedBufferRegion = {};
 	missStridedBufferRegion.buffer = shaderBindingBufferResource.buffer;
-	missStridedBufferRegion.offset = physicalDeviceRayTracingProperties.shaderGroupHandleSize * 1;
+	missStridedBufferRegion.offset = physicalDeviceRayTracingProperties.shaderGroupBaseAlignment * 1;
 	missStridedBufferRegion.size   = physicalDeviceRayTracingProperties.shaderGroupHandleSize;
 
 	VkStridedBufferRegionKHR closestHitStridedBufferRegion = {};
 	closestHitStridedBufferRegion.buffer = shaderBindingBufferResource.buffer;
-	closestHitStridedBufferRegion.offset = physicalDeviceRayTracingProperties.shaderGroupHandleSize * 2;
+	closestHitStridedBufferRegion.offset = physicalDeviceRayTracingProperties.shaderGroupBaseAlignment * 2;
 	closestHitStridedBufferRegion.size   = physicalDeviceRayTracingProperties.shaderGroupHandleSize;
 
 	VkStridedBufferRegionKHR callableStridedBufferRegion = {};
