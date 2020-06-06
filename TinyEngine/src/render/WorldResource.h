@@ -88,7 +88,8 @@ struct WorldResource : BaseResource {
 	VkPipeline raytracePipeline = VK_NULL_HANDLE;
 
 	BufferResource shaderBindingBufferResource = {};
-	VkDeviceSize size = 0;
+	uint32_t shaderGroupHandleSize = 0;
+	uint32_t shaderGroupBaseAlignment = 0;
 };
 
 #endif /* RENDER_WORLDRENDER_H_ */

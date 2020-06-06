@@ -6,7 +6,7 @@
 
 #include "HelperVulkan.h"
 
-bool VulkanResource::copyHostToDevice(VkDevice device, BufferResource& bufferResource, const void* data, size_t size)
+bool VulkanResource::copyHostToDevice(VkDevice device, BufferResource& bufferResource, const void* data, size_t size, VkDeviceSize offset)
 {
 	if (data == nullptr || size == 0)
 	{
@@ -17,7 +17,7 @@ bool VulkanResource::copyHostToDevice(VkDevice device, BufferResource& bufferRes
 
 	void* mappedData = nullptr;
 
-	result = vkMapMemory(device, bufferResource.deviceMemory, 0, size, 0, (void**)&mappedData);
+	result = vkMapMemory(device, bufferResource.deviceMemory, offset, size, 0, (void**)&mappedData);
 	if (result != VK_SUCCESS)
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);

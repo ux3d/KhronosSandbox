@@ -100,7 +100,6 @@ void RenderManager::terminate(WorldResource& worldResource, VkDevice device)
 	VulkanResource::destroyBufferResource(device, worldResource.accelerationStructureInstanceBuffer);
 
 	VulkanResource::destroyBufferResource(device, worldResource.shaderBindingBufferResource);
-	worldResource.size = 0;
 
 	worldResource.accelerationStructureInstances.clear();
 
@@ -2415,8 +2414,10 @@ bool RenderManager::worldFinalize()
 		physicalDeviceProperties2.pNext = &physicalDeviceRayTracingProperties;
 		vkGetPhysicalDeviceProperties2(physicalDevice, &physicalDeviceProperties2);
 
+		uint32_t alignedSize = glm::max(physicalDeviceRayTracingProperties.shaderGroupHandleSize, physicalDeviceRayTracingProperties.shaderGroupBaseAlignment);
+
 		bufferResourceCreateInfo = {};
-		bufferResourceCreateInfo.size = physicalDeviceRayTracingProperties.shaderGroupHandleSize * rayTracingShaderGroupCreateInfos.size();
+		bufferResourceCreateInfo.size = alignedSize * rayTracingShaderGroupCreateInfos.size();
 		bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_RAY_TRACING_BIT_KHR;
 		bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
@@ -2424,9 +2425,10 @@ bool RenderManager::worldFinalize()
 		{
 			return false;
 		}
-		worldResource->size = physicalDeviceRayTracingProperties.shaderGroupHandleSize;
+		worldResource->shaderGroupHandleSize = physicalDeviceRayTracingProperties.shaderGroupHandleSize;
+		worldResource->shaderGroupBaseAlignment = physicalDeviceRayTracingProperties.shaderGroupBaseAlignment;
 
-		std::vector<uint8_t> rayTracingShaderGroupHandles(bufferResourceCreateInfo.size);
+		std::vector<uint8_t> rayTracingShaderGroupHandles(physicalDeviceRayTracingProperties.shaderGroupHandleSize * rayTracingShaderGroupCreateInfos.size());
 
 		result = vkGetRayTracingShaderGroupHandlesKHR(device, worldResource->raytracePipeline, 0, static_cast<uint32_t>(rayTracingShaderGroupCreateInfos.size()), rayTracingShaderGroupHandles.size(), rayTracingShaderGroupHandles.data());
 		if (result != VK_SUCCESS)
@@ -2436,9 +2438,12 @@ bool RenderManager::worldFinalize()
 			return false;
 		}
 
-		if (!VulkanResource::copyHostToDevice(device, worldResource->shaderBindingBufferResource, rayTracingShaderGroupHandles.data(), rayTracingShaderGroupHandles.size()))
+		for (size_t i = 0; i < rayTracingShaderGroupCreateInfos.size(); i++)
 		{
-			return false;
+			if (!VulkanResource::copyHostToDevice(device, worldResource->shaderBindingBufferResource, &rayTracingShaderGroupHandles.data()[physicalDeviceRayTracingProperties.shaderGroupHandleSize * i], physicalDeviceRayTracingProperties.shaderGroupHandleSize, physicalDeviceRayTracingProperties.shaderGroupBaseAlignment * i))
+			{
+				return false;
+			}
 		}
 	}
 
@@ -2806,18 +2811,18 @@ void RenderManager::raytrace(VkCommandBuffer commandBuffer, uint32_t frameIndex)
 
 	VkStridedBufferRegionKHR rayGenStridedBufferRegion = {};
 	rayGenStridedBufferRegion.buffer = worldResource->shaderBindingBufferResource.buffer;
-	rayGenStridedBufferRegion.offset = worldResource->size * 0;
-	rayGenStridedBufferRegion.size   = worldResource->size;
+	rayGenStridedBufferRegion.offset = worldResource->shaderGroupBaseAlignment * 0;
+	rayGenStridedBufferRegion.size   = worldResource->shaderGroupHandleSize;
 
 	VkStridedBufferRegionKHR missStridedBufferRegion = {};
 	missStridedBufferRegion.buffer = worldResource->shaderBindingBufferResource.buffer;
-	missStridedBufferRegion.offset = worldResource->size * 1;
-	missStridedBufferRegion.size   = worldResource->size;
+	missStridedBufferRegion.offset = worldResource->shaderGroupBaseAlignment * 1;
+	missStridedBufferRegion.size   = worldResource->shaderGroupHandleSize;
 
 	VkStridedBufferRegionKHR closestHitStridedBufferRegion = {};
 	closestHitStridedBufferRegion.buffer = worldResource->shaderBindingBufferResource.buffer;
-	closestHitStridedBufferRegion.offset = worldResource->size * 2;
-	closestHitStridedBufferRegion.size   = worldResource->size;
+	closestHitStridedBufferRegion.offset = worldResource->shaderGroupBaseAlignment * 2;
+	closestHitStridedBufferRegion.size   = worldResource->shaderGroupHandleSize;
 
 	VkStridedBufferRegionKHR callableStridedBufferRegion = {};
 

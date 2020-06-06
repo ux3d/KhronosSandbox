@@ -112,7 +112,7 @@ class VulkanResource
 {
 public:
 
-	static bool copyHostToDevice(VkDevice device, BufferResource& bufferResource, const void* data, size_t size);
+	static bool copyHostToDevice(VkDevice device, BufferResource& bufferResource, const void* data, size_t size, VkDeviceSize offset = 0);
 
 	static bool createBufferResource(VkPhysicalDevice physicalDevice, VkDevice device, BufferResource& bufferResource, const BufferResourceCreateInfo& bufferResourceCreateInfo);
 
