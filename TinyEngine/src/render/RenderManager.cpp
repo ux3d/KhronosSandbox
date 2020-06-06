@@ -417,7 +417,7 @@ bool RenderManager::materialSetFactorParameters(uint64_t materialHandle, const M
 	return true;
 }
 
-bool RenderManager::materialSetTexture(uint64_t materialHandle, uint64_t textureHandle, uint32_t texCoord, const std::string& prefix)
+bool RenderManager::materialSetTexture(uint64_t materialHandle, uint64_t textureHandle, const std::string& description, uint32_t texCoord)
 {
 	MaterialResource* materialResource = getMaterial(materialHandle);
 
@@ -443,29 +443,29 @@ bool RenderManager::materialSetTexture(uint64_t materialHandle, uint64_t texture
 
 	//
 
-	materialResource->macros[prefix + "_TEXTURE"] = "";
-	materialResource->macros[prefix + "_BINDING"] = std::to_string(materialResource->binding);
-	materialResource->macros[prefix + "_TEXCOORD"] = HelperShader::getTexCoord(texCoord);
+	materialResource->macros[description + "_TEXTURE"] = "";
+	materialResource->macros[description + "_BINDING"] = std::to_string(materialResource->binding);
+	materialResource->macros[description + "_TEXCOORD"] = HelperShader::getTexCoord(texCoord);
 
 	//
 
-	if (prefix == "BASECOLOR")
+	if (description == "BASECOLOR")
 	{
 		materialResource->baseColorTexture = textureResource->textureIndex;
 	}
-	else if (prefix == "METALLICROUGHNESS")
+	else if (description == "METALLICROUGHNESS")
 	{
 		materialResource->metallicRoughnessTexture = textureResource->textureIndex;
 	}
-	else if (prefix == "EMISSIVE")
+	else if (description == "EMISSIVE")
 	{
 		materialResource->emissiveTexture = textureResource->textureIndex;
 	}
-	else if (prefix == "OCCLUSION")
+	else if (description == "OCCLUSION")
 	{
 		materialResource->occlusionTexture = textureResource->textureIndex;
 	}
-	else if (prefix == "NORMAL")
+	else if (description == "NORMAL")
 	{
 		materialResource->normalTexture = textureResource->textureIndex;
 	}
