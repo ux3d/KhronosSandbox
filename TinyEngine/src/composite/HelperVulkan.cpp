@@ -351,6 +351,76 @@ bool HelperVulkan::getFormat(VkFormat& format, uint32_t componentTypeSize, bool 
 	return result;
 }
 
+bool HelperVulkan::getTypeCount(uint32_t& typeCount, VkFormat format)
+{
+	switch (format)
+	{
+		case VK_FORMAT_R8_SNORM:
+		case VK_FORMAT_R8_UNORM:
+		case VK_FORMAT_R8_SINT:
+		case VK_FORMAT_R8_UINT:
+		case VK_FORMAT_R16_SNORM:
+		case VK_FORMAT_R16_UNORM:
+		case VK_FORMAT_R16_SINT:
+		case VK_FORMAT_R16_UINT:
+		case VK_FORMAT_R32_SINT:
+		case VK_FORMAT_R32_UINT:
+		case VK_FORMAT_R16_SFLOAT:
+		case VK_FORMAT_R32_SFLOAT:
+			typeCount = 1;
+			return true;
+
+		case VK_FORMAT_R8G8_SNORM:
+		case VK_FORMAT_R8G8_UNORM:
+		case VK_FORMAT_R8G8_SINT:
+		case VK_FORMAT_R8G8_UINT:
+		case VK_FORMAT_R16G16_SNORM:
+		case VK_FORMAT_R16G16_UNORM:
+		case VK_FORMAT_R16G16_SINT:
+		case VK_FORMAT_R16G16_UINT:
+		case VK_FORMAT_R32G32_SINT:
+		case VK_FORMAT_R32G32_UINT:
+		case VK_FORMAT_R16G16_SFLOAT:
+		case VK_FORMAT_R32G32_SFLOAT:
+			typeCount = 2;
+			return true;
+
+		case VK_FORMAT_R8G8B8_SNORM:
+		case VK_FORMAT_R8G8B8_UNORM:
+		case VK_FORMAT_R8G8B8_SINT:
+		case VK_FORMAT_R8G8B8_UINT:
+		case VK_FORMAT_R16G16B16_SNORM:
+		case VK_FORMAT_R16G16B16_UNORM:
+		case VK_FORMAT_R16G16B16_SINT:
+		case VK_FORMAT_R16G16B16_UINT:
+		case VK_FORMAT_R32G32B32_SINT:
+		case VK_FORMAT_R32G32B32_UINT:
+		case VK_FORMAT_R16G16B16_SFLOAT:
+		case VK_FORMAT_R32G32B32_SFLOAT:
+			typeCount = 3;
+			return true;
+
+		case VK_FORMAT_R8G8B8A8_SNORM:
+		case VK_FORMAT_R8G8B8A8_UNORM:
+		case VK_FORMAT_R8G8B8A8_SINT:
+		case VK_FORMAT_R8G8B8A8_UINT:
+		case VK_FORMAT_R16G16B16A16_SNORM:
+		case VK_FORMAT_R16G16B16A16_UNORM:
+		case VK_FORMAT_R16G16B16A16_SINT:
+		case VK_FORMAT_R16G16B16A16_UINT:
+		case VK_FORMAT_R32G32B32A32_SINT:
+		case VK_FORMAT_R32G32B32A32_UINT:
+		case VK_FORMAT_R16G16B16A16_SFLOAT:
+		case VK_FORMAT_R32G32B32A32_SFLOAT:
+			typeCount = 4;
+			return true;
+		default:
+			break;
+	}
+
+	return false;
+}
+
 bool HelperVulkan::findMemoryTypeIndex(uint32_t& memoryTypeIndex, VkPhysicalDevice physicalDevice, uint32_t memoryType, VkMemoryPropertyFlags memoryProperty)
 {
 	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties = {};

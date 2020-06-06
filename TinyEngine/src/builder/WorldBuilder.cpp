@@ -192,7 +192,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 					return false;
 				}
 
-				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.position].count, glTF.accessors[primitive.position].typeCount, "POSITION", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, getBufferHandle(accessor), "POSITION", glTF.accessors[primitive.position].count, format, stride, HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -210,7 +210,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 					return false;
 				}
 
-				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.normal].count, glTF.accessors[primitive.normal].typeCount, "NORMAL", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, getBufferHandle(accessor), "NORMAL", glTF.accessors[primitive.normal].count, format, stride, HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -228,7 +228,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 					return false;
 				}
 
-				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.tangent].count, glTF.accessors[primitive.tangent].typeCount, "TANGENT", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, getBufferHandle(accessor), "TANGENT", glTF.accessors[primitive.tangent].count, format, stride, HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -246,7 +246,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 					return false;
 				}
 
-				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.texCoord0].count, glTF.accessors[primitive.texCoord0].typeCount, "TEXCOORD_0", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, getBufferHandle(accessor), "TEXCOORD_0", glTF.accessors[primitive.texCoord0].count, format, stride, HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -264,7 +264,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 					return false;
 				}
 
-				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.texCoord1].count, glTF.accessors[primitive.texCoord1].typeCount, "TEXCOORD_1", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, getBufferHandle(accessor), "TEXCOORD_1", glTF.accessors[primitive.texCoord1].count, format, stride, HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -282,7 +282,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 					return false;
 				}
 
-				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.color0].count, glTF.accessors[primitive.color0].typeCount, "COLOR_0", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, getBufferHandle(accessor), "COLOR_0", glTF.accessors[primitive.color0].count, format, stride, HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -300,7 +300,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 					return false;
 				}
 
-				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.joints0].count, glTF.accessors[primitive.joints0].typeCount, "JOINTS_0", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, getBufferHandle(accessor), "JOINTS_0", glTF.accessors[primitive.joints0].count, format, stride, HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -318,7 +318,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 					return false;
 				}
 
-				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.joints1].count, glTF.accessors[primitive.joints1].typeCount, "JOINTS_1", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, getBufferHandle(accessor), "JOINTS_1", glTF.accessors[primitive.joints1].count, format, stride, HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -336,7 +336,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 					return false;
 				}
 
-				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.weights0].count, glTF.accessors[primitive.weights0].typeCount, "WEIGHTS_0", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, getBufferHandle(accessor), "WEIGHTS_0", glTF.accessors[primitive.weights0].count, format, stride, HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}
@@ -354,7 +354,7 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 					return false;
 				}
 
-				if (!renderManager.geometrySetAttribute(geometryHandle, glTF.accessors[primitive.weights1].count, glTF.accessors[primitive.weights1].typeCount, "WEIGHTS_1", format, stride, getBufferHandle(accessor), HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
+				if (!renderManager.geometrySetAttribute(geometryHandle, getBufferHandle(accessor), "WEIGHTS_1", glTF.accessors[primitive.weights1].count, format, stride, HelperAccess::getOffset(accessor), HelperAccess::getRange(accessor)))
 				{
 					return false;
 				}

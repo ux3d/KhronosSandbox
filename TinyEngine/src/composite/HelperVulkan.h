@@ -14,6 +14,8 @@ public:
 
 	static bool getFormat(VkFormat& format, uint32_t componentTypeSize, bool componentTypeSigned, bool componentTypeInteger, uint32_t typeCount, bool normalized);
 
+	static bool getTypeCount(uint32_t& typeCount, VkFormat format);
+
 	static bool findMemoryTypeIndex(uint32_t& memoryTypeIndex, VkPhysicalDevice physicalDevice, uint32_t memoryType, VkMemoryPropertyFlags memoryProperty);
 
 	static bool beginOneTimeSubmitCommand(VkDevice device, VkCommandPool commandPool, VkCommandBuffer& commandBuffer);

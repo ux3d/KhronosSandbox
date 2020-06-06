@@ -477,7 +477,7 @@ bool RenderManager::materialSetTexture(uint64_t materialHandle, uint64_t texture
 	return true;
 }
 
-bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint32_t count, uint32_t typeCount, const std::string& prefix, VkFormat format, uint32_t stride, uint64_t sharedDataHandle, VkDeviceSize offset, VkDeviceSize range)
+bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t sharedDataHandle, const std::string& description, uint32_t count, VkFormat format, uint32_t stride, VkDeviceSize offset, VkDeviceSize range)
 {
 	GeometryResource* geometryResource = getGeometry(geometryHandle);
 
@@ -486,11 +486,17 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint32_t count
 		return false;
 	}
 
-	if (prefix == "POSITION")
+	uint32_t typeCount = 0;
+	if (!HelperVulkan::getTypeCount(typeCount, format))
+	{
+		return false;
+	}
+
+	if (description == "POSITION")
 	{
 		if (typeCount == 3)
 		{
-			geometryResource->macros[prefix + "_VEC3"] = "";
+			geometryResource->macros[description + "_VEC3"] = "";
 		}
 		else
 		{
@@ -499,11 +505,11 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint32_t count
 
 		geometryResource->positionAttributeIndex = geometryResource->attributeIndex;
 	}
-	else if (prefix == "NORMAL")
+	else if (description == "NORMAL")
 	{
 		if (typeCount == 3)
 		{
-			geometryResource->macros[prefix + "_VEC3"] = "";
+			geometryResource->macros[description + "_VEC3"] = "";
 		}
 		else
 		{
@@ -512,11 +518,11 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint32_t count
 
 		geometryResource->normalAttributeIndex = geometryResource->attributeIndex;
 	}
-	else if (prefix == "TANGENT")
+	else if (description == "TANGENT")
 	{
 		if (typeCount == 4)
 		{
-			geometryResource->macros[prefix + "_VEC4"] = "";
+			geometryResource->macros[description + "_VEC4"] = "";
 		}
 		else
 		{
@@ -525,11 +531,11 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint32_t count
 
 		geometryResource->tangentAttributeIndex = geometryResource->attributeIndex;
 	}
-	else if (prefix == "TEXCOORD_0")
+	else if (description == "TEXCOORD_0")
 	{
 		if (typeCount == 2)
 		{
-			geometryResource->macros[prefix + "_VEC2"] = "";
+			geometryResource->macros[description + "_VEC2"] = "";
 		}
 		else
 		{
@@ -538,11 +544,11 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint32_t count
 
 		geometryResource->texCoord0AttributeIndex = geometryResource->attributeIndex;
 	}
-	else if (prefix == "TEXCOORD_1")
+	else if (description == "TEXCOORD_1")
 	{
 		if (typeCount == 2)
 		{
-			geometryResource->macros[prefix + "_VEC2"] = "";
+			geometryResource->macros[description + "_VEC2"] = "";
 		}
 		else
 		{
@@ -551,15 +557,15 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint32_t count
 
 		geometryResource->texCoord1AttributeIndex = geometryResource->attributeIndex;
 	}
-	else if (prefix == "COLOR_0")
+	else if (description == "COLOR_0")
 	{
 		if (typeCount == 3)
 		{
-			geometryResource->macros[prefix + "_VEC3"] = "";
+			geometryResource->macros[description + "_VEC3"] = "";
 		}
 		else if (typeCount == 4)
 		{
-			geometryResource->macros[prefix + "_VEC4"] = "";
+			geometryResource->macros[description + "_VEC4"] = "";
 		}
 		else
 		{
@@ -568,11 +574,11 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint32_t count
 
 		geometryResource->color0AttributeIndex = geometryResource->attributeIndex;
 	}
-	else if (prefix == "JOINTS_0")
+	else if (description == "JOINTS_0")
 	{
 		if (typeCount == 4)
 		{
-			geometryResource->macros[prefix + "_VEC4"] = "";
+			geometryResource->macros[description + "_VEC4"] = "";
 		}
 		else
 		{
@@ -581,11 +587,11 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint32_t count
 
 		geometryResource->joints0AttributeIndex = geometryResource->attributeIndex;
 	}
-	else if (prefix == "JOINTS_1")
+	else if (description == "JOINTS_1")
 	{
 		if (typeCount == 4)
 		{
-			geometryResource->macros[prefix + "_VEC4"] = "";
+			geometryResource->macros[description + "_VEC4"] = "";
 		}
 		else
 		{
@@ -594,11 +600,11 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint32_t count
 
 		geometryResource->joints1AttributeIndex = geometryResource->attributeIndex;
 	}
-	else if (prefix == "WEIGHTS_0")
+	else if (description == "WEIGHTS_0")
 	{
 		if (typeCount == 4)
 		{
-			geometryResource->macros[prefix + "_VEC4"] = "";
+			geometryResource->macros[description + "_VEC4"] = "";
 		}
 		else
 		{
@@ -607,11 +613,11 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint32_t count
 
 		geometryResource->weights0AttributeIndex = geometryResource->attributeIndex;
 	}
-	else if (prefix == "WEIGHTS_1")
+	else if (description == "WEIGHTS_1")
 	{
 		if (typeCount == 4)
 		{
-			geometryResource->macros[prefix + "_VEC4"] = "";
+			geometryResource->macros[description + "_VEC4"] = "";
 		}
 		else
 		{
@@ -625,7 +631,7 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint32_t count
 		return false;
 	}
 
-	geometryResource->macros[prefix + "_LOC"] = std::to_string(geometryResource->attributeIndex);
+	geometryResource->macros[description + "_LOC"] = std::to_string(geometryResource->attributeIndex);
 
 	geometryResource->vertexInputBindingDescriptions.resize(geometryResource->attributeIndex + 1);
 	geometryResource->vertexInputBindingDescriptions[geometryResource->attributeIndex].binding = geometryResource->attributeIndex;
