@@ -7,6 +7,11 @@ float Interpolator::linear(float x, float y, float t)
 	return glm::mix(x, y, t);
 }
 
+glm::vec2 Interpolator::linear(const glm::vec2& x, const glm::vec2& y, float t)
+{
+	return glm::mix(x, y, t);
+}
+
 glm::vec3 Interpolator::linear(const glm::vec3& x, const glm::vec3& y, float t)
 {
 	return glm::mix(x, y, t);
@@ -18,6 +23,11 @@ glm::quat Interpolator::linear(const glm::quat& x, const glm::quat& y, float t)
 }
 
 float Interpolator::step(float x, float y, float t)
+{
+	return (t == 1.0f) ? y : x;
+}
+
+glm::vec2 Interpolator::step(const glm::vec2& x, const glm::vec2& y, float t)
 {
 	return (t == 1.0f) ? y : x;
 }
@@ -43,6 +53,18 @@ float Interpolator::cubicspline(float x, float xOut, float yIn, float y, float t
     float h11 = t3 - t2;
 
     return h00 * x + h10 * xOut + h01 * y + h11 * yIn;
+}
+
+glm::vec2 Interpolator::cubicspline(const glm::vec2& x, const glm::vec2& xOut, const glm::vec2& yIn, const glm::vec2& y, float t)
+{
+	glm::vec3 result;
+
+	for (uint32_t i = 0; i < 2; i++)
+	{
+		result[i] = cubicspline(x[i], xOut[i], yIn[i], y[i], t);
+	}
+
+	return result;
 }
 
 glm::vec3 Interpolator::cubicspline(const glm::vec3& x, const glm::vec3& xOut, const glm::vec3& yIn, const glm::vec3& y, float t)
