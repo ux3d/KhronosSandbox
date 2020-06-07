@@ -733,26 +733,11 @@ bool RenderManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle
 		return false;
 	}
 
-	uint32_t componentTypeSize = 1;
-	if (indexType == VK_INDEX_TYPE_UINT16)
-	{
-		componentTypeSize = 2;
-	}
-	else if (indexType == VK_INDEX_TYPE_UINT32)
-	{
-		componentTypeSize = 4;
-	}
-	else
-	{
-		return false;
-	}
-
 	geometryModelResource->indicesCount = indicesCount;
 	geometryModelResource->indexType = indexType;
 	geometryModelResource->indexBuffer = getBuffer(sharedDataHandle);
 	geometryModelResource->indexOffset = indexOffset;
 	geometryModelResource->indexRange = indexRange;
-	geometryModelResource->componentTypeSize = componentTypeSize;
 
 	return true;
 }
@@ -1665,9 +1650,23 @@ bool RenderManager::worldFinalize()
 
 					worldResource->accelerationStructureInstances.push_back(accelerationStructureInstance);
 
+					uint32_t componentTypeSize = 1;
+					if (geometryModelResource->indexType == VK_INDEX_TYPE_UINT16)
+					{
+						componentTypeSize = 2;
+					}
+					else if (geometryModelResource->indexType == VK_INDEX_TYPE_UINT32)
+					{
+						componentTypeSize = 4;
+					}
+					else
+					{
+						return false;
+					}
+
 					RaytracePrimitiveUniformBuffer primitiveInformation = {};
 					primitiveInformation.materialIndex = materialResource->materialIndex;
-					primitiveInformation.componentTypeSize = geometryModelResource->componentTypeSize;
+					primitiveInformation.componentTypeSize = componentTypeSize;
 					primitiveInformation.worldMatrix = instanceResource->worldMatrix;
 
 					if (geometryResource->normalAttributeIndex >= 0)
