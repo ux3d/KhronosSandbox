@@ -494,6 +494,8 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 		return false;
 	}
 
+	int32_t attributeIndex = static_cast<int32_t>(geometryResource->vertexBuffers.size());
+
 	if (description == "POSITION")
 	{
 		if (typeCount == 3)
@@ -505,7 +507,7 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 			return false;
 		}
 
-		geometryResource->positionAttributeIndex = geometryResource->attributeIndex;
+		geometryResource->positionAttributeIndex = attributeIndex;
 	}
 	else if (description == "NORMAL")
 	{
@@ -518,7 +520,7 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 			return false;
 		}
 
-		geometryResource->normalAttributeIndex = geometryResource->attributeIndex;
+		geometryResource->normalAttributeIndex = attributeIndex;
 	}
 	else if (description == "TANGENT")
 	{
@@ -531,7 +533,7 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 			return false;
 		}
 
-		geometryResource->tangentAttributeIndex = geometryResource->attributeIndex;
+		geometryResource->tangentAttributeIndex = attributeIndex;
 	}
 	else if (description == "TEXCOORD_0")
 	{
@@ -544,7 +546,7 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 			return false;
 		}
 
-		geometryResource->texCoord0AttributeIndex = geometryResource->attributeIndex;
+		geometryResource->texCoord0AttributeIndex = attributeIndex;
 	}
 	else if (description == "TEXCOORD_1")
 	{
@@ -557,7 +559,7 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 			return false;
 		}
 
-		geometryResource->texCoord1AttributeIndex = geometryResource->attributeIndex;
+		geometryResource->texCoord1AttributeIndex = attributeIndex;
 	}
 	else if (description == "COLOR_0")
 	{
@@ -574,7 +576,7 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 			return false;
 		}
 
-		geometryResource->color0AttributeIndex = geometryResource->attributeIndex;
+		geometryResource->color0AttributeIndex = attributeIndex;
 	}
 	else if (description == "JOINTS_0")
 	{
@@ -587,7 +589,7 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 			return false;
 		}
 
-		geometryResource->joints0AttributeIndex = geometryResource->attributeIndex;
+		geometryResource->joints0AttributeIndex = attributeIndex;
 	}
 	else if (description == "JOINTS_1")
 	{
@@ -600,7 +602,7 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 			return false;
 		}
 
-		geometryResource->joints1AttributeIndex = geometryResource->attributeIndex;
+		geometryResource->joints1AttributeIndex = attributeIndex;
 	}
 	else if (description == "WEIGHTS_0")
 	{
@@ -613,7 +615,7 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 			return false;
 		}
 
-		geometryResource->weights0AttributeIndex = geometryResource->attributeIndex;
+		geometryResource->weights0AttributeIndex = attributeIndex;
 	}
 	else if (description == "WEIGHTS_1")
 	{
@@ -626,42 +628,38 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 			return false;
 		}
 
-		geometryResource->weights1AttributeIndex = geometryResource->attributeIndex;
+		geometryResource->weights1AttributeIndex = attributeIndex;
 	}
 	else
 	{
 		return false;
 	}
 
-	geometryResource->macros[description + "_LOC"] = std::to_string(geometryResource->attributeIndex);
+	geometryResource->macros[description + "_LOC"] = std::to_string(attributeIndex);
 
-	geometryResource->vertexInputBindingDescriptions.resize(geometryResource->attributeIndex + 1);
-	geometryResource->vertexInputBindingDescriptions[geometryResource->attributeIndex].binding = geometryResource->attributeIndex;
-	geometryResource->vertexInputBindingDescriptions[geometryResource->attributeIndex].stride = stride;
-	geometryResource->vertexInputBindingDescriptions[geometryResource->attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+	geometryResource->vertexInputBindingDescriptions.resize(attributeIndex + 1);
+	geometryResource->vertexInputBindingDescriptions[attributeIndex].binding = attributeIndex;
+	geometryResource->vertexInputBindingDescriptions[attributeIndex].stride = stride;
+	geometryResource->vertexInputBindingDescriptions[attributeIndex].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-	geometryResource->vertexInputAttributeDescriptions.resize(geometryResource->attributeIndex + 1);
-	geometryResource->vertexInputAttributeDescriptions[geometryResource->attributeIndex].binding = geometryResource->attributeIndex;
-	geometryResource->vertexInputAttributeDescriptions[geometryResource->attributeIndex].location = geometryResource->attributeIndex;
-	geometryResource->vertexInputAttributeDescriptions[geometryResource->attributeIndex].format = format;
-	geometryResource->vertexInputAttributeDescriptions[geometryResource->attributeIndex].offset = 0;
+	geometryResource->vertexInputAttributeDescriptions.resize(attributeIndex + 1);
+	geometryResource->vertexInputAttributeDescriptions[attributeIndex].binding = attributeIndex;
+	geometryResource->vertexInputAttributeDescriptions[attributeIndex].location = attributeIndex;
+	geometryResource->vertexInputAttributeDescriptions[attributeIndex].format = format;
+	geometryResource->vertexInputAttributeDescriptions[attributeIndex].offset = 0;
 
 	//
 
-	geometryResource->vertexBuffers.resize(geometryResource->attributeIndex + 1);
-	geometryResource->vertexBuffers[geometryResource->attributeIndex] = getBuffer(sharedDataHandle);
+	geometryResource->vertexBuffers.resize(attributeIndex + 1);
+	geometryResource->vertexBuffers[attributeIndex] = getBuffer(sharedDataHandle);
 
-	geometryResource->vertexBuffersOffsets.resize(geometryResource->attributeIndex + 1);
-	geometryResource->vertexBuffersOffsets[geometryResource->attributeIndex] = offset;
+	geometryResource->vertexBuffersOffsets.resize(attributeIndex + 1);
+	geometryResource->vertexBuffersOffsets[attributeIndex] = offset;
 
-	geometryResource->vertexBuffersRanges.resize(geometryResource->attributeIndex + 1);
-	geometryResource->vertexBuffersRanges[geometryResource->attributeIndex] = range;
+	geometryResource->vertexBuffersRanges.resize(attributeIndex + 1);
+	geometryResource->vertexBuffersRanges[attributeIndex] = range;
 
 	geometryResource->count = count;
-
-	//
-
-	geometryResource->attributeIndex++;
 
 	return true;
 }
