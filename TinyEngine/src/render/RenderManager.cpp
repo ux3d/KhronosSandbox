@@ -426,10 +426,16 @@ bool RenderManager::materialSetTexture(uint64_t materialHandle, uint64_t texture
 		return false;
 	}
 
+	uint32_t binding = 0;
+	if (materialResource->descriptorSetLayoutBindings.size() > 0)
+	{
+		binding = materialResource->descriptorSetLayoutBindings.back().binding + 1;
+	}
+
 	TextureDataResource* textureResource = getTexture(textureHandle);
 
 	VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-	descriptorSetLayoutBinding.binding = materialResource->binding;
+	descriptorSetLayoutBinding.binding = binding;
 	descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	descriptorSetLayoutBinding.descriptorCount = 1;
 	descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -444,7 +450,7 @@ bool RenderManager::materialSetTexture(uint64_t materialHandle, uint64_t texture
 	//
 
 	materialResource->macros[description + "_TEXTURE"] = "";
-	materialResource->macros[description + "_BINDING"] = std::to_string(materialResource->binding);
+	materialResource->macros[description + "_BINDING"] = std::to_string(binding);
 	materialResource->macros[description + "_TEXCOORD"] = HelperShader::getTexCoord(texCoord);
 
 	//
@@ -469,10 +475,6 @@ bool RenderManager::materialSetTexture(uint64_t materialHandle, uint64_t texture
 	{
 		materialResource->raytraceMaterialUniformBuffer.normalTexture = textureResource->textureIndex;
 	}
-
-	//
-
-	materialResource->binding++;
 
 	return true;
 }
@@ -1004,9 +1006,15 @@ bool RenderManager::materialFinalize(uint64_t materialHandle)
 
 	//
 
+	uint32_t binding = 0;
+	if (materialResource->descriptorSetLayoutBindings.size() > 0)
+	{
+		binding = materialResource->descriptorSetLayoutBindings.back().binding + 1;
+	}
+
 	VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
 	descriptorSetLayoutBinding = {};
-	descriptorSetLayoutBinding.binding = materialResource->binding;
+	descriptorSetLayoutBinding.binding = binding;
 	descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	descriptorSetLayoutBinding.descriptorCount = 1;
 	descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -1018,9 +1026,9 @@ bool RenderManager::materialFinalize(uint64_t materialHandle)
 	descriptorBufferInfo.range = sizeof(MaterialUniformBuffer);
 	materialResource->descriptorBufferInfos.push_back(descriptorBufferInfo);
 
-	materialResource->macros["UNIFORMBUFFER_BINDING"] = std::to_string(materialResource->binding);
+	materialResource->macros["UNIFORMBUFFER_BINDING"] = std::to_string(binding);
 
-	materialResource->binding++;
+	binding++;
 
 	//
 
@@ -1031,7 +1039,7 @@ bool RenderManager::materialFinalize(uint64_t materialHandle)
 		LightResource* lightResource = getLight(worldResource->lightHandle);
 
 		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = materialResource->binding;
+		descriptorSetLayoutBinding.binding = binding;
 		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptorSetLayoutBinding.descriptorCount = 1;
 		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -1043,14 +1051,14 @@ bool RenderManager::materialFinalize(uint64_t materialHandle)
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
-		materialResource->macros["DIFFUSE_BINDING"] = std::to_string(materialResource->binding);
+		materialResource->macros["DIFFUSE_BINDING"] = std::to_string(binding);
 
-		materialResource->binding++;
+		binding++;
 
 		//
 
 		descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = materialResource->binding;
+		descriptorSetLayoutBinding.binding = binding;
 		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptorSetLayoutBinding.descriptorCount = 1;
 		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -1062,14 +1070,14 @@ bool RenderManager::materialFinalize(uint64_t materialHandle)
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
-		materialResource->macros["SPECULAR_BINDING"] = std::to_string(materialResource->binding);
+		materialResource->macros["SPECULAR_BINDING"] = std::to_string(binding);
 
-		materialResource->binding++;
+		binding++;
 
 		//
 
 		descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = materialResource->binding;
+		descriptorSetLayoutBinding.binding = binding;
 		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptorSetLayoutBinding.descriptorCount = 1;
 		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -1081,9 +1089,7 @@ bool RenderManager::materialFinalize(uint64_t materialHandle)
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
 
-		materialResource->macros["LUT_BINDING"] = std::to_string(materialResource->binding);
-
-		materialResource->binding++;
+		materialResource->macros["LUT_BINDING"] = std::to_string(binding);
 	}
 	//
 
