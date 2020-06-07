@@ -88,12 +88,12 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF)
 	{
 		const Material& material = glTF.materials[i];
 
-		materialHandles.push_back((uint64_t)&material);
+		uint64_t materialHandle = (uint64_t)&material;
 
 		// Metallic Roughness
 		if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
 		{
-			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.pbrMetallicRoughness.baseColorTexture.index], "BASECOLOR", material.pbrMetallicRoughness.baseColorTexture.texCoord))
+			if (!renderManager.materialSetTexture(materialHandle, textureHandles[material.pbrMetallicRoughness.baseColorTexture.index], "BASECOLOR", material.pbrMetallicRoughness.baseColorTexture.texCoord))
 			{
 				return false;
 			}
@@ -101,7 +101,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF)
 
 		if (material.pbrMetallicRoughness.metallicRoughnessTexture.index >= 0)
 		{
-			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.pbrMetallicRoughness.metallicRoughnessTexture.index], "METALLICROUGHNESS", material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord))
+			if (!renderManager.materialSetTexture(materialHandle, textureHandles[material.pbrMetallicRoughness.metallicRoughnessTexture.index], "METALLICROUGHNESS", material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord))
 			{
 				return false;
 			}
@@ -110,7 +110,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF)
 		// Base Material
 		if (material.emissiveTexture.index >= 0)
 		{
-			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.emissiveTexture.index], "EMISSIVE", material.emissiveTexture.texCoord))
+			if (!renderManager.materialSetTexture(materialHandle, textureHandles[material.emissiveTexture.index], "EMISSIVE", material.emissiveTexture.texCoord))
 			{
 				return false;
 			}
@@ -118,7 +118,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF)
 
 		if (material.occlusionTexture.index >= 0)
 		{
-			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.occlusionTexture.index], "OCCLUSION", material.occlusionTexture.texCoord))
+			if (!renderManager.materialSetTexture(materialHandle, textureHandles[material.occlusionTexture.index], "OCCLUSION", material.occlusionTexture.texCoord))
 			{
 				return false;
 			}
@@ -126,7 +126,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF)
 
 		if (material.normalTexture.index >= 0)
 		{
-			if (!renderManager.materialSetTexture(materialHandles[i], textureHandles[material.normalTexture.index], "NORMAL", material.normalTexture.texCoord))
+			if (!renderManager.materialSetTexture(materialHandle, textureHandles[material.normalTexture.index], "NORMAL", material.normalTexture.texCoord))
 			{
 				return false;
 			}
@@ -152,12 +152,16 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF)
 
 		materialUniformBuffer.doubleSided = material.doubleSided;
 
-		renderManager.materialSetFactorParameters(materialHandles[i], materialUniformBuffer);
+		renderManager.materialSetFactorParameters(materialHandle, materialUniformBuffer);
 
-		if (!renderManager.materialFinalize(materialHandles[i]))
+		if (!renderManager.materialFinalize(materialHandle))
 		{
 			return false;
 		}
+
+		//
+
+		materialHandles.push_back(materialHandle);
 	}
 
 	return true;
@@ -170,8 +174,6 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 		const Mesh& mesh = glTF.meshes[i];
 
 		uint64_t groupHandle = (uint64_t)&mesh;
-
-		meshHandles.push_back(groupHandle);
 
 		for (size_t k = 0; k < mesh.primitives.size(); k++)
 		{
@@ -483,6 +485,10 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 		}
 
 		renderManager.groupFinalize(groupHandle);
+
+		//
+
+		meshHandles.push_back(groupHandle);
 	}
 
 	return true;
@@ -494,15 +500,19 @@ bool WorldBuilder::buildNodes(const GLTF& glTF)
 	{
 		const Node& node = glTF.nodes[i];
 
-		nodeHandles.push_back((uint64_t)&node);
+		uint64_t nodeHandle = (uint64_t)&node;
 
 		if (node.mesh >= 0)
 		{
-			renderManager.instanceSetWorldMatrix(nodeHandles[i], node.worldMatrix);
-			renderManager.instanceSetGroup(nodeHandles[i], meshHandles[node.mesh]);
+			renderManager.instanceSetWorldMatrix(nodeHandle, node.worldMatrix);
+			renderManager.instanceSetGroup(nodeHandle, meshHandles[node.mesh]);
 		}
 
-		renderManager.instanceFinalize(nodeHandles[i]);
+		renderManager.instanceFinalize(nodeHandle);
+
+		//
+
+		nodeHandles.push_back(nodeHandle);
 	}
 
 	return true;
