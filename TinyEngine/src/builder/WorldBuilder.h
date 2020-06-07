@@ -13,27 +13,30 @@ class WorldBuilder {
 
 private:
 
+	const GLTF& glTF;
+	const std::string environment;
+
 	RenderManager& renderManager;
 
 	std::vector<uint64_t> textureHandles;
 	std::vector<uint64_t> materialHandles;
-	std::vector<uint64_t> meshHandles;
-	std::vector<uint64_t> nodeHandles;
-	uint64_t glTFHandle = 0;
+	std::vector<uint64_t> groupHandles;
+	std::vector<uint64_t> instanceHandles;
+	uint64_t worldHandle = 0;
 
-	bool buildBufferViews(const GLTF& glTF);
+	bool buildBufferViews();
 
-	bool buildAccessors(const GLTF& glTF);
+	bool buildAccessors();
 
-	bool buildTextures(const GLTF& glTF);
+	bool buildTextures();
 
-	bool buildMaterials(const GLTF& glTF);
+	bool buildMaterials();
 
-	bool buildMeshes(const GLTF& glTF);
+	bool buildMeshes();
 
-	bool buildNodes(const GLTF& glTF);
+	bool buildNodes();
 
-	bool buildScene(const GLTF& glTF);
+	bool buildScene();
 
 	uint64_t getBufferHandle(const Accessor& accessor);
 
@@ -41,9 +44,9 @@ private:
 
 public:
 
-	WorldBuilder(RenderManager& resourceManager);
+	WorldBuilder(const GLTF& glTF, const std::string& environment, RenderManager& resourceManager);
 
-	bool build(const GLTF& glTF, const std::string& diffuseFilename);
+	bool build();
 
 	void terminate();
 

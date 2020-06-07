@@ -1,12 +1,12 @@
 #include "../shader/Shader.h"
 #include "WorldBuilder.h"
 
-WorldBuilder::WorldBuilder(RenderManager& resourceManager) :
-	renderManager(resourceManager)
+WorldBuilder::WorldBuilder(const GLTF& glTF, const std::string& environment, RenderManager& resourceManager) :
+	glTF(glTF), environment(environment), renderManager(resourceManager)
 {
 }
 
-bool WorldBuilder::buildBufferViews(const GLTF& glTF)
+bool WorldBuilder::buildBufferViews()
 {
 	for (size_t i = 0; i < glTF.bufferViews.size(); i++)
 	{
@@ -21,7 +21,7 @@ bool WorldBuilder::buildBufferViews(const GLTF& glTF)
 	return true;
 }
 
-bool WorldBuilder::buildAccessors(const GLTF& glTF)
+bool WorldBuilder::buildAccessors()
 {
 	for (size_t i = 0; i < glTF.accessors.size(); i++)
 	{
@@ -46,15 +46,13 @@ bool WorldBuilder::buildAccessors(const GLTF& glTF)
 	return true;
 }
 
-bool WorldBuilder::buildTextures(const GLTF& glTF)
+bool WorldBuilder::buildTextures()
 {
 	for (size_t i = 0; i < glTF.textures.size(); i++)
 	{
 		const Texture& texture = glTF.textures[i];
 
 		uint64_t textureHandle = (uint64_t)&texture;
-
-		textureHandles.push_back(textureHandle);
 
 		TextureResourceCreateInfo textureResourceCreateInfo = {};
 		textureResourceCreateInfo.imageDataResources = glTF.images[texture.source].imageDataResources;
@@ -77,12 +75,16 @@ bool WorldBuilder::buildTextures(const GLTF& glTF)
 		{
 			return false;
 		}
+
+		//
+
+		textureHandles.push_back(textureHandle);
 	}
 
 	return true;
 }
 
-bool WorldBuilder::buildMaterials(const GLTF& glTF)
+bool WorldBuilder::buildMaterials()
 {
 	for (size_t i = 0; i < glTF.materials.size(); i++)
 	{
@@ -167,7 +169,7 @@ bool WorldBuilder::buildMaterials(const GLTF& glTF)
 	return true;
 }
 
-bool WorldBuilder::buildMeshes(const GLTF& glTF)
+bool WorldBuilder::buildMeshes()
 {
 	for (size_t i = 0; i < glTF.meshes.size(); i++)
 	{
@@ -488,43 +490,43 @@ bool WorldBuilder::buildMeshes(const GLTF& glTF)
 
 		//
 
-		meshHandles.push_back(groupHandle);
+		groupHandles.push_back(groupHandle);
 	}
 
 	return true;
 }
 
-bool WorldBuilder::buildNodes(const GLTF& glTF)
+bool WorldBuilder::buildNodes()
 {
 	for (size_t i = 0; i < glTF.nodes.size(); i++)
 	{
 		const Node& node = glTF.nodes[i];
 
-		uint64_t nodeHandle = (uint64_t)&node;
+		uint64_t instanceHandle = (uint64_t)&node;
 
 		if (node.mesh >= 0)
 		{
-			renderManager.instanceSetWorldMatrix(nodeHandle, node.worldMatrix);
-			renderManager.instanceSetGroup(nodeHandle, meshHandles[node.mesh]);
+			renderManager.instanceSetWorldMatrix(instanceHandle, node.worldMatrix);
+			renderManager.instanceSetGroup(instanceHandle, groupHandles[node.mesh]);
 		}
 
-		renderManager.instanceFinalize(nodeHandle);
+		renderManager.instanceFinalize(instanceHandle);
 
 		//
 
-		nodeHandles.push_back(nodeHandle);
+		instanceHandles.push_back(instanceHandle);
 	}
 
 	return true;
 }
 
-bool WorldBuilder::buildScene(const GLTF& glTF)
+bool WorldBuilder::buildScene()
 {
 	if (glTF.defaultScene < glTF.scenes.size())
 	{
-		for (uint64_t nodeHandle : nodeHandles)
+		for (uint64_t instanceHandle : instanceHandles)
 		{
-			renderManager.worldAddInstance(nodeHandle);
+			renderManager.worldAddInstance(instanceHandle);
 		}
 
 		if (!renderManager.worldFinalize())
@@ -540,63 +542,63 @@ bool WorldBuilder::buildScene(const GLTF& glTF)
 	return true;
 }
 
-bool WorldBuilder::build(const GLTF& glTF, const std::string& environment)
+bool WorldBuilder::build()
 {
-	glTFHandle = (uint64_t)&glTF;
+	worldHandle = (uint64_t)&glTF;
 
-	renderManager.lightSetEnvironment(glTFHandle, environment);
-	renderManager.lightFinalize(glTFHandle);
+	renderManager.lightSetEnvironment(worldHandle, environment);
+	renderManager.lightFinalize(worldHandle);
 
-	renderManager.cameraFinalize(glTFHandle);
+	renderManager.cameraFinalize(worldHandle);
 
-	renderManager.worldSetLight(glTFHandle);
-	renderManager.worldSetCamera(glTFHandle);
+	renderManager.worldSetLight(worldHandle);
+	renderManager.worldSetCamera(worldHandle);
 
 	// BufferViews
 
-	if (!buildBufferViews(glTF))
+	if (!buildBufferViews())
 	{
 		return false;
 	}
 
 	// Accessors
 
-	if (!buildAccessors(glTF))
+	if (!buildAccessors())
 	{
 		return false;
 	}
 
 	// Textures
 
-	if (!buildTextures(glTF))
+	if (!buildTextures())
 	{
 		return false;
 	}
 
 	// Materials
 
-	if (!buildMaterials(glTF))
+	if (!buildMaterials())
 	{
 		return false;
 	}
 
 	// Meshes
 
-	if (!buildMeshes(glTF))
+	if (!buildMeshes())
 	{
 		return false;
 	}
 
 	// Nodes
 
-	if (!buildNodes(glTF))
+	if (!buildNodes())
 	{
 		return false;
 	}
 
 	// Scene
 
-	if (!buildScene(glTF))
+	if (!buildScene())
 	{
 		return false;
 	}

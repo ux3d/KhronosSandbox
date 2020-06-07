@@ -39,8 +39,8 @@ bool Application::applicationInit()
 		return false;
 	}
 
-	WorldBuilder worldBuilder(renderManager);
-	if(!worldBuilder.build(glTF, environment))
+	WorldBuilder worldBuilder(glTF, environment, renderManager);
+	if(!worldBuilder.build())
 	{
 		return false;
 	}
