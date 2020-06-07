@@ -3,6 +3,7 @@
 
 struct BaseResource {
 
+	bool created = false;
 	bool finalized = false;
 
 };

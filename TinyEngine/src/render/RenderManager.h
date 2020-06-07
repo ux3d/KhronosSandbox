@@ -45,6 +45,8 @@ private:
 
 	VkImageView imageView = VK_NULL_HANDLE;
 
+	uint64_t handles = 0;
+
 	std::map<uint64_t, SharedDataResource> sharedDataResources;
 	std::map<uint64_t, TextureDataResource> textureResources;
 	std::map<uint64_t, MaterialResource> materialResources;
@@ -102,6 +104,19 @@ public:
 	bool renderRaytraceSetImageView(VkImageView imageView);
 
 	bool renderRaytraceUpdateSettings(uint32_t maxDepth, uint32_t specularSamples, uint32_t diffuseSamples);
+
+	// Resources need to be created.
+
+	bool sharedDataCreate(uint64_t& sharedDataHandle);
+	bool textureCreate(uint64_t& textureHandle);
+	bool materialCreate(uint64_t& materialHandle);
+	bool geometryCreate(uint64_t& geometryHandle);
+	bool geometryModelCreate(uint64_t& geometryModelHandle);
+	bool groupCreate(uint64_t& groupHandle);
+	bool instanceCreate(uint64_t& instanceHandle);
+	bool lightCreate(uint64_t& lightHandle);
+	bool cameraCreate(uint64_t& cameraHandle);
+	bool worldCreate();
 
 	// One time setup before finalization.
 

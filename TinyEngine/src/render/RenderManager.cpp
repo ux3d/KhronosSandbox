@@ -374,6 +374,155 @@ bool RenderManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize si
 	return true;
 }
 
+bool RenderManager::sharedDataCreate(uint64_t& sharedDataHandle)
+{
+	SharedDataResource* sharedDataResource = getSharedData(++handles);
+
+	if (sharedDataResource->created)
+	{
+		return false;
+	}
+
+	sharedDataResource->created = true;
+	sharedDataHandle = handles;
+
+	return true;
+}
+
+bool RenderManager::textureCreate(uint64_t& textureHandle)
+{
+	TextureDataResource* textureDataResource = getTexture(++handles);
+
+	if (textureDataResource->created)
+	{
+		return false;
+	}
+
+	textureDataResource->created = true;
+	textureHandle = handles;
+
+	return true;
+}
+
+bool RenderManager::materialCreate(uint64_t& materialHandle)
+{
+	MaterialResource* materialResource = getMaterial(++handles);
+
+	if (materialResource->created)
+	{
+		return false;
+	}
+
+	materialResource->created = true;
+	materialHandle = handles;
+
+	return true;
+}
+
+bool RenderManager::geometryCreate(uint64_t& geometryHandle)
+{
+	GeometryResource* geometryResource = getGeometry(++handles);
+
+	if (geometryResource->created)
+	{
+		return false;
+	}
+
+	geometryResource->created = true;
+	geometryHandle = handles;
+
+	return true;
+}
+
+bool RenderManager::geometryModelCreate(uint64_t& geometryModelHandle)
+{
+	GeometryModelResource* geometryModelResource = getGeometryModel(++handles);
+
+	if (geometryModelResource->created)
+	{
+		return false;
+	}
+
+	geometryModelResource->created = true;
+	geometryModelHandle = handles;
+
+	return true;
+}
+
+bool RenderManager::groupCreate(uint64_t& groupHandle)
+{
+	GroupResource* groupResource = getGroup(++handles);
+
+	if (groupResource->created)
+	{
+		return false;
+	}
+
+	groupResource->created = true;
+	groupHandle = handles;
+
+	return true;
+}
+
+bool RenderManager::instanceCreate(uint64_t& instanceHandle)
+{
+	InstanceResource* instanceResource = getInstance(++handles);
+
+	if (instanceResource->created)
+	{
+		return false;
+	}
+
+	instanceResource->created = true;
+	instanceHandle = handles;
+
+	return true;
+}
+
+bool RenderManager::lightCreate(uint64_t& lightHandle)
+{
+	LightResource* lightResource = getLight(++handles);
+
+	if (lightResource->created)
+	{
+		return false;
+	}
+
+	lightResource->created = true;
+	lightHandle = handles;
+
+	return true;
+}
+
+bool RenderManager::cameraCreate(uint64_t& cameraHandle)
+{
+	CameraResource* cameraResource = getCamera(++handles);
+
+	if (cameraResource->created)
+	{
+		return false;
+	}
+
+	cameraResource->created = true;
+	cameraHandle = handles;
+
+	return true;
+}
+
+bool RenderManager::worldCreate()
+{
+	WorldResource* worldResource = getWorld();
+
+	if (worldResource->created)
+	{
+		return false;
+	}
+
+	worldResource->created = true;
+
+	return true;
+}
+
 bool RenderManager::sharedDataCreateVertexBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data)
 {
 	return sharedDataSetData(sharedDataHandle, size, data, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
@@ -2759,6 +2908,8 @@ void RenderManager::terminate()
 	device = VK_NULL_HANDLE;
 	queue = VK_NULL_HANDLE;
 	commandPool = VK_NULL_HANDLE;
+
+	handles = 0;
 }
 
 void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
