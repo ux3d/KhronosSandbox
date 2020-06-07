@@ -46,16 +46,7 @@ struct RaytraceMaterialUniformBuffer {
 struct MaterialResource : BaseResource {
 	// Mapper helper
 
-	MaterialUniformBuffer materialUniformBuffer;
-
-	int32_t baseColorTexture = -1;
-	int32_t metallicRoughnessTexture = -1;
-
-	int32_t emissiveTexture = -1;
-
-	int32_t occlusionTexture = -1;
-
-	int32_t normalTexture = -1;
+	RaytraceMaterialUniformBuffer raytraceMaterialUniformBuffer;
 
 	std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
 

@@ -412,7 +412,7 @@ bool RenderManager::materialSetFactorParameters(uint64_t materialHandle, const M
 		return false;
 	}
 
-	materialResource->materialUniformBuffer = materialUniformBuffer;
+	materialResource->raytraceMaterialUniformBuffer.materialUniformBuffer = materialUniformBuffer;
 
 	return true;
 }
@@ -451,23 +451,23 @@ bool RenderManager::materialSetTexture(uint64_t materialHandle, uint64_t texture
 
 	if (description == "BASECOLOR")
 	{
-		materialResource->baseColorTexture = textureResource->textureIndex;
+		materialResource->raytraceMaterialUniformBuffer.baseColorTexture = textureResource->textureIndex;
 	}
 	else if (description == "METALLICROUGHNESS")
 	{
-		materialResource->metallicRoughnessTexture = textureResource->textureIndex;
+		materialResource->raytraceMaterialUniformBuffer.metallicRoughnessTexture = textureResource->textureIndex;
 	}
 	else if (description == "EMISSIVE")
 	{
-		materialResource->emissiveTexture = textureResource->textureIndex;
+		materialResource->raytraceMaterialUniformBuffer.emissiveTexture = textureResource->textureIndex;
 	}
 	else if (description == "OCCLUSION")
 	{
-		materialResource->occlusionTexture = textureResource->textureIndex;
+		materialResource->raytraceMaterialUniformBuffer.occlusionTexture = textureResource->textureIndex;
 	}
 	else if (description == "NORMAL")
 	{
-		materialResource->normalTexture = textureResource->textureIndex;
+		materialResource->raytraceMaterialUniformBuffer.normalTexture = textureResource->textureIndex;
 	}
 
 	//
@@ -997,7 +997,7 @@ bool RenderManager::materialFinalize(uint64_t materialHandle)
 		return false;
 	}
 
-	if (!VulkanResource::copyHostToDevice(device, materialResource->uniformBufferResource.bufferResource, &materialResource->materialUniformBuffer, sizeof(materialResource->materialUniformBuffer)))
+	if (!VulkanResource::copyHostToDevice(device, materialResource->uniformBufferResource.bufferResource, &materialResource->raytraceMaterialUniformBuffer.materialUniformBuffer, sizeof(materialResource->raytraceMaterialUniformBuffer.materialUniformBuffer)))
 	{
 		return false;
 	}
@@ -1182,17 +1182,7 @@ bool RenderManager::materialFinalize(uint64_t materialHandle)
 
 	materialResource->materialIndex = static_cast<int32_t>(worldResource->materialBuffers.size());
 
-	RaytraceMaterialUniformBuffer uniformBufferRaytrace = {};
-
-	uniformBufferRaytrace.materialUniformBuffer = materialResource->materialUniformBuffer;
-
-	uniformBufferRaytrace.baseColorTexture = materialResource->baseColorTexture;
-	uniformBufferRaytrace.metallicRoughnessTexture = materialResource->metallicRoughnessTexture;
-	uniformBufferRaytrace.normalTexture = materialResource->normalTexture;
-	uniformBufferRaytrace.occlusionTexture = materialResource->occlusionTexture;
-	uniformBufferRaytrace.emissiveTexture = materialResource->emissiveTexture;
-
-	worldResource->materialBuffers.push_back(uniformBufferRaytrace);
+	worldResource->materialBuffers.push_back(materialResource->raytraceMaterialUniformBuffer);
 
 	//
 
@@ -2793,11 +2783,11 @@ void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex
 
 			//
 
-			if (materialResource->materialUniformBuffer.alphaMode == 2 && drawMode == OPAQUE)
+			if (materialResource->raytraceMaterialUniformBuffer.materialUniformBuffer.alphaMode == 2 && drawMode == OPAQUE)
 			{
 				return;
 			}
-			else if (materialResource->materialUniformBuffer.alphaMode != 2 && drawMode == TRANSPARENT)
+			else if (materialResource->raytraceMaterialUniformBuffer.materialUniformBuffer.alphaMode != 2 && drawMode == TRANSPARENT)
 			{
 				return;
 			}
