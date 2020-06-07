@@ -69,7 +69,10 @@ bool WorldBuilder::buildTextures()
 			textureResourceCreateInfo.samplerResourceCreateInfo.maxLod = glTF.samplers[texture.sampler].maxLod;
 		}
 
-		renderManager.textureSetParameters(textureHandle, textureResourceCreateInfo);
+		if (!renderManager.textureSetParameters(textureHandle, textureResourceCreateInfo))
+		{
+			return false;
+		}
 
 		if (!renderManager.textureFinalize(textureHandle))
 		{
@@ -154,7 +157,10 @@ bool WorldBuilder::buildMaterials()
 
 		materialUniformBuffer.doubleSided = material.doubleSided;
 
-		renderManager.materialSetFactorParameters(materialHandle, materialUniformBuffer);
+		if (!renderManager.materialSetFactorParameters(materialHandle, materialUniformBuffer))
+		{
+			return false;
+		}
 
 		if (!renderManager.materialFinalize(materialHandle))
 		{
@@ -366,7 +372,10 @@ bool WorldBuilder::buildMeshes()
 
 			//
 
-			renderManager.geometryFinalize(geometryHandle);
+			if (!renderManager.geometryFinalize(geometryHandle))
+			{
+				return false;
+			}
 
 			//
 
@@ -377,9 +386,15 @@ bool WorldBuilder::buildMeshes()
 
 			//
 
-			renderManager.geometryModelSetGeometry(geometryModelHandle, geometryHandle);
+			if (!renderManager.geometryModelSetGeometry(geometryModelHandle, geometryHandle))
+			{
+				return false;
+			}
 
-			renderManager.geometryModelSetMaterial(geometryModelHandle, materialHandles[primitive.material]);
+			if (!renderManager.geometryModelSetMaterial(geometryModelHandle, materialHandles[primitive.material]))
+			{
+				return false;
+			}
 
 			//
 
@@ -389,7 +404,10 @@ bool WorldBuilder::buildMeshes()
 				{
 					uint64_t targetHandle = (uint64_t)primitive.targetPositionData.data();
 
-					renderManager.sharedDataCreateStorageBuffer(targetHandle, sizeof(glm::vec3) * primitive.targetPositionData.size(), primitive.targetPositionData.data());
+					if (!renderManager.sharedDataCreateStorageBuffer(targetHandle, sizeof(glm::vec3) * primitive.targetPositionData.size(), primitive.targetPositionData.data()))
+					{
+						return false;
+					}
 
 					if (!renderManager.sharedDataFinalize(targetHandle))
 					{
@@ -408,7 +426,10 @@ bool WorldBuilder::buildMeshes()
 				{
 					uint64_t targetHandle = (uint64_t)primitive.targetNormalData.data();
 
-					renderManager.sharedDataCreateStorageBuffer(targetHandle, sizeof(glm::vec3) * primitive.targetNormalData.size(), primitive.targetNormalData.data());
+					if (!renderManager.sharedDataCreateStorageBuffer(targetHandle, sizeof(glm::vec3) * primitive.targetNormalData.size(), primitive.targetNormalData.data()))
+					{
+						return false;
+					}
 
 					if (!renderManager.sharedDataFinalize(targetHandle))
 					{
@@ -427,7 +448,10 @@ bool WorldBuilder::buildMeshes()
 				{
 					uint64_t targetHandle = (uint64_t)primitive.targetTangentData.data();
 
-					renderManager.sharedDataCreateStorageBuffer(targetHandle, sizeof(glm::vec3) * primitive.targetTangentData.size(), primitive.targetTangentData.data());
+					if (!renderManager.sharedDataCreateStorageBuffer(targetHandle, sizeof(glm::vec3) * primitive.targetTangentData.size(), primitive.targetTangentData.data()))
+					{
+						return false;
+					}
 
 					if (!renderManager.sharedDataFinalize(targetHandle))
 					{
@@ -483,10 +507,17 @@ bool WorldBuilder::buildMeshes()
 
 			//
 
-			renderManager.groupAddGeometryModel(groupHandle, geometryModelHandle);
+			if (!renderManager.groupAddGeometryModel(groupHandle, geometryModelHandle))
+			{
+				return false;
+			}
 		}
 
-		renderManager.groupFinalize(groupHandle);
+		if (!renderManager.groupFinalize(groupHandle))
+		{
+			return false;
+		}
+
 
 		//
 
@@ -506,11 +537,22 @@ bool WorldBuilder::buildNodes()
 
 		if (node.mesh >= 0)
 		{
-			renderManager.instanceSetWorldMatrix(instanceHandle, node.worldMatrix);
-			renderManager.instanceSetGroup(instanceHandle, groupHandles[node.mesh]);
+			if (!renderManager.instanceSetWorldMatrix(instanceHandle, node.worldMatrix))
+			{
+				return false;
+			}
+
+			if (!renderManager.instanceSetGroup(instanceHandle, groupHandles[node.mesh]))
+			{
+				return false;
+			}
+
 		}
 
-		renderManager.instanceFinalize(instanceHandle);
+		if (!renderManager.instanceFinalize(instanceHandle))
+		{
+			return false;
+		}
 
 		//
 
@@ -526,7 +568,10 @@ bool WorldBuilder::buildScene()
 	{
 		for (uint64_t instanceHandle : instanceHandles)
 		{
-			renderManager.worldAddInstance(instanceHandle);
+			if (!renderManager.worldAddInstance(instanceHandle))
+			{
+				return false;
+			}
 		}
 
 		if (!renderManager.worldFinalize())
@@ -546,13 +591,30 @@ bool WorldBuilder::build()
 {
 	worldHandle = (uint64_t)&glTF;
 
-	renderManager.lightSetEnvironment(worldHandle, environment);
-	renderManager.lightFinalize(worldHandle);
+	if (!renderManager.lightSetEnvironment(worldHandle, environment))
+	{
+		return false;
+	}
 
-	renderManager.cameraFinalize(worldHandle);
+	if (!renderManager.lightFinalize(worldHandle))
+	{
+		return false;
+	}
 
-	renderManager.worldSetLight(worldHandle);
-	renderManager.worldSetCamera(worldHandle);
+	if (!renderManager.cameraFinalize(worldHandle))
+	{
+		return false;
+	}
+
+	if (!renderManager.worldSetLight(worldHandle))
+	{
+		return false;
+	}
+
+	if (!renderManager.worldSetCamera(worldHandle))
+	{
+		return false;
+	}
 
 	// BufferViews
 
@@ -609,30 +671,22 @@ bool WorldBuilder::build()
 
 uint64_t WorldBuilder::getBufferHandle(const Accessor& accessor)
 {
-	uint64_t sharedDataHandle = 0;
-
 	if (accessor.aliasedBuffer.byteLength > 0)
 	{
-		sharedDataHandle = (uint64_t)&accessor.aliasedBufferView;
-
-		return sharedDataHandle;
+		return bufferViewToHandle[&accessor.aliasedBufferView];
 	}
 
 	if (accessor.sparse.count >= 1)
 	{
-		sharedDataHandle = (uint64_t)&accessor.sparse.bufferView;
-
-		return sharedDataHandle;
+		return bufferViewToHandle[&accessor.sparse.bufferView];
 	}
 
 	if (accessor.pBufferView == nullptr)
 	{
-		return sharedDataHandle;
+		return 0;
 	}
 
-	sharedDataHandle = (uint64_t)accessor.pBufferView;
-
-	return sharedDataHandle;
+	return bufferViewToHandle[accessor.pBufferView];
 }
 
 bool WorldBuilder::createSharedDataResource(const BufferView& bufferView)
@@ -641,11 +695,17 @@ bool WorldBuilder::createSharedDataResource(const BufferView& bufferView)
 
 	if (bufferView.target == 34963) // ELEMENT_ARRAY_BUFFER
 	{
-		renderManager.sharedDataCreateIndexBuffer(sharedDataHandle, bufferView.byteLength, HelperAccess::accessData(bufferView));
+		if (!renderManager.sharedDataCreateIndexBuffer(sharedDataHandle, bufferView.byteLength, HelperAccess::accessData(bufferView)))
+		{
+			return false;
+		}
 	}
 	else
 	{
-		renderManager.sharedDataCreateVertexBuffer(sharedDataHandle, bufferView.byteLength, HelperAccess::accessData(bufferView));
+		if (!renderManager.sharedDataCreateVertexBuffer(sharedDataHandle, bufferView.byteLength, HelperAccess::accessData(bufferView)))
+		{
+			return false;
+		}
 	}
 
 	if (!renderManager.sharedDataFinalize(sharedDataHandle))
@@ -653,11 +713,7 @@ bool WorldBuilder::createSharedDataResource(const BufferView& bufferView)
 		return false;
 	}
 
+	bufferViewToHandle[&bufferView] = sharedDataHandle;
+
 	return true;
 }
-
-void WorldBuilder::terminate()
-{
-	renderManager.terminate();
-}
-

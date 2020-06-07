@@ -2,6 +2,7 @@
 #define BUILDER_WORLDBUILDER_H_
 
 #include <cstdint>
+#include <map>
 #include <vector>
 
 #include "../composite/Composite.h"
@@ -17,6 +18,8 @@ private:
 	const std::string environment;
 
 	RenderManager& renderManager;
+
+	std::map<const BufferView*, uint64_t> bufferViewToHandle;
 
 	std::vector<uint64_t> textureHandles;
 	std::vector<uint64_t> materialHandles;
@@ -47,8 +50,6 @@ public:
 	WorldBuilder(const GLTF& glTF, const std::string& environment, RenderManager& resourceManager);
 
 	bool build();
-
-	void terminate();
 
 };
 
