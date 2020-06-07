@@ -958,7 +958,7 @@ bool RenderManager::textureFinalize(uint64_t textureHandle)
 
 	WorldResource* worldResource = getWorld();
 
-	textureDataResource->textureIndex = static_cast<uint32_t>(worldResource->descriptorImageInfoTextures.size());
+	textureDataResource->textureIndex = static_cast<int32_t>(worldResource->descriptorImageInfoTextures.size());
 
 	VkDescriptorImageInfo descriptorImageInfo = {};
 
