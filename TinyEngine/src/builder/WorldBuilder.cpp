@@ -691,7 +691,11 @@ uint64_t WorldBuilder::getBufferHandle(const Accessor& accessor)
 
 bool WorldBuilder::createSharedDataResource(const BufferView& bufferView)
 {
-	uint64_t sharedDataHandle = (uint64_t)&bufferView;
+	uint64_t sharedDataHandle;
+	if (!renderManager.sharedDataCreate(sharedDataHandle))
+	{
+		return false;
+	}
 
 	if (bufferView.target == 34963) // ELEMENT_ARRAY_BUFFER
 	{

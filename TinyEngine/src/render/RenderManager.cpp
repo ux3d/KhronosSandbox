@@ -339,7 +339,7 @@ bool RenderManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize si
 {
 	SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
 
-	if (sharedDataResource->finalized)
+	if (!sharedDataResource->created || sharedDataResource->finalized)
 	{
 		return false;
 	}
@@ -1043,7 +1043,7 @@ bool RenderManager::sharedDataFinalize(uint64_t sharedDataHandle)
 {
 	SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
 
-	if (sharedDataResource->finalized)
+	if (!sharedDataResource->created || sharedDataResource->finalized)
 	{
 		return false;
 	}
