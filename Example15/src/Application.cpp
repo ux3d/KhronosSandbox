@@ -33,28 +33,39 @@ bool Application::applicationInit()
 
 	//
 
-	uint64_t sharedDataHandle;
-	renderManager.sharedDataCreate(sharedDataHandle);
+	uint64_t positionDataHandle;
+	renderManager.sharedDataCreate(positionDataHandle);
 	float triangle[] = {
 			0.0f, -0.5f, 0.0f,
 			0.5f, 0.5f, 0.0f,
 			-0.5f, 0.5f, 0.0f
 	};
 	size_t size = 3 * 3 * sizeof(float);
-	renderManager.sharedDataCreateVertexBuffer(sharedDataHandle, size, (const void*)triangle);
-	renderManager.sharedDataFinalize(sharedDataHandle);
+	renderManager.sharedDataCreateVertexBuffer(positionDataHandle, size, (const void*)triangle);
+	renderManager.sharedDataFinalize(positionDataHandle);
+
+	uint64_t colorDataHandle;
+	renderManager.sharedDataCreate(colorDataHandle);
+	float color[] = {
+			1.0f, 0.0f, 0.0f,
+			0.0f, 1.0f, 0.0f,
+			0.0f, 0.0f, 1.0f
+	};
+	size = 3 * 3 * sizeof(float);
+	renderManager.sharedDataCreateVertexBuffer(colorDataHandle, size, (const void*)color);
+	renderManager.sharedDataFinalize(colorDataHandle);
 
 	uint64_t materialHandle;
 	renderManager.materialCreate(materialHandle);
 	MaterialParameters materialParameters;
 	materialParameters.doubleSided = true;
-	materialParameters.baseColorFactor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 	renderManager.materialSetParameters(materialHandle, materialParameters);
 	renderManager.materialFinalize(materialHandle);
 
 	uint64_t geometryHandle;
 	renderManager.geometryCreate(geometryHandle);
-	renderManager.geometrySetAttribute(geometryHandle, sharedDataHandle, "POSITION", 3, VK_FORMAT_R32G32B32_SFLOAT);
+	renderManager.geometrySetAttribute(geometryHandle, positionDataHandle, "POSITION", 3, VK_FORMAT_R32G32B32_SFLOAT);
+	renderManager.geometrySetAttribute(geometryHandle, colorDataHandle, "COLOR_0", 3, VK_FORMAT_R32G32B32_SFLOAT);
 	renderManager.geometryFinalize(geometryHandle);
 
 	uint64_t geometryModelHandle;
