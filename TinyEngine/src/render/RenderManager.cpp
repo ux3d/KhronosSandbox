@@ -1632,8 +1632,75 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		{
 			return false;
 		}
-	}
 
+		//
+		// Gather descriptor buffer info.
+		//
+
+		WorldResource* worldResource = getWorld();
+
+		if (!worldResource->created)
+		{
+			return false;
+		}
+
+		//
+
+		if (geometryModelResource->indicesCount > 0)
+		{
+			VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
+
+			currentDescriptorBufferInfo.buffer = geometryModelResource->indexBuffer;
+			currentDescriptorBufferInfo.offset = geometryModelResource->indexOffset;
+			currentDescriptorBufferInfo.range = geometryModelResource->indexRange;
+
+			worldResource->descriptorBufferInfoIndices.push_back(currentDescriptorBufferInfo);
+		}
+
+		if (geometryResource->positionAttributeIndex >= 0)
+		{
+			VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
+
+			currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->positionAttributeIndex];
+			currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->positionAttributeIndex];
+			currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->positionAttributeIndex];
+
+			worldResource->descriptorBufferInfoPosition.push_back(currentDescriptorBufferInfo);
+		}
+
+		if (geometryResource->normalAttributeIndex >= 0)
+		{
+			VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
+
+			currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->normalAttributeIndex];
+			currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->normalAttributeIndex];
+			currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->normalAttributeIndex];
+
+			worldResource->descriptorBufferInfoNormal.push_back(currentDescriptorBufferInfo);
+		}
+
+		if (geometryResource->tangentAttributeIndex >= 0)
+		{
+			VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
+
+			currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->tangentAttributeIndex];
+			currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->tangentAttributeIndex];
+			currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->tangentAttributeIndex];
+
+			worldResource->descriptorBufferInfoTangent.push_back(currentDescriptorBufferInfo);
+		}
+
+		if (geometryResource->texCoord0AttributeIndex >= 0)
+		{
+			VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
+
+			currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->texCoord0AttributeIndex];
+			currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->texCoord0AttributeIndex];
+			currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->texCoord0AttributeIndex];
+
+			worldResource->descriptorBufferInfoTexCoord0.push_back(currentDescriptorBufferInfo);
+		}
+	}
 
 	//
 
@@ -1757,65 +1824,6 @@ bool RenderManager::instanceFinalize(uint64_t instanceHandle)
 				}
 
 				worldResource->instanceResources.push_back(primitiveInformation);
-
-				//
-				// Gather descriptor buffer info.
-				//
-
-				if (geometryModelResource->indicesCount > 0)
-				{
-					VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
-
-					currentDescriptorBufferInfo.buffer = geometryModelResource->indexBuffer;
-					currentDescriptorBufferInfo.offset = geometryModelResource->indexOffset;
-					currentDescriptorBufferInfo.range = geometryModelResource->indexRange;
-
-					worldResource->descriptorBufferInfoIndices.push_back(currentDescriptorBufferInfo);
-				}
-
-				if (geometryResource->positionAttributeIndex >= 0)
-				{
-					VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
-
-					currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->positionAttributeIndex];
-					currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->positionAttributeIndex];
-					currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->positionAttributeIndex];
-
-					worldResource->descriptorBufferInfoPosition.push_back(currentDescriptorBufferInfo);
-				}
-
-				if (geometryResource->normalAttributeIndex >= 0)
-				{
-					VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
-
-					currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->normalAttributeIndex];
-					currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->normalAttributeIndex];
-					currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->normalAttributeIndex];
-
-					worldResource->descriptorBufferInfoNormal.push_back(currentDescriptorBufferInfo);
-				}
-
-				if (geometryResource->tangentAttributeIndex >= 0)
-				{
-					VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
-
-					currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->tangentAttributeIndex];
-					currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->tangentAttributeIndex];
-					currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->tangentAttributeIndex];
-
-					worldResource->descriptorBufferInfoTangent.push_back(currentDescriptorBufferInfo);
-				}
-
-				if (geometryResource->texCoord0AttributeIndex >= 0)
-				{
-					VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
-
-					currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->texCoord0AttributeIndex];
-					currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->texCoord0AttributeIndex];
-					currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->texCoord0AttributeIndex];
-
-					worldResource->descriptorBufferInfoTexCoord0.push_back(currentDescriptorBufferInfo);
-				}
 			}
 		}
 	}
