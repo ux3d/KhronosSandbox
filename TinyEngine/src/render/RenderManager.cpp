@@ -1663,6 +1663,163 @@ bool RenderManager::instanceFinalize(uint64_t instanceHandle)
 		return false;
 	}
 
+	if (useRaytrace)
+	{
+		WorldResource* worldResource = getWorld();
+
+		if (!worldResource->created)
+		{
+			return false;
+		}
+
+		//
+
+		VkTransformMatrixKHR transformMatrix = {
+			instanceResource->worldMatrix[0][0], instanceResource->worldMatrix[1][0], instanceResource->worldMatrix[2][0], instanceResource->worldMatrix[3][0],
+			instanceResource->worldMatrix[0][1], instanceResource->worldMatrix[1][1], instanceResource->worldMatrix[2][1], instanceResource->worldMatrix[3][1],
+			instanceResource->worldMatrix[0][2], instanceResource->worldMatrix[1][2], instanceResource->worldMatrix[2][2], instanceResource->worldMatrix[3][2]
+		};
+
+		if (instanceResource->groupHandle > 0)
+		{
+			GroupResource* groupResource = getGroup(instanceResource->groupHandle);
+
+			for (uint64_t geometryModelHandle : groupResource->geometryModelHandles)
+			{
+				GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
+
+				GeometryResource* geometryResource = getGeometry(geometryModelResource->geometryHandle);
+
+				MaterialResource* materialResource = getMaterial(geometryModelResource->materialHandle);
+
+				//
+
+				VkAccelerationStructureDeviceAddressInfoKHR accelerationStructureDeviceAddressInfo = {};
+				accelerationStructureDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
+				accelerationStructureDeviceAddressInfo.accelerationStructure = geometryModelResource->bottomLevelResource.levelResource.accelerationStructureResource.accelerationStructure;
+				VkDeviceAddress bottomDeviceAddress = vkGetAccelerationStructureDeviceAddressKHR(device, &accelerationStructureDeviceAddressInfo);
+
+				VkAccelerationStructureInstanceKHR accelerationStructureInstance = {};
+				accelerationStructureInstance.transform                              = transformMatrix;
+				accelerationStructureInstance.instanceCustomIndex                    = static_cast<uint32_t>(worldResource->instanceResources.size());
+				accelerationStructureInstance.mask                                   = 0xFF;
+				accelerationStructureInstance.instanceShaderBindingTableRecordOffset = 0;
+				accelerationStructureInstance.flags                                  = VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR;
+				accelerationStructureInstance.accelerationStructureReference         = bottomDeviceAddress;
+
+				worldResource->accelerationStructureInstances.push_back(accelerationStructureInstance);
+
+				uint32_t componentTypeSize = 1;
+				if (geometryModelResource->indexType == VK_INDEX_TYPE_UINT16)
+				{
+					componentTypeSize = 2;
+				}
+				else if (geometryModelResource->indexType == VK_INDEX_TYPE_UINT32)
+				{
+					componentTypeSize = 4;
+				}
+				else
+				{
+					return false;
+				}
+
+				RaytracePrimitiveUniformBuffer primitiveInformation = {};
+				primitiveInformation.materialIndex = materialResource->materialIndex;
+				primitiveInformation.componentTypeSize = componentTypeSize;
+				primitiveInformation.worldMatrix = instanceResource->worldMatrix;
+
+				if (geometryResource->normalAttributeIndex >= 0)
+				{
+					int32_t normalInstanceID = 0;
+					if (worldResource->instanceResources.size() > 0)
+					{
+						normalInstanceID = worldResource->instanceResources.back().normalInstanceID + 1;
+					}
+					primitiveInformation.normalInstanceID = normalInstanceID;
+				}
+				if (geometryResource->tangentAttributeIndex >= 0)
+				{
+					int32_t tangentInstanceID = 0;
+					if (worldResource->instanceResources.size() > 0)
+					{
+						tangentInstanceID = worldResource->instanceResources.back().tangentInstanceID + 1;
+					}
+					primitiveInformation.tangentInstanceID = tangentInstanceID;
+				}
+				if (geometryResource->texCoord0AttributeIndex >= 0)
+				{
+					int32_t texCoord0InstanceID = 0;
+					if (worldResource->instanceResources.size() > 0)
+					{
+						texCoord0InstanceID = worldResource->instanceResources.back().texCoord0InstanceID + 1;
+					}
+					primitiveInformation.texCoord0InstanceID = texCoord0InstanceID;
+				}
+
+				worldResource->instanceResources.push_back(primitiveInformation);
+
+				//
+				// Gather descriptor buffer info.
+				//
+
+				if (geometryModelResource->indicesCount > 0)
+				{
+					VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
+
+					currentDescriptorBufferInfo.buffer = geometryModelResource->indexBuffer;
+					currentDescriptorBufferInfo.offset = geometryModelResource->indexOffset;
+					currentDescriptorBufferInfo.range = geometryModelResource->indexRange;
+
+					worldResource->descriptorBufferInfoIndices.push_back(currentDescriptorBufferInfo);
+				}
+
+				if (geometryResource->positionAttributeIndex >= 0)
+				{
+					VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
+
+					currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->positionAttributeIndex];
+					currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->positionAttributeIndex];
+					currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->positionAttributeIndex];
+
+					worldResource->descriptorBufferInfoPosition.push_back(currentDescriptorBufferInfo);
+				}
+
+				if (geometryResource->normalAttributeIndex >= 0)
+				{
+					VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
+
+					currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->normalAttributeIndex];
+					currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->normalAttributeIndex];
+					currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->normalAttributeIndex];
+
+					worldResource->descriptorBufferInfoNormal.push_back(currentDescriptorBufferInfo);
+				}
+
+				if (geometryResource->tangentAttributeIndex >= 0)
+				{
+					VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
+
+					currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->tangentAttributeIndex];
+					currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->tangentAttributeIndex];
+					currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->tangentAttributeIndex];
+
+					worldResource->descriptorBufferInfoTangent.push_back(currentDescriptorBufferInfo);
+				}
+
+				if (geometryResource->texCoord0AttributeIndex >= 0)
+				{
+					VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
+
+					currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->texCoord0AttributeIndex];
+					currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->texCoord0AttributeIndex];
+					currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->texCoord0AttributeIndex];
+
+					worldResource->descriptorBufferInfoTexCoord0.push_back(currentDescriptorBufferInfo);
+				}
+			}
+		}
+	}
+
 	instanceResource->finalized = true;
 
 	return true;
@@ -1768,160 +1925,6 @@ bool RenderManager::worldFinalize()
 	{
 		TopLevelResourceCreateInfo topLevelResourceCreateInfo = {};
 
-		uint32_t primitiveInstanceID = 0;
-		int32_t normalInstanceID = 0;
-		int32_t tangentInstanceID = 0;
-		int32_t texCoord0InstanceID = 0;
-
-		std::vector<VkDescriptorBufferInfo> descriptorBufferInfoIndices;
-		std::vector<VkDescriptorBufferInfo> descriptorBufferInfoPosition;
-		std::vector<VkDescriptorBufferInfo> descriptorBufferInfoNormal;
-		std::vector<VkDescriptorBufferInfo> descriptorBufferInfoTangent;
-		std::vector<VkDescriptorBufferInfo> descriptorBufferInfoTexCoord0;
-
-		for (auto it : instanceResources)
-		{
-			InstanceResource* instanceResource = getInstance(it.first);
-
-			if (instanceResource->groupHandle > 0)
-			{
-				GroupResource* groupResource = getGroup(instanceResource->groupHandle);
-
-				VkAccelerationStructureDeviceAddressInfoKHR accelerationStructureDeviceAddressInfo = {};
-				accelerationStructureDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
-
-				VkTransformMatrixKHR transformMatrix = {
-					instanceResource->worldMatrix[0][0], instanceResource->worldMatrix[1][0], instanceResource->worldMatrix[2][0], instanceResource->worldMatrix[3][0],
-					instanceResource->worldMatrix[0][1], instanceResource->worldMatrix[1][1], instanceResource->worldMatrix[2][1], instanceResource->worldMatrix[3][1],
-					instanceResource->worldMatrix[0][2], instanceResource->worldMatrix[1][2], instanceResource->worldMatrix[2][2], instanceResource->worldMatrix[3][2]
-				};
-
-				for (uint64_t geometryModelHandle : groupResource->geometryModelHandles)
-				{
-					GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
-
-					GeometryResource* geometryResource = getGeometry(geometryModelResource->geometryHandle);
-
-					MaterialResource* materialResource = getMaterial(geometryModelResource->materialHandle);
-
-					//
-
-					accelerationStructureDeviceAddressInfo.accelerationStructure = geometryModelResource->bottomLevelResource.levelResource.accelerationStructureResource.accelerationStructure;
-					VkDeviceAddress bottomDeviceAddress = vkGetAccelerationStructureDeviceAddressKHR(device, &accelerationStructureDeviceAddressInfo);
-
-					VkAccelerationStructureInstanceKHR accelerationStructureInstance = {};
-					accelerationStructureInstance.transform                              = transformMatrix;
-					accelerationStructureInstance.instanceCustomIndex                    = primitiveInstanceID;
-					accelerationStructureInstance.mask                                   = 0xFF;
-					accelerationStructureInstance.instanceShaderBindingTableRecordOffset = 0;
-					accelerationStructureInstance.flags                                  = VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR;
-					accelerationStructureInstance.accelerationStructureReference         = bottomDeviceAddress;
-
-					worldResource->accelerationStructureInstances.push_back(accelerationStructureInstance);
-
-					uint32_t componentTypeSize = 1;
-					if (geometryModelResource->indexType == VK_INDEX_TYPE_UINT16)
-					{
-						componentTypeSize = 2;
-					}
-					else if (geometryModelResource->indexType == VK_INDEX_TYPE_UINT32)
-					{
-						componentTypeSize = 4;
-					}
-					else
-					{
-						return false;
-					}
-
-					RaytracePrimitiveUniformBuffer primitiveInformation = {};
-					primitiveInformation.materialIndex = materialResource->materialIndex;
-					primitiveInformation.componentTypeSize = componentTypeSize;
-					primitiveInformation.worldMatrix = instanceResource->worldMatrix;
-
-					if (geometryResource->normalAttributeIndex >= 0)
-					{
-						primitiveInformation.normalInstanceID = normalInstanceID;
-
-						normalInstanceID++;
-					}
-					if (geometryResource->tangentAttributeIndex >= 0)
-					{
-						primitiveInformation.tangentInstanceID = tangentInstanceID;
-
-						tangentInstanceID++;
-					}
-					if (geometryResource->texCoord0AttributeIndex >= 0)
-					{
-						primitiveInformation.texCoord0InstanceID = texCoord0InstanceID;
-
-						texCoord0InstanceID++;
-					}
-
-					worldResource->instanceResources.push_back(primitiveInformation);
-
-					primitiveInstanceID++;
-
-					//
-					// Gather descriptor buffer info.
-					//
-
-					if (geometryModelResource->indicesCount > 0)
-					{
-						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
-
-						currentDescriptorBufferInfo.buffer = geometryModelResource->indexBuffer;
-						currentDescriptorBufferInfo.offset = geometryModelResource->indexOffset;
-						currentDescriptorBufferInfo.range = geometryModelResource->indexRange;
-
-						descriptorBufferInfoIndices.push_back(currentDescriptorBufferInfo);
-					}
-
-					if (geometryResource->positionAttributeIndex >= 0)
-					{
-						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
-
-						currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->positionAttributeIndex];
-						currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->positionAttributeIndex];
-						currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->positionAttributeIndex];
-
-						descriptorBufferInfoPosition.push_back(currentDescriptorBufferInfo);
-					}
-
-					if (geometryResource->normalAttributeIndex >= 0)
-					{
-						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
-
-						currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->normalAttributeIndex];
-						currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->normalAttributeIndex];
-						currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->normalAttributeIndex];
-
-						descriptorBufferInfoNormal.push_back(currentDescriptorBufferInfo);
-					}
-
-					if (geometryResource->tangentAttributeIndex >= 0)
-					{
-						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
-
-						currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->tangentAttributeIndex];
-						currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->tangentAttributeIndex];
-						currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->tangentAttributeIndex];
-
-						descriptorBufferInfoTangent.push_back(currentDescriptorBufferInfo);
-					}
-
-					if (geometryResource->texCoord0AttributeIndex >= 0)
-					{
-						VkDescriptorBufferInfo currentDescriptorBufferInfo = {};
-
-						currentDescriptorBufferInfo.buffer = geometryResource->vertexBuffers[geometryResource->texCoord0AttributeIndex];
-						currentDescriptorBufferInfo.offset = geometryResource->vertexBuffersOffsets[geometryResource->texCoord0AttributeIndex];
-						currentDescriptorBufferInfo.range =  geometryResource->vertexBuffersRanges[geometryResource->texCoord0AttributeIndex];
-
-						descriptorBufferInfoTexCoord0.push_back(currentDescriptorBufferInfo);
-					}
-				}
-			}
-		}
 		BufferResourceCreateInfo bufferResourceCreateInfo = {};
 		bufferResourceCreateInfo.size = sizeof(VkAccelerationStructureInstanceKHR) * worldResource->accelerationStructureInstances.size();
 		bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
@@ -2074,43 +2077,43 @@ bool RenderManager::worldFinalize()
 		raytraceDescriptorSetLayoutBinding = {};
 		raytraceDescriptorSetLayoutBinding.binding         = indicesBinding;
 		raytraceDescriptorSetLayoutBinding.descriptorType  = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoIndices.size());
+		raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(worldResource->descriptorBufferInfoIndices.size());
 		raytraceDescriptorSetLayoutBinding.stageFlags      = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
 		raytraceDescriptorSetLayoutBindings.push_back(raytraceDescriptorSetLayoutBinding);
 
 		raytraceDescriptorSetLayoutBinding = {};
 		raytraceDescriptorSetLayoutBinding.binding         = positionBinding;
 		raytraceDescriptorSetLayoutBinding.descriptorType  = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoPosition.size());
+		raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(worldResource->descriptorBufferInfoPosition.size());
 		raytraceDescriptorSetLayoutBinding.stageFlags      = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
 		raytraceDescriptorSetLayoutBindings.push_back(raytraceDescriptorSetLayoutBinding);
 
-		if (descriptorBufferInfoNormal.size() > 0)
+		if (worldResource->descriptorBufferInfoNormal.size() > 0)
 		{
 			raytraceDescriptorSetLayoutBinding = {};
 			raytraceDescriptorSetLayoutBinding.binding         = normalBinding;
 			raytraceDescriptorSetLayoutBinding.descriptorType  = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoNormal.size());
+			raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(worldResource->descriptorBufferInfoNormal.size());
 			raytraceDescriptorSetLayoutBinding.stageFlags      = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
 			raytraceDescriptorSetLayoutBindings.push_back(raytraceDescriptorSetLayoutBinding);
 		}
 
-		if (descriptorBufferInfoTangent.size() > 0)
+		if (worldResource->descriptorBufferInfoTangent.size() > 0)
 		{
 			raytraceDescriptorSetLayoutBinding = {};
 			raytraceDescriptorSetLayoutBinding.binding         = tangentBinding;
 			raytraceDescriptorSetLayoutBinding.descriptorType  = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoTangent.size());
+			raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(worldResource->descriptorBufferInfoTangent.size());
 			raytraceDescriptorSetLayoutBinding.stageFlags      = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
 			raytraceDescriptorSetLayoutBindings.push_back(raytraceDescriptorSetLayoutBinding);
 		}
 
-		if (descriptorBufferInfoTexCoord0.size() > 0)
+		if (worldResource->descriptorBufferInfoTexCoord0.size() > 0)
 		{
 			raytraceDescriptorSetLayoutBinding = {};
 			raytraceDescriptorSetLayoutBinding.binding         = texCoord0Binding;
 			raytraceDescriptorSetLayoutBinding.descriptorType  = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoTexCoord0.size());
+			raytraceDescriptorSetLayoutBinding.descriptorCount = static_cast<uint32_t>(worldResource->descriptorBufferInfoTexCoord0.size());
 			raytraceDescriptorSetLayoutBinding.stageFlags      = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
 			raytraceDescriptorSetLayoutBindings.push_back(raytraceDescriptorSetLayoutBinding);
 		}
@@ -2175,35 +2178,35 @@ bool RenderManager::worldFinalize()
 
 		raytraceDescriptorPoolSize = {};
 		raytraceDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoIndices.size());
+		raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(worldResource->descriptorBufferInfoIndices.size());
 		raytraceDescriptorPoolSizes.push_back(raytraceDescriptorPoolSize);
 
 		raytraceDescriptorPoolSize = {};
 		raytraceDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoPosition.size());
+		raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(worldResource->descriptorBufferInfoPosition.size());
 		raytraceDescriptorPoolSizes.push_back(raytraceDescriptorPoolSize);
 
-		if (descriptorBufferInfoNormal.size() > 0)
+		if (worldResource->descriptorBufferInfoNormal.size() > 0)
 		{
 			raytraceDescriptorPoolSize = {};
 			raytraceDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoNormal.size());
+			raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(worldResource->descriptorBufferInfoNormal.size());
 			raytraceDescriptorPoolSizes.push_back(raytraceDescriptorPoolSize);
 		}
 
-		if (descriptorBufferInfoTangent.size() > 0)
+		if (worldResource->descriptorBufferInfoTangent.size() > 0)
 		{
 			raytraceDescriptorPoolSize = {};
 			raytraceDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoTangent.size());
+			raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(worldResource->descriptorBufferInfoTangent.size());
 			raytraceDescriptorPoolSizes.push_back(raytraceDescriptorPoolSize);
 		}
 
-		if (descriptorBufferInfoTexCoord0.size() > 0)
+		if (worldResource->descriptorBufferInfoTexCoord0.size() > 0)
 		{
 			raytraceDescriptorPoolSize = {};
 			raytraceDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoTexCoord0.size());
+			raytraceDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(worldResource->descriptorBufferInfoTexCoord0.size());
 			raytraceDescriptorPoolSizes.push_back(raytraceDescriptorPoolSize);
 		}
 
@@ -2349,48 +2352,48 @@ bool RenderManager::worldFinalize()
 		writeDescriptorSet.dstSet = worldResource->raytraceDescriptorSet;
 		writeDescriptorSet.dstBinding = indicesBinding;
 		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		writeDescriptorSet.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoIndices.size());
-		writeDescriptorSet.pBufferInfo = descriptorBufferInfoIndices.data();
+		writeDescriptorSet.descriptorCount = static_cast<uint32_t>(worldResource->descriptorBufferInfoIndices.size());
+		writeDescriptorSet.pBufferInfo = worldResource->descriptorBufferInfoIndices.data();
 		writeDescriptorSets.push_back(writeDescriptorSet);
 
 		writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		writeDescriptorSet.dstSet = worldResource->raytraceDescriptorSet;
 		writeDescriptorSet.dstBinding = positionBinding;
 		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		writeDescriptorSet.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoPosition.size());
-		writeDescriptorSet.pBufferInfo = descriptorBufferInfoPosition.data();
+		writeDescriptorSet.descriptorCount = static_cast<uint32_t>(worldResource->descriptorBufferInfoPosition.size());
+		writeDescriptorSet.pBufferInfo = worldResource->descriptorBufferInfoPosition.data();
 		writeDescriptorSets.push_back(writeDescriptorSet);
 
-		if (descriptorBufferInfoNormal.size() > 0)
+		if (worldResource->descriptorBufferInfoNormal.size() > 0)
 		{
 			writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			writeDescriptorSet.dstSet = worldResource->raytraceDescriptorSet;
 			writeDescriptorSet.dstBinding = normalBinding;
 			writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			writeDescriptorSet.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoNormal.size());
-			writeDescriptorSet.pBufferInfo = descriptorBufferInfoNormal.data();
+			writeDescriptorSet.descriptorCount = static_cast<uint32_t>(worldResource->descriptorBufferInfoNormal.size());
+			writeDescriptorSet.pBufferInfo = worldResource->descriptorBufferInfoNormal.data();
 			writeDescriptorSets.push_back(writeDescriptorSet);
 		}
 
-		if (descriptorBufferInfoTangent.size() > 0)
+		if (worldResource->descriptorBufferInfoTangent.size() > 0)
 		{
 			writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			writeDescriptorSet.dstSet = worldResource->raytraceDescriptorSet;
 			writeDescriptorSet.dstBinding = tangentBinding;
 			writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			writeDescriptorSet.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoTangent.size());
-			writeDescriptorSet.pBufferInfo = descriptorBufferInfoTangent.data();
+			writeDescriptorSet.descriptorCount = static_cast<uint32_t>(worldResource->descriptorBufferInfoTangent.size());
+			writeDescriptorSet.pBufferInfo = worldResource->descriptorBufferInfoTangent.data();
 			writeDescriptorSets.push_back(writeDescriptorSet);
 		}
 
-		if (descriptorBufferInfoTexCoord0.size() > 0)
+		if (worldResource->descriptorBufferInfoTexCoord0.size() > 0)
 		{
 			writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			writeDescriptorSet.dstSet = worldResource->raytraceDescriptorSet;
 			writeDescriptorSet.dstBinding = texCoord0Binding;
 			writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			writeDescriptorSet.descriptorCount = static_cast<uint32_t>(descriptorBufferInfoTexCoord0.size());
-			writeDescriptorSet.pBufferInfo = descriptorBufferInfoTexCoord0.data();
+			writeDescriptorSet.descriptorCount = static_cast<uint32_t>(worldResource->descriptorBufferInfoTexCoord0.size());
+			writeDescriptorSet.pBufferInfo = worldResource->descriptorBufferInfoTexCoord0.data();
 			writeDescriptorSets.push_back(writeDescriptorSet);
 		}
 
@@ -2448,15 +2451,15 @@ bool RenderManager::worldFinalize()
 			macros["HAS_TEXTURES"] = "";
 		}
 
-		if (descriptorBufferInfoNormal.size() > 0)
+		if (worldResource->descriptorBufferInfoNormal.size() > 0)
 		{
 			macros["NORMAL_VEC3"] = "";
 		}
-		if (descriptorBufferInfoTangent.size() > 0)
+		if (worldResource->descriptorBufferInfoTangent.size() > 0)
 		{
 			macros["TANGENT_VEC4"] = "";
 		}
-		if (descriptorBufferInfoTexCoord0.size() > 0)
+		if (worldResource->descriptorBufferInfoTexCoord0.size() > 0)
 		{
 			macros["TEXCOORD0_VEC2"] = "";
 		}

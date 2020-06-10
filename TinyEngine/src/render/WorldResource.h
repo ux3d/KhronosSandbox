@@ -90,6 +90,13 @@ struct WorldResource : BaseResource {
 	BufferResource shaderBindingBufferResource = {};
 	uint32_t shaderGroupHandleSize = 0;
 	uint32_t shaderGroupBaseAlignment = 0;
+
+	std::vector<VkDescriptorBufferInfo> descriptorBufferInfoIndices;
+	std::vector<VkDescriptorBufferInfo> descriptorBufferInfoPosition;
+	std::vector<VkDescriptorBufferInfo> descriptorBufferInfoNormal;
+	std::vector<VkDescriptorBufferInfo> descriptorBufferInfoTangent;
+	std::vector<VkDescriptorBufferInfo> descriptorBufferInfoTexCoord0;
+
 };
 
 #endif /* RENDER_WORLDRENDER_H_ */
