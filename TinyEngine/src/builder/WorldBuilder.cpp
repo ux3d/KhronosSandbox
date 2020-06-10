@@ -509,7 +509,7 @@ bool WorldBuilder::buildMeshes()
 					indexType = VK_INDEX_TYPE_UINT32;
 				}
 
-				if (!renderManager.geometryModelResourceSetIndices(geometryModelHandle, getBufferHandle(glTF.accessors[primitive.indices]), glTF.accessors[primitive.indices].count, indexType, HelperAccess::getOffset(glTF.accessors[primitive.indices]), HelperAccess::getRange(glTF.accessors[primitive.indices])))
+				if (!renderManager.geometryModelSetIndices(geometryModelHandle, getBufferHandle(glTF.accessors[primitive.indices]), glTF.accessors[primitive.indices].count, indexType, HelperAccess::getOffset(glTF.accessors[primitive.indices]), HelperAccess::getRange(glTF.accessors[primitive.indices])))
 				{
 					return false;
 				}

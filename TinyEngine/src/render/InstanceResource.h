@@ -13,7 +13,7 @@ struct InstanceResource : BaseResource {
 
 	uint64_t groupHandle;
 
-	glm::mat4 worldMatrix;
+	glm::mat4 worldMatrix = glm::mat4(1.0f);
 
 };
 

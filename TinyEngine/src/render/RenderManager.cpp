@@ -873,7 +873,7 @@ bool RenderManager::geometryModelSetVertexCount(uint64_t geometryModelHandle, ui
 	return true;
 }
 
-bool RenderManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle, uint64_t sharedDataHandle, uint32_t indicesCount, VkIndexType indexType, uint32_t indexOffset, uint32_t indexRange)
+bool RenderManager::geometryModelSetIndices(uint64_t geometryModelHandle, uint64_t sharedDataHandle, uint32_t indicesCount, VkIndexType indexType, uint32_t indexOffset, uint32_t indexRange)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
