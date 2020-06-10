@@ -52,7 +52,11 @@ bool WorldBuilder::buildTextures()
 	{
 		const Texture& texture = glTF.textures[i];
 
-		uint64_t textureHandle = (uint64_t)&texture;
+		uint64_t textureHandle;
+		if (!renderManager.textureCreate(textureHandle))
+		{
+			return false;
+		}
 
 		TextureResourceCreateInfo textureResourceCreateInfo = {};
 		textureResourceCreateInfo.imageDataResources = glTF.images[texture.source].imageDataResources;
@@ -93,7 +97,11 @@ bool WorldBuilder::buildMaterials()
 	{
 		const Material& material = glTF.materials[i];
 
-		uint64_t materialHandle = (uint64_t)&material;
+		uint64_t materialHandle;
+		if (!renderManager.materialCreate(materialHandle))
+		{
+			return false;
+		}
 
 		// Metallic Roughness
 		if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
@@ -181,14 +189,27 @@ bool WorldBuilder::buildMeshes()
 	{
 		const Mesh& mesh = glTF.meshes[i];
 
-		uint64_t groupHandle = (uint64_t)&mesh;
+		uint64_t groupHandle;
+		if (!renderManager.groupCreate(groupHandle))
+		{
+			return false;
+		}
 
 		for (size_t k = 0; k < mesh.primitives.size(); k++)
 		{
 			const Primitive& primitive = mesh.primitives[k];
 
-			uint64_t geometryHandle = (uint64_t)&primitive;
-			uint64_t geometryModelHandle = (uint64_t)&primitive;
+			uint64_t geometryHandle;
+			if (!renderManager.geometryCreate(geometryHandle))
+			{
+				return false;
+			}
+
+			uint64_t geometryModelHandle;
+			if (!renderManager.geometryModelCreate(geometryModelHandle))
+			{
+				return false;
+			}
 
 			if (primitive.position >= 0)
 			{
@@ -402,7 +423,11 @@ bool WorldBuilder::buildMeshes()
 			{
 				if (primitive.targetPositionData.size() > 0)
 				{
-					uint64_t targetHandle = (uint64_t)primitive.targetPositionData.data();
+					uint64_t targetHandle;
+					if (!renderManager.sharedDataCreate(targetHandle))
+					{
+						return false;
+					}
 
 					if (!renderManager.sharedDataCreateStorageBuffer(targetHandle, sizeof(glm::vec3) * primitive.targetPositionData.size(), primitive.targetPositionData.data()))
 					{
@@ -414,9 +439,7 @@ bool WorldBuilder::buildMeshes()
 						return false;
 					}
 
-					uint64_t sharedDataHandle = (uint64_t)primitive.targetPositionData.data();
-
-					if (!renderManager.geometryModelSetTarget(geometryModelHandle, sharedDataHandle, "POSITION"))
+					if (!renderManager.geometryModelSetTarget(geometryModelHandle, targetHandle, "POSITION"))
 					{
 						return false;
 					}
@@ -424,7 +447,11 @@ bool WorldBuilder::buildMeshes()
 
 				if (primitive.targetNormalData.size() > 0)
 				{
-					uint64_t targetHandle = (uint64_t)primitive.targetNormalData.data();
+					uint64_t targetHandle;
+					if (!renderManager.sharedDataCreate(targetHandle))
+					{
+						return false;
+					}
 
 					if (!renderManager.sharedDataCreateStorageBuffer(targetHandle, sizeof(glm::vec3) * primitive.targetNormalData.size(), primitive.targetNormalData.data()))
 					{
@@ -436,9 +463,7 @@ bool WorldBuilder::buildMeshes()
 						return false;
 					}
 
-					uint64_t sharedDataHandle = (uint64_t)primitive.targetNormalData.data();
-
-					if (!renderManager.geometryModelSetTarget(geometryModelHandle, sharedDataHandle, "NORMAL"))
+					if (!renderManager.geometryModelSetTarget(geometryModelHandle, targetHandle, "NORMAL"))
 					{
 						return false;
 					}
@@ -446,7 +471,11 @@ bool WorldBuilder::buildMeshes()
 
 				if (primitive.targetTangentData.size() > 0)
 				{
-					uint64_t targetHandle = (uint64_t)primitive.targetTangentData.data();
+					uint64_t targetHandle;
+					if (!renderManager.sharedDataCreate(targetHandle))
+					{
+						return false;
+					}
 
 					if (!renderManager.sharedDataCreateStorageBuffer(targetHandle, sizeof(glm::vec3) * primitive.targetTangentData.size(), primitive.targetTangentData.data()))
 					{
@@ -458,9 +487,7 @@ bool WorldBuilder::buildMeshes()
 						return false;
 					}
 
-					uint64_t sharedDataHandle = (uint64_t)primitive.targetTangentData.data();
-
-					if (!renderManager.geometryModelSetTarget(geometryModelHandle, sharedDataHandle, "TANGENT"))
+					if (!renderManager.geometryModelSetTarget(geometryModelHandle, targetHandle, "TANGENT"))
 					{
 						return false;
 					}
@@ -533,7 +560,13 @@ bool WorldBuilder::buildNodes()
 	{
 		const Node& node = glTF.nodes[i];
 
-		uint64_t instanceHandle = (uint64_t)&node;
+		uint64_t instanceHandle;
+		if (!renderManager.instanceCreate(instanceHandle))
+		{
+			return false;
+		}
+
+		nodeToHandles[&node] = instanceHandle;
 
 		if (node.mesh >= 0)
 		{
@@ -573,11 +606,6 @@ bool WorldBuilder::buildScene()
 				return false;
 			}
 		}
-
-		if (!renderManager.worldFinalize())
-		{
-			return false;
-		}
 	}
 	else
 	{
@@ -589,29 +617,50 @@ bool WorldBuilder::buildScene()
 
 bool WorldBuilder::build()
 {
-	worldHandle = (uint64_t)&glTF;
-
-	if (!renderManager.lightSetEnvironment(worldHandle, environment))
+	if (!renderManager.worldCreate())
 	{
 		return false;
 	}
 
-	if (!renderManager.lightFinalize(worldHandle))
+	//
+
+	uint64_t lightHandle;
+	if (!renderManager.lightCreate(lightHandle))
 	{
 		return false;
 	}
 
-	if (!renderManager.cameraFinalize(worldHandle))
+	if (!renderManager.lightSetEnvironment(lightHandle, environment))
 	{
 		return false;
 	}
 
-	if (!renderManager.worldSetLight(worldHandle))
+	if (!renderManager.lightFinalize(lightHandle))
 	{
 		return false;
 	}
 
-	if (!renderManager.worldSetCamera(worldHandle))
+	//
+
+	uint64_t cameraHandle;
+	if (!renderManager.cameraCreate(cameraHandle))
+	{
+		return false;
+	}
+
+	if (!renderManager.cameraFinalize(cameraHandle))
+	{
+		return false;
+	}
+
+	//
+
+	if (!renderManager.worldSetLight(lightHandle))
+	{
+		return false;
+	}
+
+	if (!renderManager.worldSetCamera(cameraHandle))
 	{
 		return false;
 	}
@@ -661,6 +710,11 @@ bool WorldBuilder::build()
 	// Scene
 
 	if (!buildScene())
+	{
+		return false;
+	}
+
+	if (!renderManager.worldFinalize())
 	{
 		return false;
 	}
@@ -720,4 +774,9 @@ bool WorldBuilder::createSharedDataResource(const BufferView& bufferView)
 	bufferViewToHandle[&bufferView] = sharedDataHandle;
 
 	return true;
+}
+
+std::map<const Node*, uint64_t> WorldBuilder::cloneNodeToHandles() const
+{
+	return nodeToHandles;
 }

@@ -542,7 +542,7 @@ bool RenderManager::textureSetParameters(uint64_t textureHandle, const TextureRe
 {
 	TextureDataResource* textureDataResource = getTexture(textureHandle);
 
-	if (textureDataResource->finalized)
+	if (!textureDataResource->created || textureDataResource->finalized)
 	{
 		return false;
 	}
@@ -556,7 +556,7 @@ bool RenderManager::materialSetFactorParameters(uint64_t materialHandle, const M
 {
 	MaterialResource* materialResource = getMaterial(materialHandle);
 
-	if (materialResource->finalized)
+	if (!materialResource->created || materialResource->finalized)
 	{
 		return false;
 	}
@@ -570,7 +570,7 @@ bool RenderManager::materialSetTexture(uint64_t materialHandle, uint64_t texture
 {
 	MaterialResource* materialResource = getMaterial(materialHandle);
 
-	if (materialResource->finalized)
+	if (!materialResource->created || materialResource->finalized)
 	{
 		return false;
 	}
@@ -632,7 +632,7 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 {
 	GeometryResource* geometryResource = getGeometry(geometryHandle);
 
-	if (geometryResource->finalized)
+	if (!geometryResource->created || geometryResource->finalized)
 	{
 		return false;
 	}
@@ -817,7 +817,7 @@ bool RenderManager::geometryModelSetGeometry(uint64_t geometryModelHandle, uint6
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
-	if (geometryModelResource->finalized)
+	if (!geometryModelResource->created || geometryModelResource->finalized)
 	{
 		return false;
 	}
@@ -840,7 +840,7 @@ bool RenderManager::geometryModelSetMaterial(uint64_t geometryModelHandle, uint6
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
-	if (geometryModelResource->finalized)
+	if (!geometryModelResource->created || geometryModelResource->finalized)
 	{
 		return false;
 	}
@@ -863,7 +863,7 @@ bool RenderManager::geometryModelSetVertexCount(uint64_t geometryModelHandle, ui
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
-	if (geometryModelResource->finalized)
+	if (!geometryModelResource->created || geometryModelResource->finalized)
 	{
 		return false;
 	}
@@ -877,7 +877,7 @@ bool RenderManager::geometryModelResourceSetIndices(uint64_t geometryModelHandle
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
-	if (geometryModelResource->finalized)
+	if (!geometryModelResource->created || geometryModelResource->finalized)
 	{
 		return false;
 	}
@@ -895,7 +895,7 @@ bool RenderManager::geometryModelSetTarget(uint64_t geometryModelHandle, uint64_
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
-	if (geometryModelResource->finalized)
+	if (!geometryModelResource->created || geometryModelResource->finalized)
 	{
 		return false;
 	}
@@ -931,7 +931,7 @@ bool RenderManager::geometryModelSetCullMode(uint64_t geometryModelHandle, VkCul
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
-	if (geometryModelResource->finalized)
+	if (!geometryModelResource->created || geometryModelResource->finalized)
 	{
 		return false;
 	}
@@ -945,7 +945,7 @@ bool RenderManager::groupAddGeometryModel(uint64_t groupHandle, uint64_t geometr
 {
 	GroupResource* groupResource = getGroup(groupHandle);
 
-	if (groupResource->finalized)
+	if (!groupResource->created || groupResource->finalized)
 	{
 		return false;
 	}
@@ -959,7 +959,7 @@ bool RenderManager::instanceSetWorldMatrix(uint64_t instanceHandle, const glm::m
 {
 	InstanceResource* instanceResource = getInstance(instanceHandle);
 
-	if (instanceResource->finalized)
+	if (!instanceResource->created || instanceResource->finalized)
 	{
 		return false;
 	}
@@ -973,7 +973,7 @@ bool RenderManager::instanceSetGroup(uint64_t instanceHandle, uint64_t groupHand
 {
 	InstanceResource* instanceResource = getInstance(instanceHandle);
 
-	if (instanceResource->finalized)
+	if (!instanceResource->created || instanceResource->finalized)
 	{
 		return false;
 	}
@@ -987,7 +987,7 @@ bool RenderManager::lightSetEnvironment(uint64_t lightHandle, const std::string&
 {
 	LightResource* lightResource = getLight(lightHandle);
 
-	if (lightResource->finalized)
+	if (!lightResource->created || lightResource->finalized)
 	{
 		return false;
 	}
@@ -1001,7 +1001,7 @@ bool RenderManager::worldAddInstance(uint64_t instanceHandle)
 {
 	WorldResource* worldResource = getWorld();
 
-	if (worldResource->finalized)
+	if (!worldResource->created || worldResource->finalized)
 	{
 		return false;
 	}
@@ -1015,7 +1015,7 @@ bool RenderManager::worldSetLight(uint64_t lightHandle)
 {
 	WorldResource* worldResource = getWorld();
 
-	if (worldResource->finalized)
+	if (!worldResource->created || worldResource->finalized)
 	{
 		return false;
 	}
@@ -1029,7 +1029,7 @@ bool RenderManager::worldSetCamera(uint64_t cameraHandle)
 {
 	WorldResource* worldResource = getWorld();
 
-	if (worldResource->finalized)
+	if (!worldResource->created || worldResource->finalized)
 	{
 		return false;
 	}
@@ -1078,7 +1078,7 @@ bool RenderManager::textureFinalize(uint64_t textureHandle)
 {
 	TextureDataResource* textureDataResource = getTexture(textureHandle);
 
-	if (textureDataResource->finalized)
+	if (!textureDataResource->created || textureDataResource->finalized)
 	{
 		return false;
 	}
@@ -1113,11 +1113,10 @@ bool RenderManager::materialFinalize(uint64_t materialHandle)
 {
 	MaterialResource* materialResource = getMaterial(materialHandle);
 
-	if (materialResource->finalized)
+	if (!materialResource->created || materialResource->finalized)
 	{
 		return false;
 	}
-
 
 	//
 
@@ -1333,7 +1332,7 @@ bool RenderManager::geometryFinalize(uint64_t geometryHandle)
 {
 	GeometryResource* geometryResource = getGeometry(geometryHandle);
 
-	if (geometryResource->finalized)
+	if (!geometryResource->created || geometryResource->finalized)
 	{
 		return false;
 	}
@@ -1347,7 +1346,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
-	if (geometryModelResource->finalized)
+	if (!geometryModelResource->created || geometryModelResource->finalized)
 	{
 		return false;
 	}
@@ -1624,7 +1623,7 @@ bool RenderManager::groupFinalize(uint64_t groupHandle)
 {
 	GroupResource* groupResource = getGroup(groupHandle);
 
-	if (groupResource->finalized)
+	if (!groupResource->created || groupResource->finalized)
 	{
 		return false;
 	}
@@ -1638,7 +1637,7 @@ bool RenderManager::instanceFinalize(uint64_t instanceHandle)
 {
 	InstanceResource* instanceResource = getInstance(instanceHandle);
 
-	if (instanceResource->finalized)
+	if (!instanceResource->created || instanceResource->finalized)
 	{
 		return false;
 	}
@@ -1652,7 +1651,7 @@ bool RenderManager::lightFinalize(uint64_t lightHandle)
 {
 	LightResource* lightResource = getLight(lightHandle);
 
-	if (lightResource->finalized)
+	if (!lightResource->created || lightResource->finalized)
 	{
 		return false;
 	}
@@ -1723,7 +1722,7 @@ bool RenderManager::cameraFinalize(uint64_t cameraHandle)
 {
 	CameraResource* cameraResource = getCamera(cameraHandle);
 
-	if (cameraResource->finalized)
+	if (!cameraResource->created || cameraResource->finalized)
 	{
 		return false;
 	}
@@ -1737,7 +1736,7 @@ bool RenderManager::worldFinalize()
 {
 	WorldResource* worldResource = getWorld();
 
-	if (worldResource->finalized)
+	if (!worldResource->created || worldResource->finalized)
 	{
 		return false;
 	}
@@ -2673,6 +2672,11 @@ bool RenderManager::worldGetCamera(uint64_t& cameraHandle)
 {
 	WorldResource* worldResource = getWorld();
 
+	if (!worldResource->created || !worldResource->finalized)
+	{
+		return false;
+	}
+
 	if (worldResource->cameraHandle > 0)
 	{
 		cameraHandle = worldResource->cameraHandle;
@@ -2687,7 +2691,7 @@ bool RenderManager::instanceUpdateWorldMatrix(uint64_t instanceHandle, const glm
 {
 	InstanceResource* instanceResource = getInstance(instanceHandle);
 
-	if (!instanceResource->finalized)
+	if (!instanceResource->created || !instanceResource->finalized)
 	{
 		return false;
 	}
@@ -2701,7 +2705,7 @@ bool RenderManager::cameraUpdateProjectionMatrix(uint64_t cameraHandle, const gl
 {
 	CameraResource* cameraResource = getCamera(cameraHandle);
 
-	if (!cameraResource->finalized)
+	if (!cameraResource->created || !cameraResource->finalized)
 	{
 		return false;
 	}
@@ -2720,7 +2724,7 @@ bool RenderManager::cameraUpdateViewMatrix(uint64_t cameraHandle, const glm::mat
 {
 	CameraResource* cameraResource = getCamera(cameraHandle);
 
-	if (!cameraResource->finalized)
+	if (!cameraResource->created || !cameraResource->finalized)
 	{
 		return false;
 	}

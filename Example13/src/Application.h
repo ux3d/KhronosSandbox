@@ -10,6 +10,7 @@ private:
 	RenderManager renderManager;
 	GLTF glTF;
 	AnimationController animationController;
+	std::map<const Node*, uint64_t> nodeToHandles;
 
 	std::string filename = "";
 	std::string environment = "";

@@ -20,12 +20,12 @@ private:
 	RenderManager& renderManager;
 
 	std::map<const BufferView*, uint64_t> bufferViewToHandle;
+	std::map<const Node*, uint64_t> nodeToHandles;
 
 	std::vector<uint64_t> textureHandles;
 	std::vector<uint64_t> materialHandles;
 	std::vector<uint64_t> groupHandles;
 	std::vector<uint64_t> instanceHandles;
-	uint64_t worldHandle = 0;
 
 	bool buildBufferViews();
 
@@ -50,6 +50,8 @@ public:
 	WorldBuilder(const GLTF& glTF, const std::string& environment, RenderManager& resourceManager);
 
 	bool build();
+
+	std::map<const Node*, uint64_t> cloneNodeToHandles() const;
 
 };
 
