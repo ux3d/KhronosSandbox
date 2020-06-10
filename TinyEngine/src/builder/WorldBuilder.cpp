@@ -147,25 +147,25 @@ bool WorldBuilder::buildMaterials()
 
 		//
 
-		MaterialUniformBuffer materialUniformBuffer = {};
+		MaterialParameters materialParameters = {};
 
-		materialUniformBuffer.baseColorFactor = material.pbrMetallicRoughness.baseColorFactor;
+		materialParameters.baseColorFactor = material.pbrMetallicRoughness.baseColorFactor;
 
-		materialUniformBuffer.metallicFactor = material.pbrMetallicRoughness.metallicFactor;
-		materialUniformBuffer.roughnessFactor = material.pbrMetallicRoughness.roughnessFactor;
+		materialParameters.metallicFactor = material.pbrMetallicRoughness.metallicFactor;
+		materialParameters.roughnessFactor = material.pbrMetallicRoughness.roughnessFactor;
 
-		materialUniformBuffer.normalScale = material.normalTexture.scale;
+		materialParameters.normalScale = material.normalTexture.scale;
 
-		materialUniformBuffer.occlusionStrength = material.occlusionTexture.strength;
+		materialParameters.occlusionStrength = material.occlusionTexture.strength;
 
-		materialUniformBuffer.emissiveFactor = material.emissiveFactor;
+		materialParameters.emissiveFactor = material.emissiveFactor;
 
-		materialUniformBuffer.alphaMode = material.alphaMode;
-		materialUniformBuffer.alphaCutoff = material.alphaCutoff;
+		materialParameters.alphaMode = material.alphaMode;
+		materialParameters.alphaCutoff = material.alphaCutoff;
 
-		materialUniformBuffer.doubleSided = material.doubleSided;
+		materialParameters.doubleSided = material.doubleSided;
 
-		if (!renderManager.materialSetFactorParameters(materialHandle, materialUniformBuffer))
+		if (!renderManager.materialSetParameters(materialHandle, materialParameters))
 		{
 			return false;
 		}

@@ -46,10 +46,10 @@ bool Application::applicationInit()
 
 	uint64_t materialHandle;
 	renderManager.materialCreate(materialHandle);
-	MaterialUniformBuffer materialUniformBuffer;
-	materialUniformBuffer.doubleSided = true;
-	materialUniformBuffer.baseColorFactor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-	renderManager.materialSetFactorParameters(materialHandle, materialUniformBuffer);
+	MaterialParameters materialParameters;
+	materialParameters.doubleSided = true;
+	materialParameters.baseColorFactor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	renderManager.materialSetParameters(materialHandle, materialParameters);
 	renderManager.materialFinalize(materialHandle);
 
 	uint64_t geometryHandle;

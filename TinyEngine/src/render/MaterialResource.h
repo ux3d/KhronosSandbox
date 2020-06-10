@@ -11,7 +11,7 @@
 
 #include "BaseResource.h"
 
-struct MaterialUniformBuffer {
+struct MaterialParameters {
 	glm::vec4 baseColorFactor = glm::vec4(1.0f);
 
 	float metallicFactor = 1.0f;
@@ -27,7 +27,7 @@ struct MaterialUniformBuffer {
 };
 
 struct RaytraceMaterialUniformBuffer {
-	MaterialUniformBuffer materialUniformBuffer;
+	MaterialParameters materialParameters;
 
 	int32_t baseColorTexture = -1;
 	int32_t metallicRoughnessTexture = -1;

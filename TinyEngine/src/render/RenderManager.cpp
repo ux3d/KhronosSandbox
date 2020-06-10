@@ -552,7 +552,7 @@ bool RenderManager::textureSetParameters(uint64_t textureHandle, const TextureRe
 	return true;
 }
 
-bool RenderManager::materialSetFactorParameters(uint64_t materialHandle, const MaterialUniformBuffer& materialUniformBuffer)
+bool RenderManager::materialSetParameters(uint64_t materialHandle, const MaterialParameters& materialParameters)
 {
 	MaterialResource* materialResource = getMaterial(materialHandle);
 
@@ -561,7 +561,7 @@ bool RenderManager::materialSetFactorParameters(uint64_t materialHandle, const M
 		return false;
 	}
 
-	materialResource->raytraceMaterialUniformBuffer.materialUniformBuffer = materialUniformBuffer;
+	materialResource->raytraceMaterialUniformBuffer.materialParameters = materialParameters;
 
 	return true;
 }
@@ -1143,7 +1143,7 @@ bool RenderManager::materialFinalize(uint64_t materialHandle)
 
 	UniformBufferResourceCreateInfo uniformBufferResourceCreateInfo = {};
 
-	uniformBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(MaterialUniformBuffer);
+	uniformBufferResourceCreateInfo.bufferResourceCreateInfo.size = sizeof(MaterialParameters);
 	uniformBufferResourceCreateInfo.bufferResourceCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 
 	if (!VulkanResource::createUniformBufferResource(physicalDevice, device, materialResource->uniformBufferResource, uniformBufferResourceCreateInfo))
@@ -1151,7 +1151,7 @@ bool RenderManager::materialFinalize(uint64_t materialHandle)
 		return false;
 	}
 
-	if (!VulkanResource::copyHostToDevice(device, materialResource->uniformBufferResource.bufferResource, &materialResource->raytraceMaterialUniformBuffer.materialUniformBuffer, sizeof(materialResource->raytraceMaterialUniformBuffer.materialUniformBuffer)))
+	if (!VulkanResource::copyHostToDevice(device, materialResource->uniformBufferResource.bufferResource, &materialResource->raytraceMaterialUniformBuffer.materialParameters, sizeof(materialResource->raytraceMaterialUniformBuffer.materialParameters)))
 	{
 		return false;
 	}
@@ -1175,7 +1175,7 @@ bool RenderManager::materialFinalize(uint64_t materialHandle)
 	VkDescriptorBufferInfo descriptorBufferInfo = {};
 	descriptorBufferInfo.buffer = materialResource->uniformBufferResource.bufferResource.buffer;
 	descriptorBufferInfo.offset = 0;
-	descriptorBufferInfo.range = sizeof(MaterialUniformBuffer);
+	descriptorBufferInfo.range = sizeof(MaterialParameters);
 	materialResource->descriptorBufferInfos.push_back(descriptorBufferInfo);
 
 	materialResource->macros["UNIFORMBUFFER_BINDING"] = std::to_string(binding);
@@ -2962,11 +2962,11 @@ void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex
 
 			//
 
-			if (materialResource->raytraceMaterialUniformBuffer.materialUniformBuffer.alphaMode == 2 && drawMode == OPAQUE)
+			if (materialResource->raytraceMaterialUniformBuffer.materialParameters.alphaMode == 2 && drawMode == OPAQUE)
 			{
 				return;
 			}
-			else if (materialResource->raytraceMaterialUniformBuffer.materialUniformBuffer.alphaMode != 2 && drawMode == TRANSPARENT)
+			else if (materialResource->raytraceMaterialUniformBuffer.materialParameters.alphaMode != 2 && drawMode == TRANSPARENT)
 			{
 				return;
 			}

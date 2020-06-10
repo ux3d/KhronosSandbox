@@ -126,7 +126,7 @@ public:
 
 	bool textureSetParameters(uint64_t textureHandle, const TextureResourceCreateInfo& textureResourceCreateInfo);
 
-	bool materialSetFactorParameters(uint64_t materialHandle, const MaterialUniformBuffer& materialUniformBuffer);
+	bool materialSetParameters(uint64_t materialHandle, const MaterialParameters& materialParameters);
 	bool materialSetTexture(uint64_t materialHandle, uint64_t textureHandle, const std::string& description, uint32_t texCoord = 0);
 
 	bool geometrySetAttribute(uint64_t geometryHandle, uint64_t sharedDataHandle, const std::string& description, uint32_t count, VkFormat format, uint32_t stride, VkDeviceSize offset, VkDeviceSize range);
