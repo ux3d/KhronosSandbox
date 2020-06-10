@@ -40,8 +40,8 @@ bool Application::applicationInit()
 			0.5f, 0.5f, 0.0f,
 			-0.5f, 0.5f, 0.0f
 	};
-	size_t range = 3 * 3 * sizeof(float);
-	renderManager.sharedDataCreateVertexBuffer(sharedDataHandle, range, (const void*)triangle);
+	size_t size = 3 * 3 * sizeof(float);
+	renderManager.sharedDataCreateVertexBuffer(sharedDataHandle, size, (const void*)triangle);
 	renderManager.sharedDataFinalize(sharedDataHandle);
 
 	uint64_t materialHandle;
@@ -54,7 +54,7 @@ bool Application::applicationInit()
 
 	uint64_t geometryHandle;
 	renderManager.geometryCreate(geometryHandle);
-	renderManager.geometrySetAttribute(geometryHandle, sharedDataHandle, "POSITION", 3, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float), 0, range);
+	renderManager.geometrySetAttribute(geometryHandle, sharedDataHandle, "POSITION", 3, VK_FORMAT_R32G32B32_SFLOAT);
 	renderManager.geometryFinalize(geometryHandle);
 
 	uint64_t geometryModelHandle;

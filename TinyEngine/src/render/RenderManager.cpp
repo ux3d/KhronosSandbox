@@ -813,6 +813,27 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 	return true;
 }
 
+bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t sharedDataHandle, const std::string& description, uint32_t count, VkFormat format)
+{
+	uint32_t typeCount;
+	if (!HelperVulkan::getTypeCount(typeCount, format))
+	{
+		return false;
+	}
+
+	uint32_t componentTypeSize;
+	if (!HelperVulkan::getComponentTypeSize(componentTypeSize, format))
+	{
+		return false;
+	}
+
+	uint32_t stride = typeCount * componentTypeSize;
+	VkDeviceSize offset = 0;
+	VkDeviceSize range = count * stride;
+
+	return geometrySetAttribute(geometryHandle, sharedDataHandle, description, count, format, stride, offset, range);
+}
+
 bool RenderManager::geometryModelSetGeometry(uint64_t geometryModelHandle, uint64_t geometryHandle)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);

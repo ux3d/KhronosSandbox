@@ -130,6 +130,7 @@ public:
 	bool materialSetTexture(uint64_t materialHandle, uint64_t textureHandle, const std::string& description, uint32_t texCoord = 0);
 
 	bool geometrySetAttribute(uint64_t geometryHandle, uint64_t sharedDataHandle, const std::string& description, uint32_t count, VkFormat format, uint32_t stride, VkDeviceSize offset, VkDeviceSize range);
+	bool geometrySetAttribute(uint64_t geometryHandle, uint64_t sharedDataHandle, const std::string& description, uint32_t count, VkFormat format);
 
 	bool geometryModelSetGeometry(uint64_t geometryModelHandle, uint64_t geometryHandle);
 	bool geometryModelSetMaterial(uint64_t geometryModelHandle, uint64_t materialHandle);
