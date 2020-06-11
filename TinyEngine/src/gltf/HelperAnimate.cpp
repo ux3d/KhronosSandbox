@@ -14,10 +14,10 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 
 	Node& node = *channel.target.targetNode;
 
-	std::vector<float> x;
-	std::vector<float> y;
-	std::vector<float> xout;
-	std::vector<float> yin;
+	const float* x;
+	const float* y;
+	const float* xout;
+	const float* yin;
 
 	uint32_t typeCount = 1;
 	if (channel.target.path == translation || channel.target.path == scale)
@@ -33,11 +33,6 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 		typeCount = static_cast<uint32_t>(node.weights.size());
 	}
 
-	x.resize(typeCount);
-	y.resize(typeCount);
-	xout.resize(typeCount);
-	yin.resize(typeCount);
-
 	uint32_t elementCount = 1;
 	uint32_t elementOffset = 0;
 	if (sampler.interpolation == CUBICSPLINE)
@@ -47,17 +42,17 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 	}
 	uint32_t offset = typeCount * elementCount;
 
-	memcpy(x.data(), &sampler.outputValues[startIndex * offset + elementOffset], sizeof(float) * typeCount);
+	x = &sampler.outputValues[startIndex * offset + elementOffset];
 	if (sampler.interpolation == CUBICSPLINE)
 	{
-		memcpy(xout.data(), &sampler.outputValues[startIndex * offset + elementOffset * 2], sizeof(float) * typeCount);
+		xout = &sampler.outputValues[startIndex * offset + elementOffset * 2];
 	}
 	if (stopIndex != -1)
 	{
-		memcpy(y.data(), &sampler.outputValues[stopIndex * offset + elementOffset], sizeof(float) * typeCount);
+		y = &sampler.outputValues[stopIndex * offset + elementOffset];
 		if (sampler.interpolation == CUBICSPLINE)
 		{
-			memcpy(yin.data(), &sampler.outputValues[stopIndex * offset], sizeof(float) * typeCount);
+			yin = &sampler.outputValues[stopIndex * offset];
 		}
 	}
 
