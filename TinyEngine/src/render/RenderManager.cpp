@@ -945,6 +945,8 @@ bool RenderManager::geometryModelSetTarget(uint64_t geometryModelHandle, uint64_
 		return false;
 	}
 
+	geometryModelResource->macros["HAS_TARGET_" + targetName] = "";
+
 	return true;
 }
 
@@ -1375,6 +1377,58 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 	geometryModelResource->finalized = true;
 
 	//
+
+	GeometryResource* geometryResource = getGeometry(geometryModelResource->geometryHandle);
+
+	if (!geometryResource->finalized)
+	{
+		return false;
+	}
+
+	//
+
+	uint32_t binding = 0;
+
+	std::vector<VkDescriptorSetLayout> setLayouts;
+
+	if (geometryModelResource->materialHandle > 0)
+	{
+		MaterialResource* materialResource = getMaterial(geometryModelResource->materialHandle);
+
+		if (materialResource->descriptorSetLayout != VK_NULL_HANDLE)
+		{
+			setLayouts.push_back(materialResource->descriptorSetLayout);
+		}
+
+		if (materialResource->descriptorSetLayoutBindings.size() > 0)
+		{
+			binding = materialResource->descriptorSetLayoutBindings.back().binding + 1;
+		}
+	}
+
+	//
+	// Update target bindings if available.
+	//
+
+	// TODO: Create descriptor sets etc. for target data.
+
+	if (geometryModelResource->macros.find("HAS_TARGET_POSITION") != geometryModelResource->macros.end())
+	{
+		geometryModelResource->macros["TARGET_POSITION_BINDING"] = std::to_string(binding);
+		binding++;
+	}
+	if (geometryModelResource->macros.find("HAS_TARGET_NORMAL") != geometryModelResource->macros.end())
+	{
+		geometryModelResource->macros["TARGET_NORMAL_BINDING"] = std::to_string(binding);
+		binding++;
+	}
+	if (geometryModelResource->macros.find("HAS_TARGET_TANGENT") != geometryModelResource->macros.end())
+	{
+		geometryModelResource->macros["TARGET_TANGENT_BINDING"] = std::to_string(binding);
+		binding++;
+	}
+
+	//
 	// Load the shader code.
 	//
 
@@ -1432,13 +1486,6 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 
 	//
 	//
-
-	GeometryResource* geometryResource = getGeometry(geometryModelResource->geometryHandle);
-
-	if (!geometryResource->finalized)
-	{
-		return false;
-	}
 
 	VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo = {};
 	pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -1523,25 +1570,6 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 
 	//
 
-	uint32_t setLayoutCount = 0;
-	const VkDescriptorSetLayout* pSetLayouts = nullptr;
-
-	if (geometryModelResource->materialHandle > 0)
-	{
-		MaterialResource* materialResource = getMaterial(geometryModelResource->materialHandle);
-
-		if (!geometryResource->finalized)
-		{
-			return false;
-		}
-
-		if (materialResource->descriptorSetLayout != VK_NULL_HANDLE)
-		{
-			setLayoutCount = 1;
-			pSetLayouts = &materialResource->descriptorSetLayout;
-		}
-	}
-
 	VkPushConstantRange pushConstantRange = {};
     pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
     pushConstantRange.offset = 0;
@@ -1549,8 +1577,8 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 
 	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
 	pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutCreateInfo.setLayoutCount = setLayoutCount;
-	pipelineLayoutCreateInfo.pSetLayouts = pSetLayouts;
+	pipelineLayoutCreateInfo.setLayoutCount = static_cast<uint32_t>(setLayouts.size());
+	pipelineLayoutCreateInfo.pSetLayouts = setLayouts.data();
 	pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
 	pipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;
 

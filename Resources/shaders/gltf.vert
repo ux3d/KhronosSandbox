@@ -48,6 +48,16 @@ layout (location = 7) out vec4 out_color;
 layout (location = 7) out vec4 out_color;
 #endif
 
+#ifdef HAS_TARGET_POSITION
+layout (binding = TARGET_POSITION_BINDING) buffer Position { vec3 i[]; } u_targetPosition;
+#endif
+#ifdef HAS_TARGET_NORMAL
+layout (binding = TARGET_NORMAL_BINDING) buffer Normal { vec3 i[]; } u_targetNormal;
+#endif
+#ifdef HAS_TARGET_TANGENT
+layout (binding = TARGET_TANGENT_BINDING) buffer Tangent { vec3 i[]; } u_targetTangent;
+#endif
+
 layout (location = 8) flat out float out_determinant;
 
 void main()
