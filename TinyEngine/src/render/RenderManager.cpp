@@ -930,15 +930,15 @@ bool RenderManager::geometryModelSetTarget(uint64_t geometryModelHandle, uint64_
 
 	if (targetName == "POSITION")
 	{
-		geometryModelResource->targetPosition = &sharedDataResource->storageBufferResource;
+		geometryModelResource->targetPositionHandle = sharedDataHandle;
 	}
 	else if (targetName == "NORMAL")
 	{
-		geometryModelResource->targetNormal = &sharedDataResource->storageBufferResource;
+		geometryModelResource->targetNormalHandle = sharedDataHandle;
 	}
 	else if (targetName == "TANGENT")
 	{
-		geometryModelResource->targetTangent = &sharedDataResource->storageBufferResource;
+		geometryModelResource->targetTangentHandle = sharedDataHandle;
 	}
 	else
 	{
@@ -1410,21 +1410,22 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 	// Update target bindings if available.
 	//
 
-	// TODO: Create descriptor sets etc. for target data.
-
 	if (geometryModelResource->macros.find("HAS_TARGET_POSITION") != geometryModelResource->macros.end())
 	{
 		geometryModelResource->macros["TARGET_POSITION_BINDING"] = std::to_string(binding);
+
 		binding++;
 	}
 	if (geometryModelResource->macros.find("HAS_TARGET_NORMAL") != geometryModelResource->macros.end())
 	{
 		geometryModelResource->macros["TARGET_NORMAL_BINDING"] = std::to_string(binding);
+
 		binding++;
 	}
 	if (geometryModelResource->macros.find("HAS_TARGET_TANGENT") != geometryModelResource->macros.end())
 	{
 		geometryModelResource->macros["TARGET_TANGENT_BINDING"] = std::to_string(binding);
+
 		binding++;
 	}
 
