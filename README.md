@@ -9,6 +9,16 @@ The TinyEngine requires Vulkan 1.2 and several extensions for raytracing. Howeve
 
 ![Components](Architecture/components.png)
 
+## Work in Progress
+
+### Engine  
+
+- [ ] Refactor and cleanup render component
+
+### glTF  
+- [ ] Morphing
+- [ ] Skinning
+
 ## How to build?
 - [Vulkan SDK 1.2.135.0 or later](https://vulkan.lunarg.com/sdk/home)
 - [NVIDIA Vulkan 1.2 Developer Beta Driver or later for raytracing](https://developer.nvidia.com/vulkan-driver)
