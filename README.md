@@ -1,7 +1,6 @@
-# TinyEngine for glTF 2.0 raytracing and rasterizing using Vulkan
+# Sandbox for Vulkan incl. raytracing, SPIR-V, glTF and OpenXR
 
-This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a sandbox to evaluate raytracing vs. rasterizing [glTF 2.0](https://github.com/KhronosGroup/glTF/tree/master/specification/2.0) using [Vulkan](https://www.khronos.org/vulkan/) with it's Metallic-Roughness material model.  
-The TinyEngine requires Vulkan 1.2 and several extensions for raytracing. However, the TinyEngine can also be setup for Vulkan 1.0 and 1.1.
+This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a sandbox to evaluate [Khronos](https://www.khronos.org/) API's like [Vulkan](https://www.khronos.org/vulkan/) incl. [raytracing](https://www.khronos.org/blog/ray-tracing-in-vulkan), [SPIR-V](https://www.khronos.org/spir/), [glTF](https://www.khronos.org/gltf/) and [OpenXR](https://www.khronos.org/openxr/).
 
 ![Screenshot DamagedHelmet](screenshot.jpg)
 
@@ -11,18 +10,22 @@ The TinyEngine requires Vulkan 1.2 and several extensions for raytracing. Howeve
 
 ## Work in Progress
 
-### Engine  
-
+### Vulkan  
 - [ ] Refactor and cleanup render component
+
+### SPIR-V
+- Done
 
 ### glTF  
 - [ ] Morphing
 - [ ] Skinning
 
+### OpenXR  
+- [ ] Initial component
+
 ## How to build?
 - [Vulkan SDK 1.2.135.0 or later](https://vulkan.lunarg.com/sdk/home)
-- [NVIDIA Vulkan 1.2 Developer Beta Driver or later for raytracing](https://developer.nvidia.com/vulkan-driver)
-   - NVIDIA GPU capable for raytracing
+  - [NVIDIA Vulkan 1.2 Developer Beta Driver or later for raytracing](https://developer.nvidia.com/vulkan-driver)
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
    - GCC for Linux
    - [MinGW64](https://www.msys2.org/) for Windows 
