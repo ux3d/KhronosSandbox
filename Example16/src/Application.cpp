@@ -4,6 +4,13 @@
 
 bool Application::applicationInit()
 {
+	if (!xrEngine.init())
+	{
+		return false;
+	}
+
+	//
+
 	renderManager.renderSetupVulkan(physicalDevice, device, queue, commandPool);
 	renderManager.renderRasterizeSetRenderPass(renderPass);
 	renderManager.renderRasterizeSetSamples(samples);
@@ -130,6 +137,8 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 void Application::applicationTerminate()
 {
 	renderManager.terminate();
+
+	xrEngine.terminate();
 }
 
 // Public
