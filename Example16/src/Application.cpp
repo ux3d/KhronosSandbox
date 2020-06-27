@@ -4,7 +4,7 @@
 
 bool Application::applicationInit()
 {
-	if (!xrEngine.init(instance, physicalDevice, device, queueFamilyIndex.value(), 0))
+	if (!xrEngine.init(instance, physicalDevice, device, queueFamilyIndex.value(), 0, surfaceFormat.format))
 	{
 		return false;
 	}

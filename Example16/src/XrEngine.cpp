@@ -1,7 +1,6 @@
 #include "XrEngine.h"
 
 #include <cstring>
-#include <vector>
 
 XrEngine::XrEngine()
 {
@@ -55,7 +54,7 @@ bool XrEngine::prepare()
 	return true;
 }
 
-bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDevice, VkDevice vulkanDevice, uint32_t vulkanQueueFamilyIndex, uint32_t vulkanQueueIndex)
+bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDevice, VkDevice vulkanDevice, uint32_t vulkanQueueFamilyIndex, uint32_t vulkanQueueIndex, VkFormat vulkanFormat)
 {
 	std::vector<const char*> enabledInstanceExtensionNames;
 	enabledInstanceExtensionNames.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
@@ -176,9 +175,84 @@ bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDe
 		return false;
 	}
 
-	// TODO: Create swapchains.
+	//
 
-	// TODO: Create spaces.
+	uint32_t formatCount = 0;
+	result = xrEnumerateSwapchainFormats(session, 0, &formatCount, nullptr);
+	if (result != XR_SUCCESS || formatCount == 0)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+    std::vector<int64_t> formats(formatCount);
+    result = xrEnumerateSwapchainFormats(session, formatCount, &formatCount, formats.data());
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+	int64_t swapchainFormat = 0;
+	for (int64_t currentFormat : formats)
+	{
+		if ((VkFormat)currentFormat == vulkanFormat)
+		{
+			swapchainFormat = currentFormat;
+			break;
+		}
+	}
+
+	if (swapchainFormat == 0)
+	{
+		return false;
+	}
+
+	//
+
+    uint32_t viewCount = 0;
+    result = xrEnumerateViewConfigurationViews(instance, systemId, viewConfigurationType, 0, &viewCount, nullptr);
+	if (result != XR_SUCCESS || viewCount == 0)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+	std::vector<XrViewConfigurationView> viewConfigurationView(viewCount);
+	result = xrEnumerateViewConfigurationViews(instance, systemId, viewConfigurationType, viewCount, &viewCount, viewConfigurationView.data());
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+	swapchains.resize(viewCount);
+
+	for (uint32_t i = 0; i < viewCount; i++)
+	{
+	    XrSwapchainCreateInfo swapchainCreateInfo = {};
+	    swapchainCreateInfo.type = XR_TYPE_SWAPCHAIN_CREATE_INFO;
+	    swapchainCreateInfo.arraySize = 1;
+	    swapchainCreateInfo.format = swapchainFormat;
+	    swapchainCreateInfo.width = viewConfigurationView[i].recommendedImageRectWidth;
+	    swapchainCreateInfo.height = viewConfigurationView[i].recommendedImageRectHeight;
+	    swapchainCreateInfo.mipCount = 1;
+	    swapchainCreateInfo.faceCount = 1;
+	    swapchainCreateInfo.sampleCount = viewConfigurationView[i].recommendedSwapchainSampleCount;
+	    swapchainCreateInfo.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
+
+	    result = xrCreateSwapchain(session, &swapchainCreateInfo, &swapchains[i]);
+		if (result != XR_SUCCESS)
+		{
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+			return false;
+		}
+	}
 
 	return true;
 }
@@ -195,6 +269,12 @@ bool XrEngine::update()
 
 bool XrEngine::terminate()
 {
+	for (XrSwapchain swapchain : swapchains)
+	{
+		xrDestroySwapchain(swapchain);
+	}
+	swapchains.clear();
+
 	if (session != XR_NULL_HANDLE)
 	{
 		xrDestroySession(session);

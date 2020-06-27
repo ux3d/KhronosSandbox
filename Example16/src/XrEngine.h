@@ -4,6 +4,7 @@
 #include "TinyEngine.h"
 
 #include <cstdint>
+#include <vector>
 
 #define XR_USE_GRAPHICS_API_VULKAN
 #include <openxr/openxr.h>
@@ -25,6 +26,8 @@ private:
 	XrEnvironmentBlendMode environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
 	XrSession session = XR_NULL_HANDLE;
 
+	std::vector<XrSwapchain> swapchains;
+
 	bool bindFunctions();
 
 public:
@@ -33,7 +36,7 @@ public:
 
 	bool prepare();
 
-	bool init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDevice, VkDevice vulkanDevice, uint32_t vulkanQueueFamilyIndex, uint32_t vulkanQueueIndex);
+	bool init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDevice, VkDevice vulkanDevice, uint32_t vulkanQueueFamilyIndex, uint32_t vulkanQueueIndex, VkFormat vulkanFormat);
 	bool resize();
 	bool update();
 	bool terminate();
