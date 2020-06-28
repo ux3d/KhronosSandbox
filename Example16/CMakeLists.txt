@@ -38,6 +38,7 @@ target_include_directories(Example16 PRIVATE
 	${PROJECT_SOURCE_DIR}/../Third-Party/GitHub/stb
 	${PROJECT_SOURCE_DIR}/../Third-Party/GitHub/tinygltf
 	${PROJECT_SOURCE_DIR}/../Third-Party/GitHub/volk
+	${PROJECT_SOURCE_DIR}/../Third-Party/GitHub/OpenXR-SDK/include
 	$ENV{VULKAN_SDK}/include
 	${PROJECT_SOURCE_DIR}/../TinyEngine/src
 	${PROJECT_SOURCE_DIR}/../TinyEngine/src/gui/imgui
@@ -45,6 +46,7 @@ target_include_directories(Example16 PRIVATE
 
 target_link_libraries(Example16 PRIVATE
 	TinyEngine
+	openxr_loader
 	glfw3
 	slimktx2
 	volk
