@@ -3,7 +3,6 @@
 	<name>Example16</name>
 	<comment></comment>
 	<projects>
-		<project>OPENXR@OpenXR-SDK-Source_build</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
