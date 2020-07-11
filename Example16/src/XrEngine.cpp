@@ -254,6 +254,23 @@ bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDe
 		}
 	}
 
+	//
+
+    XrReferenceSpaceCreateInfo referenceSpaceCreateInfo = {};
+    referenceSpaceCreateInfo.type = XR_TYPE_REFERENCE_SPACE_CREATE_INFO;
+
+    referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
+    referenceSpaceCreateInfo.poseInReferenceSpace.orientation = {0.0f, 0.0f, 0.0f, 1.0f};
+    referenceSpaceCreateInfo.poseInReferenceSpace.position = {0.0f, 0.0f, 0.0f};
+
+    result = xrCreateReferenceSpace(session, &referenceSpaceCreateInfo, &space);
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
 	return true;
 }
 
@@ -264,11 +281,42 @@ bool XrEngine::resize()
 
 bool XrEngine::update()
 {
+	XrResult result = XR_SUCCESS;
+
+	//
+
+	do {
+		XrEventDataBuffer eventDataBuffer = {};
+		eventDataBuffer.type = XR_TYPE_EVENT_DATA_BUFFER;
+
+		result = xrPollEvent(instance, &eventDataBuffer);
+		if (result == XR_SUCCESS)
+		{
+			Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "OpenXR Event: %u", eventDataBuffer.type);
+		}
+		else if (result != XR_EVENT_UNAVAILABLE)
+		{
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+			return false;
+		}
+	} while (result == XR_SUCCESS);
+
+	//
+
+	// TODO: Render frame.
+
 	return true;
 }
 
 bool XrEngine::terminate()
 {
+	if (space != XR_NULL_HANDLE)
+	{
+		xrDestroySpace(space);
+		space = XR_NULL_HANDLE;
+	}
+
 	for (XrSwapchain swapchain : swapchains)
 	{
 		xrDestroySwapchain(swapchain);

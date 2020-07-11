@@ -28,6 +28,8 @@ private:
 
 	std::vector<XrSwapchain> swapchains;
 
+	XrSpace space = XR_NULL_HANDLE;
+
 	bool bindFunctions();
 
 public:

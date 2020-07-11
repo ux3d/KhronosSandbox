@@ -50,6 +50,13 @@ bool Application::applicationInit()
 
 bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime)
 {
+	if (!xrEngine.update())
+	{
+		return false;
+	}
+
+	//
+
 	uint64_t cameraHandle = 0;
 
 	if (!renderManager.worldGetCamera(cameraHandle))
