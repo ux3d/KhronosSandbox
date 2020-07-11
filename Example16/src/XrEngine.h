@@ -25,6 +25,8 @@ private:
 	XrViewConfigurationType viewConfigurationType = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 	XrEnvironmentBlendMode environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
 	XrSession session = XR_NULL_HANDLE;
+	XrSessionState sessionState = XR_SESSION_STATE_UNKNOWN;
+	bool sessionRunning = false;
 
 	std::vector<XrSwapchain> swapchains;
 

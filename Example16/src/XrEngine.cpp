@@ -292,7 +292,96 @@ bool XrEngine::update()
 		result = xrPollEvent(instance, &eventDataBuffer);
 		if (result == XR_SUCCESS)
 		{
-			Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "OpenXR Event: %u", eventDataBuffer.type);
+			switch (eventDataBuffer.type)
+			{
+				case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED:
+				{
+					const XrEventDataSessionStateChanged eventDataSessionStateChanged = *reinterpret_cast<const XrEventDataSessionStateChanged*>(&eventDataBuffer);
+
+					sessionState = eventDataSessionStateChanged.state;
+					switch (sessionState)
+					{
+						case XR_SESSION_STATE_IDLE:
+						{
+							Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "OpenXR Session State Idle");
+
+							break;
+						}
+						case XR_SESSION_STATE_READY:
+						{
+							Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "OpenXR Session State Ready");
+
+							XrSessionBeginInfo sessionBeginInfo = {};
+							sessionBeginInfo.type = XR_TYPE_SESSION_BEGIN_INFO;
+							sessionBeginInfo.primaryViewConfigurationType = viewConfigurationType;
+							result = xrBeginSession(session, &sessionBeginInfo);
+							if (result != XR_SUCCESS)
+							{
+								Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+								return false;
+							}
+
+							sessionRunning = true;
+
+							break;
+						}
+						case XR_SESSION_STATE_SYNCHRONIZED:
+						{
+							Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "OpenXR Session State Synchronized");
+
+							break;
+						}
+						case XR_SESSION_STATE_VISIBLE:
+						{
+							Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "OpenXR Session State Visible");
+
+							break;
+						}
+						case XR_SESSION_STATE_FOCUSED:
+						{
+							Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "OpenXR Session State Focused");
+
+							break;
+						}
+						case XR_SESSION_STATE_STOPPING:
+						{
+							Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "OpenXR Session State Stopping");
+
+							result = xrEndSession(session);
+							if (result != XR_SUCCESS)
+							{
+								Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+								return false;
+							}
+
+							sessionRunning = false;
+
+							break;
+						}
+						case XR_SESSION_STATE_LOSS_PENDING:
+						{
+							Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "OpenXR Session State Loss Pending");
+
+							break;
+						}
+						case XR_SESSION_STATE_EXITING:
+						{
+							Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "OpenXR Session State Exiting");
+
+							break;
+						}
+						default:
+							Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+							return false;
+					}
+
+					break;
+				}
+				default:
+					Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "OpenXR Event Type: %u", eventDataBuffer.type);
+			}
 		}
 		else if (result != XR_EVENT_UNAVAILABLE)
 		{
@@ -304,7 +393,62 @@ bool XrEngine::update()
 
 	//
 
-	// TODO: Render frame.
+	if (!sessionRunning)
+	{
+		return true;
+	}
+
+	//
+
+	XrFrameWaitInfo frameWaitInfo = {};
+	frameWaitInfo.type = XR_TYPE_FRAME_WAIT_INFO;
+
+	XrFrameState frameState = {};
+	frameState.type = XR_TYPE_FRAME_STATE;
+
+	result = xrWaitFrame(session, &frameWaitInfo, &frameState);
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+    XrFrameBeginInfo frameBeginInfo = {};
+    frameBeginInfo.type = XR_TYPE_FRAME_BEGIN_INFO;
+
+    result = xrBeginFrame(session, &frameBeginInfo);
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+    std::vector<XrCompositionLayerBaseHeader*> layers;
+
+    if (frameState.shouldRender)
+    {
+    	XrCompositionLayerProjection compositionLayerProjection = {};
+    	compositionLayerProjection.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION;
+
+    	// TODO: Implement.
+    }
+
+    XrFrameEndInfo frameEndInfo = {};
+    frameEndInfo.type = XR_TYPE_FRAME_END_INFO;
+    frameEndInfo.displayTime = frameState.predictedDisplayTime;
+    frameEndInfo.environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
+    frameEndInfo.layerCount = static_cast<uint32_t>(layers.size());
+    frameEndInfo.layers = layers.data();
+
+    result = xrEndFrame(session, &frameEndInfo);
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
 
 	return true;
 }
@@ -328,6 +472,8 @@ bool XrEngine::terminate()
 		xrDestroySession(session);
 		session = XR_NULL_HANDLE;
 	}
+	sessionState = XR_SESSION_STATE_UNKNOWN;
+	bool sessionRunning = false;
 
 	environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
 
