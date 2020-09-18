@@ -47,6 +47,7 @@ target_link_libraries(Example06 PRIVATE
 	TinyEngine
 	glfw3
 	slimktx2
+	basisu
 	volk
 	shaderc_combined
 	${lib_files}

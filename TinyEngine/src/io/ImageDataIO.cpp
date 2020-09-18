@@ -50,7 +50,7 @@ bool ImageDataIO::open(ImageDataResources& output, const uint8_t* data, size_t l
 		}
 
 		VkFormat format = (VkFormat)slimKTX2.getHeader().vkFormat;
-		uint32_t pixelSize = slimktx2::getPixelSize(slimKTX2.getHeader().vkFormat);
+		uint32_t pixelSize = slimktx2::getFormatSize(slimKTX2.getHeader().vkFormat);
 		uint32_t width = slimKTX2.getHeader().pixelWidth;
 		uint32_t height = slimKTX2.getHeader().pixelHeight;
 

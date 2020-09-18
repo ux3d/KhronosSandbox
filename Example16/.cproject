@@ -59,6 +59,7 @@
 									<listOptionValue builtIn="false" value="stdc++fs"/>
 									<listOptionValue builtIn="false" value="volk"/>
 									<listOptionValue builtIn="false" value="slimktx2"/>
+									<listOptionValue builtIn="false" value="basisu"/>
 									<listOptionValue builtIn="false" value="shaderc_combined"/>
 									<listOptionValue builtIn="false" value="glfw3"/>
 									<listOptionValue builtIn="false" value="gdi32"/>
@@ -135,6 +136,7 @@
 									<listOptionValue builtIn="false" value="stdc++fs"/>
 									<listOptionValue builtIn="false" value="volk"/>
 									<listOptionValue builtIn="false" value="slimktx2"/>
+									<listOptionValue builtIn="false" value="basisu"/>
 									<listOptionValue builtIn="false" value="shaderc_combined"/>
 									<listOptionValue builtIn="false" value="glfw3"/>
 									<listOptionValue builtIn="false" value="gdi32"/>
@@ -205,6 +207,7 @@
 									<listOptionValue builtIn="false" value="stdc++fs"/>
 									<listOptionValue builtIn="false" value="volk"/>
 									<listOptionValue builtIn="false" value="slimktx2"/>
+									<listOptionValue builtIn="false" value="basisu"/>
 									<listOptionValue builtIn="false" value="shaderc_combined"/>
 									<listOptionValue builtIn="false" value="glfw3"/>
 									<listOptionValue builtIn="false" value="X11"/>
@@ -283,6 +286,7 @@
 									<listOptionValue builtIn="false" value="stdc++fs"/>
 									<listOptionValue builtIn="false" value="volk"/>
 									<listOptionValue builtIn="false" value="slimktx2"/>
+									<listOptionValue builtIn="false" value="basisu"/>
 									<listOptionValue builtIn="false" value="shaderc_combined"/>
 									<listOptionValue builtIn="false" value="glfw3"/>
 									<listOptionValue builtIn="false" value="X11"/>

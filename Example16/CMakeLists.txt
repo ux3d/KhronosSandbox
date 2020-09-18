@@ -49,6 +49,7 @@ target_link_libraries(Example16 PRIVATE
 	openxr_loader
 	glfw3
 	slimktx2
+	basisu
 	volk
 	shaderc_combined
 	${lib_files}
