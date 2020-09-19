@@ -231,6 +231,7 @@ bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDe
 	}
 
 	swapchains.resize(viewCount);
+	views.resize(viewCount);
 
 	for (uint32_t i = 0; i < viewCount; i++)
 	{
@@ -432,6 +433,26 @@ bool XrEngine::update()
     	XrCompositionLayerProjection compositionLayerProjection = {};
     	compositionLayerProjection.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION;
 
+    	XrViewLocateInfo viewLocateInfo = {};
+    	viewLocateInfo.type = XR_TYPE_VIEW_LOCATE_INFO;
+        viewLocateInfo.viewConfigurationType = viewConfigurationType;
+        viewLocateInfo.displayTime = frameState.predictedDisplayTime;
+        viewLocateInfo.space = space;
+
+        XrViewState viewState = {};
+        viewState.type = XR_TYPE_VIEW_STATE;
+
+        uint32_t viewCapacityInput = static_cast<uint32_t>(swapchains.size());
+        uint32_t viewCountOutput = 0;
+
+        result = xrLocateViews(session, &viewLocateInfo, &viewState, viewCapacityInput, &viewCountOutput, views.data());
+    	if (result != XR_SUCCESS)
+    	{
+    		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+    		return false;
+    	}
+
     	// TODO: Implement.
     }
 
@@ -461,6 +482,7 @@ bool XrEngine::terminate()
 		space = XR_NULL_HANDLE;
 	}
 
+	views.clear();
 	for (XrSwapchain swapchain : swapchains)
 	{
 		xrDestroySwapchain(swapchain);

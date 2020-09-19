@@ -29,6 +29,7 @@ private:
 	bool sessionRunning = false;
 
 	std::vector<XrSwapchain> swapchains;
+	std::vector<XrView> views;
 
 	XrSpace space = XR_NULL_HANDLE;
 
