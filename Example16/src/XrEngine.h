@@ -28,8 +28,12 @@ private:
 	XrSessionState sessionState = XR_SESSION_STATE_UNKNOWN;
 	bool sessionRunning = false;
 
-	std::vector<XrSwapchain> swapchains;
+    uint32_t viewCount = 0;
+    std::vector<XrViewConfigurationView> viewConfigurationView;
+    std::vector<XrSwapchain> swapchains;
+    std::vector<XrSwapchainImageVulkanKHR> swapchainImages;
 	std::vector<XrView> views;
+	std::vector<XrCompositionLayerProjectionView> compositionLayerProjectionView;
 
 	XrSpace space = XR_NULL_HANDLE;
 

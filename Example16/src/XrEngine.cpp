@@ -212,7 +212,6 @@ bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDe
 
 	//
 
-    uint32_t viewCount = 0;
     result = xrEnumerateViewConfigurationViews(instance, systemId, viewConfigurationType, 0, &viewCount, nullptr);
 	if (result != XR_SUCCESS || viewCount == 0)
 	{
@@ -221,7 +220,11 @@ bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDe
 		return false;
 	}
 
-	std::vector<XrViewConfigurationView> viewConfigurationView(viewCount);
+	viewConfigurationView.resize(viewCount);
+	swapchains.resize(viewCount);
+	views.resize(viewCount);
+	compositionLayerProjectionView.resize(viewCount);
+
 	result = xrEnumerateViewConfigurationViews(instance, systemId, viewConfigurationType, viewCount, &viewCount, viewConfigurationView.data());
 	if (result != XR_SUCCESS)
 	{
@@ -230,23 +233,49 @@ bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDe
 		return false;
 	}
 
-	swapchains.resize(viewCount);
-	views.resize(viewCount);
-
 	for (uint32_t i = 0; i < viewCount; i++)
 	{
-	    XrSwapchainCreateInfo swapchainCreateInfo = {};
-	    swapchainCreateInfo.type = XR_TYPE_SWAPCHAIN_CREATE_INFO;
-	    swapchainCreateInfo.arraySize = 1;
-	    swapchainCreateInfo.format = swapchainFormat;
-	    swapchainCreateInfo.width = viewConfigurationView[i].recommendedImageRectWidth;
-	    swapchainCreateInfo.height = viewConfigurationView[i].recommendedImageRectHeight;
-	    swapchainCreateInfo.mipCount = 1;
-	    swapchainCreateInfo.faceCount = 1;
-	    swapchainCreateInfo.sampleCount = viewConfigurationView[i].recommendedSwapchainSampleCount;
-	    swapchainCreateInfo.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
+		XrSwapchainCreateInfo swapchainCreateInfo = {};
+		swapchainCreateInfo.type = XR_TYPE_SWAPCHAIN_CREATE_INFO;
+		swapchainCreateInfo.arraySize = 1;
+		swapchainCreateInfo.format = swapchainFormat;
+		swapchainCreateInfo.width = viewConfigurationView[i].recommendedImageRectWidth;
+		swapchainCreateInfo.height = viewConfigurationView[i].recommendedImageRectHeight;
+		swapchainCreateInfo.mipCount = 1;
+		swapchainCreateInfo.faceCount = 1;
+		swapchainCreateInfo.sampleCount = viewConfigurationView[i].recommendedSwapchainSampleCount;
+		swapchainCreateInfo.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
 
-	    result = xrCreateSwapchain(session, &swapchainCreateInfo, &swapchains[i]);
+		result = xrCreateSwapchain(session, &swapchainCreateInfo, &swapchains[i]);
+		if (result != XR_SUCCESS)
+		{
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+			return false;
+		}
+
+		//
+
+        uint32_t imageCount = 0;
+        result = xrEnumerateSwapchainImages(swapchains[i], 0, &imageCount, nullptr);
+		if (result != XR_SUCCESS)
+		{
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+			return false;
+		}
+
+		uint32_t oldImageCount = static_cast<uint32_t>(swapchainImages.size());
+		swapchainImages.resize(oldImageCount + imageCount, {XR_TYPE_SWAPCHAIN_IMAGE_VULKAN_KHR});
+
+		if (oldImageCount / imageCount != i)
+		{
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR: Swapchain images count differ");
+
+			return false;
+		}
+
+		result = xrEnumerateSwapchainImages(swapchains[i], imageCount * sizeof(XrSwapchainImageVulkanKHR), &imageCount, reinterpret_cast<XrSwapchainImageBaseHeader*>(&swapchainImages[oldImageCount]));
 		if (result != XR_SUCCESS)
 		{
 			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
@@ -428,11 +457,11 @@ bool XrEngine::update()
 
     std::vector<XrCompositionLayerBaseHeader*> layers;
 
+	XrCompositionLayerProjection compositionLayerProjection = {};
+	compositionLayerProjection.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION;
+
     if (frameState.shouldRender)
     {
-    	XrCompositionLayerProjection compositionLayerProjection = {};
-    	compositionLayerProjection.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION;
-
     	XrViewLocateInfo viewLocateInfo = {};
     	viewLocateInfo.type = XR_TYPE_VIEW_LOCATE_INFO;
         viewLocateInfo.viewConfigurationType = viewConfigurationType;
@@ -442,7 +471,7 @@ bool XrEngine::update()
         XrViewState viewState = {};
         viewState.type = XR_TYPE_VIEW_STATE;
 
-        uint32_t viewCapacityInput = static_cast<uint32_t>(swapchains.size());
+        uint32_t viewCapacityInput = viewCount;
         uint32_t viewCountOutput = 0;
 
         result = xrLocateViews(session, &viewLocateInfo, &viewState, viewCapacityInput, &viewCountOutput, views.data());
@@ -453,7 +482,71 @@ bool XrEngine::update()
     		return false;
     	}
 
-    	// TODO: Implement.
+    	//
+
+    	for (uint32_t i = 0; i < viewCount; i++)
+    	{
+            uint32_t imageArrayIndex = 0;
+            XrSwapchainImageAcquireInfo swapchainImageAcquireInfo = {};
+            swapchainImageAcquireInfo.type = XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO;
+
+            result = xrAcquireSwapchainImage(swapchains[i], &swapchainImageAcquireInfo, &imageArrayIndex);
+        	if (result != XR_SUCCESS)
+        	{
+        		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+        		return false;
+        	}
+
+            XrSwapchainImageWaitInfo swapchainImageWaitInfo = {};
+            swapchainImageWaitInfo.type = XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO;
+            swapchainImageWaitInfo.timeout = XR_INFINITE_DURATION;
+
+            result = xrWaitSwapchainImage(swapchains[i], &swapchainImageWaitInfo);
+        	if (result != XR_SUCCESS)
+        	{
+        		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+        		return false;
+        	}
+
+    		XrRect2Di imageRect = {};
+            imageRect.offset.x = 0;
+            imageRect.offset.y = 0;
+            imageRect.extent.width = static_cast<int32_t>(viewConfigurationView[i].recommendedImageRectWidth);
+            imageRect.extent.height = static_cast<int32_t>(viewConfigurationView[i].recommendedImageRectHeight);
+
+    		compositionLayerProjectionView[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
+    		compositionLayerProjectionView[i].pose = views[i].pose;
+    		compositionLayerProjectionView[i].fov = views[i].fov;
+    		compositionLayerProjectionView[i].subImage.swapchain = swapchains[i];
+    		compositionLayerProjectionView[i].subImage.imageRect = imageRect;
+
+    		//
+
+        	// TODO: Implement and render here.
+
+        	//
+
+            XrSwapchainImageReleaseInfo swapchainImageReleaseInfo = {};
+            swapchainImageReleaseInfo.type = XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO;
+
+            result = xrReleaseSwapchainImage(swapchains[i], &swapchainImageReleaseInfo);
+        	if (result != XR_SUCCESS)
+        	{
+        		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+        		return false;
+        	}
+    	}
+
+    	//
+
+    	compositionLayerProjection.space = space;
+    	compositionLayerProjection.viewCount = viewCount;
+    	compositionLayerProjection.views = compositionLayerProjectionView.data();
+
+    	layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&compositionLayerProjection));
     }
 
     XrFrameEndInfo frameEndInfo = {};
@@ -482,12 +575,24 @@ bool XrEngine::terminate()
 		space = XR_NULL_HANDLE;
 	}
 
+	compositionLayerProjectionView.clear();
+
 	views.clear();
-	for (XrSwapchain swapchain : swapchains)
+
+	swapchainImages.clear();
+
+	for (uint32_t i = 0; i < viewCount; i++)
 	{
-		xrDestroySwapchain(swapchain);
+		if (swapchains[i] != XR_NULL_HANDLE)
+		{
+			xrDestroySwapchain(swapchains[i]);
+		}
 	}
 	swapchains.clear();
+
+	viewConfigurationView.clear();
+
+	viewCount = 0;
 
 	if (session != XR_NULL_HANDLE)
 	{
