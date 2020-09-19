@@ -29,12 +29,6 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
    - GCC for Linux
    - [MinGW64](https://www.msys2.org/) for Windows 
-- [Microsoft Visual C++ 2017](https://visualstudio.microsoft.com/de/vs/older-downloads/)
-   - Use [CMake](https://cmake.org/) to generate the project files
-- Use [Ninja](https://ninja-build.org/) to build using [MinGW64](https://www.msys2.org/) for Windows from command line
-  - Use [CMake](https://cmake.org/) to generate the project files
-- Use `make` to build using `gcc` for Linux from command line
-  - Use [CMake](https://cmake.org/) to generate the project files
 
 ### Build steps for Eclipse
 
@@ -49,25 +43,24 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 - Ubuntu 20.04 LTS (64bit)
 
 ## Used tools
-- [CMake](https://cmake.org/)
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
 - [Gestaltor - Visual glTF editor](https://gestaltor.io/)
-- [Microsoft Visual C++ 2017](https://visualstudio.microsoft.com/de/vs/older-downloads/)
 - [MSYS2](https://www.msys2.org/) on Windows  
   Execute `pacman -S mingw-w64-x86_64-gcc` to install MinGW64
-- [Ninja](https://ninja-build.org/)
 
 ## Used assets
 - [glTF 2.0 Sample Models](https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0)
 - [glTF Sample Environments](https://github.com/ux3d/glTF-Sample-Environments)
 
 ## Used libraries
+- [basis_universal](https://github.com/BinomialLLC/basis_universal)
 - [glTF Sample Viewer](https://github.com/KhronosGroup/glTF-Sample-Viewer)
 - [GLFW](https://github.com/glfw/glfw)
 - [glm](https://github.com/g-truc/glm)
 - [imgui](https://github.com/ocornut/imgui)
 - [Shaderc](https://github.com/google/shaderc)  
 - [Slim KTX2](https://github.com/ux3d/slimktx2)
+   - basis_universal
 - [stb](https://github.com/nothings/stb)    
 - [tiny glTF](https://github.com/syoyo/tinygltf)  
 - [volk](https://github.com/zeux/volk)  
@@ -80,8 +73,6 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
   - Helper methods for initalization are not optimal and causing a stall on the GPU. This is done for Vulkan code simplicity.
 - Tooling
   - gcc (Windows and Linux)
-  - MSVC (Windows)
-  - CMake (Tested MSVC, make and ninja)
   - C++17
   - 64bit only
 
