@@ -46,7 +46,8 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
 - [Gestaltor - Visual glTF editor](https://gestaltor.io/)
 - [MSYS2](https://www.msys2.org/) on Windows  
-  Execute `pacman -S mingw-w64-x86_64-gcc` to install MinGW64
+  Execute `pacman -S mingw-w64-x86_64-gcc` to install MinGW64  
+  Execute `pacman -S mingw-w64-x86_64-gdb` to install gdb for MinGW64  
 
 ## Used assets
 - [glTF 2.0 Sample Models](https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0)
