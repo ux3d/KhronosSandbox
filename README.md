@@ -1,4 +1,4 @@
-# Sandbox for Vulkan incl. raytracing, SPIR-V, glTF and OpenXR
+# Sandbox for Vulkan, SPIR-V, glTF and OpenXR
 
 This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a sandbox to evaluate [Khronos](https://www.khronos.org/) API's like [Vulkan](https://www.khronos.org/vulkan/), [SPIR-V](https://www.khronos.org/spir/), [glTF](https://www.khronos.org/gltf/) and [OpenXR](https://www.khronos.org/openxr/).
 
@@ -22,6 +22,9 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 
 ### OpenXR  
 - [ ] Initial component
+
+### General  
+- [ ] Replace slimktx2 with libktx
 
 ## How to build?
 - [Vulkan SDK 1.2.135.0 or later](https://vulkan.lunarg.com/sdk/home)
