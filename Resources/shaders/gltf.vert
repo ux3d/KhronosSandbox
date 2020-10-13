@@ -25,6 +25,18 @@ layout (location = COLOR_0_LOC) in vec4 in_color;
 #ifdef COLOR_0_VEC3
 layout (location = COLOR_0_LOC) in vec3 in_color;
 #endif
+#ifdef JOINTS_0_VEC4
+layout (location = JOINTS_0_LOC) in vec4 in_joints0;
+#endif
+#ifdef JOINTS_1_VEC4
+layout (location = JOINTS_1_LOC) in vec4 in_joints1;
+#endif
+#ifdef WEIGHTS_0_VEC4
+layout (location = WEIGHTS_0_LOC) in vec4 in_weights0;
+#endif
+#ifdef WEIGHTS_1_VEC4
+layout (location = WEIGHTS_1_LOC) in vec4 in_weights1;
+#endif
 
 layout (location = 0) out vec3 out_position;
 layout (location = 1) out vec3 out_view;
