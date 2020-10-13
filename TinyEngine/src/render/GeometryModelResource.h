@@ -11,6 +11,7 @@
 #include "BaseResource.h"
 
 struct GeometryModelResource : BaseResource {
+
 	// Mapper helper
 
 	uint64_t geometryHandle = 0;
@@ -41,9 +42,6 @@ struct GeometryModelResource : BaseResource {
 	uint64_t targetNormalHandle = 0;
 	uint64_t targetTangentHandle = 0;
 
-	// Raytrace helper
-
-	BottomLevelResource bottomLevelResource = {};
 };
 
 #endif /* RENDER_GEOMETRYMODELRENDER_H_ */

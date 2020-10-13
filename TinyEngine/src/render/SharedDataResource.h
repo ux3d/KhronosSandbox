@@ -16,6 +16,7 @@ struct SharedDataResource : BaseResource {
 
 	VertexBufferResource vertexBufferResource = {};
 	StorageBufferResource storageBufferResource = {};
+
 };
 
 #endif /* RENDER_SHAREDDATARENDER_H_ */

@@ -38,8 +38,6 @@ private:
 	uint32_t width = 0;
 	uint32_t height = 0;
 
-	bool useRaytrace = false;
-
 	VkRenderPass renderPass = VK_NULL_HANDLE;
 	VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
 
@@ -96,14 +94,9 @@ public:
 
 	bool renderSetDimension(uint32_t width, uint32_t height);
 
-	bool renderUseRaytrace(bool useRaytrace);
+	bool renderSetRenderPass(VkRenderPass renderPass);
 
-	bool renderRasterizeSetRenderPass(VkRenderPass renderPass);
-	bool renderRasterizeSetSamples(VkSampleCountFlagBits samples);
-
-	bool renderRaytraceSetImageView(VkImageView imageView);
-
-	bool renderRaytraceUpdateSettings(uint32_t maxDepth, uint32_t specularSamples, uint32_t diffuseSamples);
+	bool renderSetSamples(VkSampleCountFlagBits samples);
 
 	// Resources need to be created.
 
@@ -214,8 +207,6 @@ public:
 	//
 
 	void rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode);
-
-	void raytrace(VkCommandBuffer commandBuffer, uint32_t frameIndex);
 
 };
 

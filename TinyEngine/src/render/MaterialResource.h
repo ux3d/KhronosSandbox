@@ -44,6 +44,7 @@ struct RaytraceMaterialUniformBuffer {
 };
 
 struct MaterialResource : BaseResource {
+
 	// Mapper helper
 
 	RaytraceMaterialUniformBuffer raytraceMaterialUniformBuffer;
@@ -62,10 +63,6 @@ struct MaterialResource : BaseResource {
 	UniformBufferResource uniformBufferResource = {};
 
 	std::map<std::string, std::string> macros;
-
-	// Raytracer helper
-
-	int32_t materialIndex = -1;
 
 };
 

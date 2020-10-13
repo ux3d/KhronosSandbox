@@ -1,6 +1,6 @@
 # Sandbox for Vulkan incl. raytracing, SPIR-V, glTF and OpenXR
 
-This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a sandbox to evaluate [Khronos](https://www.khronos.org/) API's like [Vulkan](https://www.khronos.org/vulkan/) incl. [raytracing](https://www.khronos.org/blog/ray-tracing-in-vulkan), [SPIR-V](https://www.khronos.org/spir/), [glTF](https://www.khronos.org/gltf/) and [OpenXR](https://www.khronos.org/openxr/).
+This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a sandbox to evaluate [Khronos](https://www.khronos.org/) API's like [Vulkan](https://www.khronos.org/vulkan/), [SPIR-V](https://www.khronos.org/spir/), [glTF](https://www.khronos.org/gltf/) and [OpenXR](https://www.khronos.org/openxr/).
 
 ![Screenshot DamagedHelmet](screenshot.jpg)
 
@@ -11,7 +11,7 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 ## Work in Progress
 
 ### Vulkan  
-- [ ] Refactor and cleanup render component
+- Done
 
 ### SPIR-V
 - Done
@@ -25,7 +25,6 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 
 ## How to build?
 - [Vulkan SDK 1.2.135.0 or later](https://vulkan.lunarg.com/sdk/home)
-  - [NVIDIA Vulkan 1.2 Developer Beta Driver or later for raytracing](https://developer.nvidia.com/vulkan-driver)
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
    - GCC for Linux
    - [MinGW64](https://www.msys2.org/) for Windows 
@@ -35,8 +34,8 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 1. Import the projects into Eclipse.
 2. Select `Windows` or `Linux` build - either as `Release` or `Debug` build.
 3. Build the `TinyEngine` project first.
-4. Build the `Application` project.
-5. Working directory is `Application` both for `Release` and `Debug` build.
+4. Build the `ExampleXX` project.
+5. Working directory is `ExampleXX` both for `Release` and `Debug` build.
 
 ## Tested platforms
 - Windows 10 (64bit)
@@ -76,8 +75,3 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
   - gcc (Windows and Linux)
   - C++17
   - 64bit only
-
-## References
-- [NVIDIA DesignWorks Samples](https://github.com/nvpro-samples/)
-- [NVIDIA Vulkan Ray Tracing Tutorial](https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/)
-- [Sascha's Vulkan Samples Raytracing](https://github.com/SaschaWillems/Vulkan-Samples/tree/VK_KHR_ray_tracing)

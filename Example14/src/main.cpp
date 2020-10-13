@@ -4,10 +4,17 @@
 
 #define APP_WIDTH 1920
 #define APP_HEIGHT 1080
-#define APP_TITLE "Example14: Vulkan 1.0.0"
+#define APP_TITLE "Example14: Render manager"
 
-int main()
+int main(int argc, char **argv)
 {
+	std::string environment = "../Resources/brdf/doge2";
+
+	if (argc > 1)
+	{
+		environment = argv[1];
+	}
+
 	GLFWwindow* window;
 
 	if (!glfwInit())
@@ -16,6 +23,7 @@ int main()
 	}
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	window = glfwCreateWindow(APP_WIDTH, APP_HEIGHT, APP_TITLE, NULL, NULL);
 	if (!window)
 	{
@@ -23,8 +31,11 @@ int main()
 	    return -1;
 	}
 
-	Application application;
+	Application application(environment);
 	application.setApplicationName(APP_TITLE);
+	application.setMinor(2);
+	application.setDepthStencilFormat(VK_FORMAT_D24_UNORM_S8_UINT);
+	application.setSamples(VK_SAMPLE_COUNT_4_BIT);
 	application.addEnabledInstanceLayerName("VK_LAYER_KHRONOS_validation");
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensionNames = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -59,24 +70,64 @@ int main()
 		return -1;
 	}
 
-	int lastWidth = APP_WIDTH;
-	int lastHeight = APP_HEIGHT;
+	bool mouseLeftPressed = false;
+	bool mouseRightPressed = false;
+	double xposLast = 0.0;
+	double yposLast = 0.0;
+
 	while (!glfwWindowShouldClose(window))
 	{
 		if (!glfwGetWindowAttrib(window, GLFW_ICONIFIED))
 		{
-			int width;
-			int height;
-			glfwGetWindowSize(window, &width, &height);
-			if (width != lastWidth || height != lastHeight)
+			// Orbit
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 			{
-				if (!application.resize())
+				double xpos;
+				double ypos;
+
+				glfwGetCursorPos(window, &xpos, &ypos);
+				if (!mouseLeftPressed)
 				{
-					break;
+					mouseLeftPressed = true;
+
+					xposLast = xpos;
+					yposLast = ypos;
 				}
 
-				lastWidth = width;
-				lastHeight = height;
+				application.orbitY(static_cast<float>(xpos - xposLast));
+				application.orbitX(static_cast<float>(ypos - yposLast));
+
+				xposLast = xpos;
+				yposLast = ypos;
+			}
+			else if (mouseLeftPressed && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+			{
+				mouseLeftPressed = false;
+			}
+
+			// Zoom
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+			{
+				double xpos;
+				double ypos;
+
+				glfwGetCursorPos(window, &xpos, &ypos);
+				if (!mouseRightPressed)
+				{
+					mouseRightPressed = true;
+
+					xposLast = xpos;
+					yposLast = ypos;
+				}
+
+				application.zoom(static_cast<float>(ypos - yposLast));
+
+				xposLast = xpos;
+				yposLast = ypos;
+			}
+			else if (mouseRightPressed && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
+			{
+				mouseRightPressed = false;
 			}
 
 			if (!application.update())

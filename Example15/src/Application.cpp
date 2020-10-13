@@ -4,103 +4,79 @@
 
 bool Application::applicationInit()
 {
+	if (!xrEngine.init(instance, physicalDevice, device, queueFamilyIndex.value(), 0, surfaceFormat.format))
+	{
+		return false;
+	}
+
+	//
+
 	renderManager.renderSetupVulkan(physicalDevice, device, queue, commandPool);
-	renderManager.renderRasterizeSetRenderPass(renderPass);
-	renderManager.renderRasterizeSetSamples(samples);
+	renderManager.renderSetRenderPass(renderPass);
+	renderManager.renderSetSamples(samples);
 	renderManager.renderSetDimension(width, height);
 
-	//
+	HelperLoad helperLoad(true);
+	if(!helperLoad.open(glTF, filename))
+	{
+		return false;
+	}
 
-	renderManager.worldCreate();
+	if (!HelperUpdate::update(glTF, glm::mat4(1.0f)))
+	{
+		return false;
+	}
 
-	//
+	WorldBuilder worldBuilder(glTF, environment, renderManager);
+	if(!worldBuilder.build())
+	{
+		return false;
+	}
 
-	uint64_t lightHandle;
-	renderManager.lightCreate(lightHandle);
-	renderManager.lightSetEnvironment(lightHandle, environment);
-	renderManager.lightFinalize(lightHandle);
-
-	//
-
-	uint64_t cameraHandle;
-	renderManager.cameraCreate(cameraHandle);
-	renderManager.cameraFinalize(cameraHandle);
-
-	//
-
-	renderManager.worldSetLight(lightHandle);
-	renderManager.worldSetCamera(cameraHandle);
+	nodeToHandles = worldBuilder.cloneNodeToHandles();
 
 	//
 
-	uint64_t positionDataHandle;
-	renderManager.sharedDataCreate(positionDataHandle);
-	float triangle[] = {
-			0.0f, -0.5f, 0.0f,
-			0.5f, 0.5f, 0.0f,
-			-0.5f, 0.5f, 0.0f
-	};
-	size_t size = 3 * 3 * sizeof(float);
-	renderManager.sharedDataCreateVertexBuffer(positionDataHandle, size, (const void*)triangle);
-	renderManager.sharedDataFinalize(positionDataHandle);
-
-	uint64_t colorDataHandle;
-	renderManager.sharedDataCreate(colorDataHandle);
-	float color[] = {
-			1.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f,
-			0.0f, 0.0f, 1.0f
-	};
-	size = 3 * 3 * sizeof(float);
-	renderManager.sharedDataCreateVertexBuffer(colorDataHandle, size, (const void*)color);
-	renderManager.sharedDataFinalize(colorDataHandle);
-
-	uint64_t materialHandle;
-	renderManager.materialCreate(materialHandle);
-	MaterialParameters materialParameters;
-	materialParameters.doubleSided = true;
-	renderManager.materialSetParameters(materialHandle, materialParameters);
-	renderManager.materialFinalize(materialHandle);
-
-	uint64_t geometryHandle;
-	renderManager.geometryCreate(geometryHandle);
-	renderManager.geometrySetAttribute(geometryHandle, positionDataHandle, "POSITION", 3, VK_FORMAT_R32G32B32_SFLOAT);
-	renderManager.geometrySetAttribute(geometryHandle, colorDataHandle, "COLOR_0", 3, VK_FORMAT_R32G32B32_SFLOAT);
-	renderManager.geometryFinalize(geometryHandle);
-
-	uint64_t geometryModelHandle;
-	renderManager.geometryModelCreate(geometryModelHandle);
-	renderManager.geometryModelSetGeometry(geometryModelHandle, geometryHandle);
-	renderManager.geometryModelSetMaterial(geometryModelHandle, materialHandle);
-	renderManager.geometryModelSetVertexCount(geometryModelHandle, 3);
-	renderManager.geometryModelFinalize(geometryModelHandle);
-
-	uint64_t groupHandle;
-	renderManager.groupCreate(groupHandle);
-	renderManager.groupAddGeometryModel(groupHandle, geometryModelHandle);
-	renderManager.groupFinalize(groupHandle);
-
-	uint64_t instanceHandle;
-	renderManager.instanceCreate(instanceHandle);
-	renderManager.instanceSetGroup(instanceHandle, groupHandle);
-	renderManager.instanceFinalize(instanceHandle);
-
-	renderManager.worldAddInstance(instanceHandle);
-
-	//
-
-	renderManager.worldFinalize();
+	float stop = 0.0f;
+	if (!HelperAnimate::gatherStop(stop, glTF, 0))
+	{
+		Logger::print(TinyEngine_WARNING, __FILE__, __LINE__, "glTF has no animation");
+	}
+	animationController.setStopTime(stop);
+	animationController.setPlay(true);
 
 	return true;
 }
 
 bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime)
 {
+	if (!xrEngine.update())
+	{
+		return false;
+	}
+
+	//
+
 	uint64_t cameraHandle = 0;
 
 	if (!renderManager.worldGetCamera(cameraHandle))
 	{
 		return false;
+	}
+
+	//
+
+	animationController.updateCurrentTime(deltaTime);
+	HelperAnimate::update(glTF, 0, animationController.getCurrentTime());
+	HelperUpdate::update(glTF, glm::mat4(1.0f));
+
+	//
+
+	// Update the animations to the renderer.
+	for (size_t i = 0; i < glTF.nodes.size(); i++)
+	{
+		const Node& node = glTF.nodes[i];
+		renderManager.instanceUpdateWorldMatrix(nodeToHandles[&node], node.worldMatrix);
 	}
 
 	//
@@ -157,7 +133,8 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	renderManager.cameraUpdateProjectionMatrix(cameraHandle, projectionMatrix);
 	renderManager.cameraUpdateViewMatrix(cameraHandle, viewMatrix);
 
-	renderManager.rasterize(commandBuffers[frameIndex], frameIndex, ALL);
+	renderManager.rasterize(commandBuffers[frameIndex], frameIndex, OPAQUE);
+	renderManager.rasterize(commandBuffers[frameIndex], frameIndex, TRANSPARENT);
 
 	vkCmdEndRenderPass(commandBuffers[frameIndex]);
 
@@ -167,12 +144,14 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 void Application::applicationTerminate()
 {
 	renderManager.terminate();
+
+	xrEngine.terminate();
 }
 
 // Public
 
-Application::Application(const std::string& environment) :
-	environment(environment)
+Application::Application(const std::string& filename, const std::string& environment) :
+	filename(filename), environment(environment)
 {
 }
 

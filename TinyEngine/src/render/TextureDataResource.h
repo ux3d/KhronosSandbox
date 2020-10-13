@@ -12,6 +12,7 @@ struct TextureDataResource : BaseResource {
 	TextureResource textureResource = {};
 
 	int32_t textureIndex = -1;
+
 };
 
 #endif /* RENDER_TEXTUREDATARENDER_H_ */

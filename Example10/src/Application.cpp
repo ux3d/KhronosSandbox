@@ -5,8 +5,8 @@
 bool Application::applicationInit()
 {
 	renderManager.renderSetupVulkan(physicalDevice, device, queue, commandPool);
-	renderManager.renderRasterizeSetRenderPass(renderPass);
-	renderManager.renderRasterizeSetSamples(samples);
+	renderManager.renderSetRenderPass(renderPass);
+	renderManager.renderSetSamples(samples);
 	renderManager.renderSetDimension(width, height);
 
 	HelperLoad helperLoad(true);

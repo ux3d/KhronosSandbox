@@ -10,6 +10,7 @@
 #include "BaseResource.h"
 
 struct GeometryResource : BaseResource {
+
 	// Mapper helper
 
 	uint32_t count = 0;
@@ -24,18 +25,6 @@ struct GeometryResource : BaseResource {
 	std::vector<VkDeviceSize> vertexBuffersOffsets;
 	std::vector<VkDeviceSize> vertexBuffersRanges;
 
-	// Raytrace helper
-
-	int32_t positionAttributeIndex = -1;
-	int32_t normalAttributeIndex = -1;
-	int32_t tangentAttributeIndex = -1;
-	int32_t texCoord0AttributeIndex = -1;
-	int32_t texCoord1AttributeIndex = -1;
-	int32_t color0AttributeIndex = -1;
-	int32_t joints0AttributeIndex = -1;
-	int32_t joints1AttributeIndex = -1;
-	int32_t weights0AttributeIndex = -1;
-	int32_t weights1AttributeIndex = -1;
 };
 
 #endif /* RENDER_GEOMETRYRENDER_H_ */

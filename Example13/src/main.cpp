@@ -4,24 +4,10 @@
 
 #define APP_WIDTH 1920
 #define APP_HEIGHT 1080
-#define APP_TITLE "Example13: Animated glTF"
+#define APP_TITLE "Example13: Vulkan 1.0.0"
 
-int main(int argc, char **argv)
+int main()
 {
-	std::string filename = "../Resources/glTF/AnimatedCube/AnimatedCube.gltf";
-
-	std::string environment = "../Resources/brdf/doge2";
-
-	if (argc > 1)
-	{
-		filename = argv[1];
-
-		if (argc > 2)
-		{
-			environment = argv[2];
-		}
-	}
-
 	GLFWwindow* window;
 
 	if (!glfwInit())
@@ -30,7 +16,6 @@ int main(int argc, char **argv)
 	}
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	window = glfwCreateWindow(APP_WIDTH, APP_HEIGHT, APP_TITLE, NULL, NULL);
 	if (!window)
 	{
@@ -38,11 +23,8 @@ int main(int argc, char **argv)
 	    return -1;
 	}
 
-	Application application(filename, environment);
+	Application application;
 	application.setApplicationName(APP_TITLE);
-	application.setMinor(2);
-	application.setDepthStencilFormat(VK_FORMAT_D24_UNORM_S8_UINT);
-	application.setSamples(VK_SAMPLE_COUNT_4_BIT);
 	application.addEnabledInstanceLayerName("VK_LAYER_KHRONOS_validation");
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensionNames = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -77,64 +59,24 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	bool mouseLeftPressed = false;
-	bool mouseRightPressed = false;
-	double xposLast = 0.0;
-	double yposLast = 0.0;
-
+	int lastWidth = APP_WIDTH;
+	int lastHeight = APP_HEIGHT;
 	while (!glfwWindowShouldClose(window))
 	{
 		if (!glfwGetWindowAttrib(window, GLFW_ICONIFIED))
 		{
-			// Orbit
-			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+			int width;
+			int height;
+			glfwGetWindowSize(window, &width, &height);
+			if (width != lastWidth || height != lastHeight)
 			{
-				double xpos;
-				double ypos;
-
-				glfwGetCursorPos(window, &xpos, &ypos);
-				if (!mouseLeftPressed)
+				if (!application.resize())
 				{
-					mouseLeftPressed = true;
-
-					xposLast = xpos;
-					yposLast = ypos;
+					break;
 				}
 
-				application.orbitY(static_cast<float>(xpos - xposLast));
-				application.orbitX(static_cast<float>(ypos - yposLast));
-
-				xposLast = xpos;
-				yposLast = ypos;
-			}
-			else if (mouseLeftPressed && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
-			{
-				mouseLeftPressed = false;
-			}
-
-			// Zoom
-			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-			{
-				double xpos;
-				double ypos;
-
-				glfwGetCursorPos(window, &xpos, &ypos);
-				if (!mouseRightPressed)
-				{
-					mouseRightPressed = true;
-
-					xposLast = xpos;
-					yposLast = ypos;
-				}
-
-				application.zoom(static_cast<float>(ypos - yposLast));
-
-				xposLast = xpos;
-				yposLast = ypos;
-			}
-			else if (mouseRightPressed && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
-			{
-				mouseRightPressed = false;
+				lastWidth = width;
+				lastHeight = height;
 			}
 
 			if (!application.update())

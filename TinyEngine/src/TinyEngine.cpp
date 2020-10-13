@@ -327,8 +327,6 @@ bool TinyEngine::createDevice()
 	physicalDeviceBufferDeviceAddressFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
 	VkPhysicalDeviceDescriptorIndexingFeatures physicalDeviceDescriptorIndexingFeatures = {};
 	physicalDeviceDescriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
-	VkPhysicalDeviceRayTracingFeaturesKHR physicalDeviceRayTracingFeatures = {};
-	physicalDeviceRayTracingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_FEATURES_KHR;
 	VkPhysicalDeviceIndexTypeUint8FeaturesEXT physicalDeviceIndexTypeUint8Features = {};
 	physicalDeviceIndexTypeUint8Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_EXT;
 
@@ -353,13 +351,6 @@ bool TinyEngine::createDevice()
 
 			*ppNext = &physicalDeviceDescriptorIndexingFeatures;
 			ppNext = &physicalDeviceDescriptorIndexingFeatures.pNext;
-		}
-		if (hasEnabledDeviceExtensionName(VK_KHR_RAY_TRACING_EXTENSION_NAME))
-		{
-			physicalDeviceRayTracingFeatures.rayTracing = VK_TRUE;
-
-			*ppNext = &physicalDeviceRayTracingFeatures;
-			ppNext = &physicalDeviceRayTracingFeatures.pNext;
 		}
 		if (hasEnabledDeviceExtensionName(VK_EXT_INDEX_TYPE_UINT8_EXTENSION_NAME))
 		{
@@ -882,22 +873,20 @@ bool TinyEngine::createConfiguration()
 	vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
 	vkGetPhysicalDeviceFeatures(physicalDevice, &physicalDeviceFeatures);
 
-	if (major >= 1 || (major == 1 && minor >= 1))
+	if (major >= 1)
 	{
-		physicalDeviceProperties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
-		physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-
-		if (hasEnabledDeviceExtensionName(VK_KHR_RAY_TRACING_EXTENSION_NAME))
+		if (minor >= 1)
 		{
-			physicalDeviceRayTracingProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_KHR;
-			physicalDeviceRayTracingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_FEATURES_KHR;
+			physicalDeviceProperties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+			physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
 
-			physicalDeviceProperties2.pNext = &physicalDeviceRayTracingProperties;
-			physicalDeviceFeatures2.pNext = &physicalDeviceRayTracingFeatures;
+			vkGetPhysicalDeviceProperties2(physicalDevice, &physicalDeviceProperties2);
+			vkGetPhysicalDeviceFeatures2(physicalDevice, &physicalDeviceFeatures2);
 		}
-
-		vkGetPhysicalDeviceProperties2(physicalDevice, &physicalDeviceProperties2);
-		vkGetPhysicalDeviceFeatures2(physicalDevice, &physicalDeviceFeatures2);
+	}
+	else
+	{
+		return false;
 	}
 
 	return true;
@@ -1239,11 +1228,9 @@ bool TinyEngine::terminate()
 	{
 		physicalDeviceProperties = {};
 		physicalDeviceProperties2 = {};
-		physicalDeviceRayTracingProperties = {};
 
 		physicalDeviceFeatures = {};
 		physicalDeviceFeatures2 = {};
-		physicalDeviceRayTracingFeatures = {};
 
 		for (const VkFence& currentFence : queueSubmitFences)
 		{

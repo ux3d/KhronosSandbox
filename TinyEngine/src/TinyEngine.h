@@ -92,11 +92,9 @@ protected:
 
 	VkPhysicalDeviceProperties physicalDeviceProperties = {};
 	VkPhysicalDeviceProperties2 physicalDeviceProperties2 = {};
-	VkPhysicalDeviceRayTracingPropertiesKHR physicalDeviceRayTracingProperties = {};
 
 	VkPhysicalDeviceFeatures physicalDeviceFeatures = {};
 	VkPhysicalDeviceFeatures2 physicalDeviceFeatures2 = {};
-	VkPhysicalDeviceRayTracingFeaturesKHR physicalDeviceRayTracingFeatures = {};
 
 	bool useImgui = false;
 	VkRenderPass imguiRenderPass = VK_NULL_HANDLE;

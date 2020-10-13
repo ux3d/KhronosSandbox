@@ -4,15 +4,22 @@
 
 #define APP_WIDTH 1920
 #define APP_HEIGHT 1080
-#define APP_TITLE "Example15: Render manager"
+#define APP_TITLE "Example15: Hello OpenXR"
 
 int main(int argc, char **argv)
 {
+	std::string filename = "../Resources/glTF/AnimatedCube/AnimatedCube.gltf";
+
 	std::string environment = "../Resources/brdf/doge2";
 
 	if (argc > 1)
 	{
-		environment = argv[1];
+		filename = argv[1];
+
+		if (argc > 2)
+		{
+			environment = argv[2];
+		}
 	}
 
 	GLFWwindow* window;
@@ -31,7 +38,7 @@ int main(int argc, char **argv)
 	    return -1;
 	}
 
-	Application application(environment);
+	Application application(filename, environment);
 	application.setApplicationName(APP_TITLE);
 	application.setMinor(2);
 	application.setDepthStencilFormat(VK_FORMAT_D24_UNORM_S8_UINT);

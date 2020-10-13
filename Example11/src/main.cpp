@@ -4,7 +4,7 @@
 
 #define APP_WIDTH 1920
 #define APP_HEIGHT 1080
-#define APP_TITLE "Example11: Triangle raytraced"
+#define APP_TITLE "Example11: Hello Imgui"
 
 int main()
 {
@@ -26,6 +26,7 @@ int main()
 
 	Application application;
 	application.setApplicationName(APP_TITLE);
+	application.setUseImgui(true);
 	application.setMinor(2);
 	application.addEnabledInstanceLayerName("VK_LAYER_KHRONOS_validation");
 	uint32_t glfwExtensionCount = 0;
@@ -34,11 +35,6 @@ int main()
 	{
 		application.addEnabledInstanceExtensionName(glfwExtensionNames[i]);
 	}
-	application.addEnabledDeviceExtensionName(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
-	application.addEnabledDeviceExtensionName(VK_KHR_RAY_TRACING_EXTENSION_NAME);
-	application.addEnabledDeviceExtensionName(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);	// Required by ray tracing.
-	application.addEnabledDeviceExtensionName(VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME);			// Required by ray tracing.
-	application.setImageUsage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 
 	if (!application.prepare())
 	{
@@ -50,6 +46,16 @@ int main()
 	VkSurfaceKHR surface = VK_NULL_HANDLE;
 	VkResult result = glfwCreateWindowSurface(application.getInstance(), window, nullptr, &surface);
 	if (result != VK_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+		application.terminate();
+		glfwDestroyWindow(window);
+		glfwTerminate();
+		return -1;
+	}
+
+	ImGui::CreateContext();
+	if (!ImGui_ImplGlfw_InitForVulkan(window, true))
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 		application.terminate();
@@ -70,6 +76,8 @@ int main()
 	{
 		if (!glfwGetWindowAttrib(window, GLFW_ICONIFIED))
 		{
+			ImGui_ImplGlfw_NewFrame();
+
 			if (!application.update())
 			{
 				break;
@@ -84,6 +92,9 @@ int main()
 	}
 
 	application.terminate();
+
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
