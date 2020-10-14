@@ -5,6 +5,7 @@
 void RenderManager::terminate(SharedDataResource& sharedDataResource, VkDevice device)
 {
 	VulkanResource::destroyVertexBufferResource(device, sharedDataResource.vertexBufferResource);
+	VulkanResource::destroyUniformBufferResource(device, sharedDataResource.uniformBufferResource);
 	VulkanResource::destroyStorageBufferResource(device, sharedDataResource.storageBufferResource);
 }
 
@@ -102,7 +103,22 @@ RenderManager::~RenderManager()
 
 VkBuffer RenderManager::getBuffer(uint64_t sharedDataHandle)
 {
-	return getSharedData(sharedDataHandle)->vertexBufferResource.bufferResource.buffer;
+	SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
+
+	if (sharedDataResource->vertexBufferResource.bufferResource.buffer != VK_NULL_HANDLE)
+	{
+		return sharedDataResource->vertexBufferResource.bufferResource.buffer;
+	}
+	else if (sharedDataResource->uniformBufferResource.bufferResource.buffer != VK_NULL_HANDLE)
+	{
+		return sharedDataResource->uniformBufferResource.bufferResource.buffer;
+	}
+	else if (sharedDataResource->storageBufferResource.bufferResource.buffer != VK_NULL_HANDLE)
+	{
+		return sharedDataResource->storageBufferResource.bufferResource.buffer;
+	}
+
+	return VK_NULL_HANDLE;
 }
 
 SharedDataResource* RenderManager::getSharedData(uint64_t sharedDataHandle)
@@ -261,12 +277,19 @@ bool RenderManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize si
 	sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.size = size;
 	sharedDataResource->vertexBufferResourceCreateInfo.data = data;
 
+	sharedDataResource->uniformBufferResourceCreateInfo.bufferResourceCreateInfo.size = size;
+	sharedDataResource->uniformBufferResourceCreateInfo.data = data;
+
 	sharedDataResource->storageBufferResourceCreateInfo.bufferResourceCreateInfo.size = size;
 	sharedDataResource->storageBufferResourceCreateInfo.data = data;
 
 	if (((usage & VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) == VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) || ((usage & VK_BUFFER_USAGE_INDEX_BUFFER_BIT) == VK_BUFFER_USAGE_INDEX_BUFFER_BIT))
 	{
 		sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.usage = usage;
+	}
+	else if ((usage & VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT) == VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+	{
+		sharedDataResource->uniformBufferResourceCreateInfo.bufferResourceCreateInfo.usage = usage;
 	}
 	else
 	{
@@ -966,6 +989,15 @@ bool RenderManager::sharedDataFinalize(uint64_t sharedDataHandle)
 		sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 
 		if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, sharedDataResource->vertexBufferResource, sharedDataResource->vertexBufferResourceCreateInfo))
+		{
+			return false;
+		}
+	}
+	else if ((usage & VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT) == VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+	{
+		// No memory property
+
+		if (!VulkanResource::createUniformBufferResource(physicalDevice, device, sharedDataResource->uniformBufferResource, sharedDataResource->uniformBufferResourceCreateInfo))
 		{
 			return false;
 		}
