@@ -14,9 +14,11 @@ struct ViewProjectionUniformPushConstant {
 	glm::mat4 view = glm::mat4(1.0f);
 };
 
-struct ModelViewProjectionUniformPushConstant {
+struct UniformPushConstant {
 	ViewProjectionUniformPushConstant viewProjection = {};
 	glm::mat4 world = glm::mat4(1.0f);
+
+	uint32_t targetCount = 0;
 };
 
 struct WorldResource : BaseResource {

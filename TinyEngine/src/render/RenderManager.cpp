@@ -813,14 +813,20 @@ bool RenderManager::geometryModelSetTarget(uint64_t geometryModelHandle, uint64_
 	if (targetName == "POSITION")
 	{
 		geometryModelResource->targetPositionHandle = sharedDataHandle;
+
+		geometryModelResource->targetCount++;
 	}
 	else if (targetName == "NORMAL")
 	{
 		geometryModelResource->targetNormalHandle = sharedDataHandle;
+
+		geometryModelResource->targetCount++;
 	}
 	else if (targetName == "TANGENT")
 	{
 		geometryModelResource->targetTangentHandle = sharedDataHandle;
+
+		geometryModelResource->targetCount++;
 	}
 	else
 	{
@@ -1450,7 +1456,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 	VkPushConstantRange pushConstantRange = {};
     pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
     pushConstantRange.offset = 0;
-    pushConstantRange.size = sizeof(ModelViewProjectionUniformPushConstant);
+    pushConstantRange.size = sizeof(UniformPushConstant);
 
 	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
 	pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -1964,8 +1970,13 @@ void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex
 				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, geometryModelResource->pipelineLayout, 0, 1, &materialResource->descriptorSet, 0, nullptr);
 			}
 
-			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(worldResource->viewProjection), &worldResource->viewProjection);
-			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(worldResource->viewProjection), sizeof(instanceResource->worldMatrix), &instanceResource->worldMatrix);
+			uint32_t offset = 0;
+			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(worldResource->viewProjection), &worldResource->viewProjection);
+			offset += sizeof(worldResource->viewProjection);
+			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(instanceResource->worldMatrix), &instanceResource->worldMatrix);
+			offset += sizeof(instanceResource->worldMatrix);
+			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(geometryModelResource->targetCount), &geometryModelResource->targetCount);
+			offset += sizeof(geometryModelResource->targetCount);
 
 			if (geometryModelResource->indexBuffer != VK_NULL_HANDLE)
 			{
