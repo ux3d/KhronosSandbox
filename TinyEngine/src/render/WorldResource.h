@@ -18,7 +18,8 @@ struct UniformPushConstant {
 	ViewProjectionUniformPushConstant viewProjection = {};
 	glm::mat4 world = glm::mat4(1.0f);
 
-	uint32_t targetCount = 0;
+	uint32_t targetsCount = 0;
+	uint32_t targetsOffset = 0;
 };
 
 struct WorldResource : BaseResource {

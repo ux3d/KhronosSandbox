@@ -195,6 +195,8 @@ bool WorldBuilder::buildMeshes()
 			return false;
 		}
 
+		uint32_t weightsCount = 0;
+
 		for (size_t k = 0; k < mesh.primitives.size(); k++)
 		{
 			const Primitive& primitive = mesh.primitives[k];
@@ -419,7 +421,7 @@ bool WorldBuilder::buildMeshes()
 
 			//
 
-			if (primitive.targetsCount > 0)
+			if (primitive.targets.size() > 0)
 			{
 				if (primitive.targetPositionData.size() > 0)
 				{
@@ -492,6 +494,17 @@ bool WorldBuilder::buildMeshes()
 						return false;
 					}
 				}
+
+				//
+
+				if (!renderManager.geometryModelSetTargetsCountOffset(geometryModelHandle, static_cast<uint32_t>(primitive.targets.size()), primitive.targetsOffset))
+				{
+					return false;
+				}
+
+				//
+
+				weightsCount += primitive.targets.size();
 			}
 
 			//
@@ -539,6 +552,46 @@ bool WorldBuilder::buildMeshes()
 				return false;
 			}
 		}
+
+		//
+
+		if (weightsCount > 0)
+		{
+			std::vector<float> weights(weightsCount, 0.0f);
+
+			if (mesh.weights.size() > 0)
+			{
+				if (weights.size() != mesh.weights.size())
+				{
+					return false;
+				}
+
+				memcpy(weights.data(), mesh.weights.data(), mesh.weights.size()* sizeof(float));
+			}
+
+			uint64_t weightsHandle;
+			if (!renderManager.sharedDataCreate(weightsHandle))
+			{
+				return false;
+			}
+
+			if (!renderManager.sharedDataCreateUniformBuffer(weightsHandle, sizeof(float) * weights.size(), weights.data()))
+			{
+				return false;
+			}
+
+			if (!renderManager.sharedDataFinalize(weightsHandle))
+			{
+				return false;
+			}
+
+			if (!renderManager.groupSetWeights(groupHandle, weightsHandle))
+			{
+				return false;
+			}
+		}
+
+		//
 
 		if (!renderManager.groupFinalize(groupHandle))
 		{

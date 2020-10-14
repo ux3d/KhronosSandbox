@@ -458,6 +458,11 @@ bool RenderManager::sharedDataCreateIndexBuffer(uint64_t sharedDataHandle, VkDev
 	return sharedDataSetData(sharedDataHandle, size, data, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 }
 
+bool RenderManager::sharedDataCreateUniformBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data)
+{
+	return sharedDataSetData(sharedDataHandle, size, data, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+}
+
 bool RenderManager::sharedDataCreateStorageBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data)
 {
 	return sharedDataSetData(sharedDataHandle, size, data, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
@@ -836,20 +841,14 @@ bool RenderManager::geometryModelSetTarget(uint64_t geometryModelHandle, uint64_
 	if (targetName == "POSITION")
 	{
 		geometryModelResource->targetPositionHandle = sharedDataHandle;
-
-		geometryModelResource->targetCount++;
 	}
 	else if (targetName == "NORMAL")
 	{
 		geometryModelResource->targetNormalHandle = sharedDataHandle;
-
-		geometryModelResource->targetCount++;
 	}
 	else if (targetName == "TANGENT")
 	{
 		geometryModelResource->targetTangentHandle = sharedDataHandle;
-
-		geometryModelResource->targetCount++;
 	}
 	else
 	{
@@ -857,6 +856,21 @@ bool RenderManager::geometryModelSetTarget(uint64_t geometryModelHandle, uint64_
 	}
 
 	geometryModelResource->macros["HAS_TARGET_" + targetName] = "";
+
+	return true;
+}
+
+bool RenderManager::geometryModelSetTargetsCountOffset(uint64_t geometryModelHandle, uint32_t targetsCount, uint32_t targetsOffset)
+{
+	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
+
+	if (!geometryModelResource->created || geometryModelResource->finalized)
+	{
+		return false;
+	}
+
+	geometryModelResource->targetsCount = targetsCount;
+	geometryModelResource->targetsOffset = targetsOffset;
 
 	return true;
 }
@@ -885,6 +899,20 @@ bool RenderManager::groupAddGeometryModel(uint64_t groupHandle, uint64_t geometr
 	}
 
 	groupResource->geometryModelHandles.push_back(geometryModelHandle);
+
+	return true;
+}
+
+bool RenderManager::groupSetWeights(uint64_t groupHandle, uint64_t sharedDataHandle)
+{
+	GroupResource* groupResource = getGroup(groupHandle);
+
+	if (!groupResource->created || groupResource->finalized)
+	{
+		return false;
+	}
+
+	groupResource->weightsHandle = sharedDataHandle;
 
 	return true;
 }
@@ -2007,8 +2035,10 @@ void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex
 			offset += sizeof(worldResource->viewProjection);
 			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(instanceResource->worldMatrix), &instanceResource->worldMatrix);
 			offset += sizeof(instanceResource->worldMatrix);
-			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(geometryModelResource->targetCount), &geometryModelResource->targetCount);
-			offset += sizeof(geometryModelResource->targetCount);
+			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(geometryModelResource->targetsCount), &geometryModelResource->targetsCount);
+			offset += sizeof(geometryModelResource->targetsCount);
+			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(geometryModelResource->targetsOffset), &geometryModelResource->targetsOffset);
+			offset += sizeof(geometryModelResource->targetsOffset);
 
 			if (geometryModelResource->indexBuffer != VK_NULL_HANDLE)
 			{

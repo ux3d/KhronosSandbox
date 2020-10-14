@@ -38,7 +38,8 @@ struct GeometryModelResource : BaseResource {
 	VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
 	VkPipeline graphicsPipeline = VK_NULL_HANDLE;
 
-	uint32_t targetCount = 0;
+	uint32_t targetsCount = 0;
+	uint32_t targetsOffset = 0;
 
 	uint64_t targetPositionHandle = 0;
 	uint64_t targetNormalHandle = 0;

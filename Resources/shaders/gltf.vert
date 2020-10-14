@@ -5,7 +5,8 @@ layout(push_constant) uniform UniformPushConstant {
     mat4 view;
     mat4 world;
 
-    uint targetCount;
+    uint targetsCount;
+    uint targetsOffset;
 } in_upc;
 
 layout (location = POSITION_LOC) in vec3 in_position;

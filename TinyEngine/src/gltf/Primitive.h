@@ -37,7 +37,7 @@ struct Primitive {
 	std::vector<glm::vec3> targetPositionData;
 	std::vector<glm::vec3> targetNormalData;
 	std::vector<glm::vec3> targetTangentData;
-	uint32_t targetsCount = 0;
+	uint32_t targetsOffset = 0;
 };
 
 #endif /* GLTF_PRIMITIVE_H_ */
