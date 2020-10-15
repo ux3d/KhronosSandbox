@@ -487,7 +487,7 @@ bool RenderManager::sharedDataCreateDynamicUniformBuffer(uint64_t sharedDataHand
 {
 	VkDeviceSize alignedSize = 0;
 	VkDeviceSize unalignedSize = size;
-	VkDeviceSize alignment = 256;
+	VkDeviceSize alignment = physicalDeviceProperties.limits.minUniformBufferOffsetAlignment;
 
 	if (!HelperVulkan::getAligenedSize(alignedSize, unalignedSize, alignment))
 	{
@@ -1304,7 +1304,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		VkDescriptorBufferInfo descriptorBufferInfo = {};
 		descriptorBufferInfo.buffer = getSharedData(geometryModelResource->weightsHandle)->uniformBufferResource.bufferResource.buffer;
 		descriptorBufferInfo.offset = 0;
-		descriptorBufferInfo.range = 256;
+		descriptorBufferInfo.range = sizeof(float) * geometryModelResource->targetsCount;
 		descriptorBufferInfos.push_back(descriptorBufferInfo);
 
 		macros["WEIGHTS_BINDING"] = std::to_string(binding);
