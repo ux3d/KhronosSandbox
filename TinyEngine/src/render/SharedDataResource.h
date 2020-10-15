@@ -15,6 +15,8 @@ struct SharedDataResource : BaseResource {
 	UniformBufferResource uniformBufferResource = {};
 	StorageBufferResource storageBufferResource = {};
 
+	VkBufferUsageFlags usage = 0;
+
 };
 
 #endif /* RENDER_SHAREDDATARENDER_H_ */

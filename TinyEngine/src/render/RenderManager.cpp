@@ -283,6 +283,8 @@ bool RenderManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize si
 		return false;
 	}
 
+	sharedDataResource->usage = usage;
+
 	sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.size = size;
 	sharedDataResource->vertexBufferResourceCreateInfo.data = data;
 
@@ -295,14 +297,20 @@ bool RenderManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize si
 	if (((usage & VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) == VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) || ((usage & VK_BUFFER_USAGE_INDEX_BUFFER_BIT) == VK_BUFFER_USAGE_INDEX_BUFFER_BIT))
 	{
 		sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.usage = usage;
+
+		sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	}
 	else if ((usage & VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT) == VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
 	{
 		sharedDataResource->uniformBufferResourceCreateInfo.bufferResourceCreateInfo.usage = usage;
+
+		// No memory properties.
 	}
 	else
 	{
 		sharedDataResource->storageBufferResourceCreateInfo.bufferResourceCreateInfo.usage = usage;
+
+		sharedDataResource->storageBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	}
 
 	return true;
@@ -1015,12 +1023,10 @@ bool RenderManager::sharedDataFinalize(uint64_t sharedDataHandle)
 		return false;
 	}
 
-	VkBufferUsageFlags usage = sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.usage;
+	VkBufferUsageFlags usage = sharedDataResource->usage;
 
 	if (((usage & VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) == VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) || ((usage & VK_BUFFER_USAGE_INDEX_BUFFER_BIT) == VK_BUFFER_USAGE_INDEX_BUFFER_BIT))
 	{
-		sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-
 		if (!VulkanResource::createVertexBufferResource(physicalDevice, device, queue, commandPool, sharedDataResource->vertexBufferResource, sharedDataResource->vertexBufferResourceCreateInfo))
 		{
 			return false;
@@ -1028,8 +1034,6 @@ bool RenderManager::sharedDataFinalize(uint64_t sharedDataHandle)
 	}
 	else if ((usage & VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT) == VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
 	{
-		// No memory property
-
 		if (!VulkanResource::createUniformBufferResource(physicalDevice, device, sharedDataResource->uniformBufferResource, sharedDataResource->uniformBufferResourceCreateInfo))
 		{
 			return false;
@@ -1037,8 +1041,6 @@ bool RenderManager::sharedDataFinalize(uint64_t sharedDataHandle)
 	}
 	else
 	{
-		sharedDataResource->storageBufferResourceCreateInfo.bufferResourceCreateInfo.memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-
 		if (!VulkanResource::createStorageBufferResource(physicalDevice, device, queue, commandPool, sharedDataResource->storageBufferResource, sharedDataResource->storageBufferResourceCreateInfo))
 		{
 			return false;
@@ -1265,6 +1267,27 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		descriptorBufferInfos.push_back(descriptorBufferInfo);
 
 		macros["TARGET_TANGENT_BINDING"] = std::to_string(binding);
+
+		binding++;
+	}
+
+	if (geometryModelResource->weightsHandle != 0)
+	{
+		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+		descriptorSetLayoutBinding = {};
+		descriptorSetLayoutBinding.binding = binding;
+		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+		descriptorSetLayoutBinding.descriptorCount = 1;
+		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+		VkDescriptorBufferInfo descriptorBufferInfo = {};
+		descriptorBufferInfo.buffer = getSharedData(geometryModelResource->weightsHandle)->uniformBufferResource.bufferResource.buffer;
+		descriptorBufferInfo.offset = 0;
+		descriptorBufferInfo.range = sizeof(float) * geometryModelResource->targetsCount;
+		descriptorBufferInfos.push_back(descriptorBufferInfo);
+
+		macros["WEIGHTS_BINDING"] = std::to_string(binding);
 
 		binding++;
 	}

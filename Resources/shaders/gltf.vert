@@ -74,6 +74,10 @@ layout (binding = TARGET_NORMAL_BINDING) buffer Normal { vec3 i[]; } u_targetNor
 layout (binding = TARGET_TANGENT_BINDING) buffer Tangent { vec3 i[]; } u_targetTangent;
 #endif
 
+#ifdef HAS_WEIGHTS
+layout (binding = WEIGHTS_BINDING) uniform Weights { float i[]; } u_weights;
+#endif
+
 layout (location = 8) flat out float out_determinant;
 
 void main()
