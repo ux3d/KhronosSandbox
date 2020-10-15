@@ -267,6 +267,13 @@ bool RenderManager::renderSetSamples(VkSampleCountFlagBits samples)
 	return true;
 }
 
+bool RenderManager::renderSetFrames(uint32_t frames)
+{
+	this->frames = frames;
+
+	return true;
+}
+
 bool RenderManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize size, const void* data, VkBufferUsageFlags usage)
 {
 	SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
@@ -2045,10 +2052,7 @@ void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex
 
 			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, geometryModelResource->graphicsPipeline);
 
-			if (geometryModelResource->descriptorSet != VK_NULL_HANDLE)
-			{
-				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, geometryModelResource->pipelineLayout, 0, 1, &geometryModelResource->descriptorSet, 0, nullptr);
-			}
+			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, geometryModelResource->pipelineLayout, 0, 1, &geometryModelResource->descriptorSet, geometryModelResource->dynamicOffsets.size(), geometryModelResource->dynamicOffsets.data());
 
 			uint32_t offset = 0;
 			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(worldResource->viewProjection), &worldResource->viewProjection);

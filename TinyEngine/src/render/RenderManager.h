@@ -40,6 +40,7 @@ private:
 
 	VkRenderPass renderPass = VK_NULL_HANDLE;
 	VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
+	uint32_t frames = 1;
 
 	VkImageView imageView = VK_NULL_HANDLE;
 
@@ -97,6 +98,8 @@ public:
 	bool renderSetRenderPass(VkRenderPass renderPass);
 
 	bool renderSetSamples(VkSampleCountFlagBits samples);
+
+	bool renderSetFrames(uint32_t frames);
 
 	// Resources need to be created.
 

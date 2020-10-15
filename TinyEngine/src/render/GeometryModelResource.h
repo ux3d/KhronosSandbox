@@ -44,6 +44,10 @@ struct GeometryModelResource : BaseResource {
 	uint64_t targetNormalHandle = 0;
 	uint64_t targetTangentHandle = 0;
 
+	//
+
+	std::vector<uint32_t> dynamicOffsets;
+
 };
 
 #endif /* RENDER_GEOMETRYMODELRENDER_H_ */

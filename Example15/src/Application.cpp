@@ -15,6 +15,7 @@ bool Application::applicationInit()
 	renderManager.renderSetRenderPass(renderPass);
 	renderManager.renderSetSamples(samples);
 	renderManager.renderSetDimension(width, height);
+	renderManager.renderSetFrames(swapchainImages.size());
 
 	HelperLoad helperLoad(true);
 	if(!helperLoad.open(glTF, filename))
