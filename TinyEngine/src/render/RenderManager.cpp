@@ -1885,6 +1885,44 @@ bool RenderManager::worldGetCamera(uint64_t& cameraHandle)
 	return false;
 }
 
+bool RenderManager::instanceUpdateWeights(uint64_t instanceHandle, const std::vector<float>& weights, uint32_t frameIndex)
+{
+	InstanceResource* instanceResource = getInstance(instanceHandle);
+
+	if (!instanceResource->created || !instanceResource->finalized)
+	{
+		return false;
+	}
+
+	GroupResource* groupResource = getGroup(instanceResource->groupHandle);
+
+	uint32_t weightsOffset = 0;
+
+	for (size_t i = 0; i < groupResource->geometryModelHandles.size(); i++)
+	{
+		GeometryModelResource* geometryModelResource = getGeometryModel(groupResource->geometryModelHandles[i]);
+
+		SharedDataResource* sharedDataResource = getSharedData(geometryModelResource->weightsHandle);
+
+		//
+
+		VkDeviceSize size = sharedDataResource->size / frames;
+
+		VkDeviceSize offset = size * frameIndex;
+
+		if (!VulkanResource::copyHostToDevice(device, sharedDataResource->uniformBufferResource.bufferResource, &weights.data()[weightsOffset], size, offset))
+		{
+			return false;
+		}
+
+		//
+
+		weightsOffset += geometryModelResource->targetsCount;
+	}
+
+	return true;
+}
+
 bool RenderManager::instanceUpdateWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix)
 {
 	InstanceResource* instanceResource = getInstance(instanceHandle);

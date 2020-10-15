@@ -179,6 +179,7 @@ public:
 
 	// Update also after finalization.
 
+	bool instanceUpdateWeights(uint64_t geometryModelHandle, const std::vector<float>& weights, uint32_t frameIndex);
 	bool instanceUpdateWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix);
 
 	bool cameraUpdateProjectionMatrix(uint64_t cameraHandle, const glm::mat4& projectionMatrix);

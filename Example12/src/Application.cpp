@@ -64,6 +64,11 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	{
 		const Node& node = glTF.nodes[i];
 		renderManager.instanceUpdateWorldMatrix(nodeToHandles[&node], node.worldMatrix);
+
+		if (node.weights.size() > 0 && node.mesh >= 0)
+		{
+			renderManager.instanceUpdateWeights(nodeToHandles[&node], node.weights, frameIndex);
+		}
 	}
 
 	//
