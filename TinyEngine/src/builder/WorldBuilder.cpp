@@ -495,31 +495,6 @@ bool WorldBuilder::buildMeshes()
 					}
 				}
 
-				//
-
-				uint64_t weightsHandle;
-				if (!renderManager.sharedDataCreate(weightsHandle))
-				{
-					return false;
-				}
-
-				if (!renderManager.sharedDataCreateDynamicUniformBuffer(weightsHandle, sizeof(float) * targetsCount, &mesh.weights.data()[k * targetsCount]))
-				{
-					return false;
-				}
-
-				if (!renderManager.sharedDataFinalize(weightsHandle))
-				{
-					return false;
-				}
-
-				if (!renderManager.geometryModelSetWeights(geometryModelHandle, weightsHandle))
-				{
-					return false;
-				}
-
-				//
-
 				renderManager.geometryModelSetTargetsCount(geometryModelHandle, targetsCount);
 			}
 
@@ -612,6 +587,35 @@ bool WorldBuilder::buildNodes()
 			{
 				return false;
 			}
+
+			//
+
+			if (node.weights.size() > 0)
+			{
+				uint64_t weightsHandle;
+				if (!renderManager.sharedDataCreate(weightsHandle))
+				{
+					return false;
+				}
+
+				if (!renderManager.sharedDataCreateDynamicUniformBuffer(weightsHandle, sizeof(float) * node.weights.size(), node.weights.data()))
+				{
+					return false;
+				}
+
+				if (!renderManager.sharedDataFinalize(weightsHandle))
+				{
+					return false;
+				}
+
+				if (!renderManager.instanceSetWeights(instanceHandle, weightsHandle))
+				{
+					return false;
+				}
+
+			}
+
+			//
 
 			if (!renderManager.instanceFinalize(instanceHandle))
 			{

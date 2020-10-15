@@ -136,7 +136,6 @@ public:
 	bool geometryModelSetVertexCount(uint64_t geometryModelHandle, uint32_t verticesCount);
 	bool geometryModelSetIndices(uint64_t geometryModelHandle, uint64_t sharedDataHandle, uint32_t indicesCount, VkIndexType indexType, uint32_t indexOffset, uint32_t indexRange);
 	bool geometryModelSetTarget(uint64_t geometryModelHandle, uint64_t sharedDataHandle, const std::string& targetName);
-	bool geometryModelSetWeights(uint64_t geometryModelHandle, uint64_t sharedDataHandle);
 	bool geometryModelSetTargetsCount(uint64_t geometryModelHandle, uint32_t targetsCount);
 	bool geometryModelSetCullMode(uint64_t geometryModelHandle, VkCullModeFlags cullMode);
 
@@ -144,6 +143,7 @@ public:
 
 	bool instanceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix);
 	bool instanceSetGroup(uint64_t instanceHandle, uint64_t groupHandle);
+	bool instanceSetWeights(uint64_t instanceHandle, uint64_t sharedDataHandle);
 
 	bool lightSetEnvironment(uint64_t lightHandle, const std::string& environment);
 

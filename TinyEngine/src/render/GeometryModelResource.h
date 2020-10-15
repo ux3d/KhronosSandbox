@@ -28,27 +28,11 @@ struct GeometryModelResource : BaseResource {
 
 	VkCullModeFlags cullMode = VK_CULL_MODE_NONE;
 
-	VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
-	VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
-	VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
-
-	VkShaderModule vertexShaderModule = VK_NULL_HANDLE;
-	VkShaderModule fragmentShaderModule = VK_NULL_HANDLE;
-
-	VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
-	VkPipeline graphicsPipeline = VK_NULL_HANDLE;
-
 	uint32_t targetsCount = 0;
 
 	uint64_t targetPositionHandle = 0;
 	uint64_t targetNormalHandle = 0;
 	uint64_t targetTangentHandle = 0;
-
-	uint64_t weightsHandle = 0;
-
-	//
-
-	std::vector<uint32_t> dynamicOffsets;
 
 };
 

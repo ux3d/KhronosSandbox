@@ -25,51 +25,6 @@ void RenderManager::terminate(GeometryResource& geometryResource, VkDevice devic
 
 void RenderManager::terminate(GeometryModelResource& geometryModelResource, VkDevice device)
 {
-	if (geometryModelResource.graphicsPipeline != VK_NULL_HANDLE)
-	{
-		vkDestroyPipeline(device, geometryModelResource.graphicsPipeline, nullptr);
-		geometryModelResource.graphicsPipeline = VK_NULL_HANDLE;
-	}
-
-	if (geometryModelResource.pipelineLayout != VK_NULL_HANDLE)
-	{
-		vkDestroyPipelineLayout(device, geometryModelResource.pipelineLayout, nullptr);
-		geometryModelResource.pipelineLayout = VK_NULL_HANDLE;
-	}
-
-	if (geometryModelResource.vertexShaderModule != VK_NULL_HANDLE)
-	{
-		vkDestroyShaderModule(device, geometryModelResource.vertexShaderModule, nullptr);
-		geometryModelResource.vertexShaderModule = VK_NULL_HANDLE;
-	}
-
-	if (geometryModelResource.fragmentShaderModule != VK_NULL_HANDLE)
-	{
-		vkDestroyShaderModule(device, geometryModelResource.fragmentShaderModule, nullptr);
-		geometryModelResource.fragmentShaderModule = VK_NULL_HANDLE;
-	}
-
-	//
-
-	// Descriptor sets do not have to be freed, as managed by pool.
-	geometryModelResource.descriptorSet = VK_NULL_HANDLE;
-
-	if (geometryModelResource.descriptorPool != VK_NULL_HANDLE)
-	{
-		vkDestroyDescriptorPool(device, geometryModelResource.descriptorPool, nullptr);
-		geometryModelResource.descriptorPool = VK_NULL_HANDLE;
-	}
-
-	if (geometryModelResource.descriptorSetLayout != VK_NULL_HANDLE)
-	{
-		vkDestroyDescriptorSetLayout(device, geometryModelResource.descriptorSetLayout, nullptr);
-		geometryModelResource.descriptorSetLayout = VK_NULL_HANDLE;
-	}
-
-
-
-	// Shared data is not destroyed here.
-
 }
 
 void RenderManager::terminate(GroupResource& groupResource, VkDevice device)
@@ -78,6 +33,49 @@ void RenderManager::terminate(GroupResource& groupResource, VkDevice device)
 
 void RenderManager::terminate(InstanceResource& instanceResource, VkDevice device)
 {
+	for (size_t geometryModelIndex = 0; geometryModelIndex < instanceResource.instanceContainers.size(); geometryModelIndex++)
+	{
+		if (instanceResource.instanceContainers[geometryModelIndex].graphicsPipeline != VK_NULL_HANDLE)
+		{
+			vkDestroyPipeline(device, instanceResource.instanceContainers[geometryModelIndex].graphicsPipeline, nullptr);
+			instanceResource.instanceContainers[geometryModelIndex].graphicsPipeline = VK_NULL_HANDLE;
+		}
+
+		if (instanceResource.instanceContainers[geometryModelIndex].pipelineLayout != VK_NULL_HANDLE)
+		{
+			vkDestroyPipelineLayout(device, instanceResource.instanceContainers[geometryModelIndex].pipelineLayout, nullptr);
+			instanceResource.instanceContainers[geometryModelIndex].pipelineLayout = VK_NULL_HANDLE;
+		}
+
+		if (instanceResource.instanceContainers[geometryModelIndex].vertexShaderModule != VK_NULL_HANDLE)
+		{
+			vkDestroyShaderModule(device, instanceResource.instanceContainers[geometryModelIndex].vertexShaderModule, nullptr);
+			instanceResource.instanceContainers[geometryModelIndex].vertexShaderModule = VK_NULL_HANDLE;
+		}
+
+		if (instanceResource.instanceContainers[geometryModelIndex].fragmentShaderModule != VK_NULL_HANDLE)
+		{
+			vkDestroyShaderModule(device, instanceResource.instanceContainers[geometryModelIndex].fragmentShaderModule, nullptr);
+			instanceResource.instanceContainers[geometryModelIndex].fragmentShaderModule = VK_NULL_HANDLE;
+		}
+
+		//
+
+		// Descriptor sets do not have to be freed, as managed by pool.
+		instanceResource.instanceContainers[geometryModelIndex].descriptorSet = VK_NULL_HANDLE;
+
+		if (instanceResource.instanceContainers[geometryModelIndex].descriptorPool != VK_NULL_HANDLE)
+		{
+			vkDestroyDescriptorPool(device, instanceResource.instanceContainers[geometryModelIndex].descriptorPool, nullptr);
+			instanceResource.instanceContainers[geometryModelIndex].descriptorPool = VK_NULL_HANDLE;
+		}
+
+		if (instanceResource.instanceContainers[geometryModelIndex].descriptorSetLayout != VK_NULL_HANDLE)
+		{
+			vkDestroyDescriptorSetLayout(device, instanceResource.instanceContainers[geometryModelIndex].descriptorSetLayout, nullptr);
+			instanceResource.instanceContainers[geometryModelIndex].descriptorSetLayout = VK_NULL_HANDLE;
+		}
+	}
 }
 
 void RenderManager::terminate(LightResource& lightResource, VkDevice device)
@@ -877,29 +875,6 @@ bool RenderManager::geometryModelSetTarget(uint64_t geometryModelHandle, uint64_
 	return true;
 }
 
-bool RenderManager::geometryModelSetWeights(uint64_t geometryModelHandle, uint64_t sharedDataHandle)
-{
-	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
-
-	if (!geometryModelResource->created || geometryModelResource->finalized)
-	{
-		return false;
-	}
-
-	SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
-
-	if (!sharedDataResource->finalized)
-	{
-		return false;
-	}
-
-	geometryModelResource->weightsHandle = sharedDataHandle;
-
-	geometryModelResource->macros["HAS_WEIGHTS"] = "";
-
-	return true;
-}
-
 bool RenderManager::geometryModelSetTargetsCount(uint64_t geometryModelHandle, uint32_t targetsCount)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
@@ -977,6 +952,28 @@ bool RenderManager::instanceSetGroup(uint64_t instanceHandle, uint64_t groupHand
 
 	return true;
 }
+
+bool RenderManager::instanceSetWeights(uint64_t instanceHandle, uint64_t sharedDataHandle)
+{
+	InstanceResource* instanceResource = getInstance(instanceHandle);
+
+	if (!instanceResource->created || instanceResource->finalized)
+	{
+		return false;
+	}
+
+	SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
+
+	if (!sharedDataResource->finalized)
+	{
+		return false;
+	}
+
+	instanceResource->weightsHandle = sharedDataHandle;
+
+	return true;
+}
+
 
 bool RenderManager::lightSetEnvironment(uint64_t lightHandle, const std::string& environment)
 {
@@ -1189,502 +1186,6 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 
 	geometryModelResource->finalized = true;
 
-	//
-
-	GeometryResource* geometryResource = getGeometry(geometryModelResource->geometryHandle);
-
-	if (!geometryResource->finalized)
-	{
-		return false;
-	}
-
-	//
-
-	uint32_t binding = 0;
-
-	std::vector<VkDescriptorSetLayout> setLayouts;
-	std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
-
-	std::vector<VkDescriptorImageInfo> descriptorImageInfos;
-	std::vector<VkDescriptorBufferInfo> descriptorBufferInfos;
-
-	if (geometryModelResource->materialHandle > 0)
-	{
-		MaterialResource* materialResource = getMaterial(geometryModelResource->materialHandle);
-
-		if (materialResource->descriptorSetLayoutBindings.size() > 0)
-		{
-			binding = materialResource->descriptorSetLayoutBindings.back().binding + 1;
-		}
-
-		descriptorSetLayoutBindings = materialResource->descriptorSetLayoutBindings;
-
-		descriptorImageInfos = materialResource->descriptorImageInfos;
-		descriptorBufferInfos = materialResource->descriptorBufferInfos;
-	}
-
-	// Morphing
-
-	if (geometryModelResource->targetPositionHandle != 0)
-	{
-		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = binding;
-		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		descriptorSetLayoutBinding.descriptorCount = 1;
-		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-		VkDescriptorBufferInfo descriptorBufferInfo = {};
-		descriptorBufferInfo.buffer = getSharedData(geometryModelResource->targetPositionHandle)->storageBufferResource.bufferResource.buffer;
-		descriptorBufferInfo.offset = 0;
-		descriptorBufferInfo.range = sizeof(glm::vec3) * geometryModelResource->targetsCount * geometryResource->count;
-		descriptorBufferInfos.push_back(descriptorBufferInfo);
-
-		geometryModelResource->macros["TARGET_POSITION_BINDING"] = std::to_string(binding);
-
-		binding++;
-	}
-
-	if (geometryModelResource->targetNormalHandle != 0)
-	{
-		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = binding;
-		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		descriptorSetLayoutBinding.descriptorCount = 1;
-		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-		VkDescriptorBufferInfo descriptorBufferInfo = {};
-		descriptorBufferInfo.buffer = getSharedData(geometryModelResource->targetNormalHandle)->storageBufferResource.bufferResource.buffer;
-		descriptorBufferInfo.offset = 0;
-		descriptorBufferInfo.range = sizeof(glm::vec3) * geometryModelResource->targetsCount * geometryResource->count;
-		descriptorBufferInfos.push_back(descriptorBufferInfo);
-
-		geometryModelResource->macros["TARGET_NORMAL_BINDING"] = std::to_string(binding);
-
-		binding++;
-	}
-
-	if (geometryModelResource->targetTangentHandle != 0)
-	{
-		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = binding;
-		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		descriptorSetLayoutBinding.descriptorCount = 1;
-		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-		VkDescriptorBufferInfo descriptorBufferInfo = {};
-		descriptorBufferInfo.buffer = getSharedData(geometryModelResource->targetTangentHandle)->storageBufferResource.bufferResource.buffer;
-		descriptorBufferInfo.offset = 0;
-		descriptorBufferInfo.range = sizeof(glm::vec3) * geometryModelResource->targetsCount * geometryResource->count;
-		descriptorBufferInfos.push_back(descriptorBufferInfo);
-
-		geometryModelResource->macros["TARGET_TANGENT_BINDING"] = std::to_string(binding);
-
-		binding++;
-	}
-
-	if (geometryModelResource->weightsHandle != 0)
-	{
-		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = binding;
-		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-		descriptorSetLayoutBinding.descriptorCount = 1;
-		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-		VkDescriptorBufferInfo descriptorBufferInfo = {};
-		descriptorBufferInfo.buffer = getSharedData(geometryModelResource->weightsHandle)->uniformBufferResource.bufferResource.buffer;
-		descriptorBufferInfo.offset = 0;
-		descriptorBufferInfo.range = sizeof(float) * geometryModelResource->targetsCount;
-		descriptorBufferInfos.push_back(descriptorBufferInfo);
-
-		geometryModelResource->macros["WEIGHTS_BINDING"] = std::to_string(binding);
-
-		binding++;
-
-		//
-
-		geometryModelResource->dynamicOffsets.resize(frames, 0);
-
-		VkDeviceSize size = getSharedData(geometryModelResource->weightsHandle)->size / frames;
-
-		for (uint32_t i = 0; i < frames; i++)
-		{
-			geometryModelResource->dynamicOffsets[i] = i * size;
-		}
-	}
-
-	// Lighting
-
-	WorldResource* worldResource = getWorld();
-
-	if (worldResource->lightHandle > 0)
-	{
-		LightResource* lightResource = getLight(worldResource->lightHandle);
-
-		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = binding;
-		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorSetLayoutBinding.descriptorCount = 1;
-		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-		VkDescriptorImageInfo descriptorImageInfo = {};
-		descriptorImageInfo.sampler = lightResource->diffuse.samplerResource.sampler;
-		descriptorImageInfo.imageView = lightResource->diffuse.imageViewResource.imageView;
-		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		descriptorImageInfos.push_back(descriptorImageInfo);
-
-		geometryModelResource->macros["DIFFUSE_BINDING"] = std::to_string(binding);
-
-		binding++;
-
-		//
-
-		descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = binding;
-		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorSetLayoutBinding.descriptorCount = 1;
-		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-		descriptorImageInfo = {};
-		descriptorImageInfo.sampler = lightResource->specular.samplerResource.sampler;
-		descriptorImageInfo.imageView = lightResource->specular.imageViewResource.imageView;
-		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		descriptorImageInfos.push_back(descriptorImageInfo);
-
-		geometryModelResource->macros["SPECULAR_BINDING"] = std::to_string(binding);
-
-		binding++;
-
-		//
-
-		descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = binding;
-		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorSetLayoutBinding.descriptorCount = 1;
-		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-		descriptorImageInfo = {};
-		descriptorImageInfo.sampler = lightResource->lut.samplerResource.sampler;
-		descriptorImageInfo.imageView = lightResource->lut.imageViewResource.imageView;
-		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		descriptorImageInfos.push_back(descriptorImageInfo);
-
-		geometryModelResource->macros["LUT_BINDING"] = std::to_string(binding);
-	}
-
-	//
-
-	VkResult result = VK_SUCCESS;
-
-	//
-
-	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = {};
-	descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	descriptorSetLayoutCreateInfo.bindingCount = static_cast<uint32_t>(descriptorSetLayoutBindings.size());
-	descriptorSetLayoutCreateInfo.pBindings = descriptorSetLayoutBindings.data();
-
-	result = vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &geometryModelResource->descriptorSetLayout);
-	if (result != VK_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
-
-		return false;
-	}
-
-	//
-
-	std::vector<VkDescriptorPoolSize> descriptorPoolSizes;
-	descriptorPoolSizes.resize(descriptorSetLayoutBindings.size(), {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1});
-
-	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
-	descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(descriptorSetLayoutBindings.size());
-	descriptorPoolCreateInfo.pPoolSizes = descriptorPoolSizes.data();
-	descriptorPoolCreateInfo.maxSets = 1;
-
-	result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &geometryModelResource->descriptorPool);
-	if (result != VK_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
-
-		return false;
-	}
-
-	VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = {};
-	descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	descriptorSetAllocateInfo.descriptorPool = geometryModelResource->descriptorPool;
-	descriptorSetAllocateInfo.descriptorSetCount = 1;
-	descriptorSetAllocateInfo.pSetLayouts = &geometryModelResource->descriptorSetLayout;
-
-	result = vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &geometryModelResource->descriptorSet);
-	if (result != VK_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
-
-		return false;
-	}
-
-	uint32_t descriptorImageInfosSize = static_cast<uint32_t>(descriptorImageInfos.size());
-	uint32_t descriptorBufferInfosSize = static_cast<uint32_t>(descriptorBufferInfos.size());
-
-	//
-
-	std::vector<VkWriteDescriptorSet> writeDescriptorSets(descriptorImageInfosSize + descriptorBufferInfosSize);
-
-	uint32_t imageIndex = 0;
-	uint32_t bufferIndex = 0;
-	for (uint32_t k = 0; k < descriptorImageInfosSize + descriptorBufferInfosSize; k++)
-	{
-		if (descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
-		{
-			writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			writeDescriptorSets[k].dstSet = geometryModelResource->descriptorSet;
-			writeDescriptorSets[k].dstBinding = k;
-			writeDescriptorSets[k].dstArrayElement = 0;
-			writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			writeDescriptorSets[k].descriptorCount = 1;
-			writeDescriptorSets[k].pImageInfo = &descriptorImageInfos[imageIndex];
-
-			imageIndex++;
-		}
-		else if (descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
-		{
-			writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			writeDescriptorSets[k].dstSet = geometryModelResource->descriptorSet;
-			writeDescriptorSets[k].dstBinding = k;
-			writeDescriptorSets[k].dstArrayElement = 0;
-			writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			writeDescriptorSets[k].descriptorCount = 1;
-			writeDescriptorSets[k].pBufferInfo = &descriptorBufferInfos[bufferIndex];
-
-			bufferIndex++;
-		}
-		else if (descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC)
-		{
-			writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			writeDescriptorSets[k].dstSet = geometryModelResource->descriptorSet;
-			writeDescriptorSets[k].dstBinding = k;
-			writeDescriptorSets[k].dstArrayElement = 0;
-			writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-			writeDescriptorSets[k].descriptorCount = 1;
-			writeDescriptorSets[k].pBufferInfo = &descriptorBufferInfos[bufferIndex];
-
-			bufferIndex++;
-		}
-		else if (descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER)
-		{
-			writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			writeDescriptorSets[k].dstSet = geometryModelResource->descriptorSet;
-			writeDescriptorSets[k].dstBinding = k;
-			writeDescriptorSets[k].dstArrayElement = 0;
-			writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			writeDescriptorSets[k].descriptorCount = 1;
-			writeDescriptorSets[k].pBufferInfo = &descriptorBufferInfos[bufferIndex];
-
-			bufferIndex++;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	vkUpdateDescriptorSets(device, descriptorImageInfosSize + descriptorBufferInfosSize, writeDescriptorSets.data(), 0, nullptr);
-
-	setLayouts.push_back(geometryModelResource->descriptorSetLayout);
-
-	//
-	// Load the shader code.
-	//
-
-	std::string vertexShaderSource = "";
-	if (!FileIO::open(vertexShaderSource, "../Resources/shaders/gltf.vert"))
-	{
-		return false;
-	}
-
-	std::string fragmentShaderSource = "";
-	if (!FileIO::open(fragmentShaderSource, "../Resources/shaders/gltf.frag"))
-	{
-		return false;
-	}
-
-	//
-
-	std::vector<uint32_t> vertexShaderCode;
-	if (!Compiler::buildShader(vertexShaderCode, vertexShaderSource, geometryModelResource->macros, shaderc_vertex_shader))
-	{
-		return false;
-	}
-
-	std::vector<uint32_t> fragmentShaderCode;
-	if (!Compiler::buildShader(fragmentShaderCode, fragmentShaderSource, geometryModelResource->macros, shaderc_fragment_shader))
-	{
-		return false;
-	}
-
-	if (!VulkanResource::createShaderModule(geometryModelResource->vertexShaderModule, device, vertexShaderCode))
-	{
-		return false;
-	}
-
-	if (!VulkanResource::createShaderModule(geometryModelResource->fragmentShaderModule, device, fragmentShaderCode))
-	{
-		return false;
-	}
-
-	//
-
-	VkPipelineShaderStageCreateInfo pipelineShaderStageCreateInfo[2] = {};
-
-	pipelineShaderStageCreateInfo[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	pipelineShaderStageCreateInfo[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-	pipelineShaderStageCreateInfo[0].module = geometryModelResource->vertexShaderModule;
-	pipelineShaderStageCreateInfo[0].pName = "main";
-
-	pipelineShaderStageCreateInfo[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	pipelineShaderStageCreateInfo[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	pipelineShaderStageCreateInfo[1].module = geometryModelResource->fragmentShaderModule;
-	pipelineShaderStageCreateInfo[1].pName = "main";
-
-	//
-	//
-
-	VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo = {};
-	pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(geometryResource->vertexInputBindingDescriptions.size());
-	pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = geometryResource->vertexInputBindingDescriptions.data();
-	pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(geometryResource->vertexInputAttributeDescriptions.size());
-	pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = geometryResource->vertexInputAttributeDescriptions.data();
-
-	//
-	//
-
-	VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo = {};
-	pipelineInputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-	pipelineInputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-
-	//
-
-	VkViewport viewport = {};
-	viewport.x = 0.0f;
-	viewport.y = 0.0f;
-	viewport.width = (float)width;
-	viewport.height = (float)height;
-	viewport.minDepth = 0.0f;
-	viewport.maxDepth = 1.0f;
-
-	VkRect2D scissor = {};
-	scissor.offset = {0, 0};
-	scissor.extent = {width, height};
-
-	VkPipelineViewportStateCreateInfo pipelineViewportStateCreateInfo = {};
-	pipelineViewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-	pipelineViewportStateCreateInfo.viewportCount = 1;
-	pipelineViewportStateCreateInfo.pViewports = &viewport;
-	pipelineViewportStateCreateInfo.scissorCount = 1;
-	pipelineViewportStateCreateInfo.pScissors = &scissor;
-
-	//
-
-	VkCullModeFlags cullMode = geometryModelResource->cullMode;
-
-	VkPipelineRasterizationStateCreateInfo pipelineRasterizationStateCreateInfo = {};
-	pipelineRasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-	pipelineRasterizationStateCreateInfo.cullMode = cullMode;
-	pipelineRasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-	pipelineRasterizationStateCreateInfo.lineWidth = 1.0f;
-
-	//
-
-	VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo = {};
-	pipelineMultisampleStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-	pipelineMultisampleStateCreateInfo.rasterizationSamples = samples;
-	pipelineMultisampleStateCreateInfo.minSampleShading = 1.0f;
-
-	//
-
-	VkPipelineDepthStencilStateCreateInfo pipelineDepthStencilStateCreateInfo = {};
-	pipelineDepthStencilStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-	pipelineDepthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
-	pipelineDepthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
-	pipelineDepthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
-
-	//
-
-	VkPipelineColorBlendAttachmentState pipelineColorBlendAttachmentState = {};
-	pipelineColorBlendAttachmentState.blendEnable = VK_TRUE;
-	pipelineColorBlendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-	pipelineColorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-	pipelineColorBlendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
-	pipelineColorBlendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-	pipelineColorBlendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-	pipelineColorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
-	pipelineColorBlendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-
-	VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo = {};
-	pipelineColorBlendStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-	pipelineColorBlendStateCreateInfo.attachmentCount = 1;
-	pipelineColorBlendStateCreateInfo.pAttachments = &pipelineColorBlendAttachmentState;
-
-	//
-
-	VkPushConstantRange pushConstantRange = {};
-    pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-    pushConstantRange.offset = 0;
-    pushConstantRange.size = sizeof(UniformPushConstant);
-
-	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
-	pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutCreateInfo.setLayoutCount = static_cast<uint32_t>(setLayouts.size());
-	pipelineLayoutCreateInfo.pSetLayouts = setLayouts.data();
-	pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
-	pipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;
-
-	result = vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &geometryModelResource->pipelineLayout);
-	if (result != VK_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
-
-		return false;
-	}
-
-	//
-
-	VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo = {};
-	graphicsPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-	graphicsPipelineCreateInfo.stageCount = 2;
-	graphicsPipelineCreateInfo.pStages = pipelineShaderStageCreateInfo;
-	graphicsPipelineCreateInfo.pVertexInputState = &pipelineVertexInputStateCreateInfo;
-	graphicsPipelineCreateInfo.pInputAssemblyState = &pipelineInputAssemblyStateCreateInfo;
-	graphicsPipelineCreateInfo.pViewportState = &pipelineViewportStateCreateInfo;
-	graphicsPipelineCreateInfo.pRasterizationState = &pipelineRasterizationStateCreateInfo;
-	graphicsPipelineCreateInfo.pMultisampleState = &pipelineMultisampleStateCreateInfo;
-	graphicsPipelineCreateInfo.pDepthStencilState = &pipelineDepthStencilStateCreateInfo;
-	graphicsPipelineCreateInfo.pColorBlendState = &pipelineColorBlendStateCreateInfo;
-	graphicsPipelineCreateInfo.layout = geometryModelResource->pipelineLayout;
-	graphicsPipelineCreateInfo.renderPass = renderPass;
-
-	result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &geometryModelResource->graphicsPipeline);
-	if (result != VK_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
-
-		return false;
-	}
-
-	//
-
 	return true;
 }
 
@@ -1710,6 +1211,510 @@ bool RenderManager::instanceFinalize(uint64_t instanceHandle)
 	{
 		return false;
 	}
+
+	//
+
+	GroupResource* groupResource = getGroup(instanceResource->groupHandle);
+
+	instanceResource->instanceContainers.resize(groupResource->geometryModelHandles.size());
+
+	for (size_t geometryModelIndex = 0; geometryModelIndex < groupResource->geometryModelHandles.size(); geometryModelIndex++)
+	{
+		GeometryModelResource* geometryModelResource = getGeometryModel(groupResource->geometryModelHandles[geometryModelIndex]);
+
+		//
+
+		GeometryResource* geometryResource = getGeometry(geometryModelResource->geometryHandle);
+
+		//
+
+		uint32_t binding = 0;
+
+		std::vector<VkDescriptorSetLayout> setLayouts;
+		std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
+
+		std::vector<VkDescriptorImageInfo> descriptorImageInfos;
+		std::vector<VkDescriptorBufferInfo> descriptorBufferInfos;
+
+		if (geometryModelResource->materialHandle > 0)
+		{
+			MaterialResource* materialResource = getMaterial(geometryModelResource->materialHandle);
+
+			if (materialResource->descriptorSetLayoutBindings.size() > 0)
+			{
+				binding = materialResource->descriptorSetLayoutBindings.back().binding + 1;
+			}
+
+			descriptorSetLayoutBindings = materialResource->descriptorSetLayoutBindings;
+
+			descriptorImageInfos = materialResource->descriptorImageInfos;
+			descriptorBufferInfos = materialResource->descriptorBufferInfos;
+		}
+
+		// Morphing
+
+		if (geometryModelResource->targetPositionHandle != 0)
+		{
+			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding.binding = binding;
+			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+			descriptorSetLayoutBinding.descriptorCount = 1;
+			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+			VkDescriptorBufferInfo descriptorBufferInfo = {};
+			descriptorBufferInfo.buffer = getSharedData(geometryModelResource->targetPositionHandle)->storageBufferResource.bufferResource.buffer;
+			descriptorBufferInfo.offset = 0;
+			descriptorBufferInfo.range = sizeof(glm::vec3) * geometryModelResource->targetsCount * geometryResource->count;
+			descriptorBufferInfos.push_back(descriptorBufferInfo);
+
+			geometryModelResource->macros["TARGET_POSITION_BINDING"] = std::to_string(binding);
+
+			binding++;
+		}
+
+		if (geometryModelResource->targetNormalHandle != 0)
+		{
+			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding.binding = binding;
+			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+			descriptorSetLayoutBinding.descriptorCount = 1;
+			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+			VkDescriptorBufferInfo descriptorBufferInfo = {};
+			descriptorBufferInfo.buffer = getSharedData(geometryModelResource->targetNormalHandle)->storageBufferResource.bufferResource.buffer;
+			descriptorBufferInfo.offset = 0;
+			descriptorBufferInfo.range = sizeof(glm::vec3) * geometryModelResource->targetsCount * geometryResource->count;
+			descriptorBufferInfos.push_back(descriptorBufferInfo);
+
+			geometryModelResource->macros["TARGET_NORMAL_BINDING"] = std::to_string(binding);
+
+			binding++;
+		}
+
+		if (geometryModelResource->targetTangentHandle != 0)
+		{
+			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding.binding = binding;
+			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+			descriptorSetLayoutBinding.descriptorCount = 1;
+			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+			VkDescriptorBufferInfo descriptorBufferInfo = {};
+			descriptorBufferInfo.buffer = getSharedData(geometryModelResource->targetTangentHandle)->storageBufferResource.bufferResource.buffer;
+			descriptorBufferInfo.offset = 0;
+			descriptorBufferInfo.range = sizeof(glm::vec3) * geometryModelResource->targetsCount * geometryResource->count;
+			descriptorBufferInfos.push_back(descriptorBufferInfo);
+
+			geometryModelResource->macros["TARGET_TANGENT_BINDING"] = std::to_string(binding);
+
+			binding++;
+		}
+
+		if (instanceResource->weightsHandle != 0)
+		{
+			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding.binding = binding;
+			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+			descriptorSetLayoutBinding.descriptorCount = 1;
+			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+			VkDescriptorBufferInfo descriptorBufferInfo = {};
+			descriptorBufferInfo.buffer = getSharedData(instanceResource->weightsHandle)->uniformBufferResource.bufferResource.buffer;
+			descriptorBufferInfo.offset = 0;
+			descriptorBufferInfo.range = sizeof(float) * geometryModelResource->targetsCount;
+			descriptorBufferInfos.push_back(descriptorBufferInfo);
+
+			geometryModelResource->macros["WEIGHTS_BINDING"] = std::to_string(binding);
+
+			geometryModelResource->macros["HAS_WEIGHTS"] = "";
+
+			binding++;
+
+			//
+
+			instanceResource->instanceContainers[geometryModelIndex].dynamicOffsets.resize(frames, 0);
+
+			VkDeviceSize size = getSharedData(instanceResource->weightsHandle)->size / (frames * groupResource->geometryModelHandles.size());
+
+			for (uint32_t i = 0; i < frames; i++)
+			{
+				instanceResource->instanceContainers[geometryModelIndex].dynamicOffsets[i] = i * size + geometryModelIndex * groupResource->geometryModelHandles.size() * size;
+			}
+		}
+
+		// Lighting
+
+		WorldResource* worldResource = getWorld();
+
+		if (worldResource->lightHandle > 0)
+		{
+			LightResource* lightResource = getLight(worldResource->lightHandle);
+
+			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding.binding = binding;
+			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			descriptorSetLayoutBinding.descriptorCount = 1;
+			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+			VkDescriptorImageInfo descriptorImageInfo = {};
+			descriptorImageInfo.sampler = lightResource->diffuse.samplerResource.sampler;
+			descriptorImageInfo.imageView = lightResource->diffuse.imageViewResource.imageView;
+			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			descriptorImageInfos.push_back(descriptorImageInfo);
+
+			geometryModelResource->macros["DIFFUSE_BINDING"] = std::to_string(binding);
+
+			binding++;
+
+			//
+
+			descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding.binding = binding;
+			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			descriptorSetLayoutBinding.descriptorCount = 1;
+			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+			descriptorImageInfo = {};
+			descriptorImageInfo.sampler = lightResource->specular.samplerResource.sampler;
+			descriptorImageInfo.imageView = lightResource->specular.imageViewResource.imageView;
+			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			descriptorImageInfos.push_back(descriptorImageInfo);
+
+			geometryModelResource->macros["SPECULAR_BINDING"] = std::to_string(binding);
+
+			binding++;
+
+			//
+
+			descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding.binding = binding;
+			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			descriptorSetLayoutBinding.descriptorCount = 1;
+			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+			descriptorImageInfo = {};
+			descriptorImageInfo.sampler = lightResource->lut.samplerResource.sampler;
+			descriptorImageInfo.imageView = lightResource->lut.imageViewResource.imageView;
+			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			descriptorImageInfos.push_back(descriptorImageInfo);
+
+			geometryModelResource->macros["LUT_BINDING"] = std::to_string(binding);
+		}
+
+		//
+
+		VkResult result = VK_SUCCESS;
+
+		//
+
+		VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = {};
+		descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		descriptorSetLayoutCreateInfo.bindingCount = static_cast<uint32_t>(descriptorSetLayoutBindings.size());
+		descriptorSetLayoutCreateInfo.pBindings = descriptorSetLayoutBindings.data();
+
+		result = vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &instanceResource->instanceContainers[geometryModelIndex].descriptorSetLayout);
+		if (result != VK_SUCCESS)
+		{
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+			return false;
+		}
+
+		//
+
+		std::vector<VkDescriptorPoolSize> descriptorPoolSizes;
+		descriptorPoolSizes.resize(descriptorSetLayoutBindings.size(), {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1});
+
+		VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
+		descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(descriptorSetLayoutBindings.size());
+		descriptorPoolCreateInfo.pPoolSizes = descriptorPoolSizes.data();
+		descriptorPoolCreateInfo.maxSets = 1;
+
+		result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &instanceResource->instanceContainers[geometryModelIndex].descriptorPool);
+		if (result != VK_SUCCESS)
+		{
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+			return false;
+		}
+
+		VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = {};
+		descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		descriptorSetAllocateInfo.descriptorPool = instanceResource->instanceContainers[geometryModelIndex].descriptorPool;
+		descriptorSetAllocateInfo.descriptorSetCount = 1;
+		descriptorSetAllocateInfo.pSetLayouts = &instanceResource->instanceContainers[geometryModelIndex].descriptorSetLayout;
+
+		result = vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &instanceResource->instanceContainers[geometryModelIndex].descriptorSet);
+		if (result != VK_SUCCESS)
+		{
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+			return false;
+		}
+
+		uint32_t descriptorImageInfosSize = static_cast<uint32_t>(descriptorImageInfos.size());
+		uint32_t descriptorBufferInfosSize = static_cast<uint32_t>(descriptorBufferInfos.size());
+
+		//
+
+		std::vector<VkWriteDescriptorSet> writeDescriptorSets(descriptorImageInfosSize + descriptorBufferInfosSize);
+
+		uint32_t imageIndex = 0;
+		uint32_t bufferIndex = 0;
+		for (uint32_t k = 0; k < descriptorImageInfosSize + descriptorBufferInfosSize; k++)
+		{
+			if (descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+			{
+				writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				writeDescriptorSets[k].dstSet = instanceResource->instanceContainers[geometryModelIndex].descriptorSet;
+				writeDescriptorSets[k].dstBinding = k;
+				writeDescriptorSets[k].dstArrayElement = 0;
+				writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				writeDescriptorSets[k].descriptorCount = 1;
+				writeDescriptorSets[k].pImageInfo = &descriptorImageInfos[imageIndex];
+
+				imageIndex++;
+			}
+			else if (descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+			{
+				writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				writeDescriptorSets[k].dstSet = instanceResource->instanceContainers[geometryModelIndex].descriptorSet;
+				writeDescriptorSets[k].dstBinding = k;
+				writeDescriptorSets[k].dstArrayElement = 0;
+				writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				writeDescriptorSets[k].descriptorCount = 1;
+				writeDescriptorSets[k].pBufferInfo = &descriptorBufferInfos[bufferIndex];
+
+				bufferIndex++;
+			}
+			else if (descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC)
+			{
+				writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				writeDescriptorSets[k].dstSet = instanceResource->instanceContainers[geometryModelIndex].descriptorSet;
+				writeDescriptorSets[k].dstBinding = k;
+				writeDescriptorSets[k].dstArrayElement = 0;
+				writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+				writeDescriptorSets[k].descriptorCount = 1;
+				writeDescriptorSets[k].pBufferInfo = &descriptorBufferInfos[bufferIndex];
+
+				bufferIndex++;
+			}
+			else if (descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER)
+			{
+				writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				writeDescriptorSets[k].dstSet = instanceResource->instanceContainers[geometryModelIndex].descriptorSet;
+				writeDescriptorSets[k].dstBinding = k;
+				writeDescriptorSets[k].dstArrayElement = 0;
+				writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+				writeDescriptorSets[k].descriptorCount = 1;
+				writeDescriptorSets[k].pBufferInfo = &descriptorBufferInfos[bufferIndex];
+
+				bufferIndex++;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		vkUpdateDescriptorSets(device, descriptorImageInfosSize + descriptorBufferInfosSize, writeDescriptorSets.data(), 0, nullptr);
+
+		setLayouts.push_back(instanceResource->instanceContainers[geometryModelIndex].descriptorSetLayout);
+
+		//
+		// Load the shader code.
+		//
+
+		std::string vertexShaderSource = "";
+		if (!FileIO::open(vertexShaderSource, "../Resources/shaders/gltf.vert"))
+		{
+			return false;
+		}
+
+		std::string fragmentShaderSource = "";
+		if (!FileIO::open(fragmentShaderSource, "../Resources/shaders/gltf.frag"))
+		{
+			return false;
+		}
+
+		//
+
+		std::vector<uint32_t> vertexShaderCode;
+		if (!Compiler::buildShader(vertexShaderCode, vertexShaderSource, geometryModelResource->macros, shaderc_vertex_shader))
+		{
+			return false;
+		}
+
+		std::vector<uint32_t> fragmentShaderCode;
+		if (!Compiler::buildShader(fragmentShaderCode, fragmentShaderSource, geometryModelResource->macros, shaderc_fragment_shader))
+		{
+			return false;
+		}
+
+		if (!VulkanResource::createShaderModule(instanceResource->instanceContainers[geometryModelIndex].vertexShaderModule, device, vertexShaderCode))
+		{
+			return false;
+		}
+
+		if (!VulkanResource::createShaderModule(instanceResource->instanceContainers[geometryModelIndex].fragmentShaderModule, device, fragmentShaderCode))
+		{
+			return false;
+		}
+
+		//
+
+		VkPipelineShaderStageCreateInfo pipelineShaderStageCreateInfo[2] = {};
+
+		pipelineShaderStageCreateInfo[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		pipelineShaderStageCreateInfo[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
+		pipelineShaderStageCreateInfo[0].module = instanceResource->instanceContainers[geometryModelIndex].vertexShaderModule;
+		pipelineShaderStageCreateInfo[0].pName = "main";
+
+		pipelineShaderStageCreateInfo[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		pipelineShaderStageCreateInfo[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+		pipelineShaderStageCreateInfo[1].module = instanceResource->instanceContainers[geometryModelIndex].fragmentShaderModule;
+		pipelineShaderStageCreateInfo[1].pName = "main";
+
+		//
+		//
+
+		VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo = {};
+		pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(geometryResource->vertexInputBindingDescriptions.size());
+		pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = geometryResource->vertexInputBindingDescriptions.data();
+		pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(geometryResource->vertexInputAttributeDescriptions.size());
+		pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = geometryResource->vertexInputAttributeDescriptions.data();
+
+		//
+		//
+
+		VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo = {};
+		pipelineInputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+		pipelineInputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+		//
+
+		VkViewport viewport = {};
+		viewport.x = 0.0f;
+		viewport.y = 0.0f;
+		viewport.width = (float)width;
+		viewport.height = (float)height;
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+
+		VkRect2D scissor = {};
+		scissor.offset = {0, 0};
+		scissor.extent = {width, height};
+
+		VkPipelineViewportStateCreateInfo pipelineViewportStateCreateInfo = {};
+		pipelineViewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		pipelineViewportStateCreateInfo.viewportCount = 1;
+		pipelineViewportStateCreateInfo.pViewports = &viewport;
+		pipelineViewportStateCreateInfo.scissorCount = 1;
+		pipelineViewportStateCreateInfo.pScissors = &scissor;
+
+		//
+
+		VkCullModeFlags cullMode = geometryModelResource->cullMode;
+
+		VkPipelineRasterizationStateCreateInfo pipelineRasterizationStateCreateInfo = {};
+		pipelineRasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+		pipelineRasterizationStateCreateInfo.cullMode = cullMode;
+		pipelineRasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+		pipelineRasterizationStateCreateInfo.lineWidth = 1.0f;
+
+		//
+
+		VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo = {};
+		pipelineMultisampleStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+		pipelineMultisampleStateCreateInfo.rasterizationSamples = samples;
+		pipelineMultisampleStateCreateInfo.minSampleShading = 1.0f;
+
+		//
+
+		VkPipelineDepthStencilStateCreateInfo pipelineDepthStencilStateCreateInfo = {};
+		pipelineDepthStencilStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		pipelineDepthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
+		pipelineDepthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
+		pipelineDepthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+
+		//
+
+		VkPipelineColorBlendAttachmentState pipelineColorBlendAttachmentState = {};
+		pipelineColorBlendAttachmentState.blendEnable = VK_TRUE;
+		pipelineColorBlendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		pipelineColorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		pipelineColorBlendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
+		pipelineColorBlendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+		pipelineColorBlendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+		pipelineColorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
+		pipelineColorBlendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+
+		VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo = {};
+		pipelineColorBlendStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		pipelineColorBlendStateCreateInfo.attachmentCount = 1;
+		pipelineColorBlendStateCreateInfo.pAttachments = &pipelineColorBlendAttachmentState;
+
+		//
+
+		VkPushConstantRange pushConstantRange = {};
+		pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		pushConstantRange.offset = 0;
+		pushConstantRange.size = sizeof(UniformPushConstant);
+
+		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
+		pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		pipelineLayoutCreateInfo.setLayoutCount = static_cast<uint32_t>(setLayouts.size());
+		pipelineLayoutCreateInfo.pSetLayouts = setLayouts.data();
+		pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
+		pipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;
+
+		result = vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &instanceResource->instanceContainers[geometryModelIndex].pipelineLayout);
+		if (result != VK_SUCCESS)
+		{
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+			return false;
+		}
+
+		//
+
+		VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo = {};
+		graphicsPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		graphicsPipelineCreateInfo.stageCount = 2;
+		graphicsPipelineCreateInfo.pStages = pipelineShaderStageCreateInfo;
+		graphicsPipelineCreateInfo.pVertexInputState = &pipelineVertexInputStateCreateInfo;
+		graphicsPipelineCreateInfo.pInputAssemblyState = &pipelineInputAssemblyStateCreateInfo;
+		graphicsPipelineCreateInfo.pViewportState = &pipelineViewportStateCreateInfo;
+		graphicsPipelineCreateInfo.pRasterizationState = &pipelineRasterizationStateCreateInfo;
+		graphicsPipelineCreateInfo.pMultisampleState = &pipelineMultisampleStateCreateInfo;
+		graphicsPipelineCreateInfo.pDepthStencilState = &pipelineDepthStencilStateCreateInfo;
+		graphicsPipelineCreateInfo.pColorBlendState = &pipelineColorBlendStateCreateInfo;
+		graphicsPipelineCreateInfo.layout = instanceResource->instanceContainers[geometryModelIndex].pipelineLayout;
+		graphicsPipelineCreateInfo.renderPass = renderPass;
+
+		result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &instanceResource->instanceContainers[geometryModelIndex].graphicsPipeline);
+		if (result != VK_SUCCESS)
+		{
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+			return false;
+		}
+	}
+
+	//
 
 	instanceResource->finalized = true;
 
@@ -1897,28 +1902,13 @@ bool RenderManager::instanceUpdateWeights(uint64_t instanceHandle, const std::ve
 		return false;
 	}
 
-	GroupResource* groupResource = getGroup(instanceResource->groupHandle);
+	SharedDataResource* sharedDataResource = getSharedData(instanceResource->weightsHandle);
 
-	uint32_t weightsOffset = 0;
+	VkDeviceSize offset = sharedDataResource->size / frames * frameIndex;
 
-	for (size_t i = 0; i < groupResource->geometryModelHandles.size(); i++)
+	if (!VulkanResource::copyHostToDevice(device, sharedDataResource->uniformBufferResource.bufferResource, weights.data(), weights.size() * sizeof(float), offset))
 	{
-		GeometryModelResource* geometryModelResource = getGeometryModel(groupResource->geometryModelHandles[i]);
-
-		SharedDataResource* sharedDataResource = getSharedData(geometryModelResource->weightsHandle);
-
-		//
-
-		VkDeviceSize offset = sharedDataResource->size / frames * frameIndex;
-
-		if (!VulkanResource::copyHostToDevice(device, sharedDataResource->uniformBufferResource.bufferResource, weights.data(), weights.size() * sizeof(float), offset))
-		{
-			return false;
-		}
-
-		//
-
-		weightsOffset += geometryModelResource->targetsCount;
+		return false;
 	}
 
 	return true;
@@ -2164,9 +2154,9 @@ void RenderManager::draw(VkCommandBuffer commandBuffer, uint32_t frameIndex, Dra
 
 		GroupResource* groupResource = getGroup(instanceResource->groupHandle);
 
-		for (size_t k = 0; k < groupResource->geometryModelHandles.size(); k++)
+		for (size_t geometryModelIndex = 0; geometryModelIndex < groupResource->geometryModelHandles.size(); geometryModelIndex++)
 		{
-			GeometryModelResource* geometryModelResource = getGeometryModel(groupResource->geometryModelHandles[k]);
+			GeometryModelResource* geometryModelResource = getGeometryModel(groupResource->geometryModelHandles[geometryModelIndex]);
 
 			GeometryResource* geometryResource = getGeometry(geometryModelResource->geometryHandle);
 
@@ -2185,19 +2175,19 @@ void RenderManager::draw(VkCommandBuffer commandBuffer, uint32_t frameIndex, Dra
 
 			//
 
-			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, geometryModelResource->graphicsPipeline);
+			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, instanceResource->instanceContainers[geometryModelIndex].graphicsPipeline);
 
-			uint32_t dynamicOffsetCount = static_cast<uint32_t>(geometryModelResource->dynamicOffsets.size()) / frames;
-			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, geometryModelResource->pipelineLayout, 0, 1, &geometryModelResource->descriptorSet, dynamicOffsetCount, &geometryModelResource->dynamicOffsets.data()[frameIndex * dynamicOffsetCount]);
+			uint32_t dynamicOffsetCount = static_cast<uint32_t>(instanceResource->instanceContainers[geometryModelIndex].dynamicOffsets.size()) / frames;
+			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, instanceResource->instanceContainers[geometryModelIndex].pipelineLayout, 0, 1, &instanceResource->instanceContainers[geometryModelIndex].descriptorSet, dynamicOffsetCount, &instanceResource->instanceContainers[geometryModelIndex].dynamicOffsets.data()[frameIndex * dynamicOffsetCount]);
 
 			uint32_t offset = 0;
-			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(worldResource->viewProjection), &worldResource->viewProjection);
+			vkCmdPushConstants(commandBuffer, instanceResource->instanceContainers[geometryModelIndex].pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(worldResource->viewProjection), &worldResource->viewProjection);
 			offset += sizeof(worldResource->viewProjection);
-			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(instanceResource->worldMatrix), &instanceResource->worldMatrix);
+			vkCmdPushConstants(commandBuffer, instanceResource->instanceContainers[geometryModelIndex].pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(instanceResource->worldMatrix), &instanceResource->worldMatrix);
 			offset += sizeof(instanceResource->worldMatrix);
-			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(geometryModelResource->verticesCount), &geometryResource->count);
+			vkCmdPushConstants(commandBuffer, instanceResource->instanceContainers[geometryModelIndex].pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(geometryModelResource->verticesCount), &geometryResource->count);
 			offset += sizeof(geometryResource->count);
-			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(geometryModelResource->targetsCount), &geometryModelResource->targetsCount);
+			vkCmdPushConstants(commandBuffer, instanceResource->instanceContainers[geometryModelIndex].pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(geometryModelResource->targetsCount), &geometryModelResource->targetsCount);
 			offset += sizeof(geometryModelResource->targetsCount);
 
 			if (geometryModelResource->indexBuffer != VK_NULL_HANDLE)
