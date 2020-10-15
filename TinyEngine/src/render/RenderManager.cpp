@@ -472,6 +472,17 @@ bool RenderManager::sharedDataCreateUniformBuffer(uint64_t sharedDataHandle, VkD
 	return sharedDataSetData(sharedDataHandle, size, data, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 }
 
+bool RenderManager::sharedDataCreateDynamicUniformBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data)
+{
+	std::vector<uint8_t> frameData(size * frames);
+	for (uint32_t i = 0; i < frames; i++)
+	{
+		memcpy(&frameData[i * size], data, size);
+	}
+
+	return sharedDataCreateUniformBuffer(sharedDataHandle, frameData.size(), frameData.data());
+}
+
 bool RenderManager::sharedDataCreateStorageBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data)
 {
 	return sharedDataSetData(sharedDataHandle, size, data, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
@@ -842,6 +853,29 @@ bool RenderManager::geometryModelSetTarget(uint64_t geometryModelHandle, uint64_
 	}
 
 	geometryModelResource->macros["HAS_TARGET_" + targetName] = "";
+
+	return true;
+}
+
+bool RenderManager::geometryModelSetWeights(uint64_t geometryModelHandle, uint64_t sharedDataHandle)
+{
+	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
+
+	if (!geometryModelResource->created || geometryModelResource->finalized)
+	{
+		return false;
+	}
+
+	SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
+
+	if (!sharedDataResource->finalized)
+	{
+		return false;
+	}
+
+	geometryModelResource->weightsHandle = sharedDataHandle;
+
+	geometryModelResource->macros["HAS_WEIGHTS"] = "";
 
 	return true;
 }
@@ -1352,7 +1386,11 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 	uint32_t descriptorImageInfosSize = static_cast<uint32_t>(descriptorImageInfos.size());
 	uint32_t descriptorBufferInfosSize = static_cast<uint32_t>(descriptorBufferInfos.size());
 
+	//
+
 	std::vector<VkWriteDescriptorSet> writeDescriptorSets(descriptorImageInfosSize + descriptorBufferInfosSize);
+
+	uint32_t dynamicCount = 0;
 
 	uint32_t imageIndex = 0;
 	uint32_t bufferIndex = 0;
@@ -1382,6 +1420,22 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 
 			bufferIndex++;
 		}
+		else if (descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC)
+		{
+			writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			writeDescriptorSets[k].dstSet = geometryModelResource->descriptorSet;
+			writeDescriptorSets[k].dstBinding = k;
+			writeDescriptorSets[k].dstArrayElement = 0;
+			writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+			writeDescriptorSets[k].descriptorCount = 1;
+			writeDescriptorSets[k].pBufferInfo = &descriptorBufferInfos[bufferIndex];
+
+			bufferIndex++;
+
+			//
+
+			dynamicCount++;
+		}
 		else if (descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER)
 		{
 			writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -1403,6 +1457,13 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 	vkUpdateDescriptorSets(device, descriptorImageInfosSize + descriptorBufferInfosSize, writeDescriptorSets.data(), 0, nullptr);
 
 	setLayouts.push_back(geometryModelResource->descriptorSetLayout);
+
+	//
+
+	if (dynamicCount > 0)
+	{
+		geometryModelResource->dynamicOffsets.resize(dynamicCount * frames, 0);
+	}
 
 	//
 	// Load the shader code.
@@ -2014,7 +2075,7 @@ void RenderManager::terminate()
 	handles = 0;
 }
 
-void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
+void RenderManager::draw(VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode)
 {
 	WorldResource* worldResource = getWorld();
 
@@ -2052,7 +2113,8 @@ void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex
 
 			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, geometryModelResource->graphicsPipeline);
 
-			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, geometryModelResource->pipelineLayout, 0, 1, &geometryModelResource->descriptorSet, geometryModelResource->dynamicOffsets.size(), geometryModelResource->dynamicOffsets.data());
+			uint32_t dynamicOffsetCount = static_cast<uint32_t>(geometryModelResource->dynamicOffsets.size()) / frames;
+			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, geometryModelResource->pipelineLayout, 0, 1, &geometryModelResource->descriptorSet, dynamicOffsetCount, &geometryModelResource->dynamicOffsets.data()[frameIndex * dynamicOffsetCount]);
 
 			uint32_t offset = 0;
 			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(worldResource->viewProjection), &worldResource->viewProjection);

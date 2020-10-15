@@ -120,8 +120,8 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	renderManager.cameraUpdateProjectionMatrix(cameraHandle, projectionMatrix);
 	renderManager.cameraUpdateViewMatrix(cameraHandle, viewMatrix);
 
-	renderManager.rasterize(commandBuffers[frameIndex], frameIndex, OPAQUE);
-	renderManager.rasterize(commandBuffers[frameIndex], frameIndex, TRANSPARENT);
+	renderManager.draw(commandBuffers[frameIndex], frameIndex, OPAQUE);
+	renderManager.draw(commandBuffers[frameIndex], frameIndex, TRANSPARENT);
 
 	vkCmdEndRenderPass(commandBuffers[frameIndex]);
 

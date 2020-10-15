@@ -119,6 +119,7 @@ public:
 	bool sharedDataCreateVertexBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data);
 	bool sharedDataCreateIndexBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data);
 	bool sharedDataCreateUniformBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data);
+	bool sharedDataCreateDynamicUniformBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data);
 	bool sharedDataCreateStorageBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data);
 
 	bool textureSetParameters(uint64_t textureHandle, const TextureResourceCreateInfo& textureResourceCreateInfo);
@@ -134,6 +135,7 @@ public:
 	bool geometryModelSetVertexCount(uint64_t geometryModelHandle, uint32_t verticesCount);
 	bool geometryModelSetIndices(uint64_t geometryModelHandle, uint64_t sharedDataHandle, uint32_t indicesCount, VkIndexType indexType, uint32_t indexOffset, uint32_t indexRange);
 	bool geometryModelSetTarget(uint64_t geometryModelHandle, uint64_t sharedDataHandle, const std::string& targetName);
+	bool geometryModelSetWeights(uint64_t geometryModelHandle, uint64_t sharedDataHandle);
 	bool geometryModelSetTargetsCount(uint64_t geometryModelHandle, uint32_t targetsCount);
 	bool geometryModelSetCullMode(uint64_t geometryModelHandle, VkCullModeFlags cullMode);
 
@@ -211,7 +213,7 @@ public:
 	// Rendering
 	//
 
-	void rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode);
+	void draw(VkCommandBuffer commandBuffer, uint32_t frameIndex, DrawMode drawMode);
 
 };
 

@@ -44,6 +44,8 @@ struct GeometryModelResource : BaseResource {
 	uint64_t targetNormalHandle = 0;
 	uint64_t targetTangentHandle = 0;
 
+	uint64_t weightsHandle = 0;
+
 	//
 
 	std::vector<uint32_t> dynamicOffsets;

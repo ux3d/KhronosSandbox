@@ -421,6 +421,8 @@ bool WorldBuilder::buildMeshes()
 
 			if (primitive.targets.size() > 0)
 			{
+				uint32_t targetsCount = static_cast<uint32_t>(primitive.targets.size());
+
 				if (primitive.targetPositionData.size() > 0)
 				{
 					uint64_t targetHandle;
@@ -495,10 +497,30 @@ bool WorldBuilder::buildMeshes()
 
 				//
 
-				if (!renderManager.geometryModelSetTargetsCount(geometryModelHandle, static_cast<uint32_t>(primitive.targets.size())))
+				uint64_t weightsHandle;
+				if (!renderManager.sharedDataCreate(weightsHandle))
 				{
 					return false;
 				}
+
+				if (!renderManager.sharedDataCreateDynamicUniformBuffer(weightsHandle, sizeof(float) * targetsCount, &mesh.weights.data()[k * targetsCount]))
+				{
+					return false;
+				}
+
+				if (!renderManager.sharedDataFinalize(weightsHandle))
+				{
+					return false;
+				}
+
+				if (!renderManager.geometryModelSetWeights(geometryModelHandle, weightsHandle))
+				{
+					return false;
+				}
+
+				//
+
+				renderManager.geometryModelSetTargetsCount(geometryModelHandle, targetsCount);
 			}
 
 			//
@@ -545,13 +567,6 @@ bool WorldBuilder::buildMeshes()
 			{
 				return false;
 			}
-		}
-
-		//
-
-		if (mesh.weights.size() > 0)
-		{
-			// TODO: Create buffer for weights.
 		}
 
 		//
