@@ -899,6 +899,8 @@ bool RenderManager::geometryModelSetTargetsCount(uint64_t geometryModelHandle, u
 
 	geometryModelResource->targetsCount = targetsCount;
 
+	geometryModelResource->macros["TARGETS_COUNT"] = std::to_string(targetsCount);
+
 	return true;
 }
 

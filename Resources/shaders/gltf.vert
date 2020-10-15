@@ -75,7 +75,7 @@ layout (binding = TARGET_TANGENT_BINDING) buffer Tangent { vec3 i[]; } u_targetT
 #endif
 
 #ifdef HAS_WEIGHTS
-layout (binding = WEIGHTS_BINDING) uniform Weights { float i[]; } u_weights;
+layout (binding = WEIGHTS_BINDING) uniform Weights { float i[TARGETS_COUNT]; } u_weights;
 #endif
 
 layout (location = 8) flat out float out_determinant;
@@ -87,9 +87,9 @@ void main()
 #ifdef NORMAL_VEC3
     vec3 normal = in_normal;
 #ifdef HAS_TARGET_NORMAL
-    for (uint i = 0; i < in_upc.targetsCount; i++)
+    for (uint target = 0; target < in_upc.targetsCount; target++)
     {
-        normal += 0.0 * u_targetNormal.i[gl_VertexIndex + i * in_upc.verticesCount];
+        normal += u_weights.i[target] * u_targetNormal.i[gl_VertexIndex + target * in_upc.verticesCount];
     }
 #endif
     out_normal = normalMatrix * normal;
@@ -98,9 +98,9 @@ void main()
 #ifdef TANGENT_VEC4
     vec3 tangent = in_tangent.xyz;
 #ifdef HAS_TARGET_TANGENT
-    for (uint i = 0; i < in_upc.targetsCount; i++)
+    for (uint target = 0; target < in_upc.targetsCount; target++)
     {
-        tangent += 0.0 * u_targetTangent.i[gl_VertexIndex + i * in_upc.verticesCount];
+        tangent += u_weights.i[target] * u_targetTangent.i[gl_VertexIndex + target * in_upc.verticesCount];
     }
 #endif
     vec3 bitangent = cross(normal, tangent) * in_tangent.w;
@@ -124,9 +124,9 @@ void main()
 
     vec4 position = vec4(in_position, 1.0);
 #ifdef HAS_TARGET_POSITION
-    for (uint i = 0; i < in_upc.targetsCount; i++)
+    for (uint target = 0; target < in_upc.targetsCount; target++)
     {
-        position += 0.0 * vec4(u_targetPosition.i[gl_VertexIndex + i * in_upc.verticesCount], 0.0);
+        position += u_weights.i[target] * vec4(u_targetPosition.i[gl_VertexIndex + target * in_upc.verticesCount], 0.0);
     }
 #endif
     position = in_upc.world * position;
