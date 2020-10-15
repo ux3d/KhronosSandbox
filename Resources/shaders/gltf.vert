@@ -5,7 +5,7 @@ layout(push_constant) uniform UniformPushConstant {
     mat4 view;
     mat4 world;
 
-    uint verticesCount;
+    uint attributeCount;
 
     uint targetsCount;
 } in_upc;
@@ -65,13 +65,13 @@ layout (location = 7) out vec4 out_color;
 #endif
 
 #ifdef HAS_TARGET_POSITION
-layout (binding = TARGET_POSITION_BINDING) buffer Position { vec3 i[]; } u_targetPosition;
+layout (binding = TARGET_POSITION_BINDING) buffer Position { float i[]; } u_targetPosition;
 #endif
 #ifdef HAS_TARGET_NORMAL
-layout (binding = TARGET_NORMAL_BINDING) buffer Normal { vec3 i[]; } u_targetNormal;
+layout (binding = TARGET_NORMAL_BINDING) buffer Normal { float i[]; } u_targetNormal;
 #endif
 #ifdef HAS_TARGET_TANGENT
-layout (binding = TARGET_TANGENT_BINDING) buffer Tangent { vec3 i[]; } u_targetTangent;
+layout (binding = TARGET_TANGENT_BINDING) buffer Tangent { float i[]; } u_targetTangent;
 #endif
 
 #ifdef HAS_WEIGHTS
@@ -89,7 +89,8 @@ void main()
 #ifdef HAS_TARGET_NORMAL
     for (uint target = 0; target < in_upc.targetsCount; target++)
     {
-        normal += u_weights.i[target] * u_targetNormal.i[gl_VertexIndex + target * in_upc.verticesCount];
+        uint index = 3 * gl_VertexIndex + 3 * target * in_upc.attributeCount;
+        normal += u_weights.i[target] * vec3(u_targetNormal.i[index + 0], u_targetNormal.i[index + 1], u_targetNormal.i[index + 2]);
     }
 #endif
     out_normal = normalMatrix * normal;
@@ -100,7 +101,8 @@ void main()
 #ifdef HAS_TARGET_TANGENT
     for (uint target = 0; target < in_upc.targetsCount; target++)
     {
-        tangent += u_weights.i[target] * u_targetTangent.i[gl_VertexIndex + target * in_upc.verticesCount];
+        uint index = 3 * gl_VertexIndex + 3 * target * in_upc.attributeCount;
+        tangent += u_weights.i[target] * vec3(u_targetTangent.i[index + 0], u_targetTangent.i[index + 1], u_targetTangent.i[index + 2]);
     }
 #endif
     vec3 bitangent = cross(normal, tangent) * in_tangent.w;
@@ -122,13 +124,15 @@ void main()
     out_color = vec4(in_color, 1.0);
 #endif
 
-    vec4 position = vec4(in_position, 1.0);
+    vec3 tempPosition = in_position;
 #ifdef HAS_TARGET_POSITION
     for (uint target = 0; target < in_upc.targetsCount; target++)
     {
-        position += u_weights.i[target] * vec4(u_targetPosition.i[gl_VertexIndex + target * in_upc.verticesCount], 0.0);
+        uint index = 3 * gl_VertexIndex + 3 * target * in_upc.attributeCount;
+        tempPosition += u_weights.i[target] * vec3(u_targetPosition.i[index + 0], u_targetPosition.i[index + 1], u_targetPosition.i[index + 2]);
     }
 #endif
+    vec4 position = vec4(tempPosition, 1.0);
     position = in_upc.world * position;
     out_position = position.xyz / position.w;
 

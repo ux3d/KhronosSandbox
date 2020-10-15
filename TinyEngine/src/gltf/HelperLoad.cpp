@@ -660,7 +660,7 @@ bool HelperLoad::initMeshes(GLTF& glTF)
 							primitive.targetPositionData.resize(glTF.accessors[primitive.position].count * primitive.targets.size());
 						}
 
-						memcpy(&primitive.targetPositionData.data()[m * glTF.accessors[primitive.position].count], HelperAccess::accessData(glTF.accessors[primitive.position]), sizeof(glm::vec3) * glTF.accessors[primitive.position].count);
+						memcpy(&primitive.targetPositionData.data()[m * glTF.accessors[primitive.position].count], HelperAccess::accessData(glTF.accessors[primitive.targets[m].position]), sizeof(glm::vec3) * glTF.accessors[primitive.position].count);
 					}
 
 					const auto normalIt = currentTarget.find("NORMAL");
@@ -673,7 +673,7 @@ bool HelperLoad::initMeshes(GLTF& glTF)
 							primitive.targetNormalData.resize(glTF.accessors[primitive.normal].count * primitive.targets.size());
 						}
 
-						memcpy(&primitive.targetNormalData.data()[m * glTF.accessors[primitive.normal].count], HelperAccess::accessData(glTF.accessors[primitive.normal]), sizeof(glm::vec3) * glTF.accessors[primitive.normal].count);
+						memcpy(&primitive.targetNormalData.data()[m * glTF.accessors[primitive.normal].count], HelperAccess::accessData(glTF.accessors[primitive.targets[m].normal]), sizeof(glm::vec3) * glTF.accessors[primitive.normal].count);
 					}
 
 					const auto tangentIt = currentTarget.find("TANGENT");
@@ -686,7 +686,7 @@ bool HelperLoad::initMeshes(GLTF& glTF)
 							primitive.targetTangentData.resize(glTF.accessors[primitive.tangent].count * primitive.targets.size());
 						}
 
-						memcpy(&primitive.targetTangentData.data()[m * glTF.accessors[primitive.tangent].count], HelperAccess::accessData(glTF.accessors[primitive.tangent]), sizeof(glm::vec3) * glTF.accessors[primitive.tangent].count);
+						memcpy(&primitive.targetTangentData.data()[m * glTF.accessors[primitive.tangent].count], HelperAccess::accessData(glTF.accessors[primitive.targets[m].tangent]), sizeof(glm::vec3) * glTF.accessors[primitive.tangent].count);
 					}
 				}
 			}

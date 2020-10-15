@@ -487,7 +487,7 @@ bool RenderManager::sharedDataCreateDynamicUniformBuffer(uint64_t sharedDataHand
 {
 	VkDeviceSize alignedSize = 0;
 	VkDeviceSize unalignedSize = size;
-	VkDeviceSize alignment = this->physicalDeviceProperties.limits.minUniformBufferOffsetAlignment;
+	VkDeviceSize alignment = 256;
 
 	if (!HelperVulkan::getAligenedSize(alignedSize, unalignedSize, alignment))
 	{
@@ -1235,7 +1235,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		VkDescriptorBufferInfo descriptorBufferInfo = {};
 		descriptorBufferInfo.buffer = getSharedData(geometryModelResource->targetPositionHandle)->storageBufferResource.bufferResource.buffer;
 		descriptorBufferInfo.offset = 0;
-		descriptorBufferInfo.range = sizeof(MaterialParameters);
+		descriptorBufferInfo.range = sizeof(glm::vec3) * geometryModelResource->targetsCount * geometryResource->count;
 		descriptorBufferInfos.push_back(descriptorBufferInfo);
 
 		macros["TARGET_POSITION_BINDING"] = std::to_string(binding);
@@ -1256,7 +1256,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		VkDescriptorBufferInfo descriptorBufferInfo = {};
 		descriptorBufferInfo.buffer = getSharedData(geometryModelResource->targetNormalHandle)->storageBufferResource.bufferResource.buffer;
 		descriptorBufferInfo.offset = 0;
-		descriptorBufferInfo.range = sizeof(MaterialParameters);
+		descriptorBufferInfo.range = sizeof(glm::vec3) * geometryModelResource->targetsCount * geometryResource->count;
 		descriptorBufferInfos.push_back(descriptorBufferInfo);
 
 		macros["TARGET_NORMAL_BINDING"] = std::to_string(binding);
@@ -1277,7 +1277,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		VkDescriptorBufferInfo descriptorBufferInfo = {};
 		descriptorBufferInfo.buffer = getSharedData(geometryModelResource->targetTangentHandle)->storageBufferResource.bufferResource.buffer;
 		descriptorBufferInfo.offset = 0;
-		descriptorBufferInfo.range = sizeof(MaterialParameters);
+		descriptorBufferInfo.range = sizeof(glm::vec3) * geometryModelResource->targetsCount * geometryResource->count;
 		descriptorBufferInfos.push_back(descriptorBufferInfo);
 
 		macros["TARGET_TANGENT_BINDING"] = std::to_string(binding);
@@ -1298,7 +1298,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		VkDescriptorBufferInfo descriptorBufferInfo = {};
 		descriptorBufferInfo.buffer = getSharedData(geometryModelResource->weightsHandle)->uniformBufferResource.bufferResource.buffer;
 		descriptorBufferInfo.offset = 0;
-		descriptorBufferInfo.range = sizeof(float) * geometryModelResource->targetsCount;
+		descriptorBufferInfo.range = 256;
 		descriptorBufferInfos.push_back(descriptorBufferInfo);
 
 		macros["WEIGHTS_BINDING"] = std::to_string(binding);
@@ -2194,8 +2194,8 @@ void RenderManager::draw(VkCommandBuffer commandBuffer, uint32_t frameIndex, Dra
 			offset += sizeof(worldResource->viewProjection);
 			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(instanceResource->worldMatrix), &instanceResource->worldMatrix);
 			offset += sizeof(instanceResource->worldMatrix);
-			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(geometryModelResource->verticesCount), &geometryModelResource->verticesCount);
-			offset += sizeof(geometryModelResource->verticesCount);
+			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(geometryModelResource->verticesCount), &geometryResource->count);
+			offset += sizeof(geometryResource->count);
 			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(geometryModelResource->targetsCount), &geometryModelResource->targetsCount);
 			offset += sizeof(geometryModelResource->targetsCount);
 
