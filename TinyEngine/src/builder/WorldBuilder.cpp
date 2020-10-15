@@ -551,7 +551,7 @@ bool WorldBuilder::buildMeshes()
 
 		if (mesh.weights.size() > 0)
 		{
-			// TODO: Set weights.
+			// TODO: Create buffer for weights.
 		}
 
 		//

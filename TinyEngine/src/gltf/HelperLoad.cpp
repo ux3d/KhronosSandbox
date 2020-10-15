@@ -753,13 +753,23 @@ bool HelperLoad::initNodes(GLTF& glTF)
 		{
 			node.mesh = model.nodes[i].mesh;
 
-			if (model.nodes[i].weights.size() > 0)
-			{
-				node.weights.resize(model.nodes[i].weights.size());
+			const Mesh& mesh = glTF.meshes[node.mesh];
 
-				for (size_t k = 0; k < model.nodes[i].weights.size(); k++)
+			if (mesh.weights.size() > 0)
+			{
+				node.weights = mesh.weights;
+
+				if (model.nodes[i].weights.size() > 0)
 				{
-					node.weights[k] = static_cast<float>(model.nodes[i].weights[k]);
+					if (node.weights.size() != model.nodes[i].weights.size())
+					{
+						return false;
+					}
+
+					for (size_t k = 0; k < model.nodes[i].weights.size(); k++)
+					{
+						node.weights[k] = static_cast<float>(model.nodes[i].weights[k]);
+					}
 				}
 			}
 		}
