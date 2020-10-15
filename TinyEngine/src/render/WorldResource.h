@@ -18,13 +18,12 @@ struct UniformPushConstant {
 	ViewProjectionUniformPushConstant viewProjection = {};
 	glm::mat4 world = glm::mat4(1.0f);
 
+	uint32_t verticesCount = 0;
+
 	uint32_t targetsCount = 0;
-	uint32_t targetsOffset = 0;
 };
 
 struct WorldResource : BaseResource {
-
-	// Mapper helper
 
 	std::vector<uint64_t> instanceHandles;
 
@@ -33,8 +32,6 @@ struct WorldResource : BaseResource {
 	uint64_t cameraHandle;
 
 	std::vector<VkDescriptorImageInfo> descriptorImageInfoTextures;
-
-	// Rasterize helper
 
 	ViewProjectionUniformPushConstant viewProjection = {};
 

@@ -497,7 +497,7 @@ bool WorldBuilder::buildMeshes()
 
 				//
 
-				if (!renderManager.geometryModelSetTargetsCountOffset(geometryModelHandle, static_cast<uint32_t>(primitive.targets.size()), primitive.targetsOffset))
+				if (!renderManager.geometryModelSetTargetsCount(geometryModelHandle, static_cast<uint32_t>(primitive.targets.size())))
 				{
 					return false;
 				}

@@ -9,8 +9,6 @@
 
 struct InstanceResource : BaseResource {
 
-	// Mapper helper
-
 	uint64_t groupHandle;
 
 	glm::mat4 worldMatrix = glm::mat4(1.0f);

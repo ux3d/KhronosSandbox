@@ -8,8 +8,6 @@
 
 struct GroupResource : BaseResource {
 
-	// Mapper helper
-
 	std::vector<uint64_t> geometryModelHandles;
 
 };

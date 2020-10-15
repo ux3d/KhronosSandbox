@@ -11,13 +11,9 @@
 
 struct GeometryResource : BaseResource {
 
-	// Mapper helper
-
 	uint32_t count = 0;
 
 	std::map<std::string, std::string> macros;
-
-	// Rasterize helper
 
 	std::vector<VkVertexInputBindingDescription> vertexInputBindingDescriptions;
 	std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;

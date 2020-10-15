@@ -642,8 +642,6 @@ bool HelperLoad::initMeshes(GLTF& glTF)
 			{
 				primitive.targets.resize(model.meshes[i].primitives[k].targets.size());
 
-				primitive.targetsOffset = glTF.accessors[primitive.position].count;
-
 				for (uint32_t m = 0; m < primitive.targets.size(); m++)
 				{
 					const auto& currentTarget = model.meshes[i].primitives[k].targets[m];

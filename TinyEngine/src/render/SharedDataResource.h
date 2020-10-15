@@ -7,13 +7,9 @@
 
 struct SharedDataResource : BaseResource {
 
-	// Mapper helper
-
 	VertexBufferResourceCreateInfo vertexBufferResourceCreateInfo = {};
 	UniformBufferResourceCreateInfo uniformBufferResourceCreateInfo = {};
 	StorageBufferResourceCreateInfo storageBufferResourceCreateInfo = {};
-
-	// Rasterize helper
 
 	VertexBufferResource vertexBufferResource = {};
 	UniformBufferResource uniformBufferResource = {};

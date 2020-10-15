@@ -131,7 +131,7 @@ public:
 	bool geometryModelSetVertexCount(uint64_t geometryModelHandle, uint32_t verticesCount);
 	bool geometryModelSetIndices(uint64_t geometryModelHandle, uint64_t sharedDataHandle, uint32_t indicesCount, VkIndexType indexType, uint32_t indexOffset, uint32_t indexRange);
 	bool geometryModelSetTarget(uint64_t geometryModelHandle, uint64_t sharedDataHandle, const std::string& targetName);
-	bool geometryModelSetTargetsCountOffset(uint64_t geometryModelHandle, uint32_t targetsCount, uint32_t targetsOffset);
+	bool geometryModelSetTargetsCount(uint64_t geometryModelHandle, uint32_t targetsCount);
 	bool geometryModelSetCullMode(uint64_t geometryModelHandle, VkCullModeFlags cullMode);
 
 	bool groupAddGeometryModel(uint64_t groupHandle, uint64_t geometryModelHandle);

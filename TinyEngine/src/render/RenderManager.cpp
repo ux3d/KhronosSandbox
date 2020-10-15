@@ -841,7 +841,7 @@ bool RenderManager::geometryModelSetTarget(uint64_t geometryModelHandle, uint64_
 	return true;
 }
 
-bool RenderManager::geometryModelSetTargetsCountOffset(uint64_t geometryModelHandle, uint32_t targetsCount, uint32_t targetsOffset)
+bool RenderManager::geometryModelSetTargetsCount(uint64_t geometryModelHandle, uint32_t targetsCount)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
 
@@ -851,7 +851,6 @@ bool RenderManager::geometryModelSetTargetsCountOffset(uint64_t geometryModelHan
 	}
 
 	geometryModelResource->targetsCount = targetsCount;
-	geometryModelResource->targetsOffset = targetsOffset;
 
 	return true;
 }
@@ -2008,10 +2007,10 @@ void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex
 			offset += sizeof(worldResource->viewProjection);
 			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(instanceResource->worldMatrix), &instanceResource->worldMatrix);
 			offset += sizeof(instanceResource->worldMatrix);
+			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(geometryModelResource->verticesCount), &geometryModelResource->verticesCount);
+			offset += sizeof(geometryModelResource->verticesCount);
 			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(geometryModelResource->targetsCount), &geometryModelResource->targetsCount);
 			offset += sizeof(geometryModelResource->targetsCount);
-			vkCmdPushConstants(commandBuffer, geometryModelResource->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, offset, sizeof(geometryModelResource->targetsOffset), &geometryModelResource->targetsOffset);
-			offset += sizeof(geometryModelResource->targetsOffset);
 
 			if (geometryModelResource->indexBuffer != VK_NULL_HANDLE)
 			{

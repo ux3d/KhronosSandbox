@@ -28,13 +28,9 @@ struct MaterialParameters {
 
 struct MaterialResource : BaseResource {
 
-	// Mapper helper
-
 	MaterialParameters materialParameters = {};
 
 	std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
-
-	// Rasterize helper
 
 	std::vector<VkDescriptorImageInfo> descriptorImageInfos;
 	std::vector<VkDescriptorBufferInfo> descriptorBufferInfos;

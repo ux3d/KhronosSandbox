@@ -12,8 +12,6 @@
 
 struct GeometryModelResource : BaseResource {
 
-	// Mapper helper
-
 	uint64_t geometryHandle = 0;
 
 	uint64_t materialHandle = 0;
@@ -30,8 +28,6 @@ struct GeometryModelResource : BaseResource {
 
 	VkCullModeFlags cullMode = VK_CULL_MODE_NONE;
 
-	// Rasterize helper
-
 	VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
 	VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
 	VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
@@ -43,7 +39,6 @@ struct GeometryModelResource : BaseResource {
 	VkPipeline graphicsPipeline = VK_NULL_HANDLE;
 
 	uint32_t targetsCount = 0;
-	uint32_t targetsOffset = 0;
 
 	uint64_t targetPositionHandle = 0;
 	uint64_t targetNormalHandle = 0;

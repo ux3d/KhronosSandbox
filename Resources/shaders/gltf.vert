@@ -5,8 +5,9 @@ layout(push_constant) uniform UniformPushConstant {
     mat4 view;
     mat4 world;
 
+    uint verticesCount;
+
     uint targetsCount;
-    uint targetsOffset;
 } in_upc;
 
 layout (location = POSITION_LOC) in vec3 in_position;
@@ -84,7 +85,7 @@ void main()
 #ifdef HAS_TARGET_NORMAL
     for (uint i = 0; i < in_upc.targetsCount; i++)
     {
-        normal += 0.0 * u_targetNormal.i[gl_VertexIndex + i * in_upc.targetsOffset];
+        normal += 0.0 * u_targetNormal.i[gl_VertexIndex + i * in_upc.verticesCount];
     }
 #endif
     out_normal = normalMatrix * normal;
@@ -95,7 +96,7 @@ void main()
 #ifdef HAS_TARGET_TANGENT
     for (uint i = 0; i < in_upc.targetsCount; i++)
     {
-        tangent += 0.0 * u_targetTangent.i[gl_VertexIndex + i * in_upc.targetsOffset];
+        tangent += 0.0 * u_targetTangent.i[gl_VertexIndex + i * in_upc.verticesCount];
     }
 #endif
     vec3 bitangent = cross(normal, tangent) * in_tangent.w;
@@ -121,7 +122,7 @@ void main()
 #ifdef HAS_TARGET_POSITION
     for (uint i = 0; i < in_upc.targetsCount; i++)
     {
-        position += 0.0 * vec4(u_targetPosition.i[gl_VertexIndex + i * in_upc.targetsOffset], 0.0);
+        position += 0.0 * vec4(u_targetPosition.i[gl_VertexIndex + i * in_upc.verticesCount], 0.0);
     }
 #endif
     position = in_upc.world * position;
