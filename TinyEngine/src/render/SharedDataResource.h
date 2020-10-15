@@ -16,6 +16,7 @@ struct SharedDataResource : BaseResource {
 	StorageBufferResource storageBufferResource = {};
 
 	VkBufferUsageFlags usage = 0;
+	VkDeviceSize size = 0;
 
 };
 

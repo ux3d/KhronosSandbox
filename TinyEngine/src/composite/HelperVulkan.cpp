@@ -488,6 +488,27 @@ bool HelperVulkan::getComponentTypeSize(uint32_t& componentTypeSize, VkFormat fo
 	return false;
 }
 
+bool HelperVulkan::getAligenedSize(VkDeviceSize& alignedSize, VkDeviceSize unalignedSize, VkDeviceSize alignment)
+{
+	if (alignment <= 1)
+	{
+		alignedSize = unalignedSize;
+
+		return true;
+	}
+
+	VkDeviceSize factor = unalignedSize / alignment;
+	VkDeviceSize remainer = unalignedSize % alignment;
+	if (remainer != 0)
+	{
+		factor++;
+	}
+
+	alignedSize = alignment * factor;
+
+	return true;
+}
+
 bool HelperVulkan::findMemoryTypeIndex(uint32_t& memoryTypeIndex, VkPhysicalDevice physicalDevice, uint32_t memoryType, VkMemoryPropertyFlags memoryProperty)
 {
 	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties = {};

@@ -18,6 +18,8 @@ public:
 
 	static bool getComponentTypeSize(uint32_t& componentTypeSize, VkFormat format);
 
+	static bool getAligenedSize(VkDeviceSize& alignedSize, VkDeviceSize unalignedSize, VkDeviceSize alignment);
+
 	static bool findMemoryTypeIndex(uint32_t& memoryTypeIndex, VkPhysicalDevice physicalDevice, uint32_t memoryType, VkMemoryPropertyFlags memoryProperty);
 
 	static bool beginOneTimeSubmitCommand(VkDevice device, VkCommandPool commandPool, VkCommandBuffer& commandBuffer);

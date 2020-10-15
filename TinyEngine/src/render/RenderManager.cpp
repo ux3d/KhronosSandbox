@@ -242,6 +242,8 @@ bool RenderManager::renderSetupVulkan(VkPhysicalDevice physicalDevice, VkDevice 
 	this->queue = queue;
 	this->commandPool = commandPool;
 
+	vkGetPhysicalDeviceProperties(physicalDevice, &this->physicalDeviceProperties);
+
 	return true;
 }
 
@@ -284,6 +286,7 @@ bool RenderManager::sharedDataSetData(uint64_t sharedDataHandle, VkDeviceSize si
 	}
 
 	sharedDataResource->usage = usage;
+	sharedDataResource->size = size;
 
 	sharedDataResource->vertexBufferResourceCreateInfo.bufferResourceCreateInfo.size = size;
 	sharedDataResource->vertexBufferResourceCreateInfo.data = data;
@@ -482,10 +485,19 @@ bool RenderManager::sharedDataCreateUniformBuffer(uint64_t sharedDataHandle, VkD
 
 bool RenderManager::sharedDataCreateDynamicUniformBuffer(uint64_t sharedDataHandle, VkDeviceSize size, const void* data)
 {
-	std::vector<uint8_t> frameData(size * frames);
+	VkDeviceSize alignedSize = 0;
+	VkDeviceSize unalignedSize = size;
+	VkDeviceSize alignment = this->physicalDeviceProperties.limits.minUniformBufferOffsetAlignment;
+
+	if (!HelperVulkan::getAligenedSize(alignedSize, unalignedSize, alignment))
+	{
+		return false;
+	}
+
+	std::vector<uint8_t> frameData(alignedSize * frames);
 	for (uint32_t i = 0; i < frames; i++)
 	{
-		memcpy(&frameData[i * size], data, size);
+		memcpy(&frameData[i * alignedSize], data, size);
 	}
 
 	return sharedDataCreateUniformBuffer(sharedDataHandle, frameData.size(), frameData.data());
@@ -1292,6 +1304,17 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		macros["WEIGHTS_BINDING"] = std::to_string(binding);
 
 		binding++;
+
+		//
+
+		geometryModelResource->dynamicOffsets.resize(frames, 0);
+
+		VkDeviceSize size = getSharedData(geometryModelResource->weightsHandle)->size / frames;
+
+		for (uint32_t i = 0; i < frames; i++)
+		{
+			geometryModelResource->dynamicOffsets[i] = i * size;
+		}
 	}
 
 	// Lighting
@@ -1415,8 +1438,6 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 
 	std::vector<VkWriteDescriptorSet> writeDescriptorSets(descriptorImageInfosSize + descriptorBufferInfosSize);
 
-	uint32_t dynamicCount = 0;
-
 	uint32_t imageIndex = 0;
 	uint32_t bufferIndex = 0;
 	for (uint32_t k = 0; k < descriptorImageInfosSize + descriptorBufferInfosSize; k++)
@@ -1456,10 +1477,6 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 			writeDescriptorSets[k].pBufferInfo = &descriptorBufferInfos[bufferIndex];
 
 			bufferIndex++;
-
-			//
-
-			dynamicCount++;
 		}
 		else if (descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER)
 		{
@@ -1482,13 +1499,6 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 	vkUpdateDescriptorSets(device, descriptorImageInfosSize + descriptorBufferInfosSize, writeDescriptorSets.data(), 0, nullptr);
 
 	setLayouts.push_back(geometryModelResource->descriptorSetLayout);
-
-	//
-
-	if (dynamicCount > 0)
-	{
-		geometryModelResource->dynamicOffsets.resize(dynamicCount * frames, 0);
-	}
 
 	//
 	// Load the shader code.
