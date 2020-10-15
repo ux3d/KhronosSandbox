@@ -60,19 +60,22 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 
 	if (channel.target.path == translation || channel.target.path == scale)
 	{
-		glm::vec3 value;
+		glm::vec3 value(x[0], x[1], x[2]);
 
-		if (sampler.interpolation == CUBICSPLINE)
+		if (t > 0.0f)
 		{
-			value = Interpolator::cubicspline(glm::vec3(x[0], x[1], x[2]), glm::vec3(xout[0], xout[1], xout[2]), glm::vec3(yin[0], yin[1], yin[2]), glm::vec3(y[0], y[1], y[2]), t);
-		}
-		else if (sampler.interpolation == LINEAR)
-		{
-			value = Interpolator::linear(glm::vec3(x[0], x[1], x[2]), glm::vec3(y[0], y[1], y[2]), t);
-		}
-		else
-		{
-			value = Interpolator::step(glm::vec3(x[0], x[1], x[2]), glm::vec3(y[0], y[1], y[2]), t);
+			if (sampler.interpolation == CUBICSPLINE)
+			{
+				value = Interpolator::cubicspline(glm::vec3(x[0], x[1], x[2]), glm::vec3(xout[0], xout[1], xout[2]), glm::vec3(yin[0], yin[1], yin[2]), glm::vec3(y[0], y[1], y[2]), t);
+			}
+			else if (sampler.interpolation == LINEAR)
+			{
+				value = Interpolator::linear(glm::vec3(x[0], x[1], x[2]), glm::vec3(y[0], y[1], y[2]), t);
+			}
+			else
+			{
+				value = Interpolator::step(glm::vec3(x[0], x[1], x[2]), glm::vec3(y[0], y[1], y[2]), t);
+			}
 		}
 
 		if (channel.target.path == translation)
@@ -86,19 +89,22 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 	}
 	else if (channel.target.path == rotation)
 	{
-		glm::quat value;
+		glm::quat value(x[3], x[0], x[1], x[2]);
 
-		if (sampler.interpolation == CUBICSPLINE)
+		if (t > 0.0f)
 		{
-			value = Interpolator::cubicspline(glm::quat(x[3], x[0], x[1], x[2]), glm::quat(xout[3], xout[0], xout[1], xout[2]), glm::quat(yin[3], yin[0], yin[1], yin[2]), glm::quat(y[3], y[0], y[1], y[2]), t);
-		}
-		else if (sampler.interpolation == LINEAR)
-		{
-			value = Interpolator::linear(glm::quat(x[3], x[0], x[1], x[2]), glm::quat(y[3], y[0], y[1], y[2]), t);
-		}
-		else
-		{
-			value = Interpolator::step(glm::quat(x[3], x[0], x[1], x[2]), glm::quat(y[3], y[0], y[1], y[2]), t);
+			if (sampler.interpolation == CUBICSPLINE)
+			{
+				value = Interpolator::cubicspline(glm::quat(x[3], x[0], x[1], x[2]), glm::quat(xout[3], xout[0], xout[1], xout[2]), glm::quat(yin[3], yin[0], yin[1], yin[2]), glm::quat(y[3], y[0], y[1], y[2]), t);
+			}
+			else if (sampler.interpolation == LINEAR)
+			{
+				value = Interpolator::linear(glm::quat(x[3], x[0], x[1], x[2]), glm::quat(y[3], y[0], y[1], y[2]), t);
+			}
+			else
+			{
+				value = Interpolator::step(glm::quat(x[3], x[0], x[1], x[2]), glm::quat(y[3], y[0], y[1], y[2]), t);
+			}
 		}
 
 		node.rotation = value;
@@ -107,19 +113,22 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 	{
 		for (size_t i = 0; i < node.weights.size(); i++)
 		{
-			float value;
+			float value = x[i];
 
-			if (sampler.interpolation == CUBICSPLINE)
+			if (t > 0.0f)
 			{
-				value = Interpolator::cubicspline(x[i], xout[i], yin[i], y[i], t);
-			}
-			else if (sampler.interpolation == LINEAR)
-			{
-				value = Interpolator::linear(x[i], y[i], t);
-			}
-			else
-			{
-				value = Interpolator::step(x[i], y[i], t);
+				if (sampler.interpolation == CUBICSPLINE)
+				{
+					value = Interpolator::cubicspline(x[i], xout[i], yin[i], y[i], t);
+				}
+				else if (sampler.interpolation == LINEAR)
+				{
+					value = Interpolator::linear(x[i], y[i], t);
+				}
+				else
+				{
+					value = Interpolator::step(x[i], y[i], t);
+				}
 			}
 
 			node.weights[i] = value;
