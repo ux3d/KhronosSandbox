@@ -570,6 +570,8 @@ bool HelperLoad::initMeshes(GLTF& glTF)
 
 		mesh.primitives.resize(model.meshes[i].primitives.size());
 
+		uint32_t weightsCount = 0;
+
 		for (size_t k = 0; k < mesh.primitives.size(); k++)
 		{
 			Primitive& primitive = mesh.primitives[k];
@@ -642,6 +644,8 @@ bool HelperLoad::initMeshes(GLTF& glTF)
 			{
 				primitive.targets.resize(model.meshes[i].primitives[k].targets.size());
 
+				weightsCount += static_cast<uint32_t>(model.meshes[i].primitives[k].targets.size());
+
 				for (uint32_t m = 0; m < primitive.targets.size(); m++)
 				{
 					const auto& currentTarget = model.meshes[i].primitives[k].targets[m];
@@ -690,13 +694,21 @@ bool HelperLoad::initMeshes(GLTF& glTF)
 
 		//
 
-		if (model.meshes[i].weights.size() > 0)
+		if (weightsCount > 0)
 		{
-			mesh.weights.resize(model.meshes[i].weights.size());
+			mesh.weights.resize(weightsCount, 0.0f);
 
-			for (size_t k = 0; k < model.meshes[i].weights.size(); k++)
+			if (model.meshes[i].weights.size() > 0)
 			{
-				mesh.weights[k] = static_cast<float>(model.meshes[i].weights[k]);
+				if (mesh.weights.size() != model.meshes[i].weights.size())
+				{
+					return false;
+				}
+
+				for (size_t k = 0; k < model.meshes[i].weights.size(); k++)
+				{
+					mesh.weights[k] = static_cast<float>(model.meshes[i].weights[k]);
+				}
 			}
 		}
 	}
