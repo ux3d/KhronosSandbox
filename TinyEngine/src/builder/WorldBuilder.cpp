@@ -551,7 +551,7 @@ bool WorldBuilder::buildMeshes()
 				}
 			}
 
-			if (!renderManager.geometryModelSetCullMode(geometryModelHandle, VK_CULL_MODE_BACK_BIT))
+			if (!renderManager.geometryModelSetCullMode(geometryModelHandle, VK_CULL_MODE_NONE))
 			{
 				return false;
 			}

@@ -239,9 +239,9 @@ vec3 getNormal()
 void main()
 {
 #ifdef UNIFORMBUFFER_BINDING
-    if (!in_ub.doubleSided && !gl_FrontFacing)
+    if (!in_ub.doubleSided)
     {
-        if (in_determinant > 0.0)
+        if ((in_determinant > 0.0 && !gl_FrontFacing) || (in_determinant < 0.0 && gl_FrontFacing))
         {   
             discard;
         }
