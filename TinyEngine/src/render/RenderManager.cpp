@@ -834,9 +834,7 @@ bool RenderManager::geometryModelSetTarget(uint64_t geometryModelHandle, uint64_
 		return false;
 	}
 
-	// TODO: Enable again.
-
-	//geometryModelResource->macros["HAS_TARGET_" + targetName] = "";
+	geometryModelResource->macros["HAS_TARGET_" + targetName] = "";
 
 	return true;
 }
@@ -1138,8 +1136,6 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 	}
 
 	//
-	//
-	//
 
 	uint32_t binding = 0;
 
@@ -1167,7 +1163,72 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		descriptorBufferInfos = materialResource->descriptorBufferInfos;
 	}
 
-	//
+	// Morphing
+
+	if (geometryModelResource->targetPositionHandle != 0)
+	{
+		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+		descriptorSetLayoutBinding = {};
+		descriptorSetLayoutBinding.binding = binding;
+		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		descriptorSetLayoutBinding.descriptorCount = 1;
+		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+		VkDescriptorBufferInfo descriptorBufferInfo = {};
+		descriptorBufferInfo.buffer = getSharedData(geometryModelResource->targetPositionHandle)->storageBufferResource.bufferResource.buffer;
+		descriptorBufferInfo.offset = 0;
+		descriptorBufferInfo.range = sizeof(MaterialParameters);
+		descriptorBufferInfos.push_back(descriptorBufferInfo);
+
+		macros["TARGET_POSITION_BINDING"] = std::to_string(binding);
+
+		binding++;
+	}
+
+	if (geometryModelResource->targetNormalHandle != 0)
+	{
+		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+		descriptorSetLayoutBinding = {};
+		descriptorSetLayoutBinding.binding = binding;
+		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		descriptorSetLayoutBinding.descriptorCount = 1;
+		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+		VkDescriptorBufferInfo descriptorBufferInfo = {};
+		descriptorBufferInfo.buffer = getSharedData(geometryModelResource->targetNormalHandle)->storageBufferResource.bufferResource.buffer;
+		descriptorBufferInfo.offset = 0;
+		descriptorBufferInfo.range = sizeof(MaterialParameters);
+		descriptorBufferInfos.push_back(descriptorBufferInfo);
+
+		macros["TARGET_NORMAL_BINDING"] = std::to_string(binding);
+
+		binding++;
+	}
+
+	if (geometryModelResource->targetTangentHandle != 0)
+	{
+		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+		descriptorSetLayoutBinding = {};
+		descriptorSetLayoutBinding.binding = binding;
+		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		descriptorSetLayoutBinding.descriptorCount = 1;
+		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+		VkDescriptorBufferInfo descriptorBufferInfo = {};
+		descriptorBufferInfo.buffer = getSharedData(geometryModelResource->targetTangentHandle)->storageBufferResource.bufferResource.buffer;
+		descriptorBufferInfo.offset = 0;
+		descriptorBufferInfo.range = sizeof(MaterialParameters);
+		descriptorBufferInfos.push_back(descriptorBufferInfo);
+
+		macros["TARGET_TANGENT_BINDING"] = std::to_string(binding);
+
+		binding++;
+	}
+
+	// Lighting
 
 	WorldResource* worldResource = getWorld();
 
@@ -1282,7 +1343,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 	}
 
 	uint32_t descriptorImageInfosSize = static_cast<uint32_t>(descriptorImageInfos.size());
-	uint32_t descriptorBufferInfosSize = 1;
+	uint32_t descriptorBufferInfosSize = static_cast<uint32_t>(descriptorBufferInfos.size());
 
 	std::vector<VkWriteDescriptorSet> writeDescriptorSets(descriptorImageInfosSize + descriptorBufferInfosSize);
 
@@ -1314,6 +1375,18 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 
 			bufferIndex++;
 		}
+		else if (descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER)
+		{
+			writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			writeDescriptorSets[k].dstSet = geometryModelResource->descriptorSet;
+			writeDescriptorSets[k].dstBinding = k;
+			writeDescriptorSets[k].dstArrayElement = 0;
+			writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+			writeDescriptorSets[k].descriptorCount = 1;
+			writeDescriptorSets[k].pBufferInfo = &descriptorBufferInfos[bufferIndex];
+
+			bufferIndex++;
+		}
 		else
 		{
 			return false;
@@ -1323,31 +1396,6 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 	vkUpdateDescriptorSets(device, descriptorImageInfosSize + descriptorBufferInfosSize, writeDescriptorSets.data(), 0, nullptr);
 
 	setLayouts.push_back(geometryModelResource->descriptorSetLayout);
-
-	//
-	// Update target bindings if available.
-	//
-
-	// TODO: Enable again.
-
-	/*if (geometryModelResource->macros.find("HAS_TARGET_POSITION") != geometryModelResource->macros.end())
-	{
-		geometryModelResource->macros["TARGET_POSITION_BINDING"] = std::to_string(binding);
-
-		binding++;
-	}
-	if (geometryModelResource->macros.find("HAS_TARGET_NORMAL") != geometryModelResource->macros.end())
-	{
-		geometryModelResource->macros["TARGET_NORMAL_BINDING"] = std::to_string(binding);
-
-		binding++;
-	}
-	if (geometryModelResource->macros.find("HAS_TARGET_TANGENT") != geometryModelResource->macros.end())
-	{
-		geometryModelResource->macros["TARGET_TANGENT_BINDING"] = std::to_string(binding);
-
-		binding++;
-	}*/
 
 	//
 	// Load the shader code.
