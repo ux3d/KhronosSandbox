@@ -591,16 +591,18 @@ bool WorldBuilder::buildNodes()
 	{
 		const Node& node = glTF.nodes[i];
 
-		uint64_t instanceHandle;
-		if (!renderManager.instanceCreate(instanceHandle))
-		{
-			return false;
-		}
-
-		nodeToHandles[&node] = instanceHandle;
-
 		if (node.mesh >= 0)
 		{
+			uint64_t instanceHandle;
+			if (!renderManager.instanceCreate(instanceHandle))
+			{
+				return false;
+			}
+
+			nodeToHandles[&node] = instanceHandle;
+
+			//
+
 			if (!renderManager.instanceSetWorldMatrix(instanceHandle, node.worldMatrix))
 			{
 				return false;
@@ -611,16 +613,15 @@ bool WorldBuilder::buildNodes()
 				return false;
 			}
 
+			if (!renderManager.instanceFinalize(instanceHandle))
+			{
+				return false;
+			}
+
+			//
+
+			instanceHandles.push_back(instanceHandle);
 		}
-
-		if (!renderManager.instanceFinalize(instanceHandle))
-		{
-			return false;
-		}
-
-		//
-
-		instanceHandles.push_back(instanceHandle);
 	}
 
 	return true;

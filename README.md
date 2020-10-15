@@ -17,7 +17,7 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 - Done
 
 ### glTF  
-- [ ] Morphing
+- [ ] Store resources per node
 - [ ] Skinning
 
 ### OpenXR  

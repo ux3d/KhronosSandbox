@@ -1202,9 +1202,6 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 
 	uint32_t binding = 0;
 
-	std::map<std::string, std::string> macros;
-	macros.insert(geometryModelResource->macros.begin(), geometryModelResource->macros.end());
-
 	std::vector<VkDescriptorSetLayout> setLayouts;
 	std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
 
@@ -1244,7 +1241,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		descriptorBufferInfo.range = sizeof(glm::vec3) * geometryModelResource->targetsCount * geometryResource->count;
 		descriptorBufferInfos.push_back(descriptorBufferInfo);
 
-		macros["TARGET_POSITION_BINDING"] = std::to_string(binding);
+		geometryModelResource->macros["TARGET_POSITION_BINDING"] = std::to_string(binding);
 
 		binding++;
 	}
@@ -1265,7 +1262,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		descriptorBufferInfo.range = sizeof(glm::vec3) * geometryModelResource->targetsCount * geometryResource->count;
 		descriptorBufferInfos.push_back(descriptorBufferInfo);
 
-		macros["TARGET_NORMAL_BINDING"] = std::to_string(binding);
+		geometryModelResource->macros["TARGET_NORMAL_BINDING"] = std::to_string(binding);
 
 		binding++;
 	}
@@ -1286,7 +1283,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		descriptorBufferInfo.range = sizeof(glm::vec3) * geometryModelResource->targetsCount * geometryResource->count;
 		descriptorBufferInfos.push_back(descriptorBufferInfo);
 
-		macros["TARGET_TANGENT_BINDING"] = std::to_string(binding);
+		geometryModelResource->macros["TARGET_TANGENT_BINDING"] = std::to_string(binding);
 
 		binding++;
 	}
@@ -1307,7 +1304,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		descriptorBufferInfo.range = sizeof(float) * geometryModelResource->targetsCount;
 		descriptorBufferInfos.push_back(descriptorBufferInfo);
 
-		macros["WEIGHTS_BINDING"] = std::to_string(binding);
+		geometryModelResource->macros["WEIGHTS_BINDING"] = std::to_string(binding);
 
 		binding++;
 
@@ -1344,7 +1341,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		descriptorImageInfos.push_back(descriptorImageInfo);
 
-		macros["DIFFUSE_BINDING"] = std::to_string(binding);
+		geometryModelResource->macros["DIFFUSE_BINDING"] = std::to_string(binding);
 
 		binding++;
 
@@ -1363,7 +1360,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		descriptorImageInfos.push_back(descriptorImageInfo);
 
-		macros["SPECULAR_BINDING"] = std::to_string(binding);
+		geometryModelResource->macros["SPECULAR_BINDING"] = std::to_string(binding);
 
 		binding++;
 
@@ -1382,7 +1379,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		descriptorImageInfos.push_back(descriptorImageInfo);
 
-		macros["LUT_BINDING"] = std::to_string(binding);
+		geometryModelResource->macros["LUT_BINDING"] = std::to_string(binding);
 	}
 
 	//
@@ -1525,13 +1522,13 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 	//
 
 	std::vector<uint32_t> vertexShaderCode;
-	if (!Compiler::buildShader(vertexShaderCode, vertexShaderSource, macros, shaderc_vertex_shader))
+	if (!Compiler::buildShader(vertexShaderCode, vertexShaderSource, geometryModelResource->macros, shaderc_vertex_shader))
 	{
 		return false;
 	}
 
 	std::vector<uint32_t> fragmentShaderCode;
-	if (!Compiler::buildShader(fragmentShaderCode, fragmentShaderSource, macros, shaderc_fragment_shader))
+	if (!Compiler::buildShader(fragmentShaderCode, fragmentShaderSource, geometryModelResource->macros, shaderc_fragment_shader))
 	{
 		return false;
 	}
