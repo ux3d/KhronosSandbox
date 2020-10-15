@@ -26,36 +26,15 @@ struct MaterialParameters {
 	bool doubleSided = false;
 };
 
-struct RaytraceMaterialUniformBuffer {
-	MaterialParameters materialParameters;
-
-	int32_t baseColorTexture = -1;
-	int32_t metallicRoughnessTexture = -1;
-
-	int32_t emissiveTexture = -1;
-
-	int32_t occlusionTexture = -1;
-
-	int32_t normalTexture = -1;
-
-	//
-
-	int32_t padding;
-};
-
 struct MaterialResource : BaseResource {
 
 	// Mapper helper
 
-	RaytraceMaterialUniformBuffer raytraceMaterialUniformBuffer;
+	MaterialParameters materialParameters = {};
 
 	std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
 
 	// Rasterize helper
-
-	VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
-	VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
-	VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
 
 	std::vector<VkDescriptorImageInfo> descriptorImageInfos;
 	std::vector<VkDescriptorBufferInfo> descriptorBufferInfos;

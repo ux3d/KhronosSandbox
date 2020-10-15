@@ -135,7 +135,6 @@ public:
 	bool geometryModelSetCullMode(uint64_t geometryModelHandle, VkCullModeFlags cullMode);
 
 	bool groupAddGeometryModel(uint64_t groupHandle, uint64_t geometryModelHandle);
-	bool groupSetWeights(uint64_t groupHandle, uint64_t sharedDataHandle);
 
 	bool instanceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix);
 	bool instanceSetGroup(uint64_t instanceHandle, uint64_t groupHandle);

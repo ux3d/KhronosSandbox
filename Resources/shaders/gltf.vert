@@ -81,11 +81,23 @@ void main()
 
 #ifdef NORMAL_VEC3
     vec3 normal = in_normal;
+#ifdef HAS_TARGET_NORMAL
+    for (uint i = 0; i < in_upc.targetsCount; i++)
+    {
+        normal += 0.0 * u_targetNormal.i[gl_VertexIndex + i * in_upc.targetsOffset];
+    }
+#endif
     out_normal = normalMatrix * normal;
 #endif
 
 #ifdef TANGENT_VEC4
     vec3 tangent = in_tangent.xyz;
+#ifdef HAS_TARGET_TANGENT
+    for (uint i = 0; i < in_upc.targetsCount; i++)
+    {
+        tangent += 0.0 * u_targetTangent.i[gl_VertexIndex + i * in_upc.targetsOffset];
+    }
+#endif
     vec3 bitangent = cross(normal, tangent) * in_tangent.w;
     out_tangent = normalMatrix * tangent;
     out_bitangent = normalMatrix * bitangent;
@@ -105,7 +117,14 @@ void main()
     out_color = vec4(in_color, 1.0);
 #endif
 
-    vec4 position = in_upc.world * vec4(in_position, 1.0);
+    vec4 position = vec4(in_position, 1.0);
+#ifdef HAS_TARGET_POSITION
+    for (uint i = 0; i < in_upc.targetsCount; i++)
+    {
+        position += 0.0 * vec4(u_targetPosition.i[gl_VertexIndex + i * in_upc.targetsOffset], 0.0);
+    }
+#endif
+    position = in_upc.world * position;
     out_position = position.xyz / position.w;
 
     out_determinant = determinant(in_upc.world);

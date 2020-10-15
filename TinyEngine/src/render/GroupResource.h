@@ -12,10 +12,6 @@ struct GroupResource : BaseResource {
 
 	std::vector<uint64_t> geometryModelHandles;
 
-	// Rasterize helper
-
-	uint64_t weightsHandle = 0;
-
 };
 
 #endif /* RENDER_GROUPRENDER_H_ */

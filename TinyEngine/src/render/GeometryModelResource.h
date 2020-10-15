@@ -32,6 +32,10 @@ struct GeometryModelResource : BaseResource {
 
 	// Rasterize helper
 
+	VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
+	VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
+	VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
+
 	VkShaderModule vertexShaderModule = VK_NULL_HANDLE;
 	VkShaderModule fragmentShaderModule = VK_NULL_HANDLE;
 

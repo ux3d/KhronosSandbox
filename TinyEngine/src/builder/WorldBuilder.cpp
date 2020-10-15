@@ -569,26 +569,7 @@ bool WorldBuilder::buildMeshes()
 				memcpy(weights.data(), mesh.weights.data(), mesh.weights.size()* sizeof(float));
 			}
 
-			uint64_t weightsHandle;
-			if (!renderManager.sharedDataCreate(weightsHandle))
-			{
-				return false;
-			}
-
-			if (!renderManager.sharedDataCreateUniformBuffer(weightsHandle, sizeof(float) * weights.size(), weights.data()))
-			{
-				return false;
-			}
-
-			if (!renderManager.sharedDataFinalize(weightsHandle))
-			{
-				return false;
-			}
-
-			if (!renderManager.groupSetWeights(groupHandle, weightsHandle))
-			{
-				return false;
-			}
+			// TODO: Set weights.
 		}
 
 		//

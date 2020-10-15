@@ -16,21 +16,6 @@ void RenderManager::terminate(TextureDataResource& textureResource, VkDevice dev
 
 void RenderManager::terminate(MaterialResource& materialResource, VkDevice device)
 {
-	// Descriptor sets do not have to be freed, as managed by pool.
-	materialResource.descriptorSet = VK_NULL_HANDLE;
-
-	if (materialResource.descriptorPool != VK_NULL_HANDLE)
-	{
-		vkDestroyDescriptorPool(device, materialResource.descriptorPool, nullptr);
-		materialResource.descriptorPool = VK_NULL_HANDLE;
-	}
-
-	if (materialResource.descriptorSetLayout != VK_NULL_HANDLE)
-	{
-		vkDestroyDescriptorSetLayout(device, materialResource.descriptorSetLayout, nullptr);
-		materialResource.descriptorSetLayout = VK_NULL_HANDLE;
-	}
-
 	VulkanResource::destroyUniformBufferResource(device, materialResource.uniformBufferResource);
 }
 
@@ -65,6 +50,23 @@ void RenderManager::terminate(GeometryModelResource& geometryModelResource, VkDe
 	}
 
 	//
+
+	// Descriptor sets do not have to be freed, as managed by pool.
+	geometryModelResource.descriptorSet = VK_NULL_HANDLE;
+
+	if (geometryModelResource.descriptorPool != VK_NULL_HANDLE)
+	{
+		vkDestroyDescriptorPool(device, geometryModelResource.descriptorPool, nullptr);
+		geometryModelResource.descriptorPool = VK_NULL_HANDLE;
+	}
+
+	if (geometryModelResource.descriptorSetLayout != VK_NULL_HANDLE)
+	{
+		vkDestroyDescriptorSetLayout(device, geometryModelResource.descriptorSetLayout, nullptr);
+		geometryModelResource.descriptorSetLayout = VK_NULL_HANDLE;
+	}
+
+
 
 	// Shared data is not destroyed here.
 
@@ -491,7 +493,7 @@ bool RenderManager::materialSetParameters(uint64_t materialHandle, const Materia
 		return false;
 	}
 
-	materialResource->raytraceMaterialUniformBuffer.materialParameters = materialParameters;
+	materialResource->materialParameters = materialParameters;
 
 	return true;
 }
@@ -531,29 +533,6 @@ bool RenderManager::materialSetTexture(uint64_t materialHandle, uint64_t texture
 	materialResource->macros[description + "_TEXTURE"] = "";
 	materialResource->macros[description + "_BINDING"] = std::to_string(binding);
 	materialResource->macros[description + "_TEXCOORD"] = HelperShader::getTexCoord(texCoord);
-
-	//
-
-	if (description == "BASECOLOR")
-	{
-		materialResource->raytraceMaterialUniformBuffer.baseColorTexture = textureResource->textureIndex;
-	}
-	else if (description == "METALLICROUGHNESS")
-	{
-		materialResource->raytraceMaterialUniformBuffer.metallicRoughnessTexture = textureResource->textureIndex;
-	}
-	else if (description == "EMISSIVE")
-	{
-		materialResource->raytraceMaterialUniformBuffer.emissiveTexture = textureResource->textureIndex;
-	}
-	else if (description == "OCCLUSION")
-	{
-		materialResource->raytraceMaterialUniformBuffer.occlusionTexture = textureResource->textureIndex;
-	}
-	else if (description == "NORMAL")
-	{
-		materialResource->raytraceMaterialUniformBuffer.normalTexture = textureResource->textureIndex;
-	}
 
 	return true;
 }
@@ -855,7 +834,9 @@ bool RenderManager::geometryModelSetTarget(uint64_t geometryModelHandle, uint64_
 		return false;
 	}
 
-	geometryModelResource->macros["HAS_TARGET_" + targetName] = "";
+	// TODO: Enable again.
+
+	//geometryModelResource->macros["HAS_TARGET_" + targetName] = "";
 
 	return true;
 }
@@ -899,20 +880,6 @@ bool RenderManager::groupAddGeometryModel(uint64_t groupHandle, uint64_t geometr
 	}
 
 	groupResource->geometryModelHandles.push_back(geometryModelHandle);
-
-	return true;
-}
-
-bool RenderManager::groupSetWeights(uint64_t groupHandle, uint64_t sharedDataHandle)
-{
-	GroupResource* groupResource = getGroup(groupHandle);
-
-	if (!groupResource->created || groupResource->finalized)
-	{
-		return false;
-	}
-
-	groupResource->weightsHandle = sharedDataHandle;
 
 	return true;
 }
@@ -1101,7 +1068,7 @@ bool RenderManager::materialFinalize(uint64_t materialHandle)
 		return false;
 	}
 
-	if (!VulkanResource::copyHostToDevice(device, materialResource->uniformBufferResource.bufferResource, &materialResource->raytraceMaterialUniformBuffer.materialParameters, sizeof(materialResource->raytraceMaterialUniformBuffer.materialParameters)))
+	if (!VulkanResource::copyHostToDevice(device, materialResource->uniformBufferResource.bufferResource, &materialResource->materialParameters, sizeof(materialResource->materialParameters)))
 	{
 		return false;
 	}
@@ -1131,166 +1098,6 @@ bool RenderManager::materialFinalize(uint64_t materialHandle)
 	materialResource->macros["UNIFORMBUFFER_BINDING"] = std::to_string(binding);
 
 	binding++;
-
-	//
-
-	WorldResource* worldResource = getWorld();
-
-	if (worldResource->lightHandle > 0)
-	{
-		LightResource* lightResource = getLight(worldResource->lightHandle);
-
-		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = binding;
-		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorSetLayoutBinding.descriptorCount = 1;
-		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-		VkDescriptorImageInfo descriptorImageInfo = {};
-		descriptorImageInfo.sampler = lightResource->diffuse.samplerResource.sampler;
-		descriptorImageInfo.imageView = lightResource->diffuse.imageViewResource.imageView;
-		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-		materialResource->macros["DIFFUSE_BINDING"] = std::to_string(binding);
-
-		binding++;
-
-		//
-
-		descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = binding;
-		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorSetLayoutBinding.descriptorCount = 1;
-		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-		descriptorImageInfo = {};
-		descriptorImageInfo.sampler = lightResource->specular.samplerResource.sampler;
-		descriptorImageInfo.imageView = lightResource->specular.imageViewResource.imageView;
-		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-		materialResource->macros["SPECULAR_BINDING"] = std::to_string(binding);
-
-		binding++;
-
-		//
-
-		descriptorSetLayoutBinding = {};
-		descriptorSetLayoutBinding.binding = binding;
-		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorSetLayoutBinding.descriptorCount = 1;
-		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		materialResource->descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
-
-		descriptorImageInfo = {};
-		descriptorImageInfo.sampler = lightResource->lut.samplerResource.sampler;
-		descriptorImageInfo.imageView = lightResource->lut.imageViewResource.imageView;
-		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		materialResource->descriptorImageInfos.push_back(descriptorImageInfo);
-
-		materialResource->macros["LUT_BINDING"] = std::to_string(binding);
-	}
-	//
-
-	VkResult result = VK_SUCCESS;
-
-	//
-
-	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = {};
-	descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	descriptorSetLayoutCreateInfo.bindingCount = static_cast<uint32_t>(materialResource->descriptorSetLayoutBindings.size());
-	descriptorSetLayoutCreateInfo.pBindings = materialResource->descriptorSetLayoutBindings.data();
-
-	result = vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &materialResource->descriptorSetLayout);
-	if (result != VK_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
-
-		return false;
-	}
-
-	//
-
-	std::vector<VkDescriptorPoolSize> descriptorPoolSizes;
-	descriptorPoolSizes.resize(materialResource->descriptorSetLayoutBindings.size(), {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1});
-
-	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
-	descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(materialResource->descriptorSetLayoutBindings.size());
-	descriptorPoolCreateInfo.pPoolSizes = descriptorPoolSizes.data();
-	descriptorPoolCreateInfo.maxSets = 1;
-
-	result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &materialResource->descriptorPool);
-	if (result != VK_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
-
-		return false;
-	}
-
-	VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = {};
-	descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	descriptorSetAllocateInfo.descriptorPool = materialResource->descriptorPool;
-	descriptorSetAllocateInfo.descriptorSetCount = 1;
-	descriptorSetAllocateInfo.pSetLayouts = &materialResource->descriptorSetLayout;
-
-	result = vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &materialResource->descriptorSet);
-	if (result != VK_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
-
-		return false;
-	}
-
-	uint32_t descriptorImageInfosSize = static_cast<uint32_t>(materialResource->descriptorImageInfos.size());
-	uint32_t descriptorBufferInfosSize = 1;
-
-	std::vector<VkWriteDescriptorSet> writeDescriptorSets(descriptorImageInfosSize + descriptorBufferInfosSize);
-
-	uint32_t imageIndex = 0;
-	uint32_t bufferIndex = 0;
-	for (uint32_t k = 0; k < descriptorImageInfosSize + descriptorBufferInfosSize; k++)
-	{
-		if (materialResource->descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
-		{
-			writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			writeDescriptorSets[k].dstSet = materialResource->descriptorSet;
-			writeDescriptorSets[k].dstBinding = k;
-			writeDescriptorSets[k].dstArrayElement = 0;
-			writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			writeDescriptorSets[k].descriptorCount = 1;
-			writeDescriptorSets[k].pImageInfo = &materialResource->descriptorImageInfos[imageIndex];
-
-			imageIndex++;
-		}
-		else if (materialResource->descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
-		{
-			writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			writeDescriptorSets[k].dstSet = materialResource->descriptorSet;
-			writeDescriptorSets[k].dstBinding = k;
-			writeDescriptorSets[k].dstArrayElement = 0;
-			writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			writeDescriptorSets[k].descriptorCount = 1;
-			writeDescriptorSets[k].pBufferInfo = &materialResource->descriptorBufferInfos[bufferIndex];
-
-			bufferIndex++;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	vkUpdateDescriptorSets(device, descriptorImageInfosSize + descriptorBufferInfosSize, writeDescriptorSets.data(), 0, nullptr);
-
-	//
-
-	worldResource->materialBuffers.push_back(materialResource->raytraceMaterialUniformBuffer);
-
-	//
 
 	materialResource->finalized = true;
 
@@ -1332,31 +1139,199 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 	}
 
 	//
+	//
+	//
 
 	uint32_t binding = 0;
 
+	std::map<std::string, std::string> macros;
+	macros.insert(geometryModelResource->macros.begin(), geometryModelResource->macros.end());
+
 	std::vector<VkDescriptorSetLayout> setLayouts;
+	std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
+
+	std::vector<VkDescriptorImageInfo> descriptorImageInfos;
+	std::vector<VkDescriptorBufferInfo> descriptorBufferInfos;
 
 	if (geometryModelResource->materialHandle > 0)
 	{
 		MaterialResource* materialResource = getMaterial(geometryModelResource->materialHandle);
 
-		if (materialResource->descriptorSetLayout != VK_NULL_HANDLE)
-		{
-			setLayouts.push_back(materialResource->descriptorSetLayout);
-		}
-
 		if (materialResource->descriptorSetLayoutBindings.size() > 0)
 		{
 			binding = materialResource->descriptorSetLayoutBindings.back().binding + 1;
 		}
+
+		descriptorSetLayoutBindings = materialResource->descriptorSetLayoutBindings;
+
+		descriptorImageInfos = materialResource->descriptorImageInfos;
+		descriptorBufferInfos = materialResource->descriptorBufferInfos;
 	}
+
+	//
+
+	WorldResource* worldResource = getWorld();
+
+	if (worldResource->lightHandle > 0)
+	{
+		LightResource* lightResource = getLight(worldResource->lightHandle);
+
+		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+		descriptorSetLayoutBinding.binding = binding;
+		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorSetLayoutBinding.descriptorCount = 1;
+		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+		VkDescriptorImageInfo descriptorImageInfo = {};
+		descriptorImageInfo.sampler = lightResource->diffuse.samplerResource.sampler;
+		descriptorImageInfo.imageView = lightResource->diffuse.imageViewResource.imageView;
+		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		descriptorImageInfos.push_back(descriptorImageInfo);
+
+		macros["DIFFUSE_BINDING"] = std::to_string(binding);
+
+		binding++;
+
+		//
+
+		descriptorSetLayoutBinding = {};
+		descriptorSetLayoutBinding.binding = binding;
+		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorSetLayoutBinding.descriptorCount = 1;
+		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+		descriptorImageInfo = {};
+		descriptorImageInfo.sampler = lightResource->specular.samplerResource.sampler;
+		descriptorImageInfo.imageView = lightResource->specular.imageViewResource.imageView;
+		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		descriptorImageInfos.push_back(descriptorImageInfo);
+
+		macros["SPECULAR_BINDING"] = std::to_string(binding);
+
+		binding++;
+
+		//
+
+		descriptorSetLayoutBinding = {};
+		descriptorSetLayoutBinding.binding = binding;
+		descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorSetLayoutBinding.descriptorCount = 1;
+		descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+		descriptorImageInfo = {};
+		descriptorImageInfo.sampler = lightResource->lut.samplerResource.sampler;
+		descriptorImageInfo.imageView = lightResource->lut.imageViewResource.imageView;
+		descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		descriptorImageInfos.push_back(descriptorImageInfo);
+
+		macros["LUT_BINDING"] = std::to_string(binding);
+	}
+
+	//
+
+	VkResult result = VK_SUCCESS;
+
+	//
+
+	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = {};
+	descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	descriptorSetLayoutCreateInfo.bindingCount = static_cast<uint32_t>(descriptorSetLayoutBindings.size());
+	descriptorSetLayoutCreateInfo.pBindings = descriptorSetLayoutBindings.data();
+
+	result = vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &geometryModelResource->descriptorSetLayout);
+	if (result != VK_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+		return false;
+	}
+
+	//
+
+	std::vector<VkDescriptorPoolSize> descriptorPoolSizes;
+	descriptorPoolSizes.resize(descriptorSetLayoutBindings.size(), {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1});
+
+	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
+	descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(descriptorSetLayoutBindings.size());
+	descriptorPoolCreateInfo.pPoolSizes = descriptorPoolSizes.data();
+	descriptorPoolCreateInfo.maxSets = 1;
+
+	result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &geometryModelResource->descriptorPool);
+	if (result != VK_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+		return false;
+	}
+
+	VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = {};
+	descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+	descriptorSetAllocateInfo.descriptorPool = geometryModelResource->descriptorPool;
+	descriptorSetAllocateInfo.descriptorSetCount = 1;
+	descriptorSetAllocateInfo.pSetLayouts = &geometryModelResource->descriptorSetLayout;
+
+	result = vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &geometryModelResource->descriptorSet);
+	if (result != VK_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+		return false;
+	}
+
+	uint32_t descriptorImageInfosSize = static_cast<uint32_t>(descriptorImageInfos.size());
+	uint32_t descriptorBufferInfosSize = 1;
+
+	std::vector<VkWriteDescriptorSet> writeDescriptorSets(descriptorImageInfosSize + descriptorBufferInfosSize);
+
+	uint32_t imageIndex = 0;
+	uint32_t bufferIndex = 0;
+	for (uint32_t k = 0; k < descriptorImageInfosSize + descriptorBufferInfosSize; k++)
+	{
+		if (descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+		{
+			writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			writeDescriptorSets[k].dstSet = geometryModelResource->descriptorSet;
+			writeDescriptorSets[k].dstBinding = k;
+			writeDescriptorSets[k].dstArrayElement = 0;
+			writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			writeDescriptorSets[k].descriptorCount = 1;
+			writeDescriptorSets[k].pImageInfo = &descriptorImageInfos[imageIndex];
+
+			imageIndex++;
+		}
+		else if (descriptorSetLayoutBindings[k].descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+		{
+			writeDescriptorSets[k].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			writeDescriptorSets[k].dstSet = geometryModelResource->descriptorSet;
+			writeDescriptorSets[k].dstBinding = k;
+			writeDescriptorSets[k].dstArrayElement = 0;
+			writeDescriptorSets[k].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			writeDescriptorSets[k].descriptorCount = 1;
+			writeDescriptorSets[k].pBufferInfo = &descriptorBufferInfos[bufferIndex];
+
+			bufferIndex++;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	vkUpdateDescriptorSets(device, descriptorImageInfosSize + descriptorBufferInfosSize, writeDescriptorSets.data(), 0, nullptr);
+
+	setLayouts.push_back(geometryModelResource->descriptorSetLayout);
 
 	//
 	// Update target bindings if available.
 	//
 
-	if (geometryModelResource->macros.find("HAS_TARGET_POSITION") != geometryModelResource->macros.end())
+	// TODO: Enable again.
+
+	/*if (geometryModelResource->macros.find("HAS_TARGET_POSITION") != geometryModelResource->macros.end())
 	{
 		geometryModelResource->macros["TARGET_POSITION_BINDING"] = std::to_string(binding);
 
@@ -1373,7 +1348,7 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		geometryModelResource->macros["TARGET_TANGENT_BINDING"] = std::to_string(binding);
 
 		binding++;
-	}
+	}*/
 
 	//
 	// Load the shader code.
@@ -1394,13 +1369,13 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 	//
 
 	std::vector<uint32_t> vertexShaderCode;
-	if (!Compiler::buildShader(vertexShaderCode, vertexShaderSource, geometryModelResource->macros, shaderc_vertex_shader))
+	if (!Compiler::buildShader(vertexShaderCode, vertexShaderSource, macros, shaderc_vertex_shader))
 	{
 		return false;
 	}
 
 	std::vector<uint32_t> fragmentShaderCode;
-	if (!Compiler::buildShader(fragmentShaderCode, fragmentShaderSource, geometryModelResource->macros, shaderc_fragment_shader))
+	if (!Compiler::buildShader(fragmentShaderCode, fragmentShaderSource, macros, shaderc_fragment_shader))
 	{
 		return false;
 	}
@@ -1416,8 +1391,6 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 	}
 
 	//
-
-	VkResult result = VK_SUCCESS;
 
 	VkPipelineShaderStageCreateInfo pipelineShaderStageCreateInfo[2] = {};
 
@@ -2012,11 +1985,11 @@ void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex
 
 			//
 
-			if (materialResource->raytraceMaterialUniformBuffer.materialParameters.alphaMode == 2 && drawMode == OPAQUE)
+			if (materialResource->materialParameters.alphaMode == 2 && drawMode == OPAQUE)
 			{
 				return;
 			}
-			else if (materialResource->raytraceMaterialUniformBuffer.materialParameters.alphaMode != 2 && drawMode == TRANSPARENT)
+			else if (materialResource->materialParameters.alphaMode != 2 && drawMode == TRANSPARENT)
 			{
 				return;
 			}
@@ -2025,9 +1998,9 @@ void RenderManager::rasterize(VkCommandBuffer commandBuffer, uint32_t frameIndex
 
 			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, geometryModelResource->graphicsPipeline);
 
-			if (materialResource->descriptorSet != VK_NULL_HANDLE)
+			if (geometryModelResource->descriptorSet != VK_NULL_HANDLE)
 			{
-				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, geometryModelResource->pipelineLayout, 0, 1, &materialResource->descriptorSet, 0, nullptr);
+				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, geometryModelResource->pipelineLayout, 0, 1, &geometryModelResource->descriptorSet, 0, nullptr);
 			}
 
 			uint32_t offset = 0;

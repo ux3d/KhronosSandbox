@@ -33,7 +33,6 @@ struct WorldResource : BaseResource {
 	uint64_t cameraHandle;
 
 	std::vector<VkDescriptorImageInfo> descriptorImageInfoTextures;
-	std::vector<RaytraceMaterialUniformBuffer> materialBuffers;
 
 	// Rasterize helper
 
