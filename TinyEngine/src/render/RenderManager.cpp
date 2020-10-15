@@ -911,7 +911,13 @@ bool RenderManager::geometryModelSetTargetsCount(uint64_t geometryModelHandle, u
 
 	geometryModelResource->targetsCount = targetsCount;
 
-	geometryModelResource->macros["TARGETS_COUNT"] = std::to_string(targetsCount);
+	uint32_t packedTargetsCount = targetsCount / 4;
+	if (targetsCount % 4 != 0)
+	{
+		packedTargetsCount++;
+	}
+
+	geometryModelResource->macros["TARGETS_COUNT"] = std::to_string(packedTargetsCount);
 
 	return true;
 }
@@ -1906,11 +1912,9 @@ bool RenderManager::instanceUpdateWeights(uint64_t instanceHandle, const std::ve
 
 		//
 
-		VkDeviceSize size = sharedDataResource->size / frames;
+		VkDeviceSize offset = sharedDataResource->size / frames * frameIndex;
 
-		VkDeviceSize offset = size * frameIndex;
-
-		if (!VulkanResource::copyHostToDevice(device, sharedDataResource->uniformBufferResource.bufferResource, &weights.data()[weightsOffset], size, offset))
+		if (!VulkanResource::copyHostToDevice(device, sharedDataResource->uniformBufferResource.bufferResource, weights.data(), weights.size() * sizeof(float), offset))
 		{
 			return false;
 		}

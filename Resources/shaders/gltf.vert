@@ -65,17 +65,25 @@ layout (location = 7) out vec4 out_color;
 #endif
 
 #ifdef HAS_TARGET_POSITION
-layout (binding = TARGET_POSITION_BINDING) buffer Position { float i[]; } u_targetPosition;
+layout (binding = TARGET_POSITION_BINDING) buffer Position {
+    float i[];
+} u_targetPosition;
 #endif
 #ifdef HAS_TARGET_NORMAL
-layout (binding = TARGET_NORMAL_BINDING) buffer Normal { float i[]; } u_targetNormal;
+layout (binding = TARGET_NORMAL_BINDING) buffer Normal {
+    float i[];
+} u_targetNormal;
 #endif
 #ifdef HAS_TARGET_TANGENT
-layout (binding = TARGET_TANGENT_BINDING) buffer Tangent { float i[]; } u_targetTangent;
+layout (binding = TARGET_TANGENT_BINDING) buffer Tangent {
+    float i[];
+} u_targetTangent;
 #endif
 
 #ifdef HAS_WEIGHTS
-layout (binding = WEIGHTS_BINDING) uniform Weights { float i[TARGETS_COUNT]; } u_weights;
+layout (binding = WEIGHTS_BINDING) uniform Weights { 
+    vec4 i[TARGETS_COUNT];
+} u_weights;
 #endif
 
 layout (location = 8) flat out float out_determinant;
@@ -90,7 +98,7 @@ void main()
     for (uint target = 0; target < in_upc.targetsCount; target++)
     {
         uint index = 3 * gl_VertexIndex + 3 * target * in_upc.attributeCount;
-        normal += u_weights.i[target] * vec3(u_targetNormal.i[index + 0], u_targetNormal.i[index + 1], u_targetNormal.i[index + 2]);
+        normal += u_weights.i[target / 4][target % 4] * vec3(u_targetNormal.i[index + 0], u_targetNormal.i[index + 1], u_targetNormal.i[index + 2]);
     }
 #endif
     out_normal = normalMatrix * normal;
@@ -102,7 +110,7 @@ void main()
     for (uint target = 0; target < in_upc.targetsCount; target++)
     {
         uint index = 3 * gl_VertexIndex + 3 * target * in_upc.attributeCount;
-        tangent += u_weights.i[target] * vec3(u_targetTangent.i[index + 0], u_targetTangent.i[index + 1], u_targetTangent.i[index + 2]);
+        tangent += u_weights.i[target / 4][target % 4] * vec3(u_targetTangent.i[index + 0], u_targetTangent.i[index + 1], u_targetTangent.i[index + 2]);
     }
 #endif
     vec3 bitangent = cross(normal, tangent) * in_tangent.w;
@@ -129,7 +137,8 @@ void main()
     for (uint target = 0; target < in_upc.targetsCount; target++)
     {
         uint index = 3 * gl_VertexIndex + 3 * target * in_upc.attributeCount;
-        tempPosition += u_weights.i[target] * vec3(u_targetPosition.i[index + 0], u_targetPosition.i[index + 1], u_targetPosition.i[index + 2]);
+
+        tempPosition += u_weights.i[target / 4][target % 4] * vec3(u_targetPosition.i[index + 0], u_targetPosition.i[index + 1], u_targetPosition.i[index + 2]);
     }
 #endif
     vec4 position = vec4(tempPosition, 1.0);
