@@ -774,9 +774,41 @@ bool HelperLoad::initNodes(GLTF& glTF)
 			}
 		}
 
+		if (model.nodes[i].skin >= 0)
+		{
+			node.skin = model.nodes[i].skin;
+		}
+
 		for (size_t k = 0; k < model.nodes[i].children.size(); k++)
 		{
 			node.children.push_back(model.nodes[i].children[k]);
+		}
+	}
+
+	return true;
+}
+
+bool HelperLoad::initSkins(GLTF& glTF)
+{
+	glTF.skins.resize(model.skins.size());
+
+	for (size_t i = 0; i < glTF.skins.size(); i++)
+	{
+		Skin& skin = glTF.skins[i];
+
+		if (model.skins[i].inverseBindMatrices >= 0)
+		{
+			skin.inverseBindMatrices = model.skins[i].inverseBindMatrices;
+		}
+
+		if (model.skins[i].skeleton >= 0)
+		{
+			skin.skeleton = model.skins[i].skeleton;
+		}
+
+		for (size_t k = 0; k < model.skins[i].joints.size(); k++)
+		{
+			skin.joints.push_back(model.skins[i].joints[k]);
 		}
 	}
 
@@ -1053,6 +1085,13 @@ bool HelperLoad::open(GLTF& glTF, const std::string& filename)
 	// Nodes
 
 	if (!initNodes(glTF))
+	{
+		return false;
+	}
+
+	// Skins
+
+	if (!initSkins(glTF))
 	{
 		return false;
 	}

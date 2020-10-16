@@ -42,6 +42,8 @@ private:
 
 	bool initNodes(GLTF& glTF);
 
+	bool initSkins(GLTF& glTF);
+
 	bool initAnimations(GLTF& glTF);
 
 	bool initScenes(GLTF& glTF);

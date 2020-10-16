@@ -15,6 +15,7 @@
 #include "Primitive.h"
 #include "Mesh.h"
 #include "Node.h"
+#include "Skin.h"
 #include "Animation.h"
 #include "Scene.h"
 #include "HelperAccess.h"
@@ -33,6 +34,7 @@ struct GLTF {
 	std::vector<Mesh> meshes;
 	std::vector<Node> nodes;
 	std::vector<Animation> animations;
+	std::vector<Skin> skins;
 	std::vector<Scene> scenes;
 	uint32_t defaultScene = 0;
 };
