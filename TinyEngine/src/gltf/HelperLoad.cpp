@@ -856,10 +856,12 @@ bool HelperLoad::initAnimations(GLTF& glTF)
 
 			if (sampler.input >= 0 && glTF.accessors[sampler.input].componentType == 5126 && glTF.accessors[sampler.input].typeCount == 1)
 			{
-				uint32_t range = HelperAccess::getRange(glTF.accessors[sampler.input]);
+				uint32_t count = glTF.accessors[sampler.input].count;
+				uint32_t size = count * glTF.accessors[sampler.input].typeCount;
+				uint32_t byteSize = size * glTF.accessors[sampler.input].componentTypeSize;
 
-				sampler.inputTime.resize(range / sizeof(float));
-				memcpy(sampler.inputTime.data(), HelperAccess::accessData(glTF.accessors[sampler.input]), range);
+				sampler.inputTime.resize(size);
+				memcpy(sampler.inputTime.data(), HelperAccess::accessData(glTF.accessors[sampler.input]), byteSize);
 			}
 			else
 			{
@@ -868,16 +870,18 @@ bool HelperLoad::initAnimations(GLTF& glTF)
 
 			if (sampler.output >= 0)
 			{
-				uint32_t range = HelperAccess::getRange(glTF.accessors[sampler.output]);
+				uint32_t count = glTF.accessors[sampler.output].count;
+				uint32_t size = count * glTF.accessors[sampler.output].typeCount;
+				uint32_t byteSize = size * glTF.accessors[sampler.output].componentTypeSize;
 
 				if (glTF.accessors[sampler.output].componentType == 5126)
 				{
-					sampler.outputValues.resize(range / sizeof(float));
-					memcpy(sampler.outputValues.data(), HelperAccess::accessData(glTF.accessors[sampler.output]), range);
+					sampler.outputValues.resize(size);
+					memcpy(sampler.outputValues.data(), HelperAccess::accessData(glTF.accessors[sampler.output]), byteSize);
 				}
 				else if (glTF.accessors[sampler.output].componentType == 5123)
 				{
-					sampler.outputValues.resize(2 * range / sizeof(float));
+					sampler.outputValues.resize(size);
 					const uint16_t* data = reinterpret_cast<const uint16_t*>(HelperAccess::accessData(glTF.accessors[sampler.output]));
 					for (size_t m = 0; m < sampler.outputValues.size(); m++)
 					{
@@ -886,7 +890,7 @@ bool HelperLoad::initAnimations(GLTF& glTF)
 				}
 				else if (glTF.accessors[sampler.output].componentType == 5122)
 				{
-					sampler.outputValues.resize(2 * range / sizeof(float));
+					sampler.outputValues.resize(size);
 					const int16_t* data = reinterpret_cast<const int16_t*>(HelperAccess::accessData(glTF.accessors[sampler.output]));
 					for (size_t m = 0; m < sampler.outputValues.size(); m++)
 					{
@@ -895,7 +899,7 @@ bool HelperLoad::initAnimations(GLTF& glTF)
 				}
 				else if (glTF.accessors[sampler.output].componentType == 5121)
 				{
-					sampler.outputValues.resize(4 * range / sizeof(float));
+					sampler.outputValues.resize(size);
 					const uint8_t* data = reinterpret_cast<const uint8_t*>(HelperAccess::accessData(glTF.accessors[sampler.output]));
 					for (size_t m = 0; m < sampler.outputValues.size(); m++)
 					{
@@ -904,7 +908,7 @@ bool HelperLoad::initAnimations(GLTF& glTF)
 				}
 				else if (glTF.accessors[sampler.output].componentType == 5120)
 				{
-					sampler.outputValues.resize(4 * range / sizeof(float));
+					sampler.outputValues.resize(size);
 					const int8_t* data = reinterpret_cast<const int8_t*>(HelperAccess::accessData(glTF.accessors[sampler.output]));
 					for (size_t m = 0; m < sampler.outputValues.size(); m++)
 					{
