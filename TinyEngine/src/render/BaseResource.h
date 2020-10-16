@@ -1,5 +1,5 @@
-#ifndef RENDER_BASERENDER_H_
-#define RENDER_BASERENDER_H_
+#ifndef RENDER_BASERESOURCE_H_
+#define RENDER_BASERESOURCE_H_
 
 struct BaseResource {
 
@@ -8,4 +8,4 @@ struct BaseResource {
 
 };
 
-#endif /* RENDER_BASERENDER_H_ */
+#endif /* RENDER_BASERESOURCE_H_ */

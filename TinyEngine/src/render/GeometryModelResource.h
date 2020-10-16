@@ -1,10 +1,9 @@
-#ifndef RENDER_GEOMETRYMODELRENDER_H_
-#define RENDER_GEOMETRYMODELRENDER_H_
+#ifndef RENDER_GEOMETRYMODELRESOURCE_H_
+#define RENDER_GEOMETRYMODELRESOURCE_H_
 
 #include <cstdint>
 #include <string>
 #include <map>
-#include <vector>
 
 #include "../composite/Composite.h"
 
@@ -36,4 +35,4 @@ struct GeometryModelResource : BaseResource {
 
 };
 
-#endif /* RENDER_GEOMETRYMODELRENDER_H_ */
+#endif /* RENDER_GEOMETRYMODELRESOURCE_H_ */

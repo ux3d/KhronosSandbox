@@ -1,5 +1,5 @@
-#ifndef RENDER_MATERIALRENDER_H_
-#define RENDER_MATERIALRENDER_H_
+#ifndef RENDER_MATERIALRESOURCE_H_
+#define RENDER_MATERIALRESOURCE_H_
 
 #include <cstdint>
 #include <map>
@@ -41,4 +41,4 @@ struct MaterialResource : BaseResource {
 
 };
 
-#endif /* RENDER_MATERIALRENDER_H_ */
+#endif /* RENDER_MATERIALRESOURCE_H_ */

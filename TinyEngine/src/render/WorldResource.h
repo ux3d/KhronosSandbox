@@ -1,5 +1,5 @@
-#ifndef RENDER_WORLDRENDER_H_
-#define RENDER_WORLDRENDER_H_
+#ifndef RENDER_WORLDRESOURCE_H_
+#define RENDER_WORLDRESOURCE_H_
 
 #include <cstdint>
 #include <vector>
@@ -37,4 +37,4 @@ struct WorldResource : BaseResource {
 
 };
 
-#endif /* RENDER_WORLDRENDER_H_ */
+#endif /* RENDER_WORLDRESOURCE_H_ */

@@ -1,5 +1,5 @@
-#ifndef RENDER_GEOMETRYRENDER_H_
-#define RENDER_GEOMETRYRENDER_H_
+#ifndef RENDER_GEOMETRYRESOURCE_H_
+#define RENDER_GEOMETRYRESOURCE_H_
 
 #include <cstdint>
 #include <map>
@@ -23,4 +23,4 @@ struct GeometryResource : BaseResource {
 
 };
 
-#endif /* RENDER_GEOMETRYRENDER_H_ */
+#endif /* RENDER_GEOMETRYRESOURCE_H_ */

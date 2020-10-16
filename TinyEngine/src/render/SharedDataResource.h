@@ -1,5 +1,5 @@
-#ifndef RENDER_SHAREDDATARENDER_H_
-#define RENDER_SHAREDDATARENDER_H_
+#ifndef RENDER_SHAREDDATARESOURCE_H_
+#define RENDER_SHAREDDATARESOURCE_H_
 
 #include "../composite/Composite.h"
 
@@ -20,4 +20,4 @@ struct SharedDataResource : BaseResource {
 
 };
 
-#endif /* RENDER_SHAREDDATARENDER_H_ */
+#endif /* RENDER_SHAREDDATARESOURCE_H_ */

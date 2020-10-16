@@ -1,11 +1,10 @@
-#ifndef RENDER_INSTANCERENDER_H_
-#define RENDER_INSTANCERENDER_H_
+#ifndef RENDER_INSTANCERESOURCE_H_
+#define RENDER_INSTANCERESOURCE_H_
 
 #include <cstdint>
 
-#include "../math/Math.h"
-
 #include "../composite/Composite.h"
+#include "../math/Math.h"
 
 #include "BaseResource.h"
 
@@ -39,4 +38,4 @@ struct InstanceResource : BaseResource {
 
 };
 
-#endif /* RENDER_INSTANCERENDER_H_ */
+#endif /* RENDER_INSTANCERESOURCE_H_ */

@@ -1,7 +1,9 @@
-#ifndef RENDER_LIGHTRENDER_H_
-#define RENDER_LIGHTRENDER_H_
+#ifndef RENDER_LIGHTRESOURCE_H_
+#define RENDER_LIGHTRESOURCE_H_
 
 #include <string>
+
+#include "../composite/Composite.h"
 
 #include "BaseResource.h"
 
@@ -15,4 +17,4 @@ struct LightResource : BaseResource {
 
 };
 
-#endif /* RENDER_LIGHTRENDER_H_ */
+#endif /* RENDER_LIGHTRESOURCE_H_ */
