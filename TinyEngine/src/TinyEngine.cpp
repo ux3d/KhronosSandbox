@@ -839,6 +839,7 @@ bool TinyEngine::createImgui()
 	initInfo.DescriptorPool = imguiDescriptorPool;
 	initInfo.MinImageCount = 2;
 	initInfo.ImageCount = static_cast<uint32_t>(swapchainImageViews.size());
+	initInfo.MSAASamples = samples;
 	if (!ImGui_ImplVulkan_Init(&initInfo, renderPass))
 	{
 		return false;
