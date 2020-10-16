@@ -2182,11 +2182,11 @@ void RenderManager::draw(VkCommandBuffer commandBuffer, uint32_t frameIndex, Dra
 
 			if (materialResource->materialParameters.alphaMode == 2 && drawMode == OPAQUE)
 			{
-				return;
+				continue;
 			}
 			else if (materialResource->materialParameters.alphaMode != 2 && drawMode == TRANSPARENT)
 			{
-				return;
+				continue;
 			}
 
 			//
