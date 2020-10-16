@@ -391,6 +391,11 @@ bool WorldBuilder::buildMeshes()
 				}
 			}
 
+			if (!renderManager.geometrySetPrimitiveTopology(geometryHandle, primitive.mode))
+			{
+				return false;
+			}
+
 			//
 
 			if (!renderManager.geometryFinalize(geometryHandle))

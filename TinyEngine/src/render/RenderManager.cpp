@@ -761,6 +761,20 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 	return geometrySetAttribute(geometryHandle, sharedDataHandle, description, count, format, stride, offset, range);
 }
 
+bool RenderManager::geometrySetPrimitiveTopology(uint64_t geometryHandle, VkPrimitiveTopology primitiveTopology)
+{
+	GeometryResource* geometryResource = getGeometry(geometryHandle);
+
+	if (!geometryResource->created || geometryResource->finalized)
+	{
+		return false;
+	}
+
+	geometryResource->primitiveTopology = primitiveTopology;
+
+	return true;
+}
+
 bool RenderManager::geometryModelSetGeometry(uint64_t geometryModelHandle, uint64_t geometryHandle)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
@@ -1604,7 +1618,7 @@ bool RenderManager::instanceFinalize(uint64_t instanceHandle)
 
 		VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo = {};
 		pipelineInputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		pipelineInputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		pipelineInputAssemblyStateCreateInfo.topology = geometryResource->primitiveTopology;
 
 		//
 

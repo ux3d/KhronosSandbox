@@ -150,4 +150,6 @@ void main()
     out_view = inverse(mat3(in_upc.view)) * vec3(0.0, 0.0, 1.0);
 
     gl_Position = in_upc.projection * in_upc.view * position;
+
+    gl_PointSize = 1.0;
 }
