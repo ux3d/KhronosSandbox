@@ -1,5 +1,7 @@
 #include "RenderManager.h"
 
+#include <cstring>
+
 #include "../shader/Shader.h"
 
 void RenderManager::terminate(SharedDataResource& sharedDataResource, VkDevice device)
