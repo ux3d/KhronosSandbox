@@ -30,10 +30,10 @@ layout (location = COLOR_0_LOC) in vec4 in_color;
 layout (location = COLOR_0_LOC) in vec3 in_color;
 #endif
 #ifdef JOINTS_0_VEC4
-layout (location = JOINTS_0_LOC) in vec4 in_joints0;
+layout (location = JOINTS_0_LOC) in uvec4 in_joints0;
 #endif
 #ifdef JOINTS_1_VEC4
-layout (location = JOINTS_1_LOC) in vec4 in_joints1;
+layout (location = JOINTS_1_LOC) in uvec4 in_joints1;
 #endif
 #ifdef WEIGHTS_0_VEC4
 layout (location = WEIGHTS_0_LOC) in vec4 in_weights0;
