@@ -645,7 +645,7 @@ bool HelperLoad::initMeshes(GLTF& glTF)
 				}
 				else
 				{
-					// Not supported.
+					Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "Attribute '%s' not supported.", attribute.first.c_str());
 
 					return false;
 				}
@@ -1076,6 +1076,13 @@ bool HelperLoad::open(GLTF& glTF, const std::string& filename)
 
 	if (!status)
 	{
+		return false;
+	}
+
+	if (model.extensionsUsed.size() > 0)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "No glTF extensions supported.");
+
 		return false;
 	}
 
