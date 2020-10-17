@@ -32,12 +32,16 @@ bool Application::applicationInit()
 	//
 
 	float stop = 0.0f;
-	if (!HelperAnimate::gatherStop(stop, glTF, 0))
+	if (HelperAnimate::gatherStop(stop, glTF, 0))
 	{
-		Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "glTF has no animation");
+		animationController.setStopTime(stop);
+		animationController.setPlay(true);
 	}
-	animationController.setStopTime(stop);
-	animationController.setPlay(true);
+	else
+	{
+		animationController.setPlay(false);
+		animate = false;
+	}
 
 	return true;
 }
@@ -60,7 +64,12 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	focused = ImGui::IsWindowFocused();
 
-	ImGui::Checkbox("Animate", &animate);
+	if (animationController.isPlay())
+	{
+		ImGui::Checkbox("Animate", &animate);
+		ImGui::Separator();
+	}
+	ImGui::SliderFloat("World Scale", &worldScale, 0.1f, 10.0f, "ratio = %.1f");
 	ImGui::Separator();
 	ImGui::SliderFloat("Zoom Speed", &zoomSpeed, 0.01f, 0.1f, "ratio = %.2f");
 	ImGui::End();
@@ -73,8 +82,8 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	{
 		animationController.updateCurrentTime(deltaTime);
 		HelperAnimate::update(glTF, 0, animationController.getCurrentTime());
-		HelperUpdate::update(glTF, glm::mat4(1.0f));
 	}
+	HelperUpdate::update(glTF, glm::scale(glm::vec3(worldScale)));
 
 	//
 

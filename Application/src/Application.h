@@ -26,6 +26,7 @@ private:
 	bool focused = false;
 
 	bool animate = true;
+	float worldScale = 1.0f;
 
 	virtual bool applicationInit();
 	virtual bool applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime);
