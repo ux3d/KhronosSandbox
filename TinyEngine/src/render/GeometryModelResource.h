@@ -35,6 +35,7 @@ struct GeometryModelResource : BaseResource {
 
 	uint64_t indexHandle = 0;
 
+	uint32_t mode = 4;
 	VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
 };

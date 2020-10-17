@@ -761,20 +761,6 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 	return geometrySetAttribute(geometryHandle, sharedDataHandle, description, count, format, stride, offset, range);
 }
 
-bool RenderManager::geometrySetPrimitiveTopology(uint64_t geometryHandle, uint32_t mode)
-{
-	GeometryResource* geometryResource = getGeometry(geometryHandle);
-
-	if (!geometryResource->created || geometryResource->finalized)
-	{
-		return false;
-	}
-
-	geometryResource->mode = mode;
-
-	return true;
-}
-
 bool RenderManager::geometryModelSetGeometry(uint64_t geometryModelHandle, uint64_t geometryHandle)
 {
 	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
@@ -794,6 +780,20 @@ bool RenderManager::geometryModelSetGeometry(uint64_t geometryModelHandle, uint6
 	geometryModelResource->geometryHandle = geometryHandle;
 
 	geometryModelResource->macros.insert(geometryResource->macros.begin(), geometryResource->macros.end());
+
+	return true;
+}
+
+bool RenderManager::geometryModelSetPrimitiveTopology(uint64_t geometryModelHandle, uint32_t mode)
+{
+	GeometryModelResource* geometryModelResource = getGeometryModel(geometryModelHandle);
+
+	if (!geometryModelResource->created || geometryModelResource->finalized)
+	{
+		return false;
+	}
+
+	geometryModelResource->mode = mode;
 
 	return true;
 }
@@ -1235,11 +1235,9 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		return false;
 	}
 
-	GeometryResource* geometryResource = getGeometry(geometryModelResource->geometryHandle);
-
 	bool convert = false;
 
-	switch (geometryResource->mode)
+	switch (geometryModelResource->mode)
 	{
 		case 0:
 			geometryModelResource->topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;

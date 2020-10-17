@@ -21,8 +21,6 @@ struct GeometryResource : BaseResource {
 	std::vector<VkDeviceSize> vertexBuffersOffsets;
 	std::vector<VkDeviceSize> vertexBuffersRanges;
 
-	uint32_t mode = 4;
-
 };
 
 #endif /* RENDER_GEOMETRYRESOURCE_H_ */
