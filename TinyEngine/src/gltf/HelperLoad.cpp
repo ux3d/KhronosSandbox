@@ -356,6 +356,8 @@ bool HelperLoad::initAccessors(GLTF& glTF)
 			accessor.componentType = 5123;
 			accessor.componentTypeSize = 2;
 			accessor.byteOffset = 0;
+
+			Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "Converted unsigned 8 bit index buffer to unsigned 16 bit.");
 		}
 	}
 
