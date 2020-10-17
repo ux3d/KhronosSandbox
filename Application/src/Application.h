@@ -20,6 +20,8 @@ private:
 	float eyeObjectDistance = 5.0f;
 	float rotY = 0.0f;
 	float rotX = 0.0f;
+	float posX = 0.0f;
+	float posY = 0.0f;
 
 	float zoomSpeed = 0.05f;
 
@@ -38,6 +40,9 @@ public:
 
 	void orbitY(float orbit);
 	void orbitX(float orbit);
+
+	void panX(float deltaX);
+	void panY(float deltaY);
 
 	void zoom(float zoom);
 

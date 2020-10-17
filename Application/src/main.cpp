@@ -89,6 +89,7 @@ int main(int argc, char **argv)
 	}
 
 	bool mouseLeftPressed = false;
+	bool mouseMiddlePressed = false;
 	bool mouseRightPressed = false;
 	double xposLast = 0.0;
 	double yposLast = 0.0;
@@ -121,6 +122,32 @@ int main(int argc, char **argv)
 			else if (mouseLeftPressed && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
 			{
 				mouseLeftPressed = false;
+			}
+
+			// Panning
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS)
+			{
+				double xpos;
+				double ypos;
+
+				glfwGetCursorPos(window, &xpos, &ypos);
+				if (!mouseMiddlePressed)
+				{
+					mouseMiddlePressed = true;
+
+					xposLast = xpos;
+					yposLast = ypos;
+				}
+
+				application.panX(static_cast<float>(xpos - xposLast));
+				application.panY(static_cast<float>(ypos - yposLast));
+
+				xposLast = xpos;
+				yposLast = ypos;
+			}
+			else if (mouseLeftPressed && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_RELEASE)
+			{
+				mouseMiddlePressed = false;
 			}
 
 			// Zoom

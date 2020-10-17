@@ -147,8 +147,9 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	glm::mat3 orbitMatrix = glm::rotate(rotY, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(rotX, glm::vec3(1.0f, 0.0f, 0.0f));
 	glm::vec3 orbitEye = orbitMatrix * glm::vec3(0.0f, 0.0f, eyeObjectDistance);
+	glm::vec3 orbitCenter = orbitMatrix * glm::vec3(0.0f, 0.0f, 0.0f);
 
-	glm::mat4 viewMatrix = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 viewMatrix = glm::translate(glm::vec3(posX, posY, 0.0f)) * glm::lookAt(orbitEye, orbitCenter, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	renderManager.cameraUpdateProjectionMatrix(cameraHandle, projectionMatrix);
 	renderManager.cameraUpdateViewMatrix(cameraHandle, viewMatrix);
@@ -198,6 +199,22 @@ void Application::orbitX(float orbit)
 
 		// Not more than 90 degrees
 		rotX = glm::clamp(rotX, -glm::pi<float>() * 0.49f, glm::pi<float>() * 0.49f);
+	}
+}
+
+void Application::panX(float deltaX)
+{
+	if (!focused)
+	{
+		posX += deltaX * 0.05f;
+	}
+}
+
+void Application::panY(float deltaY)
+{
+	if (!focused)
+	{
+		posY -= deltaY * 0.05f;
 	}
 }
 
