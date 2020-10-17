@@ -883,6 +883,8 @@ bool RenderManager::geometryModelSetIndices(uint64_t geometryModelHandle, uint64
 	geometryModelResource->indexOffset = indexOffset;
 	geometryModelResource->indexRange = indexRange;
 
+	geometryModelResource->indexHandle = sharedDataHandle;
+
 	return true;
 }
 
@@ -1233,6 +1235,104 @@ bool RenderManager::geometryModelFinalize(uint64_t geometryModelHandle)
 		return false;
 	}
 
+	GeometryResource* geometryResource = getGeometry(geometryModelResource->geometryHandle);
+
+	bool convert = false;
+
+	switch (geometryResource->mode)
+	{
+		case 0:
+			geometryModelResource->topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+			break;
+		case 1:
+			geometryModelResource->topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+			break;
+		case 2:
+			geometryModelResource->topology = VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+			convert = true;
+			break;
+		case 3:
+			geometryModelResource->topology = VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+			break;
+		case 4:
+			geometryModelResource->topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+			break;
+		case 5:
+			geometryModelResource->topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+			break;
+		case 6:
+			geometryModelResource->topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
+			break;
+		default:
+			return false;
+	}
+
+	if (convert)
+	{
+		std::vector<uint32_t> newIndices;
+
+		if (geometryModelResource->indexType == VK_INDEX_TYPE_NONE_KHR)
+		{
+			for (uint32_t i = 0; i < geometryModelResource->verticesCount; i++)
+			{
+				newIndices.push_back(i);
+			}
+			newIndices.push_back(0);
+		}
+		else
+		{
+			SharedDataResource* sharedDataResource = getSharedData(geometryModelResource->indexHandle);
+			if (geometryModelResource->indexType == VK_INDEX_TYPE_UINT16)
+			{
+				const uint16_t* shortData = reinterpret_cast<const uint16_t*>(sharedDataResource->vertexBufferResourceCreateInfo.data);
+
+				for (uint32_t i = 0; i < geometryModelResource->indicesCount; i++)
+				{
+					newIndices.push_back(static_cast<uint32_t>(shortData[i]));
+				}
+
+				newIndices.push_back(newIndices[0]);
+			}
+			else if (geometryModelResource->indexType == VK_INDEX_TYPE_UINT32)
+			{
+				const uint32_t* integerData = reinterpret_cast<const uint32_t*>(sharedDataResource->vertexBufferResourceCreateInfo.data);
+
+				for (uint32_t i = 0; i < geometryModelResource->indicesCount; i++)
+				{
+					newIndices.push_back(integerData[i]);
+				}
+
+				newIndices.push_back(newIndices[0]);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		uint64_t sharedDataHandle;
+		if (!sharedDataCreate(sharedDataHandle))
+		{
+			return false;
+		}
+
+		if (!sharedDataCreateIndexBuffer(sharedDataHandle, newIndices.size() * sizeof(uint32_t), newIndices.data()))
+		{
+			return false;
+		}
+
+		if (!sharedDataFinalize(sharedDataHandle))
+		{
+			return false;
+		}
+
+		geometryModelResource->indicesCount = static_cast<uint32_t>(newIndices.size());
+		geometryModelResource->indexType = VK_INDEX_TYPE_UINT32;
+		geometryModelResource->indexBuffer = getBuffer(sharedDataHandle);
+		geometryModelResource->indexOffset = 0;
+		geometryModelResource->indexRange = newIndices.size() * sizeof(uint32_t);
+	}
+
 	geometryModelResource->finalized = true;
 
 	return true;
@@ -1274,37 +1374,6 @@ bool RenderManager::instanceFinalize(uint64_t instanceHandle)
 		//
 
 		GeometryResource* geometryResource = getGeometry(geometryModelResource->geometryHandle);
-
-		VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-
-		switch (geometryResource->mode)
-		{
-			case 0:
-				topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
-				break;
-			case 1:
-				topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
-				break;
-			case 2:
-				Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "'LINE_LOOP' not supported.");
-				return false;
-				break;
-			case 3:
-				topology = VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
-				break;
-			case 4:
-				topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-				break;
-			case 5:
-				topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
-				break;
-			case 6:
-				topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
-				break;
-			default:
-				return false;
-		}
-
 
 		//
 
@@ -1682,7 +1751,7 @@ bool RenderManager::instanceFinalize(uint64_t instanceHandle)
 
 		VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo = {};
 		pipelineInputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		pipelineInputAssemblyStateCreateInfo.topology = topology;
+		pipelineInputAssemblyStateCreateInfo.topology = geometryModelResource->topology;
 
 		//
 

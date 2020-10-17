@@ -33,6 +33,10 @@ struct GeometryModelResource : BaseResource {
 	uint64_t targetNormalHandle = 0;
 	uint64_t targetTangentHandle = 0;
 
+	uint64_t indexHandle = 0;
+
+	VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
 };
 
 #endif /* RENDER_GEOMETRYMODELRESOURCE_H_ */
