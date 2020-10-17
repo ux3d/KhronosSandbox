@@ -27,14 +27,7 @@ bool WorldBuilder::buildAccessors()
 	{
 		const Accessor& accessor = glTF.accessors[i];
 
-		if (accessor.aliasedBuffer.byteLength > 0)
-		{
-			if (!createSharedDataResource(accessor.aliasedBufferView))
-			{
-				return false;
-			}
-		}
-		else if (accessor.sparse.count >= 1)
+		if (accessor.sparse.count >= 1)
 		{
 			if (!createSharedDataResource(accessor.sparse.bufferView))
 			{
@@ -791,11 +784,6 @@ bool WorldBuilder::build()
 
 uint64_t WorldBuilder::getBufferHandle(const Accessor& accessor)
 {
-	if (accessor.aliasedBuffer.byteLength > 0)
-	{
-		return bufferViewToHandle[&accessor.aliasedBufferView];
-	}
-
 	if (accessor.sparse.count >= 1)
 	{
 		return bufferViewToHandle[&accessor.sparse.bufferView];

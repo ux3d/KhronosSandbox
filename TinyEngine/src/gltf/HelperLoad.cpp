@@ -76,8 +76,8 @@ static bool ReadWholeFile(std::vector<unsigned char> *out, std::string *err, con
 	return true;
 }
 
-HelperLoad::HelperLoad(bool convertIndexBuffer) :
-		convertIndexBuffer(convertIndexBuffer), model()
+HelperLoad::HelperLoad() :
+	model()
 {
 }
 
@@ -130,22 +130,6 @@ bool HelperLoad::initBufferViews(GLTF& glTF)
 
 bool HelperLoad::initAccessors(GLTF& glTF)
 {
-	// Gather, which accessors are used for indices in primitives.
-	std::vector<int32_t> indicesAccessors;
-
-	for (size_t i = 0; i < model.meshes.size(); i++)
-	{
-		for (size_t k = 0; k < model.meshes[i].primitives.size(); k++)
-		{
-			if (model.meshes[i].primitives[k].indices >= 0)
-			{
-				indicesAccessors.push_back(model.meshes[i].primitives[k].indices);
-			}
-		}
-	}
-
-	//
-
 	glTF.accessors.resize(model.accessors.size());
 
 	for (size_t i = 0; i < glTF.accessors.size(); i++)
@@ -330,34 +314,6 @@ bool HelperLoad::initAccessors(GLTF& glTF)
 
 				memcpy(&accessor.sparse.buffer.binary.data()[offsetBinary], &values[offsetValues], accessor.componentTypeSize * accessor.typeCount);
 			}
-		}
-
-		//
-
-		if (convertIndexBuffer && accessor.componentTypeSize == 1 && std::find(indicesAccessors.begin(), indicesAccessors.end(), static_cast<int32_t>(i)) != indicesAccessors.end())
-		{
-			const uint8_t* data = reinterpret_cast<const uint8_t*>(HelperAccess::accessData(accessor));
-
-			accessor.aliasedBuffer.byteLength = static_cast<uint32_t>(sizeof(uint16_t) * accessor.count);
-			accessor.aliasedBuffer.binary.resize(accessor.aliasedBuffer.byteLength);
-
-			accessor.aliasedBufferView.byteOffset = 0;
-			accessor.aliasedBufferView.byteLength = accessor.aliasedBuffer.byteLength;
-			accessor.aliasedBufferView.target = 34963;
-			accessor.aliasedBufferView.byteStride = 0;
-			accessor.aliasedBufferView.pBuffer = &accessor.aliasedBuffer;
-
-			for (uint32_t k = 0; k < accessor.count; k++)
-			{
-				uint16_t newData = static_cast<uint16_t>(data[k]);
-				memcpy(&accessor.aliasedBuffer.binary.data()[k * 2], &newData, sizeof(uint16_t));
-			}
-
-			accessor.componentType = 5123;
-			accessor.componentTypeSize = 2;
-			accessor.byteOffset = 0;
-
-			Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "Converted unsigned 8 bit index buffer to unsigned 16 bit.");
 		}
 	}
 

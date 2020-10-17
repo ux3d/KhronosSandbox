@@ -10,7 +10,7 @@ bool Application::applicationInit()
 	renderManager.renderSetDimension(width, height);
 	renderManager.renderSetFrames(swapchainImages.size());
 
-	HelperLoad helperLoad(true);
+	HelperLoad helperLoad;
 	if(!helperLoad.open(glTF, filename))
 	{
 		return false;

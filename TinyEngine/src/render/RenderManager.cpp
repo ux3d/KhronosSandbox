@@ -844,6 +844,39 @@ bool RenderManager::geometryModelSetIndices(uint64_t geometryModelHandle, uint64
 		return false;
 	}
 
+	if (indexType == VK_INDEX_TYPE_UINT8_EXT)
+	{
+		SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
+		const uint8_t* byteData = reinterpret_cast<const uint8_t*>(sharedDataResource->vertexBufferResourceCreateInfo.data);
+
+		std::vector<uint16_t> newIndices(indicesCount);
+		for (size_t i = 0; i < newIndices.size(); i++)
+		{
+			newIndices[i] = static_cast<uint16_t>(byteData[i]);
+		}
+
+		//
+
+		indexType = VK_INDEX_TYPE_UINT16;
+		indexOffset = 0;
+		indexRange = 2 * indexRange;
+
+		if (!sharedDataCreate(sharedDataHandle))
+		{
+			return false;
+		}
+
+		if (!sharedDataCreateIndexBuffer(sharedDataHandle, newIndices.size() * sizeof(uint16_t), newIndices.data()))
+		{
+			return false;
+		}
+
+		if (!sharedDataFinalize(sharedDataHandle))
+		{
+			return false;
+		}
+	}
+
 	geometryModelResource->indicesCount = indicesCount;
 	geometryModelResource->indexType = indexType;
 	geometryModelResource->indexBuffer = getBuffer(sharedDataHandle);

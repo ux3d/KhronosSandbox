@@ -10,7 +10,7 @@ bool Application::applicationInit()
 	renderManager.renderSetDimension(width, height);
 	renderManager.renderSetFrames(swapchainImages.size());
 
-	HelperLoad helperLoad(true);
+	HelperLoad helperLoad;
 	if(!helperLoad.open(glTF, filename))
 	{
 		return false;
@@ -34,7 +34,7 @@ bool Application::applicationInit()
 	float stop = 0.0f;
 	if (!HelperAnimate::gatherStop(stop, glTF, 0))
 	{
-		Logger::print(TinyEngine_WARNING, __FILE__, __LINE__, "glTF has no animation");
+		Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "glTF has no animation");
 	}
 	animationController.setStopTime(stop);
 	animationController.setPlay(true);

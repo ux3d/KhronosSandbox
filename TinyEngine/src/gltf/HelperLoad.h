@@ -20,8 +20,6 @@ class HelperLoad {
 
 private:
 
-	bool convertIndexBuffer = false;
-
 	tinygltf::Model model;
 
 	bool initBuffers(GLTF& glTF);
@@ -50,7 +48,7 @@ private:
 
 public:
 
-	HelperLoad(bool convertIndexBuffer);
+	HelperLoad();
 
 	bool open(GLTF& glTF, const std::string& filename);
 
