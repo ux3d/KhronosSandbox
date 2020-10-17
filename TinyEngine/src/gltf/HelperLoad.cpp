@@ -616,33 +616,7 @@ bool HelperLoad::initMeshes(GLTF& glTF)
 
 			if (model.meshes[i].primitives[k].mode >= 0)
 			{
-				switch (model.meshes[i].primitives[k].mode)
-				{
-					case 0:
-						primitive.mode = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
-						break;
-					case 1:
-						primitive.mode = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
-						break;
-					case 2:
-						Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "'LINE_LOOP' not supported.");
-						return false;
-						break;
-					case 3:
-						primitive.mode = VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
-						break;
-					case 4:
-						primitive.mode = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-						break;
-					case 5:
-						primitive.mode = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
-						break;
-					case 6:
-						primitive.mode = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
-						break;
-					default:
-						return false;
-				}
+				primitive.mode = static_cast<uint32_t>(model.meshes[i].primitives[k].mode);
 			}
 
 			//

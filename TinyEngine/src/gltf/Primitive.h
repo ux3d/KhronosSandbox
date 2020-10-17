@@ -28,7 +28,7 @@ struct Primitive {
 
 	int32_t material = -1;
 
-	VkPrimitiveTopology mode = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	uint32_t mode = 4;
 
 	std::vector<Target> targets;
 

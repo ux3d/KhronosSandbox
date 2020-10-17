@@ -21,7 +21,7 @@ struct GeometryResource : BaseResource {
 	std::vector<VkDeviceSize> vertexBuffersOffsets;
 	std::vector<VkDeviceSize> vertexBuffersRanges;
 
-	VkPrimitiveTopology primitiveTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	uint32_t mode = 4;
 
 };
 

@@ -761,7 +761,7 @@ bool RenderManager::geometrySetAttribute(uint64_t geometryHandle, uint64_t share
 	return geometrySetAttribute(geometryHandle, sharedDataHandle, description, count, format, stride, offset, range);
 }
 
-bool RenderManager::geometrySetPrimitiveTopology(uint64_t geometryHandle, VkPrimitiveTopology primitiveTopology)
+bool RenderManager::geometrySetPrimitiveTopology(uint64_t geometryHandle, uint32_t mode)
 {
 	GeometryResource* geometryResource = getGeometry(geometryHandle);
 
@@ -770,7 +770,7 @@ bool RenderManager::geometrySetPrimitiveTopology(uint64_t geometryHandle, VkPrim
 		return false;
 	}
 
-	geometryResource->primitiveTopology = primitiveTopology;
+	geometryResource->mode = mode;
 
 	return true;
 }
@@ -1275,6 +1275,37 @@ bool RenderManager::instanceFinalize(uint64_t instanceHandle)
 
 		GeometryResource* geometryResource = getGeometry(geometryModelResource->geometryHandle);
 
+		VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+		switch (geometryResource->mode)
+		{
+			case 0:
+				topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+				break;
+			case 1:
+				topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+				break;
+			case 2:
+				Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "'LINE_LOOP' not supported.");
+				return false;
+				break;
+			case 3:
+				topology = VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+				break;
+			case 4:
+				topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+				break;
+			case 5:
+				topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+				break;
+			case 6:
+				topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
+				break;
+			default:
+				return false;
+		}
+
+
 		//
 
 		uint32_t binding = 0;
@@ -1651,7 +1682,7 @@ bool RenderManager::instanceFinalize(uint64_t instanceHandle)
 
 		VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo = {};
 		pipelineInputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		pipelineInputAssemblyStateCreateInfo.topology = geometryResource->primitiveTopology;
+		pipelineInputAssemblyStateCreateInfo.topology = topology;
 
 		//
 
