@@ -180,6 +180,21 @@ bool WorldBuilder::buildMaterials()
 		materialHandles.push_back(materialHandle);
 	}
 
+	// Default material
+
+	uint64_t materialHandle;
+	if (!renderManager.materialCreate(materialHandle))
+	{
+		return false;
+	}
+
+	if (!renderManager.materialFinalize(materialHandle))
+	{
+		return false;
+	}
+
+	materialHandles.push_back(materialHandle);
+
 	return true;
 }
 
@@ -417,9 +432,19 @@ bool WorldBuilder::buildMeshes()
 				return false;
 			}
 
-			if (!renderManager.geometryModelSetMaterial(geometryModelHandle, materialHandles[primitive.material]))
+			if (primitive.material >= 0)
 			{
-				return false;
+				if (!renderManager.geometryModelSetMaterial(geometryModelHandle, materialHandles[primitive.material]))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				if (!renderManager.geometryModelSetMaterial(geometryModelHandle, materialHandles[materialHandles.size()- 1]))
+				{
+					return false;
+				}
 			}
 
 			//
