@@ -62,7 +62,7 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 	{
 		glm::vec3 value(x[0], x[1], x[2]);
 
-		if (t > 0.0f)
+		if (stopIndex != -1)
 		{
 			if (sampler.interpolation == CUBICSPLINE)
 			{
@@ -91,7 +91,7 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 	{
 		glm::quat value(x[3], x[0], x[1], x[2]);
 
-		if (t > 0.0f)
+		if (stopIndex != -1)
 		{
 			if (sampler.interpolation == CUBICSPLINE)
 			{
@@ -115,7 +115,7 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 		{
 			float value = x[i];
 
-			if (t > 0.0f)
+			if (stopIndex != -1)
 			{
 				if (sampler.interpolation == CUBICSPLINE)
 				{
