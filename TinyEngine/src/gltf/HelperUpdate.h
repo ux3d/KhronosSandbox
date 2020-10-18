@@ -10,10 +10,6 @@ struct GLTF;
 class HelperUpdate {
 public:
 
-	static bool update(Primitive& primitive, GLTF& glTF, const glm::mat4& parentWorldMatrix);
-
-	static bool update(Mesh& mesh, GLTF& glTF, const glm::mat4& parentWorldMatrix);
-
 	static bool update(Node& node, GLTF& glTF, const glm::mat4& parentWorldMatrix);
 
 	static bool update(Scene& scene, GLTF& glTF, const glm::mat4& parentWorldMatrix);

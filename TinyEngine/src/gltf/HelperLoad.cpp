@@ -697,6 +697,45 @@ bool HelperLoad::initMeshes(GLTF& glTF)
 	return true;
 }
 
+bool HelperLoad::initSkins(GLTF& glTF)
+{
+	glTF.skins.resize(model.skins.size());
+
+	for (size_t i = 0; i < glTF.skins.size(); i++)
+	{
+		Skin& skin = glTF.skins[i];
+
+		if (model.skins[i].inverseBindMatrices >= 0)
+		{
+			const glm::mat4* inverseBindMatrices = reinterpret_cast<const glm::mat4*>(HelperAccess::accessData(glTF.accessors[model.skins[i].inverseBindMatrices]));
+
+			for (size_t k = 0; k < model.skins[i].joints.size(); k++)
+			{
+				skin.inverseBindMatrices.push_back(inverseBindMatrices[k]);
+			}
+		}
+		else
+		{
+			for (size_t k = 0; k < model.skins[i].joints.size(); k++)
+			{
+				skin.inverseBindMatrices.push_back(glm::mat4(1.0f));
+			}
+		}
+
+		if (model.skins[i].skeleton >= 0)
+		{
+			skin.skeleton = model.skins[i].skeleton;
+		}
+
+		for (size_t k = 0; k < model.skins[i].joints.size(); k++)
+		{
+			skin.joints.push_back(model.skins[i].joints[k]);
+		}
+	}
+
+	return true;
+}
+
 bool HelperLoad::initNodes(GLTF& glTF)
 {
 	glTF.nodes.resize(model.nodes.size());
@@ -758,50 +797,13 @@ bool HelperLoad::initNodes(GLTF& glTF)
 		if (model.nodes[i].skin >= 0)
 		{
 			node.skin = model.nodes[i].skin;
+
+			node.jointMatrices.resize(glTF.skins[node.skin].inverseBindMatrices.size());
 		}
 
 		for (size_t k = 0; k < model.nodes[i].children.size(); k++)
 		{
 			node.children.push_back(model.nodes[i].children[k]);
-		}
-	}
-
-	return true;
-}
-
-bool HelperLoad::initSkins(GLTF& glTF)
-{
-	glTF.skins.resize(model.skins.size());
-
-	for (size_t i = 0; i < glTF.skins.size(); i++)
-	{
-		Skin& skin = glTF.skins[i];
-
-		if (model.skins[i].inverseBindMatrices >= 0)
-		{
-			const glm::mat4* inverseBindMatrices = reinterpret_cast<const glm::mat4*>(HelperAccess::accessData(glTF.accessors[model.skins[i].inverseBindMatrices]));
-
-			for (size_t k = 0; k < model.skins[i].joints.size(); k++)
-			{
-				skin.inverseBindMatrices.push_back(inverseBindMatrices[k]);
-			}
-		}
-		else
-		{
-			for (size_t k = 0; k < model.skins[i].joints.size(); k++)
-			{
-				skin.inverseBindMatrices.push_back(glm::mat4(1.0f));
-			}
-		}
-
-		if (model.skins[i].skeleton >= 0)
-		{
-			skin.skeleton = model.skins[i].skeleton;
-		}
-
-		for (size_t k = 0; k < model.skins[i].joints.size(); k++)
-		{
-			skin.joints.push_back(model.skins[i].joints[k]);
 		}
 	}
 
@@ -1086,16 +1088,16 @@ bool HelperLoad::open(GLTF& glTF, const std::string& filename)
 		return false;
 	}
 
-	// Nodes
+	// Skins
 
-	if (!initNodes(glTF))
+	if (!initSkins(glTF))
 	{
 		return false;
 	}
 
-	// Skins
+	// Nodes
 
-	if (!initSkins(glTF))
+	if (!initNodes(glTF))
 	{
 		return false;
 	}

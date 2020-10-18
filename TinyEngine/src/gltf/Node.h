@@ -23,6 +23,8 @@ struct Node {
 	// Generic helper
 
 	glm::mat4 worldMatrix;
+
+	std::vector<glm::mat4> jointMatrices;
 };
 
 #endif /* GLTF_NODE_H_ */

@@ -38,9 +38,9 @@ private:
 
 	bool initMeshes(GLTF& glTF);
 
-	bool initNodes(GLTF& glTF);
-
 	bool initSkins(GLTF& glTF);
+
+	bool initNodes(GLTF& glTF);
 
 	bool initAnimations(GLTF& glTF);
 
