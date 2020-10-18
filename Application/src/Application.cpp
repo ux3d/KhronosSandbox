@@ -97,6 +97,10 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 		{
 			renderManager.instanceUpdateWeights(nodeToHandles[&node], node.weights, frameIndex);
 		}
+		if (node.jointMatrices.size() > 0 && node.mesh >= 0)
+		{
+			renderManager.instanceUpdateJointMatrices(nodeToHandles[&node], node.jointMatrices, frameIndex);
+		}
 	}
 
 	//

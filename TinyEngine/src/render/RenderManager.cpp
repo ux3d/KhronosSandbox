@@ -1025,6 +1025,29 @@ bool RenderManager::instanceSetWeights(uint64_t instanceHandle, uint64_t sharedD
 	return true;
 }
 
+bool RenderManager::instanceSetJointMatrices(uint64_t instanceHandle, uint64_t sharedDataHandle, uint32_t jointMatricesCount)
+{
+	InstanceResource* instanceResource = getInstance(instanceHandle);
+
+	if (!instanceResource->created || instanceResource->finalized)
+	{
+		return false;
+	}
+
+	SharedDataResource* sharedDataResource = getSharedData(sharedDataHandle);
+
+	if (!sharedDataResource->finalized)
+	{
+		return false;
+	}
+
+	instanceResource->jointMatricesHandle = sharedDataHandle;
+	instanceResource->jointMatricesCount = jointMatricesCount;
+
+	return true;
+}
+
+
 
 bool RenderManager::lightSetEnvironment(uint64_t lightHandle, const std::string& environment)
 {
@@ -1494,6 +1517,49 @@ bool RenderManager::instanceFinalize(uint64_t instanceHandle)
 			for (uint32_t i = 0; i < frames; i++)
 			{
 				instanceResource->instanceContainers[geometryModelIndex].dynamicOffsets[i] = i * size + geometryModelIndex * groupResource->geometryModelHandles.size() * size;
+			}
+		}
+
+		// Skinning
+
+		if (instanceResource->jointMatricesHandle != 0)
+		{
+			VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding = {};
+			descriptorSetLayoutBinding.binding = binding;
+			descriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+			descriptorSetLayoutBinding.descriptorCount = 1;
+			descriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
+
+			VkDescriptorBufferInfo descriptorBufferInfo = {};
+			descriptorBufferInfo.buffer = getSharedData(instanceResource->jointMatricesHandle)->uniformBufferResource.bufferResource.buffer;
+			descriptorBufferInfo.offset = 0;
+			descriptorBufferInfo.range = sizeof(glm::mat4) * instanceResource->jointMatricesCount;
+			descriptorBufferInfos.push_back(descriptorBufferInfo);
+
+			geometryModelResource->macros["JOINT_MATRICES_BINDING"] = std::to_string(binding);
+			geometryModelResource->macros["JOINT_MATRICES_COUNT"] = std::to_string(instanceResource->jointMatricesCount);
+
+			geometryModelResource->macros["HAS_JOINTS"] = "";
+
+			binding++;
+
+			//
+
+			std::vector<uint32_t> dynamicOffsets = instanceResource->instanceContainers[geometryModelIndex].dynamicOffsets;
+			instanceResource->instanceContainers[geometryModelIndex].dynamicOffsets.clear();
+
+			VkDeviceSize size = getSharedData(instanceResource->jointMatricesHandle)->size / frames;
+
+			for (uint32_t i = 0; i < frames; i++)
+			{
+				if (dynamicOffsets.size() > 0)
+				{
+					instanceResource->instanceContainers[geometryModelIndex].dynamicOffsets.push_back(dynamicOffsets[i]);
+				}
+
+				instanceResource->instanceContainers[geometryModelIndex].dynamicOffsets.push_back(i * size);
 			}
 		}
 
@@ -2040,6 +2106,20 @@ bool RenderManager::worldGetCamera(uint64_t& cameraHandle)
 	return false;
 }
 
+bool RenderManager::instanceUpdateWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix)
+{
+	InstanceResource* instanceResource = getInstance(instanceHandle);
+
+	if (!instanceResource->created || !instanceResource->finalized)
+	{
+		return false;
+	}
+
+	instanceResource->worldMatrix = worldMatrix;
+
+	return true;
+}
+
 bool RenderManager::instanceUpdateWeights(uint64_t instanceHandle, const std::vector<float>& weights, uint32_t frameIndex)
 {
 	InstanceResource* instanceResource = getInstance(instanceHandle);
@@ -2061,7 +2141,7 @@ bool RenderManager::instanceUpdateWeights(uint64_t instanceHandle, const std::ve
 	return true;
 }
 
-bool RenderManager::instanceUpdateWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix)
+bool RenderManager::instanceUpdateJointMatrices(uint64_t instanceHandle, const std::vector<glm::mat4>& jointMatrices, uint32_t frameIndex)
 {
 	InstanceResource* instanceResource = getInstance(instanceHandle);
 
@@ -2070,7 +2150,14 @@ bool RenderManager::instanceUpdateWorldMatrix(uint64_t instanceHandle, const glm
 		return false;
 	}
 
-	instanceResource->worldMatrix = worldMatrix;
+	SharedDataResource* sharedDataResource = getSharedData(instanceResource->jointMatricesHandle);
+
+	VkDeviceSize offset = sharedDataResource->size / frames * frameIndex;
+
+	if (!VulkanResource::copyHostToDevice(device, sharedDataResource->uniformBufferResource.bufferResource, jointMatrices.data(), jointMatrices.size() * sizeof(glm::mat4), offset))
+	{
+		return false;
+	}
 
 	return true;
 }

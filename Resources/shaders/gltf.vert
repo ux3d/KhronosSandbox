@@ -86,11 +86,58 @@ layout (binding = WEIGHTS_BINDING) uniform Weights {
 } u_weights;
 #endif
 
+#ifdef HAS_JOINTS
+layout (binding = JOINT_MATRICES_BINDING) uniform JointMatrices { 
+    mat4 i[JOINT_MATRICES_COUNT];
+} u_jointMatrices;
+#endif
+
 layout (location = 8) flat out float out_determinant;
+
+#ifdef HAS_JOINTS
+mat4 getJointMatrix()
+{
+    mat4 jointMatrix = mat4(0.0);
+
+    #ifdef JOINTS_0_VEC4
+    #ifdef WEIGHTS_0_VEC4
+    jointMatrix +=
+        in_weights0.x * u_jointMatrices.i[in_joints0.x] +
+        in_weights0.y * u_jointMatrices.i[in_joints0.y] +
+        in_weights0.z * u_jointMatrices.i[in_joints0.z] +
+        in_weights0.w * u_jointMatrices.i[in_joints0.w];
+    #endif
+    #endif
+
+    #ifdef JOINTS_1_VEC4
+    #ifdef WEIGHTS_1_VEC4
+    jointMatrix +=
+        in_weights1.x * u_jointMatrices.i[in_joints1.x] +
+        in_weights1.y * u_jointMatrices.i[in_joints1.y] +
+        in_weights1.z * u_jointMatrices.i[in_joints1.z] +
+        in_weights1.w * u_jointMatrices.i[in_joints1.w];
+    #endif
+    #endif
+
+    return jointMatrix;
+}
+#endif
 
 void main()
 {
-    mat3 normalMatrix = transpose(inverse(mat3(in_upc.world)));
+    mat4 worldMatrix = in_upc.world;
+    mat3 tangentMatrix = mat3(worldMatrix);
+    mat3 normalMatrix = transpose(inverse(tangentMatrix));
+
+#ifdef HAS_JOINTS
+    mat4 jointMatrix = getJointMatrix();
+    mat3 tangentJointMatrix = mat3(jointMatrix);
+    mat3 normalJointMatrix = transpose(inverse(tangentJointMatrix));
+
+    worldMatrix = worldMatrix * jointMatrix;
+    tangentMatrix = tangentMatrix * tangentJointMatrix;
+    normalMatrix = normalMatrix * normalJointMatrix;
+#endif
 
 #ifdef NORMAL_VEC3
     vec3 normal = in_normal;
@@ -114,8 +161,8 @@ void main()
     }
 #endif
     vec3 bitangent = cross(normal, tangent) * in_tangent.w;
-    out_tangent = normalMatrix * tangent;
-    out_bitangent = normalMatrix * bitangent;
+    out_tangent = tangentMatrix * tangent;
+    out_bitangent = tangentMatrix * bitangent;
 #endif
 
 #ifdef TEXCOORD_0_VEC2
@@ -142,10 +189,13 @@ void main()
     }
 #endif
     vec4 position = vec4(tempPosition, 1.0);
-    position = in_upc.world * position;
+#ifdef HAS_JOINTS
+    position = jointMatrix * position;
+#endif
+    position = worldMatrix * position;
     out_position = position.xyz / position.w;
 
-    out_determinant = determinant(in_upc.world);
+    out_determinant = determinant(worldMatrix);
     
     out_view = inverse(mat3(in_upc.view)) * vec3(0.0, 0.0, 1.0);
 

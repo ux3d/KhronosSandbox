@@ -639,6 +639,31 @@ bool WorldBuilder::buildNodes()
 
 		}
 
+		if (node.jointMatrices.size() > 0)
+		{
+			uint64_t jointMatricesHandle;
+			if (!renderManager.sharedDataCreate(jointMatricesHandle))
+			{
+				return false;
+			}
+
+			if (!renderManager.sharedDataCreateDynamicUniformBuffer(jointMatricesHandle, sizeof(glm::mat4) * node.jointMatrices.size(), node.jointMatrices.data()))
+			{
+				return false;
+			}
+
+			if (!renderManager.sharedDataFinalize(jointMatricesHandle))
+			{
+				return false;
+			}
+
+			if (!renderManager.instanceSetJointMatrices(instanceHandle, jointMatricesHandle, node.jointMatrices.size()))
+			{
+				return false;
+			}
+
+		}
+
 		//
 
 		if (!renderManager.instanceFinalize(instanceHandle))

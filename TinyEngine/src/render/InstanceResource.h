@@ -2,6 +2,7 @@
 #define RENDER_INSTANCERESOURCE_H_
 
 #include <cstdint>
+#include <vector>
 
 #include "../composite/Composite.h"
 #include "../math/Math.h"
@@ -35,6 +36,9 @@ struct InstanceResource : BaseResource {
 	std::vector<InstanceContainer> instanceContainers;
 
 	uint64_t weightsHandle = 0;
+
+	uint64_t jointMatricesHandle = 0;
+	uint32_t jointMatricesCount = 0;
 
 };
 

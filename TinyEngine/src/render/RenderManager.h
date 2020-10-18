@@ -145,6 +145,7 @@ public:
 	bool instanceSetWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix);
 	bool instanceSetGroup(uint64_t instanceHandle, uint64_t groupHandle);
 	bool instanceSetWeights(uint64_t instanceHandle, uint64_t sharedDataHandle);
+	bool instanceSetJointMatrices(uint64_t instanceHandle, uint64_t sharedDataHandle, uint32_t jointMatricesCount);
 
 	bool lightSetEnvironment(uint64_t lightHandle, const std::string& environment);
 
@@ -180,8 +181,9 @@ public:
 
 	// Update also after finalization.
 
-	bool instanceUpdateWeights(uint64_t geometryModelHandle, const std::vector<float>& weights, uint32_t frameIndex);
 	bool instanceUpdateWorldMatrix(uint64_t instanceHandle, const glm::mat4& worldMatrix);
+	bool instanceUpdateWeights(uint64_t instanceHandle, const std::vector<float>& weights, uint32_t frameIndex);
+	bool instanceUpdateJointMatrices(uint64_t instanceHandle, const std::vector<glm::mat4>& jointMatrices, uint32_t frameIndex);
 
 	bool cameraUpdateProjectionMatrix(uint64_t cameraHandle, const glm::mat4& projectionMatrix);
 	bool cameraUpdateViewMatrix(uint64_t cameraHandle, const glm::mat4& viewMatrix);
