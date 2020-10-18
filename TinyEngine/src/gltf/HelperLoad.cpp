@@ -722,14 +722,14 @@ bool HelperLoad::initSkins(GLTF& glTF)
 			}
 		}
 
-		if (model.skins[i].skeleton >= 0)
-		{
-			skin.skeleton = model.skins[i].skeleton;
-		}
-
 		for (size_t k = 0; k < model.skins[i].joints.size(); k++)
 		{
 			skin.joints.push_back(model.skins[i].joints[k]);
+		}
+
+		if (model.skins[i].skeleton >= 0)
+		{
+			skin.skeleton = model.skins[i].skeleton;
 		}
 	}
 

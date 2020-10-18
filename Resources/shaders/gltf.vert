@@ -189,9 +189,6 @@ void main()
     }
 #endif
     vec4 position = vec4(tempPosition, 1.0);
-#ifdef HAS_JOINTS
-    position = jointMatrix * position;
-#endif
     position = worldMatrix * position;
     out_position = position.xyz / position.w;
 
