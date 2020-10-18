@@ -14,10 +14,10 @@ bool HelperAnimate::update(GLTF& glTF, const AnimationChannel& channel, int32_t 
 
 	Node& node = *channel.target.targetNode;
 
-	const float* x;
-	const float* y;
-	const float* xout;
-	const float* yin;
+	const float* x = nullptr;
+	const float* y = nullptr;
+	const float* xout = nullptr;
+	const float* yin = nullptr;
 
 	uint32_t typeCount = 1;
 	if (channel.target.path == translation || channel.target.path == scale)

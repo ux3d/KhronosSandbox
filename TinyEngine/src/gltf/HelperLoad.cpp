@@ -292,7 +292,7 @@ bool HelperLoad::initAccessors(GLTF& glTF)
 			const uint8_t* values = HelperAccess::accessData(*accessor.sparse.values.pBufferView) + accessor.sparse.values.byteOffset;
 			for (uint32_t k = 0; k < accessor.sparse.count; k++)
 			{
-				uint32_t index;
+				uint32_t index = 0;
 
 				switch (accessor.sparse.indices.componentTypeSize)
 				{
@@ -305,6 +305,8 @@ bool HelperLoad::initAccessors(GLTF& glTF)
 					case 4:
 						index = *reinterpret_cast<const uint32_t*>(&indices[k * 4]);
 						break;
+					default:
+						return false;
 				}
 
 				//
