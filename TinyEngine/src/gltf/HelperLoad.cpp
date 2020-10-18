@@ -779,7 +779,19 @@ bool HelperLoad::initSkins(GLTF& glTF)
 
 		if (model.skins[i].inverseBindMatrices >= 0)
 		{
-			skin.inverseBindMatrices = model.skins[i].inverseBindMatrices;
+			const glm::mat4* inverseBindMatrices = reinterpret_cast<const glm::mat4*>(HelperAccess::accessData(glTF.accessors[model.skins[i].inverseBindMatrices]));
+
+			for (size_t k = 0; k < model.skins[i].joints.size(); k++)
+			{
+				skin.inverseBindMatrices.push_back(inverseBindMatrices[k]);
+			}
+		}
+		else
+		{
+			for (size_t k = 0; k < model.skins[i].joints.size(); k++)
+			{
+				skin.inverseBindMatrices.push_back(glm::mat4(1.0f));
+			}
 		}
 
 		if (model.skins[i].skeleton >= 0)

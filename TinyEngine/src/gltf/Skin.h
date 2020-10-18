@@ -4,8 +4,10 @@
 #include <cstdint>
 #include <vector>
 
+#include "../math/Math.h"
+
 struct Skin {
-	int32_t inverseBindMatrices = -1;
+	std::vector<glm::mat4> inverseBindMatrices;
 
 	int32_t skeleton = -1;
 
