@@ -21,8 +21,6 @@ private:
 	float rotY = 0.0f;
 	float rotX = 0.0f;
 
-	XrEngine xrEngine;
-
 	virtual bool applicationInit();
 	virtual bool applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime);
 	virtual void applicationTerminate();

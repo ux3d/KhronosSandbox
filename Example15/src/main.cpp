@@ -41,6 +41,7 @@ int main(int argc, char **argv)
 	Application application(filename, environment);
 	application.setApplicationName(APP_TITLE);
 	application.setMinor(2);
+	application.setUseOpenXR(true);
 	application.setDepthStencilFormat(VK_FORMAT_D24_UNORM_S8_UINT);
 	application.setSamples(VK_SAMPLE_COUNT_4_BIT);
 	application.addEnabledInstanceLayerName("VK_LAYER_KHRONOS_validation");

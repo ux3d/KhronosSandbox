@@ -982,6 +982,14 @@ bool TinyEngine::init(VkSurfaceKHR surface)
 		return false;
 	}
 
+	if (useOpenXR)
+	{
+		if (!xrEngine.init(instance, physicalDevice, device, queueFamilyIndex.value(), 0, surfaceFormat.format))
+		{
+			return false;
+		}
+	}
+
 	return applicationInit();
 }
 
@@ -1114,6 +1122,14 @@ bool TinyEngine::update()
 
 	//
 
+	if (useOpenXR)
+	{
+		if (!xrEngine.update())
+		{
+			return false;
+		}
+	}
+
 	if (!applicationUpdate(frameIndex, deltaTime, currentTime - firstTime.value()))
 	{
 		return false;
@@ -1202,6 +1218,13 @@ bool TinyEngine::update()
 
 bool TinyEngine::terminate()
 {
+	if (useOpenXR)
+	{
+		xrEngine.terminate();
+	}
+
+	//
+
 	if (device)
 	{
 		vkDeviceWaitIdle(device);
@@ -1539,5 +1562,15 @@ bool TinyEngine::isUseImgui() const
 void TinyEngine::setUseImgui(bool useImgui)
 {
 	this->useImgui = useImgui;
+}
+
+bool TinyEngine::isUseOpenXR() const
+{
+	return useOpenXR;
+}
+
+void TinyEngine::setUseOpenXR(bool useOpenXR)
+{
+	this->useOpenXR = useOpenXR;
 }
 

@@ -1,10 +1,10 @@
 #ifndef XRENGINE_H_
 #define XRENGINE_H_
 
-#include "TinyEngine.h"
-
 #include <cstdint>
 #include <vector>
+
+#include "composite/Composite.h"
 
 #define XR_USE_GRAPHICS_API_VULKAN
 #include <openxr/openxr.h>

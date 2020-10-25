@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+#include "common/Common.h"
+
 XrEngine::XrEngine()
 {
 }
@@ -600,7 +602,7 @@ bool XrEngine::terminate()
 		session = XR_NULL_HANDLE;
 	}
 	sessionState = XR_SESSION_STATE_UNKNOWN;
-	bool sessionRunning = false;
+	sessionRunning = false;
 
 	environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
 

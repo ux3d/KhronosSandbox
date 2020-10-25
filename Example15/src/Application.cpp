@@ -4,13 +4,6 @@
 
 bool Application::applicationInit()
 {
-	if (!xrEngine.init(instance, physicalDevice, device, queueFamilyIndex.value(), 0, surfaceFormat.format))
-	{
-		return false;
-	}
-
-	//
-
 	renderManager.renderSetupVulkan(physicalDevice, device, queue, commandPool);
 	renderManager.renderSetRenderPass(renderPass);
 	renderManager.renderSetSamples(samples);
@@ -51,13 +44,6 @@ bool Application::applicationInit()
 
 bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime)
 {
-	if (!xrEngine.update())
-	{
-		return false;
-	}
-
-	//
-
 	uint64_t cameraHandle = 0;
 
 	if (!renderManager.worldGetCamera(cameraHandle))
@@ -145,8 +131,6 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 void Application::applicationTerminate()
 {
 	renderManager.terminate();
-
-	xrEngine.terminate();
 }
 
 // Public

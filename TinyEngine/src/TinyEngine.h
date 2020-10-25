@@ -22,6 +22,8 @@
 
 #include "builder/Builder.h"
 
+#include "XrEngine.h"
+
 class TinyEngine
 {
 private:
@@ -100,6 +102,9 @@ protected:
 	VkRenderPass imguiRenderPass = VK_NULL_HANDLE;
 	VkDescriptorPool imguiDescriptorPool = VK_NULL_HANDLE;
 
+	bool useOpenXR = false;
+	XrEngine xrEngine;
+
 	bool inResize = false;
 
 	virtual bool applicationInit() = 0;
@@ -156,6 +161,9 @@ public:
 
 	bool isUseImgui() const;
 	void setUseImgui(bool useImgui);
+
+	bool isUseOpenXR() const;
+	void setUseOpenXR(bool useOpenXR);
 
 };
 
