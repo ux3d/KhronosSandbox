@@ -311,7 +311,7 @@ bool XrEngine::resize()
 	return true;
 }
 
-bool XrEngine::update()
+bool XrEngine::update(uint32_t frameIndex, double deltaTime, double totalTime, IXr& xr)
 {
 	XrResult result = XR_SUCCESS;
 
@@ -526,7 +526,8 @@ bool XrEngine::update()
 
     		//
 
-        	// TODO: Implement and render here.
+        	// TODO: Add camera information.
+    		xr.applicationUpdateXr(frameIndex, deltaTime, totalTime);
 
         	//
 

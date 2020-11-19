@@ -23,6 +23,7 @@ private:
 
 	virtual bool applicationInit();
 	virtual bool applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime);
+	virtual bool applicationUpdateXr(uint32_t frameIndex, double deltaTime, double totalTime);
 	virtual void applicationTerminate();
 
 public:

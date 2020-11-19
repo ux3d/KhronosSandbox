@@ -24,7 +24,7 @@
 
 #include "XrEngine.h"
 
-class TinyEngine
+class TinyEngine : public IXr
 {
 private:
 	std::string applicationName = "TinyEngineApp";

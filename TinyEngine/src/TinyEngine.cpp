@@ -1122,17 +1122,19 @@ bool TinyEngine::update()
 
 	//
 
+	double totalTime = currentTime - firstTime.value();
+
+	if (!applicationUpdate(frameIndex, deltaTime, totalTime))
+	{
+		return false;
+	}
+
 	if (useOpenXR)
 	{
-		if (!xrEngine.update())
+		if (!xrEngine.update(frameIndex, deltaTime, totalTime, *this))
 		{
 			return false;
 		}
-	}
-
-	if (!applicationUpdate(frameIndex, deltaTime, currentTime - firstTime.value()))
-	{
-		return false;
 	}
 
 	//

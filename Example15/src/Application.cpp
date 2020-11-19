@@ -128,6 +128,78 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	return true;
 }
 
+bool Application::applicationUpdateXr(uint32_t frameIndex, double deltaTime, double totalTime)
+{
+	uint64_t cameraHandle = 0;
+
+	if (!renderManager.worldGetCamera(cameraHandle))
+	{
+		return false;
+	}
+
+	//
+
+	VkClearColorValue resolveClearColorValue = {};
+	resolveClearColorValue.float32[0] = 0.0f;
+	resolveClearColorValue.float32[1] = 0.0f;
+	resolveClearColorValue.float32[2] = 0.0f;
+	resolveClearColorValue.float32[3] = 0.0f;
+
+	VkClearColorValue clearColorValue = {};
+	clearColorValue.float32[0] = 0.0f;
+	clearColorValue.float32[1] = 0.0f;
+	clearColorValue.float32[2] = 0.0f;
+	clearColorValue.float32[3] = 1.0f;
+
+	VkClearDepthStencilValue clearDepthStencilValue = {};
+	clearDepthStencilValue.depth = 1.0f;
+
+	std::vector<VkClearValue> clearValues;
+	if (samples == VK_SAMPLE_COUNT_1_BIT)
+	{
+		clearValues.resize(2);
+		clearValues[0].color = clearColorValue;
+		clearValues[1].depthStencil = clearDepthStencilValue;
+	}
+	else
+	{
+		clearValues.resize(3);
+		clearValues[0].color = resolveClearColorValue;
+		clearValues[1].color = clearColorValue;
+		clearValues[2].depthStencil = clearDepthStencilValue;
+	}
+
+	// TODO: Use data from OpenXR.
+	VkRenderPassBeginInfo renderPassBeginInfo = {};
+	renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassBeginInfo.renderPass = renderPass;
+	renderPassBeginInfo.framebuffer = framebuffers[frameIndex];
+	renderPassBeginInfo.renderArea.offset.x = 0;
+	renderPassBeginInfo.renderArea.offset.y = 0;
+	renderPassBeginInfo.renderArea.extent = {width, height};
+	renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+	renderPassBeginInfo.pClearValues = clearValues.data();
+
+	vkCmdBeginRenderPass(commandBuffers[frameIndex], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	glm::mat4 projectionMatrix = Projection::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f);
+
+	glm::mat3 orbitMatrix = glm::rotate(rotY, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(rotX, glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::vec3 orbitEye = orbitMatrix * glm::vec3(0.0f, 0.0f, eyeObjectDistance);
+
+	glm::mat4 viewMatrix = glm::lookAt(orbitEye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	renderManager.cameraUpdateProjectionMatrix(cameraHandle, projectionMatrix);
+	renderManager.cameraUpdateViewMatrix(cameraHandle, viewMatrix);
+
+	renderManager.draw(commandBuffers[frameIndex], frameIndex, OPAQUE);
+	renderManager.draw(commandBuffers[frameIndex], frameIndex, TRANSPARENT);
+
+	vkCmdEndRenderPass(commandBuffers[frameIndex]);
+
+	return true;
+}
+
 void Application::applicationTerminate()
 {
 	renderManager.terminate();
