@@ -23,8 +23,11 @@ private:
 
 	virtual bool applicationInit();
 	virtual bool applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime);
-	virtual bool applicationUpdateXr(uint32_t frameIndex, double deltaTime, double totalTime);
 	virtual void applicationTerminate();
+
+	virtual bool applicationInitXr();
+	virtual bool applicationUpdateXr(uint32_t frameIndex, double deltaTime, double totalTime);
+	virtual void applicationTerminateXr();
 
 public:
 	Application(const std::string& filename, const std::string& environment);

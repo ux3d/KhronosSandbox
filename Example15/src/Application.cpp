@@ -128,6 +128,16 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	return true;
 }
 
+void Application::applicationTerminate()
+{
+	renderManager.terminate();
+}
+
+bool Application::applicationInitXr()
+{
+	return true;
+}
+
 bool Application::applicationUpdateXr(uint32_t frameIndex, double deltaTime, double totalTime)
 {
 	uint64_t cameraHandle = 0;
@@ -200,9 +210,8 @@ bool Application::applicationUpdateXr(uint32_t frameIndex, double deltaTime, dou
 	return true;
 }
 
-void Application::applicationTerminate()
+void Application::applicationTerminateXr()
 {
-	renderManager.terminate();
 }
 
 // Public

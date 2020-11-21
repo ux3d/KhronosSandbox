@@ -984,7 +984,7 @@ bool TinyEngine::init(VkSurfaceKHR surface)
 
 	if (useOpenXR)
 	{
-		if (!xrEngine.init(instance, physicalDevice, device, queueFamilyIndex.value(), 0, surfaceFormat.format))
+		if (!xrEngine.init(instance, physicalDevice, device, queueFamilyIndex.value(), 0, surfaceFormat.format, *this))
 		{
 			return false;
 		}
@@ -1222,7 +1222,7 @@ bool TinyEngine::terminate()
 {
 	if (useOpenXR)
 	{
-		xrEngine.terminate();
+		xrEngine.terminate(*this);
 	}
 
 	//

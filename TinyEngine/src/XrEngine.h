@@ -47,10 +47,10 @@ public:
 
 	bool prepare();
 
-	bool init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDevice, VkDevice vulkanDevice, uint32_t vulkanQueueFamilyIndex, uint32_t vulkanQueueIndex, VkFormat vulkanFormat);
+	bool init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDevice, VkDevice vulkanDevice, uint32_t vulkanQueueFamilyIndex, uint32_t vulkanQueueIndex, VkFormat vulkanFormat, IXr& xr);
 	bool resize();
 	bool update(uint32_t frameIndex, double deltaTime, double totalTime, IXr& xr);
-	bool terminate();
+	bool terminate(IXr& xr);
 
 };
 

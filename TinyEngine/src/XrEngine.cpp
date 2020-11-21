@@ -56,7 +56,7 @@ bool XrEngine::prepare()
 	return true;
 }
 
-bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDevice, VkDevice vulkanDevice, uint32_t vulkanQueueFamilyIndex, uint32_t vulkanQueueIndex, VkFormat vulkanFormat)
+bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDevice, VkDevice vulkanDevice, uint32_t vulkanQueueFamilyIndex, uint32_t vulkanQueueIndex, VkFormat vulkanFormat, IXr& xr)
 {
 	std::vector<const char*> enabledInstanceExtensionNames;
 	enabledInstanceExtensionNames.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
@@ -300,6 +300,13 @@ bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDe
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
 
+		return false;
+	}
+
+	//
+
+	if (!xr.applicationInitXr())
+	{
 		return false;
 	}
 
@@ -570,8 +577,12 @@ bool XrEngine::update(uint32_t frameIndex, double deltaTime, double totalTime, I
 	return true;
 }
 
-bool XrEngine::terminate()
+bool XrEngine::terminate(IXr& xr)
 {
+	xr.applicationTerminateXr();
+
+	//
+
 	if (space != XR_NULL_HANDLE)
 	{
 		xrDestroySpace(space);
