@@ -18,12 +18,15 @@ glm::vec3 Sample::uniformHemisphere(const glm::vec2& point)
 
 glm::vec3 Sample::cosineHemisphere(const glm::vec2& point)
 {
-	float r = sqrtf(point.x);
-	float theta = point.y * 2.0f * glm::pi<float>();
+	float cosTheta = sqrtf(1.0f - point.x);
 
-	float x = r * cosf(theta);
-	float y = r * sinf(theta);
-	float z = sqrtf(1.0f - point.x);
+	// Radius
+	float sinTheta = sqrtf(point.x);
+	float phi = point.y * 2.0f * glm::pi<float>();
+
+	float x = sinTheta * cosf(phi);
+	float y = sinTheta * sinf(phi);
+	float z = cosTheta;
 
 	return glm::vec3(x, y, z);
 }
