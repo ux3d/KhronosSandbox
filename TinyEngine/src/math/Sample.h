@@ -6,8 +6,6 @@
 class Sample {
 public:
 
-	static glm::vec2 concentricDisk(const glm::vec2& point);
-
 	static glm::vec3 uniformHemisphere(const glm::vec2& point);
 
 	static glm::vec3 cosineHemisphere(const glm::vec2& point);
