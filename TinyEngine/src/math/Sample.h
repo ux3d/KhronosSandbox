@@ -3,18 +3,16 @@
 
 #include "glm_include.h"
 
-#include "SphericalCoordinate.h"
-
 class Sample {
 public:
 
-	static glm::vec3 lambertToCartesianCoordinate(const glm::vec2& point);
+	static glm::vec2 concentricDisk(const glm::vec2& point);
 
-	static SphericalCoordinate lambertToSphericalCoordinate(const glm::vec2& point);
+	static glm::vec3 uniformHemisphere(const glm::vec2& point);
 
-	static glm::vec3 ggxToCartesianCoordinate(const glm::vec2& point, float alpha);
+	static glm::vec3 cosineHemisphere(const glm::vec2& point);
 
-	static SphericalCoordinate ggxToSphericalCoordinate(const glm::vec2& point, float alpha);
+	static glm::vec3 ggxHemisphere(const glm::vec2& point, float alpha);
 
 };
 
