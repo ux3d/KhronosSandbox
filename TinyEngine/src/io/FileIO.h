@@ -1,9 +1,7 @@
 #ifndef IO_FILEIO_H_
 #define IO_FILEIO_H_
 
-#include <cstdint>
 #include <string>
-#include <vector>
 
 class FileIO
 {
