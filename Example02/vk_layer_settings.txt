@@ -140,14 +140,47 @@ khronos_validation.log_filename = stdout
 
 # Example entry showing how to Enable GPU-Assisted Validation
 #khronos_validation.enables = VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_EXT,VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT
+# Example entry showing how to disable buffer out of bounds checking
+#khronos_validation.gpuav_buffer_oob = false
 
 # Example entry showing how to Enable Best Practices Validation
 #khronos_validation.enables = VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT
 
 # Example entry showing how to enable Debug Printf messages
 #khronos_validation.enables = VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT
+# Example showing how to set the size in bytes of the buffer used by debug printf (default 1024 bytes)
+#khronos_validation.printf_buffer_size = 1024
+# Example of how to set the verbosity of debug printf messages (default not verbose)
+#khronos_validation.printf_verbose = false
+# Example of how to redirect debug printf messages from the debug callback to stdout
+#khronos_validation.printf_to_stdout = true
 
 ################################################################################
+################################################################################
+#
+#  This file contains per-layer settings that configure layer behavior at
+#  execution time. Comments in this file are denoted with the "#" char.
+#  Settings lines are of the form:
+#      "<LayerIdentifier>.<SettingName> = <SettingValue>"
+#
+#  <LayerIdentifier> is typically the official layer name, minus the VK_LAYER
+#  prefix and all lower-camel-case -- i.e., for VK_LAYER_LUNARG_api_dump, the
+#  layer identifier is 'lunarg_api_dump'.
+#
+################################################################################
+################################################################################
+#  VK_LAYER_KHRONOS_synchronization2 Settings:
+#  ==================================
+#
+#    FORCE_ENABLE:
+#    =========
+#    <LayerIdentifer>.force_enable: If TRUE, the layers implementation will always
+#    be used. If FALSE (default), the layers implementation will only be used if the
+#    underlying driver does not implement the extension.
+#
+
+#  VK_LAYER_KHRONOS_synchronization2 Settings
+khronos_synchronization2.force_enable = FALSE
 ################################################################################
 #
 #  This file contains per-layer settings that configure layer behavior at
@@ -166,8 +199,8 @@ khronos_validation.log_filename = stdout
 #
 #    OUTPUT_FORMAT:
 #    =========
-#    <LayerIdentifer>.output_format : Specifies the format used for output;
-#    can be Text (default -- outputs plain text) or Html.
+#    <LayerIdentifer>.output_format : Specifies the format used for output; 
+#    can be HTML, JSON, or  Text (default -- outputs plain text).
 #
 #    DETAILED:
 #    =========
@@ -293,6 +326,8 @@ lunarg_device_simulation.exit_on_error = 0
 #    FORMAT:
 #    =======
 #    <LayerIdentifer>.format : This can be set to a color space for the output.
+#    It must be one of the following values: "UNORM", "SNORM", "USCALED", "SSCALED",
+#    "UINT", "SINT", "SRGB" or "USE_SWAPCHAIN_COLORSPACE".
 
 # VK_LAYER_LUNARG_screenshot Settings
 lunarg_screenshot.frames = 0-0

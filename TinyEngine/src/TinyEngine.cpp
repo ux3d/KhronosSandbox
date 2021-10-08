@@ -982,14 +982,6 @@ bool TinyEngine::init(VkSurfaceKHR surface)
 		return false;
 	}
 
-	if (useOpenXR)
-	{
-		if (!xrEngine.init(instance, physicalDevice, device, queueFamilyIndex.value(), 0, surfaceFormat.format, *this))
-		{
-			return false;
-		}
-	}
-
 	return applicationInit();
 }
 
@@ -1129,14 +1121,6 @@ bool TinyEngine::update()
 		return false;
 	}
 
-	if (useOpenXR)
-	{
-		if (!xrEngine.update(frameIndex, deltaTime, totalTime, *this))
-		{
-			return false;
-		}
-	}
-
 	//
 
 	imageMemoryBarrier[0].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
@@ -1220,13 +1204,6 @@ bool TinyEngine::update()
 
 bool TinyEngine::terminate()
 {
-	if (useOpenXR)
-	{
-		xrEngine.terminate(*this);
-	}
-
-	//
-
 	if (device)
 	{
 		vkDeviceWaitIdle(device);
@@ -1565,14 +1542,3 @@ void TinyEngine::setUseImgui(bool useImgui)
 {
 	this->useImgui = useImgui;
 }
-
-bool TinyEngine::isUseOpenXR() const
-{
-	return useOpenXR;
-}
-
-void TinyEngine::setUseOpenXR(bool useOpenXR)
-{
-	this->useOpenXR = useOpenXR;
-}
-
