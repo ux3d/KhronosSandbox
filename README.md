@@ -23,7 +23,9 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 - [ ] Initial component
 
 ### General  
-- [ ] Replace slimktx2 with libktx
+- [ ] Prefilter IBL on the fly
+- [ ] Remove Slim KTX2 dependency
+- [ ] Remove BasisU dependency
 
 ## How to build?
 - [Vulkan SDK 1.2.135.0 or later](https://vulkan.lunarg.com/sdk/home)
@@ -59,7 +61,6 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 - [glTF Sample Viewer](https://github.com/KhronosGroup/glTF-Sample-Viewer)
 - [GLFW](https://github.com/glfw/glfw)
 - [glm](https://github.com/g-truc/glm)
-- [imgui](https://github.com/ocornut/imgui)
 - [Shaderc](https://github.com/google/shaderc)  
 - [Slim KTX2](https://github.com/ux3d/slimktx2)
    - basis_universal

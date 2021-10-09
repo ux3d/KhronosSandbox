@@ -621,22 +621,6 @@ bool TinyEngine::createRenderpass()
 		return false;
 	}
 
-	if (useImgui)
-	{
-		for (VkAttachmentDescription& currentAttachmentDescription : attachmentDescription)
-		{
-			currentAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		}
-
-		result = vkCreateRenderPass(device, &renderPassCreateInfo, nullptr, &imguiRenderPass);
-		if (result != VK_SUCCESS)
-		{
-			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
-
-			return false;
-		}
-	}
-
 	return true;
 }
 
@@ -790,80 +774,6 @@ bool TinyEngine::createSynchronizationResources()
 	return true;
 }
 
-bool TinyEngine::createImgui()
-{
-	if (!useImgui)
-	{
-		return true;
-	}
-
-	VkResult result = VK_SUCCESS;
-
-	//
-
-	const uint32_t BufferSize = 1000;
-	VkDescriptorPoolSize descriptorPoolSizes[] = {
-		{ VK_DESCRIPTOR_TYPE_SAMPLER, BufferSize },
-		{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, BufferSize },
-		{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, BufferSize },
-		{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, BufferSize },
-		{ VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, BufferSize },
-		{ VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, BufferSize },
-		{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, BufferSize },
-		{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, BufferSize },
-		{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, BufferSize },
-		{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, BufferSize },
-		{ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, BufferSize }
-	};
-
-	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
-	descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	descriptorPoolCreateInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-	descriptorPoolCreateInfo.maxSets = BufferSize * IM_ARRAYSIZE(descriptorPoolSizes);
-	descriptorPoolCreateInfo.poolSizeCount = (uint32_t)IM_ARRAYSIZE(descriptorPoolSizes);
-	descriptorPoolCreateInfo.pPoolSizes = descriptorPoolSizes;
-	result = vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &imguiDescriptorPool);
-	if (result != VK_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
-
-		return false;
-	}
-
-	ImGui_ImplVulkan_InitInfo initInfo = {};
-	initInfo.Instance = instance;
-	initInfo.PhysicalDevice = physicalDevice;
-	initInfo.Device = device;
-	initInfo.QueueFamily = queueFamilyIndex.value();
-	initInfo.Queue = queue;
-	initInfo.DescriptorPool = imguiDescriptorPool;
-	initInfo.MinImageCount = 2;
-	initInfo.ImageCount = static_cast<uint32_t>(swapchainImageViews.size());
-	initInfo.MSAASamples = samples;
-	if (!ImGui_ImplVulkan_Init(&initInfo, renderPass))
-	{
-		return false;
-	}
-
-	VkCommandBuffer imguiCommandBuffer = VK_NULL_HANDLE;
-	if (!HelperVulkan::beginOneTimeSubmitCommand(device, commandPool, imguiCommandBuffer))
-	{
-		return false;
-	}
-
-	if (!ImGui_ImplVulkan_CreateFontsTexture(imguiCommandBuffer))
-	{
-		return false;
-	}
-
-	if (!HelperVulkan::endOneTimeSubmitCommand(device, queue, commandPool, imguiCommandBuffer))
-	{
-		return false;
-	}
-
-	return true;
-}
-
 bool TinyEngine::createConfiguration()
 {
 	if (inResize)
@@ -968,11 +878,6 @@ bool TinyEngine::init(VkSurfaceKHR surface)
 	}
 
 	if (!createSynchronizationResources())
-	{
-		return false;
-	}
-
-	if (!createImgui())
 	{
 		return false;
 	}
@@ -1211,20 +1116,6 @@ bool TinyEngine::terminate()
 
 	//
 
-	if (useImgui)
-	{
-		ImGui_ImplVulkan_Shutdown();
-
-		if (imguiDescriptorPool != VK_NULL_HANDLE)
-		{
-			vkDestroyDescriptorPool(device, imguiDescriptorPool, nullptr);
-
-			imguiDescriptorPool = VK_NULL_HANDLE;
-		}
-	}
-
-	//
-
 	applicationTerminate();
 
 	if (!inResize)
@@ -1284,15 +1175,6 @@ bool TinyEngine::terminate()
 	{
 		vkDestroyRenderPass(device, renderPass, nullptr);
 		renderPass = VK_NULL_HANDLE;
-	}
-
-	if (useImgui)
-	{
-		if (imguiRenderPass != VK_NULL_HANDLE)
-		{
-			vkDestroyRenderPass(device, imguiRenderPass, nullptr);
-			imguiRenderPass = VK_NULL_HANDLE;
-		}
 	}
 
 	VulkanResource::destroyImageViewResource(device, depth);
@@ -1531,14 +1413,4 @@ VkImageUsageFlags TinyEngine::getImageUsage() const
 void TinyEngine::setImageUsage(VkImageUsageFlags imageUsage)
 {
 	this->imageUsage = imageUsage;
-}
-
-bool TinyEngine::isUseImgui() const
-{
-	return useImgui;
-}
-
-void TinyEngine::setUseImgui(bool useImgui)
-{
-	this->useImgui = useImgui;
 }

@@ -40,7 +40,6 @@ int main(int argc, char **argv)
 
 	Application application(filename, environment);
 	application.setApplicationName(APP_TITLE);
-	application.setUseImgui(true);
 	application.setMinor(2);
 	application.setDepthStencilFormat(VK_FORMAT_D24_UNORM_S8_UINT);
 	application.setSamples(VK_SAMPLE_COUNT_4_BIT);
@@ -62,16 +61,6 @@ int main(int argc, char **argv)
 	VkSurfaceKHR surface = VK_NULL_HANDLE;
 	VkResult result = glfwCreateWindowSurface(application.getInstance(), window, nullptr, &surface);
 	if (result != VK_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
-		application.terminate();
-		glfwDestroyWindow(window);
-		glfwTerminate();
-		return -1;
-	}
-
-	ImGui::CreateContext();
-	if (!ImGui_ImplGlfw_InitForVulkan(window, true))
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
 		application.terminate();
@@ -175,8 +164,6 @@ int main(int argc, char **argv)
 				mouseRightPressed = false;
 			}
 
-			ImGui_ImplGlfw_NewFrame();
-
 			if (!application.update())
 			{
 				break;
@@ -191,9 +178,6 @@ int main(int argc, char **argv)
 	}
 
 	application.terminate();
-
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
 
 	glfwDestroyWindow(window);
 	glfwTerminate();

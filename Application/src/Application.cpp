@@ -57,27 +57,6 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	//
 
-	ImGui_ImplVulkan_NewFrame();
-	ImGui::NewFrame();
-
-	ImGui::Begin("Settings");
-
-	focused = ImGui::IsWindowFocused();
-
-	if (animationController.isPlay())
-	{
-		ImGui::Checkbox("Animate", &animate);
-		ImGui::Separator();
-	}
-	ImGui::SliderFloat("World Scale", &worldScale, 0.1f, 10.0f, "ratio = %.1f");
-	ImGui::Separator();
-	ImGui::SliderFloat("Zoom Speed", &zoomSpeed, 0.01f, 0.1f, "ratio = %.2f");
-	ImGui::End();
-
-	ImGui::Render();
-
-	//
-
 	if (animate)
 	{
 		animationController.updateCurrentTime(deltaTime);
@@ -166,9 +145,6 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	renderManager.draw(commandBuffers[frameIndex], frameIndex, TRANSPARENT);
 
 	//
-
-	// Render the imgui content.
-	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffers[frameIndex]);
 
 	vkCmdEndRenderPass(commandBuffers[frameIndex]);
 

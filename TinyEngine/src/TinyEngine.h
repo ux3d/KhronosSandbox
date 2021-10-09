@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "common/Common.h"
-#include "gui/Gui.h"
 #include "math/Math.h"
 
 #include "activity/Activity.h"
@@ -46,7 +45,6 @@ private:
 	bool createFramebuffer();
 	bool createCommandResources();
 	bool createSynchronizationResources();
-	bool createImgui();
 	bool createConfiguration();
 
 protected:
@@ -95,10 +93,6 @@ protected:
 
 	VkPhysicalDeviceFeatures physicalDeviceFeatures = {};
 	VkPhysicalDeviceFeatures2 physicalDeviceFeatures2 = {};
-
-	bool useImgui = false;
-	VkRenderPass imguiRenderPass = VK_NULL_HANDLE;
-	VkDescriptorPool imguiDescriptorPool = VK_NULL_HANDLE;
 
 	bool inResize = false;
 
@@ -153,9 +147,6 @@ public:
 
 	VkImageUsageFlags getImageUsage() const;
 	void setImageUsage(VkImageUsageFlags imageUsage);
-
-	bool isUseImgui() const;
-	void setUseImgui(bool useImgui);
 
 };
 
