@@ -28,7 +28,7 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 - [ ] Remove BasisU dependency
 
 ## How to build?
-- [Vulkan SDK 1.2.135.0 or later](https://vulkan.lunarg.com/sdk/home)
+- [Vulkan SDK 1.2.198.0 or later](https://vulkan.lunarg.com/sdk/home)
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
    - GCC for Linux
    - [MinGW64](https://www.msys2.org/) for Windows 
