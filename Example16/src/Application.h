@@ -24,7 +24,8 @@ private:
 	TextureResource textureResource  = {};
 
 	bool srgbIn = false;
-	bool transferFunction = 0;
+	int32_t tonemap = 0;
+	int32_t transferFunction = 0;
 	bool debug = false;
 
 	virtual bool applicationInit();

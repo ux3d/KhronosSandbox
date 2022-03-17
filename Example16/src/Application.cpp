@@ -9,6 +9,7 @@ struct VertexData {
 
 struct UniformData {
 	bool srgbIn;
+	int32_t tonemap;
 	int32_t transferFunction;
 	//
 	bool debug;
@@ -33,8 +34,10 @@ bool Application::applicationInit()
 	}
 	srgbIn = false;			// HDR is linear
 
+	tonemap = 1;
 
 	//
+
 	if (surfaceFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
 	{
 		if (surfaceFormat.format == VK_FORMAT_B8G8R8A8_UNORM)
@@ -452,6 +455,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 
 	UniformData uniformData = {};
 	uniformData.srgbIn = srgbIn;
+	uniformData.tonemap = tonemap;
 	uniformData.transferFunction = transferFunction;
 	uniformData.debug = debug;
 

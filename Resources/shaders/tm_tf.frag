@@ -6,6 +6,7 @@ const float SRGB_ALPHA = 0.055;
 
 layout(binding = 0) uniform UniformBufferObject {
     bool srgbIn;
+	int tonemap;
 	int transferFunction;
 	//
 	bool debug;
@@ -16,6 +17,15 @@ layout (binding = 1) uniform sampler2D u_colorTexture;
 layout (location = 0) in vec2 in_texCoord;
 
 layout(location = 0) out vec4 out_pixelColor;
+
+//
+// Tonemappings
+//
+
+vec3 tonemapReinhard(vec3 color)
+{
+	return color / (vec3(1.0) + color);
+}
 
 //
 // see http://chilliant.blogspot.com/2012/08/srgb-approximations-for-hlsl.html
@@ -161,7 +171,18 @@ void main()
 
 	// Tone mapping
 
-	// TODO: Implement several ones
+	if (in_ub.tonemap == 0)
+	{
+		// None
+
+		// Do nothing
+	}
+	else if (in_ub.tonemap == 1)
+	{
+		// Reinhard
+
+		c = tonemapReinhard(c);
+	}
 	
 	// Transfer functions
 
