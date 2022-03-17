@@ -22,12 +22,20 @@ int main()
 
 	//
 
-	// TODO: Query Vulkan, what is possible
+	// Note: Execute vulkaninfo, what is possible on your machine. These are combinations, which maybe do not exist on your machine.
 
 	application.setColorFormat(VK_FORMAT_B8G8R8A8_UNORM);
-	//application.setColorFormat(VK_FORMAT_B8G8R8A8_SRGB);
-
 	application.setColorSpace(VK_COLORSPACE_SRGB_NONLINEAR_KHR);
+
+	/*
+	application.setColorFormat(VK_FORMAT_B8G8R8A8_SRGB);
+	application.setColorSpace(VK_COLORSPACE_SRGB_NONLINEAR_KHR);
+	*/
+
+	/*
+	application.setColorFormat(VK_FORMAT_A2B10G10R10_UNORM_PACK32);
+	application.setColorSpace(VK_COLORSPACE_SRGB_NONLINEAR_KHR);
+	*/
 
 	//
 

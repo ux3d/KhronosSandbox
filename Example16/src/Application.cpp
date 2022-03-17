@@ -23,7 +23,7 @@ bool Application::applicationInit()
 	{
 		return false;
 	}
-	srgbIn = true;			// JPG in general is SRGB
+	srgbIn = true;			// JPG in general is SRGB and we are uploading it 1:1 with no specific format conversion
 	*/
 
 
@@ -37,13 +37,17 @@ bool Application::applicationInit()
 	//
 	if (surfaceFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
 	{
-		if (surfaceFormat.format == VK_FORMAT_B8G8R8A8_SRGB)
+		if (surfaceFormat.format == VK_FORMAT_B8G8R8A8_UNORM)
+		{
+			transferFunction = 1;	// Format: B8G8R8A8_UNORM and ColorSpace: SRGB_NONLINEAR => sRGB transfer function
+		}
+		else if (surfaceFormat.format == VK_FORMAT_B8G8R8A8_SRGB)
 		{
 			transferFunction = 0;	// Format: B8G8R8A8_SRG and ColorSpace: SRGB_NONLINEAR => No transfer function
 		}
-		else if (surfaceFormat.format == VK_FORMAT_B8G8R8A8_UNORM)
+		else if (surfaceFormat.format == VK_FORMAT_A2B10G10R10_UNORM_PACK32)
 		{
-			transferFunction = 1;	// Format: B8G8R8A8_UNORM and ColorSpace: SRGB_NONLINEAR => sRGB transfer function
+			transferFunction = 1;	// Format: A2B10G10R10_UNORM_PACK32 and ColorSpace: SRGB_NONLINEAR => sRGB transfer function
 		}
 		else
 		{
