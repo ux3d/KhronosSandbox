@@ -5,6 +5,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ONLY_JPEG
 #define STBI_ONLY_PNG
+#define STBI_ONLY_HDR
 #include <stb_image.h>
 
 #include "slimktx2.h"
@@ -94,29 +95,74 @@ bool ImageDataIO::open(ImageDataResources& output, const uint8_t* data, size_t l
 		int comp = 0;
 		int req_comp = static_cast<int>(channels);
 
-		uint8_t* tempData = static_cast<uint8_t*>(stbi_load_from_memory((const stbi_uc*)data, (int)length, &x, &y, &comp, req_comp));
+		uint32_t bytesPerChannel = 1;
+		bool isHDR = (bool)stbi_is_hdr_from_memory((const stbi_uc*)data, (int)length);
+
+		uint8_t* tempData = nullptr;
+
+		if (isHDR)
+		{
+			bytesPerChannel = 4;
+
+			tempData = reinterpret_cast<uint8_t*>(stbi_loadf_from_memory((const stbi_uc*)data, (int)length, &x, &y, &comp, req_comp));
+		}
+		else
+		{
+			tempData = static_cast<uint8_t*>(stbi_load_from_memory((const stbi_uc*)data, (int)length, &x, &y, &comp, req_comp));
+		}
+
 		if (!tempData)
 		{
 			return false;
 		}
 
+
+
 		output.images[0].width = static_cast<uint32_t>(x);
 		output.images[0].height = static_cast<uint32_t>(y);
-		output.images[0].pixels.resize(output.images[0].width * output.images[0].height * channels);
-		memcpy(output.images[0].pixels.data(), tempData, output.images[0].width * output.images[0].height * channels);
+		output.images[0].pixels.resize(output.images[0].width * output.images[0].height * channels * bytesPerChannel);
+		memcpy(output.images[0].pixels.data(), tempData, output.images[0].width * output.images[0].height * channels * bytesPerChannel);
 		switch (channels)
 		{
 			case 1:
-				output.images[0].format = VK_FORMAT_R8_UNORM;
+				if (isHDR)
+				{
+					output.images[0].format = VK_FORMAT_R32_SFLOAT;
+				}
+				else
+				{
+					output.images[0].format = VK_FORMAT_R8_UNORM;
+				}
 				break;
 			case 2:
-				output.images[0].format = VK_FORMAT_R8G8_UNORM;
+				if (isHDR)
+				{
+					output.images[0].format = VK_FORMAT_R32G32_SFLOAT;
+				}
+				else
+				{
+					output.images[0].format = VK_FORMAT_R8G8_UNORM;
+				}
 				break;
 			case 3:
-				output.images[0].format = VK_FORMAT_R8G8B8_UNORM;
+				if (isHDR)
+				{
+					output.images[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+				}
+				else
+				{
+					output.images[0].format = VK_FORMAT_R8G8B8_UNORM;
+				}
 				break;
 			case 4:
-				output.images[0].format = VK_FORMAT_R8G8B8A8_UNORM;
+				if (isHDR)
+				{
+					output.images[0].format = VK_FORMAT_R32G32B32A32_SFLOAT;
+				}
+				else
+				{
+					output.images[0].format = VK_FORMAT_R8G8B8A8_UNORM;
+				}
 				break;
 		}
 
@@ -145,7 +191,7 @@ bool ImageDataIO::open(ImageDataResources& output, const std::string& filename, 
 	{
 		return open(output, (const uint8_t*)binary.data(), binary.length(), channels);
 	}
-	else if (HelperFile::getExtension(filename) == "png" || HelperFile::getExtension(filename) == "jpg" || HelperFile::getExtension(filename) == "jpeg")
+	else if (HelperFile::getExtension(filename) == "png" || HelperFile::getExtension(filename) == "jpg" || HelperFile::getExtension(filename) == "jpeg" || HelperFile::getExtension(filename) == "hdr")
 	{
 		return open(output, (const uint8_t*)binary.data(), binary.length(), channels);
 	}
