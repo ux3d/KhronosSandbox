@@ -19,6 +19,18 @@ int main()
 	application.setApplicationName(APP_TITLE);
 	application.setMinor(2);
 	application.addEnabledInstanceLayerName("VK_LAYER_KHRONOS_validation");
+
+	//
+
+	// TODO: Query Vulkan, what is possible
+
+	application.setColorFormat(VK_FORMAT_B8G8R8A8_UNORM);
+	//application.setColorFormat(VK_FORMAT_B8G8R8A8_SRGB);
+
+	application.setColorSpace(VK_COLORSPACE_SRGB_NONLINEAR_KHR);
+
+	//
+
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensionNames = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 	for (uint32_t i = 0; i < glfwExtensionCount; i++)
