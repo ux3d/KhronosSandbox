@@ -51,17 +51,15 @@ void main()
 	if (in_ub.transferFunction == 0)
 	{
 		// No conversion required
-
-		// Do nothing
 	}
 	else if (in_ub.transferFunction == 1)
 	{
-		// Non-SRGB format and SRGB color space
-
 		c = linearToSrgbFast(c);
 	}
-
-	// TODO: Implement for HDR
+	else if (in_ub.transferFunction == 2)
+	{
+		// TODO: Implement PQ transfer function
+	}
 
 	//
 
