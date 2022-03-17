@@ -34,7 +34,7 @@ bool Application::applicationInit()
 	}
 	srgbIn = false;			// HDR is linear
 
-	tonemap = 1;
+	tonemap = 0;
 
 	//
 
