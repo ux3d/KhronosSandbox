@@ -75,24 +75,51 @@ vec3 srgbToLinear(vec3 color)
 
 vec3 linearToXyz(vec3 color)
 {
-	const mat3 RGB_2_XYZ = mat3(
+	const mat3 m = mat3(
 		0.4124564, 0.2126729, 0.0193339,
 		0.3575761, 0.7151522, 0.1191920,
 		0.1804375, 0.0721750, 0.9503041
 	);
 
-	return RGB_2_XYZ * color;
+	return m * color;
 }
 
 vec3 xyzToLinear(vec3 color)
 {
-	const mat3 XYZ_2_RGB = mat3(
+	const mat3 m = mat3(
 		3.2404542,-0.9692660, 0.0556434,
 		-1.5371385, 1.8760108,-0.2040259,
 		-0.4985314, 0.0415560, 1.0572252
 	);
 
-	return XYZ_2_RGB * color;
+	return m * color;
+}
+
+//
+// see https://www.itu.int/rec/R-REC-BT.2087-0-201510-I
+// see https://www.itu.int/pub/R-REP-BT.2407
+//
+
+vec3 rec2020ToXyz(vec3 color)
+{
+	const mat3 m = mat3(
+		 0.6370, 0.2627, 0.0,
+		 0.1446, 0.6780, 0.0281,
+		 0.1689, 0.0593, 1.0610
+	);
+
+	return m * color;
+}
+
+vec3 xyzToRec2020(vec3 color)
+{
+	const mat3 m = mat3(
+		 1.7167, -0.6667,  0.0176,
+		-0.3557,  1.6165, -0.0428,
+		-0.2534,  0.0158,  0.9421
+	);
+
+	return m * color;
 }
 
 //
@@ -127,7 +154,7 @@ void main()
 
 		// CIE-XYZ => BT.2020
 
-		// TODO: Implement
+		c = xyzToRec2020(c);
 
 		// TODO: Implement PQ transfer function
 	}
