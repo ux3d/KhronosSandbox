@@ -22,7 +22,9 @@ int main()
 
 	//
 
-	// Note: Execute vulkaninfo, what is possible on your machine. These are combinations, which maybe do not exist on your machine.
+	// Note: Execute vulkaninfo to gather allowed combinations for your display and graphics card.
+	// Display: 		Samsung UE75NU8009 UHD 4K
+	// Graphics card:	NVIDIA GeForce RTX 2060
 
 	/*
 	application.setColorFormat(VK_FORMAT_B8G8R8A8_UNORM);

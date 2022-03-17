@@ -26,7 +26,9 @@ private:
 	bool srgbIn = false;
 	int32_t tonemap = 0;
 	int32_t transferFunction = 0;
-	float monitorMaximumNits = 1000.0f;
+	// Display: 		Samsung UE75NU8009 UHD 4K
+	// Value:			763.881897 nits (Max Fullframe Value from DisplayHDR Test)
+	float monitorMaximumNits = 763.881897f;
 	bool debug = false;
 
 	virtual bool applicationInit();
