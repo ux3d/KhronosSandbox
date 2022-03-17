@@ -11,6 +11,7 @@ struct UniformData {
 	bool srgbIn;
 	int32_t tonemap;
 	int32_t transferFunction;
+	float monitorMaximumNits;
 	//
 	bool debug;
 };
@@ -34,7 +35,7 @@ bool Application::applicationInit()
 	}
 	srgbIn = false;			// HDR is linear
 
-	tonemap = 0;
+	tonemap = 1;			// Basic Reinhard
 
 	//
 
@@ -457,6 +458,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	uniformData.srgbIn = srgbIn;
 	uniformData.tonemap = tonemap;
 	uniformData.transferFunction = transferFunction;
+	uniformData.monitorMaximumNits = monitorMaximumNits;
 	uniformData.debug = debug;
 
 	if (!VulkanResource::copyHostToDevice(device, uniformBufferResources[frameIndex].bufferResource, &uniformData, sizeof(uniformData)))

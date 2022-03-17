@@ -26,6 +26,7 @@ private:
 	bool srgbIn = false;
 	int32_t tonemap = 0;
 	int32_t transferFunction = 0;
+	float monitorMaximumNits = 1000.0f;
 	bool debug = false;
 
 	virtual bool applicationInit();

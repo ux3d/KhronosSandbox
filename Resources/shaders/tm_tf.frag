@@ -8,6 +8,7 @@ layout(binding = 0) uniform UniformBufferObject {
     bool srgbIn;
 	int tonemap;
 	int transferFunction;
+	float monitorMaximumNits;
 	//
 	bool debug;
 } in_ub;
@@ -169,7 +170,9 @@ void main()
 		c = srgbToLinearFast(c);
 	}
 
+	//
 	// Tone mapping
+	//
 
 	if (in_ub.tonemap == 0)
 	{
@@ -184,7 +187,9 @@ void main()
 		c = tonemapReinhard(c);
 	}
 	
-	// Transfer functions
+	//
+	// Transfer function
+	//
 
 	if (in_ub.transferFunction == 0)
 	{
@@ -210,11 +215,17 @@ void main()
 
 		c = xyzToRec2020(c);
 
+		// Adjust to monitor maximum possible nits
+
+		c = in_ub.monitorMaximumNits * c;
+
 		// PQ EOTF -1
 
 		c = rec2020ToPq(c);
 	}
 
+	//
+	// In debug mode, write out any clamped pixel in red
 	//
 
 	if (in_ub.debug)
