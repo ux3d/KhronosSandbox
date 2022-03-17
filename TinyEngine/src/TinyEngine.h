@@ -52,6 +52,7 @@ protected:
 	uint32_t height = 0;
 
 	VkFormat colorFormat = VK_FORMAT_B8G8R8A8_UNORM;
+	VkColorSpaceKHR colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 	VkFormat depthStencilFormat = VK_FORMAT_UNDEFINED;
 	VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
 	VkImageUsageFlags imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
@@ -138,6 +139,9 @@ public:
 
 	VkFormat getColorFormat() const;
 	void setColorFormat(VkFormat colorFormat);
+
+	VkColorSpaceKHR getColorSpace() const;
+	void setColorSpace(VkColorSpaceKHR colorSpace);
 
 	VkFormat getDepthStencilFormat() const;
 	void setDepthStencilFormat(VkFormat depthFormat);

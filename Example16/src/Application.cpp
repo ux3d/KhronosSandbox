@@ -18,15 +18,48 @@ bool Application::applicationInit()
 {
 	TextureResourceCreateInfo textureResourceCreateInfo = {};
 
+	/*
+	if (!ImageDataIO::open(textureResourceCreateInfo.imageDataResources, "../Resources/images/desert.jpg"))
+	{
+		return false;
+	}
+	srgbIn = true;			// JPG in general is SRGB
+	*/
+
+
 	if (!ImageDataIO::open(textureResourceCreateInfo.imageDataResources, "../Resources/images/field.hdr"))
 	{
 		return false;
 	}
 	srgbIn = false;			// HDR is linear
 
-	// TODO: Get from main.cpp
-	transferFunction = 1;	// Format: B8G8R8A8_UNORM and ColorSpace: SRGB_NONLINEAR => sRGB transfer function
 
+	//
+	if (surfaceFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+	{
+		if (surfaceFormat.format == VK_FORMAT_B8G8R8A8_SRGB)
+		{
+			transferFunction = 0;	// Format: B8G8R8A8_SRG and ColorSpace: SRGB_NONLINEAR => No transfer function
+		}
+		else if (surfaceFormat.format == VK_FORMAT_B8G8R8A8_UNORM)
+		{
+			transferFunction = 1;	// Format: B8G8R8A8_UNORM and ColorSpace: SRGB_NONLINEAR => sRGB transfer function
+		}
+		else
+		{
+			// Unknown combination
+
+			return false;
+		}
+	}
+	else
+	{
+		// Unknown combination
+
+		return false;
+	}
+
+	// If true, all fragment values having a final RGB component larger than 1 becomes red
 	debug = false;
 
 	textureResourceCreateInfo.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;

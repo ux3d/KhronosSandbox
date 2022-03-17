@@ -222,7 +222,7 @@ bool TinyEngine::createSurface()
 
 	for (const VkSurfaceFormatKHR& currentSurfaceFormat : surfaceFormats)
 	{
-		if (currentSurfaceFormat.format == colorFormat)
+		if (currentSurfaceFormat.format == colorFormat && currentSurfaceFormat.colorSpace == colorSpace)
 		{
 			surfaceFormat = currentSurfaceFormat;
 			break;
@@ -1383,6 +1383,16 @@ VkFormat TinyEngine::getColorFormat() const
 void TinyEngine::setColorFormat(VkFormat colorFormat)
 {
 	this->colorFormat = colorFormat;
+}
+
+VkColorSpaceKHR TinyEngine::getColorSpace() const
+{
+	return colorSpace;
+}
+
+void TinyEngine::setColorSpace(VkColorSpaceKHR colorSpace)
+{
+	this->colorSpace = colorSpace;
 }
 
 VkFormat TinyEngine::getDepthStencilFormat() const
