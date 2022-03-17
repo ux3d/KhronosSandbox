@@ -264,7 +264,11 @@ void main()
     float roughness = getRoughness();
 
     // BRDF
-    vec3 color = getLambertian(normal, diffuseColor) + getSpecular(normal, view, roughness, f0);
+    vec3 lambert = getLambertian(normal, diffuseColor);
+    vec3 specular = getSpecular(normal, view, roughness, f0);
+
+    // Ambient occlusion
+    vec3 color = mix(lambert, lambert * getOcclusion(), in_ub.occlusionStrength) + specular;
 #else
 	vec3 color = baseColor.rgb;
 #endif
@@ -272,9 +276,6 @@ void main()
     color += getEmissive();
 
 #ifdef UNIFORMBUFFER_BINDING
-    // Ambient occlusion
-    color = mix(color, color * getOcclusion(), in_ub.occlusionStrength);
-
     if (in_ub.alphaMode == 0)
     {
         alphaChannel = 1.0;
