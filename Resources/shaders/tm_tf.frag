@@ -123,6 +123,33 @@ vec3 xyzToRec2020(vec3 color)
 }
 
 //
+// see https://www.khronos.org/registry/DataFormat/specs/1.3/dataformat.1.3.html#TRANSFER_PQ
+//
+
+float rec2020ToPqPerChannel(float channel)
+{
+	const float m1 = 2610.0 / 16384.0;
+	const float m2 = 2523.0 / 4096.0 * 128.0;
+	const float c1 = 3424.0 / 4096.0;
+	const float c2 = 2413.0 / 4096.0 * 32.0;
+	const float c3 = 2392.0 / 4096.0 * 32.0;
+
+	float Y = channel / 10000.0;
+	float Ym1 = pow(Y, m1);
+
+	return pow((c1 + c2 * Ym1)/(1.0 + c3 * Ym1), m2);
+}
+
+vec3 rec2020ToPq(vec3 color)
+{
+	return vec3(
+        rec2020ToPqPerChannel(color.r),
+        rec2020ToPqPerChannel(color.g),
+        rec2020ToPqPerChannel(color.b)
+    );	
+}
+
+//
 
 void main()
 {
@@ -140,14 +167,20 @@ void main()
 
 	if (in_ub.transferFunction == 0)
 	{
+		// Linear
+
 		// No conversion required
 	}
 	else if (in_ub.transferFunction == 1)
 	{
+		// sRGB
+
 		c = linearToSrgbFast(c);
 	}
 	else if (in_ub.transferFunction == 2)
 	{
+		// PQ
+
 		// BT.709 => CIE-XYZ
 
 		c = linearToXyz(c);
@@ -156,7 +189,9 @@ void main()
 
 		c = xyzToRec2020(c);
 
-		// TODO: Implement PQ transfer function
+		// PQ EOTF -1
+
+		c = rec2020ToPq(c);
 	}
 
 	//
