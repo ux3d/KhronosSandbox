@@ -230,7 +230,7 @@ void main()
 
 	if (in_ub.debug)
 	{
-		if (c.r > 1.0 || c.g > 1.0 || c.g > 1.0)
+		if (c.r > 1.0 || c.g > 1.0 || c.b > 1.0)
 		{
 			c = vec3(1.0, 0.0, 0.0);
 		}
