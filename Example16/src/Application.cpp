@@ -56,6 +56,32 @@ bool Application::applicationInit()
 			return false;
 		}
 	}
+	else if (surfaceFormat.colorSpace == VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT)
+	{
+		if (surfaceFormat.format == VK_FORMAT_R16G16B16A16_SFLOAT)
+		{
+			transferFunction = 0;	// Format: R16G16B16A16_SFLOAT and ColorSpace: EXTENDED_SRGB_LINEAR => No transfer function
+		}
+		else
+		{
+			// Unknown combination
+
+			return false;
+		}
+	}
+	else if (surfaceFormat.colorSpace == VK_COLOR_SPACE_HDR10_ST2084_EXT)
+	{
+		if (surfaceFormat.format == VK_FORMAT_A2B10G10R10_UNORM_PACK32)
+		{
+			transferFunction = 2;	// Format: FORMAT_A2B10G10R10_UNORM_PACK32 and ColorSpace: COLOR_SPACE_HDR10_ST2084 => PQ transfer function
+		}
+		else
+		{
+			// Unknown combination
+
+			return false;
+		}
+	}
 	else
 	{
 		// Unknown combination
