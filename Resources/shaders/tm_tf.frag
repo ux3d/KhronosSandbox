@@ -9,6 +9,7 @@ layout(binding = 0) uniform UniformBufferObject {
 	int tonemap;
 	int transferFunction;
 	float monitorMaximumNits;
+	bool colorPrimary2020;
 	//
 	bool debug;
 } in_ub;
@@ -20,17 +21,19 @@ layout (location = 0) in vec2 in_texCoord;
 layout(location = 0) out vec4 out_pixelColor;
 
 //
-// Tonemappings
+// Helper functions
 //
 
-vec3 tonemapReinhard(vec3 color)
+float luminance(vec3 color)
 {
-	return color / (vec3(1.0) + color);
+	return 0.2126*color.r + 0.7152*color.g + 0.0722*color.b;
 }
 
 //
+// Color space conversions
+// 
+
 // see http://chilliant.blogspot.com/2012/08/srgb-approximations-for-hlsl.html
-//
 
 vec3 linearToSrgbFast(vec3 color)
 {
@@ -42,9 +45,7 @@ vec3 srgbToLinearFast(vec3 srgbIn)
     return vec3(pow(srgbIn.xyz, vec3(SRGB_GAMMA)));
 }
 
-//
 // see https://github.com/tobspr/GLSL-Color-Spaces/blob/master/ColorSpaces.inc.glsl
-//
 
 float linearToSrgbPerChannel(float channel)
 {
@@ -98,7 +99,7 @@ vec3 linearToXyz(vec3 color)
 vec3 xyzToLinear(vec3 color)
 {
 	const mat3 m = mat3(
-		3.2404542,-0.9692660, 0.0556434,
+		 3.2404542,-0.9692660, 0.0556434,
 		-1.5371385, 1.8760108,-0.2040259,
 		-0.4985314, 0.0415560, 1.0572252
 	);
@@ -106,10 +107,37 @@ vec3 xyzToLinear(vec3 color)
 	return m * color;
 }
 
-//
+// see https://www.shadertoy.com/view/WltSRB
+
+// Linear sRGB => XYZ => D65_2_D60 => AP1
+vec3 linearToAp1(vec3 color)
+{
+	const mat3 m = mat3
+	(
+		0.613097, 0.070194, 0.020616,
+		0.339523, 0.916354, 0.109570,
+		0.047379, 0.013452, 0.869815
+	);
+
+	return m * color;
+}
+
+// Inverse from above
+vec3 ap1ToLinear(vec3 color)
+{
+	const mat3 m = mat3
+	(
+		 1.704859, -0.130078, -0.023964,
+		-0.621715,  1.140734, -0.128975,
+		-0.083299, -0.010560,  1.153013
+
+	);
+
+	return m * color;
+}
+
 // see https://www.itu.int/rec/R-REC-BT.2087-0-201510-I
 // see https://www.itu.int/pub/R-REP-BT.2407
-//
 
 vec3 rec2020ToXyz(vec3 color)
 {
@@ -133,9 +161,7 @@ vec3 xyzToRec2020(vec3 color)
 	return m * color;
 }
 
-//
 // see https://www.khronos.org/registry/DataFormat/specs/1.3/dataformat.1.3.html#TRANSFER_PQ
-//
 
 float rec2020ToPqPerChannel(float channel)
 {
@@ -160,6 +186,38 @@ vec3 rec2020ToPq(vec3 color)
     );	
 }
 
+//
+// Tonemappings
+//
+
+// see https://64.github.io/tonemapping/
+
+vec3 tonemapReinhard(vec3 color)
+{
+	return color / (vec3(1.0) + color);
+}
+
+vec3 tonemapReinhardJodie(vec3 color)
+{
+    float L = luminance(color);
+    vec3 tonemappedColor = tonemapReinhard(color);
+    return mix(color / (1.0 + L), tonemappedColor, tonemappedColor);
+}
+
+// see https://www.shadertoy.com/view/WltSRB
+
+vec3 tonemapAcesHill(vec3 color)
+{
+	// RRT and ODT fit
+
+    vec3 a = (color            + 0.0245786) * color;
+    vec3 b = (color * 0.983729 + 0.4329510) * color + 0.238081;
+    
+    return a / b;
+}
+
+//
+// Main program
 //
 
 void main()
@@ -186,6 +244,40 @@ void main()
 
 		c = tonemapReinhard(c);
 	}
+	else if (in_ub.tonemap == 2)
+	{
+		// Reinhard Jodie
+
+		c = tonemapReinhardJodie(c);	
+	}
+	else if (in_ub.tonemap == 3)
+	{
+		// BT.709 => AP1
+
+	    c = linearToAp1(c);
+
+		// ACES (Hill)
+		c = tonemapAcesHill(c);
+
+		// AP1 => BT.709
+
+    	c = ap1ToLinear(c);
+	}
+
+	//
+	// Color Primary
+	//
+
+	if (in_ub.colorPrimary2020)
+	{
+		// BT.709 => CIE-XYZ
+
+		c = linearToXyz(c);
+
+		// CIE-XYZ => BT.2020
+
+		c = xyzToRec2020(c);
+	}
 	
 	//
 	// Transfer function
@@ -207,19 +299,11 @@ void main()
 	{
 		// PQ
 
-		// BT.709 => CIE-XYZ
-
-		c = linearToXyz(c);
-
-		// CIE-XYZ => BT.2020
-
-		c = xyzToRec2020(c);
-
 		// Adjust to monitor maximum possible nits
 
 		c = in_ub.monitorMaximumNits * c;
 
-		// PQ EOTF -1
+		// PQ EOTF-1
 
 		c = rec2020ToPq(c);
 	}

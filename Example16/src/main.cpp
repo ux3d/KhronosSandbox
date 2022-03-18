@@ -23,13 +23,15 @@ int main()
 	//
 
 	// Note: Execute vulkaninfo to gather allowed combinations for your display and graphics card.
+	//
 	// Display: 		Samsung UE75NU8009 UHD 4K
 	// Graphics card:	NVIDIA GeForce RTX 2060
+	//
+	// First version is available in most cases.
+	//
 
-	/*
 	application.setColorFormat(VK_FORMAT_B8G8R8A8_UNORM);
 	application.setColorSpace(VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
-	*/
 
 	/*
 	application.setColorFormat(VK_FORMAT_B8G8R8A8_SRGB);
@@ -46,8 +48,10 @@ int main()
 	application.setColorSpace(VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT);
 	*/
 
+	/*
 	application.setColorFormat(VK_FORMAT_A2B10G10R10_UNORM_PACK32);
 	application.setColorSpace(VK_COLOR_SPACE_HDR10_ST2084_EXT);
+	*/
 
 	//
 

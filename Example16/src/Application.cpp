@@ -12,6 +12,7 @@ struct UniformData {
 	int32_t tonemap;
 	int32_t transferFunction;
 	float monitorMaximumNits;
+	bool colorPrimary2020;
 	//
 	bool debug;
 };
@@ -35,7 +36,14 @@ bool Application::applicationInit()
 	}
 	srgbIn = false;			// HDR is linear
 
-	tonemap = 1;			// Basic Reinhard
+	//
+	// Choose tonemapping here
+	//
+
+	//tonemap = 0;			// None
+	//tonemap = 1;			// Reinhard
+	//tonemap = 2;			// Reinhard Jodie
+	tonemap = 3;			// ACES (Hill)
 
 	//
 
@@ -78,6 +86,8 @@ bool Application::applicationInit()
 		if (surfaceFormat.format == VK_FORMAT_A2B10G10R10_UNORM_PACK32)
 		{
 			transferFunction = 2;	// Format: FORMAT_A2B10G10R10_UNORM_PACK32 and ColorSpace: COLOR_SPACE_HDR10_ST2084 => PQ transfer function
+
+			colorPrimary2020 = true;
 		}
 		else
 		{
@@ -459,6 +469,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	uniformData.tonemap = tonemap;
 	uniformData.transferFunction = transferFunction;
 	uniformData.monitorMaximumNits = monitorMaximumNits;
+	uniformData.colorPrimary2020 = colorPrimary2020;
 	uniformData.debug = debug;
 
 	if (!VulkanResource::copyHostToDevice(device, uniformBufferResources[frameIndex].bufferResource, &uniformData, sizeof(uniformData)))
