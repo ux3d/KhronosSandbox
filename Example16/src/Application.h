@@ -28,6 +28,8 @@ private:
 	int32_t transferFunction = 0;
 	// Display: 		Samsung UE75NU8009 UHD 4K
 	// Value:			763.881897 nits (Max Fullframe Value from DisplayHDR Test)
+	// Note:			One can read out these values
+	//					https://www.asawicki.info/news_1703_programming_hdr_monitor_support_in_direct3d
 	float monitorMaximumNits = 763.881897f;
 	bool debug = false;
 
