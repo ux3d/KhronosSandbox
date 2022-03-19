@@ -8,7 +8,6 @@ layout(binding = 0) uniform UniformBufferObject {
 	int tonemap;
 	int transferFunction;
 	float monitorMaximumNits;
-	bool colorPrimary2020;
     bool srgbIn;
 	bool debug;
 } in_ub;
@@ -267,7 +266,7 @@ void main()
 	// Color Primary
 	//
 
-	if (in_ub.colorPrimary2020)
+	if (in_ub.transferFunction == 2)
 	{
 		// BT.709 => CIE-XYZ
 

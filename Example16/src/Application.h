@@ -34,7 +34,6 @@ private:
 	// Note:			One can read out these values programmatically:
 	//					https://www.asawicki.info/news_1703_programming_hdr_monitor_support_in_direct3d
 	float monitorMaximumNits = 763.881897f;
-	bool colorPrimary2020 = false;
 
 	virtual bool applicationInit();
 	virtual bool applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime);
