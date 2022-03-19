@@ -328,7 +328,7 @@ void main()
 	{
 		// sRGB
 
-		c = rec709ToSrgbNonLinearFast(c);
+		c = rec709ToSrgbNonLinear(c);
 	}
 	else if (in_ub.transferFunction == 2)
 	{
