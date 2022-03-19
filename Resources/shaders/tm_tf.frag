@@ -1,8 +1,7 @@
 #version 460 core
 
-const float SRGB_GAMMA = 2.2;
-const float SRGB_INV_GAMMA = 1.0 / SRGB_GAMMA;
-const float SRGB_ALPHA = 0.055;
+const float SRGB_GAMMA_FAST = 2.2;
+const float SRGB_INV_GAMMA_FAST = 1.0 / SRGB_GAMMA_FAST;
 
 layout(binding = 0) uniform UniformBufferObject {
 	int tonemap;
@@ -35,12 +34,12 @@ float luminance(vec3 color)
 
 vec3 rec709ToSrgbNonLinearFast(vec3 color)
 {
-    return pow(color, vec3(SRGB_INV_GAMMA));
+    return pow(color, vec3(SRGB_INV_GAMMA_FAST));
 }
 
 vec3 srgbNonLinearToRec709Fast(vec3 color)
 {
-    return vec3(pow(color.xyz, vec3(SRGB_GAMMA)));
+    return vec3(pow(color.xyz, vec3(SRGB_GAMMA_FAST)));
 }
 
 // see https://github.com/tobspr/GLSL-Color-Spaces/blob/master/ColorSpaces.inc.glsl
@@ -52,7 +51,7 @@ float rec709ToSrgbNonLinearPerChannel(float channel)
         return 12.92 * channel;
 	}
     
-	return (1.0 + SRGB_ALPHA) * pow(channel, 1.0/2.4) - SRGB_ALPHA;
+	return 1.055 * pow(channel, 1.0/2.4) - 0.055;
 }
 
 float srgbNonLinearToRec709PerChannel(float channel)
@@ -62,7 +61,7 @@ float srgbNonLinearToRec709PerChannel(float channel)
         return channel / 12.92;
 	}
     
-	return pow((channel + SRGB_ALPHA) / (1.0 + SRGB_ALPHA), 2.4);
+	return pow((channel + 0.055) / 1.055, 2.4);
 }
 
 vec3 rec709ToSrgbNonLinear(vec3 color)
