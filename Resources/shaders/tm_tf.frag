@@ -6,9 +6,10 @@ const float SRGB_INV_GAMMA_FAST = 1.0 / SRGB_GAMMA_FAST;
 layout(binding = 0) uniform UniformBufferObject {
 	int tonemap;
 	int transferFunction;
-	float monitorMaximumNits;
     bool imageSrgbNonLinear;
 	bool debug;
+	float minLuminance;
+	float maxLuminance;
 } in_ub;
 
 layout (binding = 1) uniform sampler2D u_colorTexture;
@@ -332,13 +333,11 @@ void main()
 	}
 	else if (in_ub.transferFunction == 2)
 	{
+		// see https://docs.microsoft.com/en-us/windows/win32/direct3darticles/high-dynamic-range
+
+		c = c * (in_ub.maxLuminance - in_ub.minLuminance) + in_ub.minLuminance;
+
 		// PQ
-
-		// Adjust to monitor maximum possible nits
-
-		c = in_ub.monitorMaximumNits * c;
-
-		// PQ EOTF-1
 
 		c = rec2020ToPq(c);
 	}

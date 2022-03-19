@@ -10,9 +10,10 @@ struct VertexData {
 struct UniformData {
 	int32_t tonemap;
 	int32_t transferFunction;
-	float monitorMaximumNits;
 	int32_t imageSrgbNonLinear;
 	int32_t debug;
+	float minLuminance;
+	float maxLuminance;
 };
 
 bool Application::applicationInit()
@@ -80,6 +81,8 @@ bool Application::applicationInit()
 		if (surfaceFormat.format == VK_FORMAT_A2B10G10R10_UNORM_PACK32)
 		{
 			transferFunction = 2;	// Format: FORMAT_A2B10G10R10_UNORM_PACK32 and ColorSpace: COLOR_SPACE_HDR10_ST2084 => PQ transfer function
+
+			vkSetHdrMetadataEXT(device, 1, &swapchain, &hdrMetadata);
 		}
 		else
 		{
@@ -456,9 +459,10 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	UniformData uniformData = {};
 	uniformData.tonemap = tonemap;
 	uniformData.transferFunction = transferFunction;
-	uniformData.monitorMaximumNits = monitorMaximumNits;
 	uniformData.imageSrgbNonLinear = (int32_t)imageSrgbNonLinear;
 	uniformData.debug = (int32_t)debug;
+	uniformData.minLuminance = hdrMetadata.minLuminance;
+	uniformData.maxLuminance = hdrMetadata.maxLuminance;
 
 	if (!VulkanResource::copyHostToDevice(device, uniformBufferResources[frameIndex].bufferResource, &uniformData, sizeof(uniformData)))
 	{
@@ -534,8 +538,8 @@ void Application::applicationTerminate()
 
 // Public
 
-Application::Application(int32_t tonemap, int32_t testImage, bool debug) :
-	tonemap(tonemap), testImage(testImage), debug(debug)
+Application::Application(int32_t tonemap, int32_t testImage, const VkHdrMetadataEXT& hdrMetadata, bool debug) :
+	tonemap(tonemap), testImage(testImage), hdrMetadata(hdrMetadata), debug(debug)
 {
 }
 

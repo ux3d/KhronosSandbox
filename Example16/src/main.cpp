@@ -2,12 +2,22 @@
 
 #include <GLFW/glfw3.h>
 
+#include "query_display.h"
+
 #define APP_WIDTH 1920
 #define APP_HEIGHT 1080
 #define APP_TITLE "Example16: HDR tests"
 
 int main(int argc, char *argv[])
 {
+	VkHdrMetadataEXT hdrMetadata;
+	if (!getHdrMetdata(hdrMetadata))
+	{
+		return -1;
+	}
+
+	//
+
 	// 0 None
 	// 1 Reinhard
 	// 2 Reinhard Jodie
@@ -58,7 +68,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	Application application(tonemap, testImage, debug);
+	Application application(tonemap, testImage, hdrMetadata, debug);
 	application.setApplicationName(APP_TITLE);
 	application.setMinor(2);
 	application.addEnabledInstanceLayerName("VK_LAYER_KHRONOS_validation");
