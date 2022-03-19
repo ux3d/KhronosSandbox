@@ -82,6 +82,44 @@ vec3 srgbNonLinearToRec709(vec3 color)
     );	
 }
 
+float rec709ToRec709NonLinearPerChannel(float channel)
+{
+    if(channel <= 0.018)
+	{
+        return 4.5 * channel;
+	}
+    
+	return 1.099 * pow(channel, 1.0/2.2) - 0.099;
+}
+
+float rec709NonLinearToRec709PerChannel(float channel)
+{
+    if (channel <= 0.081)
+	{
+        return channel / 4.5;
+	}
+    
+	return pow((channel + 0.099) / 1.099, 2.2);
+}
+
+vec3 rec709ToRec709NonLinear(vec3 color)
+{
+	return vec3(
+        rec709ToRec709NonLinearPerChannel(color.r),
+        rec709ToRec709NonLinearPerChannel(color.g),
+        rec709ToRec709NonLinearPerChannel(color.b)
+    );	
+}
+
+vec3 rec709NonLinearToRec709(vec3 color)
+{
+	return vec3(
+        rec709NonLinearToRec709PerChannel(color.r),
+        rec709NonLinearToRec709PerChannel(color.g),
+        rec709NonLinearToRec709PerChannel(color.b)
+    );	
+}
+
 vec3 rec709ToXyz(vec3 color)
 {
 	const mat3 m = mat3(
