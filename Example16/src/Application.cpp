@@ -11,7 +11,7 @@ struct UniformData {
 	int32_t tonemap;
 	int32_t transferFunction;
 	float monitorMaximumNits;
-	int32_t srgbIn;
+	int32_t imageSrgbNonLinear;
 	int32_t debug;
 };
 
@@ -26,14 +26,14 @@ bool Application::applicationInit()
 			{
 				return false;
 			}
-			srgbIn = false;			// HDR is linear
+			imageSrgbNonLinear = false;		// HDR is linear and we assume it is in the Linear SRGB space, which has the same gamut as Rec.709
 		break;
 		case 1:
 			if (!ImageDataIO::open(textureResourceCreateInfo.imageDataResources, "../Resources/images/desert.jpg"))
 			{
 				return false;
 			}
-			srgbIn = true;			// JPG in general is SRGB and we are uploading it 1:1 with no specific format conversion
+			imageSrgbNonLinear = true;			// JPG in general is Non-linear SRGB and we are uploading it 1:1 with no specific format conversion
 		break;
 		default:
 			return false;
@@ -457,7 +457,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	uniformData.tonemap = tonemap;
 	uniformData.transferFunction = transferFunction;
 	uniformData.monitorMaximumNits = monitorMaximumNits;
-	uniformData.srgbIn = (int32_t)srgbIn;
+	uniformData.imageSrgbNonLinear = (int32_t)imageSrgbNonLinear;
 	uniformData.debug = (int32_t)debug;
 
 	if (!VulkanResource::copyHostToDevice(device, uniformBufferResources[frameIndex].bufferResource, &uniformData, sizeof(uniformData)))

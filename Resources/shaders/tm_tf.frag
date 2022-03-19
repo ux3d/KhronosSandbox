@@ -8,7 +8,7 @@ layout(binding = 0) uniform UniformBufferObject {
 	int tonemap;
 	int transferFunction;
 	float monitorMaximumNits;
-    bool srgbIn;
+    bool imageSrgbNonLinear;
 	bool debug;
 } in_ub;
 
@@ -33,19 +33,19 @@ float luminance(vec3 color)
 
 // see http://chilliant.blogspot.com/2012/08/srgb-approximations-for-hlsl.html
 
-vec3 rec709ToSrgbFast(vec3 color)
+vec3 rec709ToSrgbNonLinearFast(vec3 color)
 {
     return pow(color, vec3(SRGB_INV_GAMMA));
 }
 
-vec3 srgbToRec709Fast(vec3 srgbIn)
+vec3 srgbNonLinearToRec709Fast(vec3 color)
 {
-    return vec3(pow(srgbIn.xyz, vec3(SRGB_GAMMA)));
+    return vec3(pow(color.xyz, vec3(SRGB_GAMMA)));
 }
 
 // see https://github.com/tobspr/GLSL-Color-Spaces/blob/master/ColorSpaces.inc.glsl
 
-float rec709ToSrgbPerChannel(float channel)
+float rec709ToSrgbNonLinearPerChannel(float channel)
 {
     if(channel <= 0.0031308)
 	{
@@ -55,7 +55,7 @@ float rec709ToSrgbPerChannel(float channel)
 	return (1.0 + SRGB_ALPHA) * pow(channel, 1.0/2.4) - SRGB_ALPHA;
 }
 
-float srgbToRec709PerChannel(float channel)
+float srgbNonLinearToRec709PerChannel(float channel)
 {
     if (channel <= 0.04045)
 	{
@@ -65,21 +65,21 @@ float srgbToRec709PerChannel(float channel)
 	return pow((channel + SRGB_ALPHA) / (1.0 + SRGB_ALPHA), 2.4);
 }
 
-vec3 rec709ToSrgb(vec3 color)
+vec3 rec709ToSrgbNonLinear(vec3 color)
 {
 	return vec3(
-        rec709ToSrgbPerChannel(color.r),
-        rec709ToSrgbPerChannel(color.g),
-        rec709ToSrgbPerChannel(color.b)
+        rec709ToSrgbNonLinearPerChannel(color.r),
+        rec709ToSrgbNonLinearPerChannel(color.g),
+        rec709ToSrgbNonLinearPerChannel(color.b)
     );	
 }
 
-vec3 srgbToRec709(vec3 color)
+vec3 srgbNonLinearToRec709(vec3 color)
 {
 	return vec3(
-        srgbToRec709PerChannel(color.r),
-        srgbToRec709PerChannel(color.g),
-        srgbToRec709PerChannel(color.b)
+        srgbNonLinearToRec709PerChannel(color.r),
+        srgbNonLinearToRec709PerChannel(color.g),
+        srgbNonLinearToRec709PerChannel(color.b)
     );	
 }
 
@@ -221,9 +221,9 @@ vec3 tonemapAcesHill(vec3 color)
 void main()
 {
 	vec3 c = texture(u_colorTexture, in_texCoord.st).rgb;
-	if (in_ub.srgbIn)
+	if (in_ub.imageSrgbNonLinear)
 	{
-		c = srgbToRec709Fast(c);
+		c = srgbNonLinearToRec709Fast(c);
 	}
 
 	//
@@ -291,7 +291,7 @@ void main()
 	{
 		// sRGB
 
-		c = rec709ToSrgbFast(c);
+		c = rec709ToSrgbNonLinearFast(c);
 	}
 	else if (in_ub.transferFunction == 2)
 	{

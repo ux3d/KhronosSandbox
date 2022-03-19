@@ -25,7 +25,7 @@ private:
 
 	int32_t tonemap = 0;
 	int32_t testImage = 0;
-	bool srgbIn = false;
+	bool imageSrgbNonLinear = false;
 	bool debug = false;
 
 	int32_t transferFunction = 0;
