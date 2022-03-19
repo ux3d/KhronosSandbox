@@ -23,8 +23,11 @@ private:
 
 	TextureResource textureResource  = {};
 
-	bool srgbIn = false;
 	int32_t tonemap = 0;
+	int32_t testImage = 0;
+	bool srgbIn = false;
+	bool debug = false;
+
 	int32_t transferFunction = 0;
 	// Display: 		Samsung UE75NU8009 UHD 4K
 	// Value:			763.881897 nits (Max Fullframe Value from DisplayHDR Test)
@@ -32,14 +35,13 @@ private:
 	//					https://www.asawicki.info/news_1703_programming_hdr_monitor_support_in_direct3d
 	float monitorMaximumNits = 763.881897f;
 	bool colorPrimary2020 = false;
-	bool debug = false;
 
 	virtual bool applicationInit();
 	virtual bool applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime);
 	virtual void applicationTerminate();
 
 public:
-	Application();
+	Application(int32_t tonemap, int32_t testImage, bool debug);
 	~Application();
 };
 

@@ -8,42 +8,37 @@ struct VertexData {
 };
 
 struct UniformData {
-	bool srgbIn;
 	int32_t tonemap;
 	int32_t transferFunction;
 	float monitorMaximumNits;
-	bool colorPrimary2020;
-	//
-	bool debug;
+	int32_t colorPrimary2020;	// Make sure, the "bool" is 32bits
+	int32_t srgbIn;
+	int32_t debug;
 };
 
 bool Application::applicationInit()
 {
 	TextureResourceCreateInfo textureResourceCreateInfo = {};
 
-	/*
-	if (!ImageDataIO::open(textureResourceCreateInfo.imageDataResources, "../Resources/images/desert.jpg"))
+	switch (testImage)
 	{
-		return false;
+		case 0:
+			if (!ImageDataIO::open(textureResourceCreateInfo.imageDataResources, "../Resources/images/field.hdr"))
+			{
+				return false;
+			}
+			srgbIn = false;			// HDR is linear
+		break;
+		case 1:
+			if (!ImageDataIO::open(textureResourceCreateInfo.imageDataResources, "../Resources/images/desert.jpg"))
+			{
+				return false;
+			}
+			srgbIn = true;			// JPG in general is SRGB and we are uploading it 1:1 with no specific format conversion
+		break;
+		default:
+			return false;
 	}
-	srgbIn = true;			// JPG in general is SRGB and we are uploading it 1:1 with no specific format conversion
-	*/
-
-
-	if (!ImageDataIO::open(textureResourceCreateInfo.imageDataResources, "../Resources/images/field.hdr"))
-	{
-		return false;
-	}
-	srgbIn = false;			// HDR is linear
-
-	//
-	// Choose tonemapping here
-	//
-
-	//tonemap = 0;			// None
-	//tonemap = 1;			// Reinhard
-	//tonemap = 2;			// Reinhard Jodie
-	tonemap = 3;			// ACES (Hill)
 
 	//
 
@@ -102,9 +97,6 @@ bool Application::applicationInit()
 
 		return false;
 	}
-
-	// If true, all fragment values having a final RGB component larger than 1 becomes red
-	debug = false;
 
 	textureResourceCreateInfo.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
 	textureResourceCreateInfo.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
@@ -465,12 +457,12 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	vkCmdBindPipeline(commandBuffers[frameIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
 	UniformData uniformData = {};
-	uniformData.srgbIn = srgbIn;
 	uniformData.tonemap = tonemap;
 	uniformData.transferFunction = transferFunction;
 	uniformData.monitorMaximumNits = monitorMaximumNits;
-	uniformData.colorPrimary2020 = colorPrimary2020;
-	uniformData.debug = debug;
+	uniformData.colorPrimary2020 = (int32_t)colorPrimary2020;
+	uniformData.srgbIn = (int32_t)srgbIn;
+	uniformData.debug = (int32_t)debug;
 
 	if (!VulkanResource::copyHostToDevice(device, uniformBufferResources[frameIndex].bufferResource, &uniformData, sizeof(uniformData)))
 	{
@@ -546,7 +538,8 @@ void Application::applicationTerminate()
 
 // Public
 
-Application::Application()
+Application::Application(int32_t tonemap, int32_t testImage, bool debug) :
+	tonemap(tonemap), testImage(testImage), debug(debug)
 {
 }
 

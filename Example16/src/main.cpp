@@ -6,8 +6,51 @@
 #define APP_HEIGHT 1080
 #define APP_TITLE "Example16: HDR tests"
 
-int main()
+int main(int argc, char *argv[])
 {
+	// 0 None
+	// 1 Reinhard
+	// 2 Reinhard Jodie
+	// 3 ACES (Hill)
+	int32_t tonemap = 3;
+
+	// 0 HDR image
+	// 1 LDR image
+	int32_t testImage = 0;
+
+	// see below
+	int32_t surfaceFormat = 0;
+
+	// If true, all pixels having a channel larger than 1.0 do become red.
+	bool debug = false;
+
+    for (int i = 0; i < argc; i++)
+    {
+        if (strcmp(argv[i], "-t") == 0 && (i + 1 < argc))
+        {
+            tonemap = (int32_t)std::stoi(argv[i + 1]);
+        }
+        if (strcmp(argv[i], "-i") == 0 && (i + 1 < argc))
+        {
+            testImage = (int32_t)std::stoi(argv[i + 1]);
+        }
+        if (strcmp(argv[i], "-s") == 0 && (i + 1 < argc))
+        {
+        	surfaceFormat = (int32_t)std::stoi(argv[i + 1]);
+        }
+		if (strcmp(argv[i], "-d") == 0 && (i + 1 < argc))
+		{
+			if (strcmp(argv[i + 1], "true") == 0)
+			{
+				debug = "true";
+			}
+		}
+    }
+
+	//
+	//
+	//
+
 	GLFWwindow* window;
 
 	if (!glfwInit())
@@ -15,43 +58,46 @@ int main()
 		return -1;
 	}
 
-	Application application;
+	Application application(tonemap, testImage, debug);
 	application.setApplicationName(APP_TITLE);
 	application.setMinor(2);
 	application.addEnabledInstanceLayerName("VK_LAYER_KHRONOS_validation");
 
 	//
-
-	// Note: Execute vulkaninfo to gather allowed combinations for your display and graphics card.
-	//
+	// Execute vulkaninfo to gather allowed combinations for your display and graphics card.
+	// Following surface list is from the given setup:
 	// Display: 		Samsung UE75NU8009 UHD 4K
 	// Graphics card:	NVIDIA GeForce RTX 2060
 	//
-	// First version is available in most cases.
+	// SurfaceFormat 0 is available in most cases. This index is not the one from the vulkaninfo list.
 	//
 
-	application.setColorFormat(VK_FORMAT_B8G8R8A8_UNORM);
-	application.setColorSpace(VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
-
-	/*
-	application.setColorFormat(VK_FORMAT_B8G8R8A8_SRGB);
-	application.setColorSpace(VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
-	*/
-
-	/*
-	application.setColorFormat(VK_FORMAT_A2B10G10R10_UNORM_PACK32);
-	application.setColorSpace(VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
-	*/
-
-	/*
-	application.setColorFormat(VK_FORMAT_R16G16B16A16_SFLOAT);
-	application.setColorSpace(VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT);
-	*/
-
-	/*
-	application.setColorFormat(VK_FORMAT_A2B10G10R10_UNORM_PACK32);
-	application.setColorSpace(VK_COLOR_SPACE_HDR10_ST2084_EXT);
-	*/
+	switch (surfaceFormat)
+	{
+		case 0:
+			application.setColorFormat(VK_FORMAT_B8G8R8A8_UNORM);
+			application.setColorSpace(VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
+		break;
+		case 1:
+			application.setColorFormat(VK_FORMAT_B8G8R8A8_SRGB);
+			application.setColorSpace(VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
+		break;
+		case 2:
+			application.setColorFormat(VK_FORMAT_A2B10G10R10_UNORM_PACK32);
+			application.setColorSpace(VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
+		break;
+		case 3:
+			application.setColorFormat(VK_FORMAT_R16G16B16A16_SFLOAT);
+			application.setColorSpace(VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT);
+		break;
+		case 4:
+			application.setColorFormat(VK_FORMAT_A2B10G10R10_UNORM_PACK32);
+			application.setColorSpace(VK_COLOR_SPACE_HDR10_ST2084_EXT);
+		break;
+		default:
+			glfwTerminate();
+		    return -1;
+	}
 
 	//
 

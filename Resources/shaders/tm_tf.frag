@@ -5,12 +5,11 @@ const float SRGB_INV_GAMMA = 1.0 / SRGB_GAMMA;
 const float SRGB_ALPHA = 0.055;
 
 layout(binding = 0) uniform UniformBufferObject {
-    bool srgbIn;
 	int tonemap;
 	int transferFunction;
 	float monitorMaximumNits;
 	bool colorPrimary2020;
-	//
+    bool srgbIn;
 	bool debug;
 } in_ub;
 
