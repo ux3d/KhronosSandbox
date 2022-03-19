@@ -1,6 +1,5 @@
 #include "query_display.h"
 
-#include <dxgi1_5.h>
 #include <dxgi1_6.h>
 
 bool getHdrMetdata(VkHdrMetadataEXT& hdrMetadata)
