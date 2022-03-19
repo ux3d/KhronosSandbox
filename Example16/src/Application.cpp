@@ -81,8 +81,6 @@ bool Application::applicationInit()
 		if (surfaceFormat.format == VK_FORMAT_A2B10G10R10_UNORM_PACK32)
 		{
 			transferFunction = 2;	// Format: FORMAT_A2B10G10R10_UNORM_PACK32 and ColorSpace: COLOR_SPACE_HDR10_ST2084 => PQ transfer function
-
-			vkSetHdrMetadataEXT(device, 1, &swapchain, &hdrMetadata);
 		}
 		else
 		{
