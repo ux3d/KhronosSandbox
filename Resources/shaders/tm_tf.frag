@@ -251,7 +251,7 @@ vec3 tonemapReinhardJodie(vec3 color)
 
 vec3 tonemapAcesHill(vec3 color)
 {
-	// RRT and ODT fit
+	// RRT and ODT fit output between 0.0 and 1.0
 
     vec3 a = (color            + 0.0245786) * color;
     vec3 b = (color * 0.983729 + 0.4329510) * color + 0.238081;
@@ -346,8 +346,8 @@ void main()
 	}
 	else if (in_ub.transferFunction == 2)
 	{
-		// see https://docs.microsoft.com/en-us/windows/win32/direct3darticles/high-dynamic-range
-
+		// Converts scene referred linear data between 0.0 and 1.0 to an ultrawide display-referred data set
+		// also see https://docs.microsoft.com/en-us/windows/win32/direct3darticles/high-dynamic-range
 		c = c * (in_ub.maxLuminance - in_ub.minLuminance) + in_ub.minLuminance;
 
 		// PQ
