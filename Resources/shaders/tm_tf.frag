@@ -149,28 +149,31 @@ vec3 xyzToRec709(vec3 color)
 // Rec709 => XYZ => D65_2_D60 => AP1
 vec3 rec709ToAcesAp1(vec3 color)
 {
+	// TODO: Factor out RRT_SAT
 	const mat3 m = mat3
 	(
-		0.613097, 0.070194, 0.020616,
-		0.339523, 0.916354, 0.109570,
-		0.047379, 0.013452, 0.869815
+		0.59719, 0.35458, 0.04823,
+		0.07600, 0.90834, 0.01566,
+		0.02840, 0.13383, 0.83777
 	);
 
-	return m * color;
+	// To use HLSL matrices
+	return color * m;
 }
 
 // Inverse from above
 vec3 acesAp1ToRec709(vec3 color)
 {
+	// TODO: Factor out ODT_SAT
 	const mat3 m = mat3
 	(
-		 1.704859, -0.130078, -0.023964,
-		-0.621715,  1.140734, -0.128975,
-		-0.083299, -0.010560,  1.153013
-
+		1.60475, -0.53108, -0.07367,
+		-0.10208,  1.10813, -0.00605,
+		-0.00327, -0.07276,  1.07602
 	);
 
-	return m * color;
+	// To use HLSL matrices
+	return color * m;
 }
 
 // see https://www.itu.int/rec/R-REC-BT.2087-0-201510-I
@@ -252,12 +255,16 @@ vec3 tonemapReinhardJodie(vec3 color)
 
 vec3 tonemapAcesHill(vec3 color)
 {
+	// TODO: Add RTT_SAT here
+
 	// RRT and ODT fit output between 0.0 and 1.0
 
     vec3 a = (color            + 0.0245786) * color - 0.000090537;
     vec3 b = (color * 0.983729 + 0.4329510) * color + 0.238081;
     
     return a / b;
+
+	// TODO: Add ODT_SAT here
 }
 
 vec3 tonemapAcesNarkowicz(vec3 color)
