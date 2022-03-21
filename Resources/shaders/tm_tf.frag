@@ -248,12 +248,13 @@ vec3 tonemapReinhardJodie(vec3 color)
 }
 
 // see https://www.shadertoy.com/view/WltSRB
+// see https://github.com/TheRealMJP/BakingLab/blob/master/BakingLab/ACES.hlsl
 
 vec3 tonemapAcesHill(vec3 color)
 {
 	// RRT and ODT fit output between 0.0 and 1.0
 
-    vec3 a = (color            + 0.0245786) * color;
+    vec3 a = (color            + 0.0245786) * color - 0.000090537;
     vec3 b = (color * 0.983729 + 0.4329510) * color + 0.238081;
     
     return a / b;
