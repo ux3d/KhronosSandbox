@@ -16,13 +16,17 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
+	// Take half the range for HDR
+	hdrMetadata.maxLuminance *= 0.5;
+
 	//
 
 	// 0 None
 	// 1 Reinhard
-	// 2 Reinhard Jodie
-	// 3 ACES (Hill)
-	int32_t tonemap = 3;
+	// 2 Extended Reinhard
+	// 3 Reinhard Jodie
+	// 4 ACES (Hill)
+	int32_t tonemap = 4;
 
 	// 0 HDR image
 	// 1 LDR image
@@ -30,6 +34,9 @@ int main(int argc, char *argv[])
 
 	// see below
 	int32_t surfaceFormat = 0;
+
+	// Maximum scene white
+	float maxWhite = 1.0f;
 
 	// If true, all pixels having a channel larger than 1.0 do become red.
 	bool debug = false;
@@ -47,6 +54,10 @@ int main(int argc, char *argv[])
         if (strcmp(argv[i], "-s") == 0 && (i + 1 < argc))
         {
         	surfaceFormat = (int32_t)std::stoi(argv[i + 1]);
+        }
+        if (strcmp(argv[i], "-w") == 0 && (i + 1 < argc))
+        {
+        	maxWhite = std::stof(argv[i + 1]);
         }
 		if (strcmp(argv[i], "-d") == 0 && (i + 1 < argc))
 		{
@@ -68,7 +79,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	Application application(tonemap, testImage, hdrMetadata, debug);
+	Application application(tonemap, testImage, hdrMetadata, maxWhite, debug);
 	application.setApplicationName(APP_TITLE);
 	application.setMinor(2);
 	application.addEnabledInstanceLayerName("VK_LAYER_KHRONOS_validation");

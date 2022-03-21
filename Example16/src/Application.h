@@ -27,6 +27,7 @@ private:
 	int32_t testImage = 0;
 	bool imageSrgbNonLinear = false;
 	VkHdrMetadataEXT hdrMetadata{};
+	float maxWhite = 1.0f;
 	bool debug = false;
 
 	int32_t transferFunction = 0;
@@ -36,7 +37,7 @@ private:
 	virtual void applicationTerminate();
 
 public:
-	Application(int32_t tonemap, int32_t testImage, const VkHdrMetadataEXT& hdrMetadata, bool debug);
+	Application(int32_t tonemap, int32_t testImage, const VkHdrMetadataEXT& hdrMetadata, float maxWhite, bool debug);
 	~Application();
 };
 

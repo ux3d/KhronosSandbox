@@ -10,6 +10,7 @@ layout(binding = 0) uniform UniformBufferObject {
 	bool debug;
 	float minLuminance;
 	float maxLuminance;
+	float maxWhite;
 } in_ub;
 
 layout (binding = 1) uniform sampler2D u_colorTexture;
@@ -233,6 +234,12 @@ vec3 tonemapReinhard(vec3 color)
 	return color / (vec3(1.0) + color);
 }
 
+vec3 tonemapExtendedReinhard(vec3 color, float maxWhite)
+{
+	vec3 adjustedColor = color * (1.0 + (color / vec3(maxWhite * maxWhite)));
+    return tonemapReinhard(adjustedColor);
+}
+
 vec3 tonemapReinhardJodie(vec3 color)
 {
     float L = luminance(color);
@@ -282,11 +289,17 @@ void main()
 	}
 	else if (in_ub.tonemap == 2)
 	{
+		// Extended Reinhard
+
+		c = tonemapExtendedReinhard(c, in_ub.maxWhite);
+	}
+	else if (in_ub.tonemap == 3)
+	{
 		// Reinhard Jodie
 
 		c = tonemapReinhardJodie(c);	
 	}
-	else if (in_ub.tonemap == 3)
+	else if (in_ub.tonemap == 4)
 	{
 		// BT.709 => AP1
 

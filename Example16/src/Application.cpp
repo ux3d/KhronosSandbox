@@ -14,6 +14,7 @@ struct UniformData {
 	int32_t debug;
 	float minLuminance;
 	float maxLuminance;
+	float maxWhite;
 };
 
 bool Application::applicationInit()
@@ -460,8 +461,8 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	uniformData.imageSrgbNonLinear = (int32_t)imageSrgbNonLinear;
 	uniformData.debug = (int32_t)debug;
 	uniformData.minLuminance = hdrMetadata.minLuminance;
-	// Use half the range.
-	uniformData.maxLuminance = hdrMetadata.maxLuminance * 0.5f;
+	uniformData.maxLuminance = hdrMetadata.maxLuminance;
+	uniformData.maxWhite = maxWhite;
 
 	if (!VulkanResource::copyHostToDevice(device, uniformBufferResources[frameIndex].bufferResource, &uniformData, sizeof(uniformData)))
 	{
@@ -537,8 +538,8 @@ void Application::applicationTerminate()
 
 // Public
 
-Application::Application(int32_t tonemap, int32_t testImage, const VkHdrMetadataEXT& hdrMetadata, bool debug) :
-	tonemap(tonemap), testImage(testImage), hdrMetadata(hdrMetadata), debug(debug)
+Application::Application(int32_t tonemap, int32_t testImage, const VkHdrMetadataEXT& hdrMetadata, float maxWhite, bool debug) :
+	tonemap(tonemap), testImage(testImage), hdrMetadata(hdrMetadata), maxWhite(maxWhite), debug(debug)
 {
 }
 
