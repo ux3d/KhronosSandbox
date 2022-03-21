@@ -460,7 +460,8 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	uniformData.imageSrgbNonLinear = (int32_t)imageSrgbNonLinear;
 	uniformData.debug = (int32_t)debug;
 	uniformData.minLuminance = hdrMetadata.minLuminance;
-	uniformData.maxLuminance = hdrMetadata.maxLuminance;
+	// Use half the range.
+	uniformData.maxLuminance = hdrMetadata.maxLuminance * 0.5f;
 
 	if (!VulkanResource::copyHostToDevice(device, uniformBufferResources[frameIndex].bufferResource, &uniformData, sizeof(uniformData)))
 	{
