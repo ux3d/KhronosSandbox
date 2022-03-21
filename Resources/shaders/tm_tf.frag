@@ -259,6 +259,52 @@ vec3 tonemapAcesHill(vec3 color)
     return a / b;
 }
 
+vec3 tonemapAcesNarkowicz(vec3 color)
+{
+	const float A = 2.51;
+    const float B = 0.03;
+    const float C = 2.43;
+    const float D = 0.59;
+    const float E = 0.14;
+
+    return clamp((color * (A * color + B)) / (color * (C * color + D) + E), 0.0, 1.0);
+}
+
+vec3 changeLuminance(vec3 c_in, float l_out)
+{
+    float l_in = luminance(c_in);
+    return c_in * (l_out / l_in);
+}
+
+vec3 tonemapReinhardExtendedLuminance(vec3 color, float maxWhite)
+{
+    float l_old = luminance(color);
+    float numerator = l_old * (1.0 + (l_old / (maxWhite * maxWhite)));
+    float l_new = numerator / (1.0 + l_old);
+    return changeLuminance(color, l_new);
+}
+
+vec3 tonemapUncharted2Partial(vec3 color)
+{
+    float A = 0.15;
+    float B = 0.50;
+    float C = 0.10;
+    float D = 0.20;
+    float E = 0.02;
+    float F = 0.30;
+    return ((color*(A*color+C*B)+D*E)/(color*(A*color+B)+D*F))-E/F;
+}
+
+vec3 tonemapUncharted2(vec3 color)
+{
+    float exposure_bias = 2.0;
+    vec3 curr = tonemapUncharted2Partial(color * exposure_bias);
+
+    vec3 W = vec3(11.2);
+    vec3 white_scale = vec3(1.0) / tonemapUncharted2Partial(W);
+    return curr * white_scale;
+}
+
 //
 // Main program
 //
@@ -311,6 +357,24 @@ void main()
 		// AP1 => BT.709
 
     	c = acesAp1ToRec709(c);
+	}
+	else if (in_ub.tonemap == 5)
+	{
+		// ACES (Narkowicz)
+
+		c = tonemapAcesNarkowicz(c);	
+	}
+	else if (in_ub.tonemap == 6)
+	{
+		// ACES (Narkowicz)
+
+		c = tonemapReinhardExtendedLuminance(c, in_ub.maxWhite);
+	}
+	else if (in_ub.tonemap == 7)
+	{
+		// Uncharted2
+
+		c = tonemapUncharted2(c);
 	}
 
 	//

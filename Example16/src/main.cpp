@@ -23,6 +23,9 @@ int main(int argc, char *argv[])
 	// 2 Extended Reinhard
 	// 3 Reinhard Jodie
 	// 4 ACES (Hill)
+	// 5 ACES (Narkowicz)
+	// 6 Extended Reinhard Luminance
+	// 7 Uncharted 2
 	int32_t tonemap = 4;
 
 	// 0 HDR image
