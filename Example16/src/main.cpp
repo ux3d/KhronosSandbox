@@ -16,9 +16,6 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	// Take half the range for HDR
-	hdrMetadata.maxLuminance *= 0.5;
-
 	//
 
 	// 0 None
@@ -37,6 +34,9 @@ int main(int argc, char *argv[])
 
 	// Maximum scene white
 	float maxWhite = 1.0f;
+
+	// Artistic changes
+	float outputFactor = 1.0f;
 
 	// If true, all pixels having a channel larger than 1.0 do become red.
 	bool debug = false;
@@ -59,6 +59,10 @@ int main(int argc, char *argv[])
         {
         	maxWhite = std::stof(argv[i + 1]);
         }
+        if (strcmp(argv[i], "-o") == 0 && (i + 1 < argc))
+        {
+        	outputFactor = std::stof(argv[i + 1]);
+        }
 		if (strcmp(argv[i], "-d") == 0 && (i + 1 < argc))
 		{
 			if (strcmp(argv[i + 1], "true") == 0)
@@ -67,6 +71,8 @@ int main(int argc, char *argv[])
 			}
 		}
     }
+
+	hdrMetadata.maxContentLightLevel *= outputFactor;
 
 	//
 	//

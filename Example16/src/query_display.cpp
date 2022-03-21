@@ -53,13 +53,13 @@ bool getHdrMetdata(VkHdrMetadataEXT& hdrMetadata)
 	hdrMetadata.displayPrimaryBlue.y = outputDesc1.BluePrimary[1];
 	hdrMetadata.whitePoint.x = outputDesc1.WhitePoint[0];
 	hdrMetadata.whitePoint.y = outputDesc1.WhitePoint[1];
-	hdrMetadata.maxLuminance = outputDesc1.MaxLuminance;
+	// Not using max luminance see https://professionalsupport.dolby.com/s/article/Calculation-of-MaxFALL-and-MaxCLL-metadata
+	hdrMetadata.maxLuminance = outputDesc1.MaxFullFrameLuminance;
 	hdrMetadata.minLuminance = outputDesc1.MinLuminance;
-	// see https://professionalsupport.dolby.com/s/article/Calculation-of-MaxFALL-and-MaxCLL-metadata
 	// MaxCLL
 	hdrMetadata.maxContentLightLevel = hdrMetadata.maxLuminance;
 	// MaxFALL
-	hdrMetadata.maxFrameAverageLightLevel = (hdrMetadata.maxLuminance + hdrMetadata.minLuminance) * 0.5f;
+	hdrMetadata.maxFrameAverageLightLevel = hdrMetadata.maxContentLightLevel * 0.5f;
 
 	//
 
