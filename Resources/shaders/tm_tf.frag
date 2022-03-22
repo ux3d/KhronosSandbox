@@ -28,6 +28,18 @@ float luminance(vec3 color)
 	return 0.2126*color.r + 0.7152*color.g + 0.0722*color.b;
 }
 
+const mat3 RRT_SAT_MAT = mat3(
+    0.970889,  0.010889,  0.010889,    //  0.970889,  0.026963,  0.002148, 
+    0.026963,  0.986963,  0.026963,    //  0.010889,  0.986963,  0.002148, 
+    0.002148,  0.002148,  0.962148     //  0.010889,  0.026963,  0.962148
+);
+
+const mat3 ODT_SAT_MAT = mat3(
+    0.949056,  0.019056,  0.019056,    //  0.949056,  0.047186,  0.003758, 
+    0.047186,  0.977186,  0.047186,    //  0.019056,  0.977186,  0.003758, 
+    0.003758,  0.003758,  0.933758     //  0.019056,  0.047186,  0.933758
+);
+
 //
 // Color space conversions
 // 
@@ -149,31 +161,25 @@ vec3 xyzToRec709(vec3 color)
 // Rec709 => XYZ => D65_2_D60 => AP1
 vec3 rec709ToAcesAp1(vec3 color)
 {
-	// TODO: Factor out RRT_SAT
-	const mat3 m = mat3
-	(
-		0.59719, 0.35458, 0.04823,
-		0.07600, 0.90834, 0.01566,
-		0.02840, 0.13383, 0.83777
+	const mat3 m = mat3(
+		0.613097,  0.070194,  0.020616,    //  0.613097,  0.339523,  0.047379, 
+		0.339523,  0.916354,  0.109570,    //  0.070194,  0.916354,  0.013452, 
+		0.047379,  0.013452,  0.869815     //  0.020616,  0.109570,  0.869815
 	);
 
-	// To use HLSL matrices
-	return color * m;
+	return m * color;
 }
 
 // Inverse from above
 vec3 acesAp1ToRec709(vec3 color)
 {
-	// TODO: Factor out ODT_SAT
-	const mat3 m = mat3
-	(
-		1.60475, -0.53108, -0.07367,
-		-0.10208,  1.10813, -0.00605,
-		-0.00327, -0.07276,  1.07602
+	const mat3 m = mat3(
+		1.705051, -0.130256, -0.024003,    //  1.705051, -0.621792, -0.083259, 
+		-0.621792,  1.140804, -0.128969,    // -0.130256,  1.140804, -0.010548, 
+		-0.083259, -0.010548,  1.152972     // -0.024003, -0.128969,  1.152972
 	);
 
-	// To use HLSL matrices
-	return color * m;
+	return m * color;
 }
 
 // see https://www.itu.int/rec/R-REC-BT.2087-0-201510-I
@@ -255,16 +261,19 @@ vec3 tonemapReinhardJodie(vec3 color)
 
 vec3 tonemapAcesHill(vec3 color)
 {
-	// TODO: Add RTT_SAT here
+	// RTT_SAT
+	color = RRT_SAT_MAT * color;
 
 	// RRT and ODT fit output between 0.0 and 1.0
-
     vec3 a = (color            + 0.0245786) * color - 0.000090537;
     vec3 b = (color * 0.983729 + 0.4329510) * color + 0.238081;
     
-    return a / b;
+    color = a / b;
 
-	// TODO: Add ODT_SAT here
+	// ODT_SAT
+	color = ODT_SAT_MAT * color;
+
+	return color;
 }
 
 vec3 tonemapAcesNarkowicz(vec3 color)
