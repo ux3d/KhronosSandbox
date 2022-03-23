@@ -424,6 +424,15 @@ void main()
 		// sRGB
 
 		c = rec709ToSrgbNonLinear(c);
+
+		/*
+		c = 1.099 * pow(46.42 * c, vec3(0.45)) - 0.099;
+		c = 100.0 * pow(c, vec3(2.4));
+
+		// PQ
+
+		c = rec2020ToPq(c);
+		*/
 	}
 	else if (in_ub.transferFunction == 2)
 	{
