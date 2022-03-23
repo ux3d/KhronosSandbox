@@ -64,10 +64,6 @@ bool Application::applicationInit()
 		{
 			return false;
 		}
-		if (spec.nchannels != 3 && spec.nchannels != 4)
-		{
-			return false;
-		}
 		if (spec.format.basetype != TypeDesc::BASETYPE::HALF && spec.format.basetype != TypeDesc::BASETYPE::FLOAT)
 		{
 			return false;
@@ -80,7 +76,7 @@ bool Application::applicationInit()
 		//
 
 		auto newFormat = spec.format;
-		// Always use floats and four channles as best supported by hardware
+		// Always use 32 floats and as best supported by hardware having different amount of channels
 		newFormat.basetype = TypeDesc::BASETYPE::FLOAT;
 
 		//
@@ -92,13 +88,25 @@ bool Application::applicationInit()
 		image.width = static_cast<uint32_t>(spec.width);
 		image.height = static_cast<uint32_t>(spec.height);
 		image.pixels.resize(image.width * image.height * channels * bytesPerChannel);
-		if (channels == 3)
+		if (channels == 1)
+		{
+			image.format = VK_FORMAT_R32_SFLOAT;
+		}
+		else if (channels == 2)
+		{
+			image.format = VK_FORMAT_R32G32_SFLOAT;
+		}
+		else if (channels == 3)
 		{
 			image.format = VK_FORMAT_R32G32B32_SFLOAT;
 		}
-		else
+		else if (channels == 4)
 		{
 			image.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+		}
+		else
+		{
+			return false;
 		}
 
 		input->read_image(newFormat, image.pixels.data());
