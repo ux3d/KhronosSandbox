@@ -1,5 +1,8 @@
 #include "Application.h"
 
+#include <OpenImageIO/imageio.h>
+using namespace OIIO;
+
 // Private
 
 struct VertexData {
@@ -42,10 +45,67 @@ bool Application::applicationInit()
 
 		imageSrgbNonLinear = true;		// JPG etc. in general is Non-linear SRGB and we are uploading it 1:1 with no specific format conversion
 	}
+	else  if (extension == "exr")
+	{
+		auto input = ImageInput::open(filename);
+		if (!input)
+		{
+			return false;
+		}
+		const ImageSpec& spec = input->spec();
+		// Limit the cases
+		if (spec.x != 0 || spec.y != 0 || spec.z != 0)
+		{
+			return false;
+		}
+		if (spec.depth != 1)
+		{
+			return false;
+		}
+		if (spec.nchannels != 3 && spec.nchannels != 4)
+		{
+			return false;
+		}
+		if (spec.format.basetype != TypeDesc::BASETYPE::HALF && spec.format.basetype != TypeDesc::BASETYPE::FLOAT)
+		{
+			return false;
+		}
+		if (spec.format.aggregate != TypeDesc::AGGREGATE::SCALAR)
+		{
+			return false;
+		}
+
+		//
+
+		auto newFormat = spec.format;
+		// Always use floats as best supported by hardware
+		newFormat.basetype = TypeDesc::BASETYPE::FLOAT;
+
+		//
+
+		uint32_t channels = static_cast<uint32_t>(spec.nchannels);
+		uint32_t bytesPerChannel = 4;
+
+		auto& image = textureResourceCreateInfo.imageDataResources.images[0];
+		image.width = static_cast<uint32_t>(spec.width);
+		image.height = static_cast<uint32_t>(spec.height);
+		image.pixels.resize(image.width * image.height * channels * bytesPerChannel);
+		if (channels == 3)
+		{
+			image.format = VK_FORMAT_R32G32B32_SFLOAT;
+		}
+		else
+		{
+			image.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+		}
+
+		input->read_image(newFormat, image.pixels.data());
+		input->close();
+
+		imageSrgbNonLinear = false;
+	}
 	else
 	{
-		// Not supported file format
-
 		return false;
 	}
 
