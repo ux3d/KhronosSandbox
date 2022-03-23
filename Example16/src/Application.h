@@ -23,6 +23,7 @@ private:
 
 	TextureResource textureResource  = {};
 
+	int32_t colorSpace = 0;
 	int32_t tonemap = 0;
 	int32_t testImage = 0;
 	bool imageSrgbNonLinear = false;

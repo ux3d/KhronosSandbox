@@ -8,6 +8,7 @@ struct VertexData {
 };
 
 struct UniformData {
+	int32_t colorSpace;
 	int32_t tonemap;
 	int32_t transferFunction;
 	int32_t imageSrgbNonLinear;
@@ -59,7 +60,28 @@ bool Application::applicationInit()
 		}
 		else
 		{
-			// Unknown combination
+			// Not implemented combination
+
+			return false;
+		}
+	}
+	else if (surfaceFormat.colorSpace == VK_COLOR_SPACE_BT709_NONLINEAR_EXT)
+	{
+		if (surfaceFormat.format == VK_FORMAT_B8G8R8A8_UNORM)
+		{
+			transferFunction = 3;	// Format: B8G8R8A8_UNORM and ColorSpace: BT709_NONLINEAR => BT709 transfer function
+		}
+		else if (surfaceFormat.format == VK_FORMAT_B8G8R8A8_SRGB)
+		{
+			transferFunction = 0;	// Format: B8G8R8A8_SRGB and ColorSpace: BT709_NONLINEAR => No transfer function
+		}
+		else if (surfaceFormat.format == VK_FORMAT_A2B10G10R10_UNORM_PACK32)
+		{
+			transferFunction = 3;	// Format: A2B10G10R10_UNORM_PACK32 and ColorSpace: BT709_NONLINEAR => BT709 transfer function
+		}
+		else
+		{
+			// Not implemented combination
 
 			return false;
 		}
@@ -72,27 +94,48 @@ bool Application::applicationInit()
 		}
 		else
 		{
-			// Unknown combination
+			// Not implemented combination
 
 			return false;
 		}
 	}
 	else if (surfaceFormat.colorSpace == VK_COLOR_SPACE_HDR10_ST2084_EXT)
 	{
+		colorSpace = 1;		// Rec20200
+
 		if (surfaceFormat.format == VK_FORMAT_A2B10G10R10_UNORM_PACK32)
 		{
 			transferFunction = 2;	// Format: FORMAT_A2B10G10R10_UNORM_PACK32 and ColorSpace: COLOR_SPACE_HDR10_ST2084 => PQ transfer function
 		}
 		else
 		{
-			// Unknown combination
+			// Not implemented combination
+
+			return false;
+		}
+	}
+	else if (surfaceFormat.colorSpace == VK_COLOR_SPACE_BT2020_LINEAR_EXT)
+	{
+		colorSpace = 1;		// Rec20200
+
+		if (surfaceFormat.format == VK_FORMAT_R16G16B16A16_SFLOAT)
+		{
+			transferFunction = 0;	// Format: R16G16B16A16_SFLOAT and ColorSpace: ColorSpace: BT2020_LINEAR => No transfer function
+		}
+		else if (surfaceFormat.format == VK_FORMAT_A2B10G10R10_UNORM_PACK32)
+		{
+			transferFunction = 0;	// Format: FORMAT_A2B10G10R10_UNORM_PACK32 and ColorSpace: BT2020_LINEAR => No transfer function
+		}
+		else
+		{
+			// Not implemented combination
 
 			return false;
 		}
 	}
 	else
 	{
-		// Unknown combination
+		// Not implemented combination
 
 		return false;
 	}
@@ -456,6 +499,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	vkCmdBindPipeline(commandBuffers[frameIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
 	UniformData uniformData = {};
+	uniformData.colorSpace = colorSpace;
 	uniformData.tonemap = tonemap;
 	uniformData.transferFunction = transferFunction;
 	uniformData.imageSrgbNonLinear = (int32_t)imageSrgbNonLinear;

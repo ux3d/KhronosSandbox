@@ -4,6 +4,7 @@ const float SRGB_GAMMA_FAST = 2.2;
 const float SRGB_INV_GAMMA_FAST = 1.0 / SRGB_GAMMA_FAST;
 
 layout(binding = 0) uniform UniformBufferObject {
+	int colorSpace;
 	int tonemap;
 	int transferFunction;
     bool imageSrgbNonLinear;
@@ -398,7 +399,7 @@ void main()
 	// Color Primary
 	//
 
-	if (in_ub.transferFunction == 2)
+	if (in_ub.colorSpace == 1)
 	{
 		// BT.709 => CIE-XYZ
 
@@ -415,13 +416,13 @@ void main()
 
 	if (in_ub.transferFunction == 0)
 	{
-		// Rec709
+		// sRGB or Rec709 or Rec2020 Linear
 
 		// No conversion required
 	}
 	else if (in_ub.transferFunction == 1)
 	{
-		// sRGB
+		// sRGB Non-Linear
 
 		c = rec709ToSrgbNonLinear(c);
 
@@ -443,6 +444,12 @@ void main()
 		// PQ
 
 		c = rec2020ToPq(c);
+	}
+	else if (in_ub.transferFunction == 3)
+	{
+		// Rec709 Non-Linear
+
+		c = rec709ToRec709NonLinear(c);
 	}
 
 	//
