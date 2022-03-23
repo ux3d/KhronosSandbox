@@ -22,24 +22,31 @@ bool Application::applicationInit()
 {
 	TextureResourceCreateInfo textureResourceCreateInfo = {};
 
-	switch (testImage)
+	std::string extension = HelperFile::getExtension(filename);
+
+	if (extension == "hdr")
 	{
-		case 0:
-			if (!ImageDataIO::open(textureResourceCreateInfo.imageDataResources, "../Resources/images/field.hdr"))
-			{
-				return false;
-			}
-			imageSrgbNonLinear = false;		// HDR is linear and we assume it is in the Linear SRGB space, which has the same gamut as Rec.709
-		break;
-		case 1:
-			if (!ImageDataIO::open(textureResourceCreateInfo.imageDataResources, "../Resources/images/desert.jpg"))
-			{
-				return false;
-			}
-			imageSrgbNonLinear = true;			// JPG in general is Non-linear SRGB and we are uploading it 1:1 with no specific format conversion
-		break;
-		default:
+		if (!ImageDataIO::open(textureResourceCreateInfo.imageDataResources, filename))
+		{
 			return false;
+		}
+
+		imageSrgbNonLinear = false;		// HDR is linear and we assume it is in the Linear SRGB space, which has the same gamut as Rec.709
+	}
+	else if (extension == "jpg" || extension == "jpeg" || extension == "png")
+	{
+		if (!ImageDataIO::open(textureResourceCreateInfo.imageDataResources, filename))
+		{
+			return false;
+		}
+
+		imageSrgbNonLinear = true;		// JPG etc. in general is Non-linear SRGB and we are uploading it 1:1 with no specific format conversion
+	}
+	else
+	{
+		// Not supported file format
+
+		return false;
 	}
 
 	//
@@ -582,8 +589,8 @@ void Application::applicationTerminate()
 
 // Public
 
-Application::Application(int32_t tonemap, int32_t testImage, const VkHdrMetadataEXT& hdrMetadata, float maxWhite, bool debug) :
-	tonemap(tonemap), testImage(testImage), hdrMetadata(hdrMetadata), maxWhite(maxWhite), debug(debug)
+Application::Application(int32_t tonemap, const std::string& filename, const VkHdrMetadataEXT& hdrMetadata, float maxWhite, bool debug) :
+	tonemap(tonemap), filename(filename), hdrMetadata(hdrMetadata), maxWhite(maxWhite), debug(debug)
 {
 }
 

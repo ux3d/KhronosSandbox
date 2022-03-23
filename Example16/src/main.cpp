@@ -28,9 +28,8 @@ int main(int argc, char *argv[])
 	// 7 Uncharted 2
 	int32_t tonemap = 4;
 
-	// 0 HDR image
-	// 1 LDR image
-	int32_t testImage = 0;
+	// Test file
+	std::string filename = "../Resources/images/field.hdr";
 
 	// see below
 	int32_t surfaceFormat = 0;
@@ -50,9 +49,9 @@ int main(int argc, char *argv[])
         {
             tonemap = (int32_t)std::stoi(argv[i + 1]);
         }
-        if (strcmp(argv[i], "-i") == 0 && (i + 1 < argc))
+        if (strcmp(argv[i], "-f") == 0 && (i + 1 < argc))
         {
-            testImage = (int32_t)std::stoi(argv[i + 1]);
+            filename = argv[i + 1];
         }
         if (strcmp(argv[i], "-s") == 0 && (i + 1 < argc))
         {
@@ -88,7 +87,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	Application application(tonemap, testImage, hdrMetadata, maxWhite, debug);
+	Application application(tonemap, filename, hdrMetadata, maxWhite, debug);
 	application.setApplicationName(APP_TITLE);
 	application.setMinor(2);
 	application.addEnabledInstanceLayerName("VK_LAYER_KHRONOS_validation");
