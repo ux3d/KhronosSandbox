@@ -24,6 +24,8 @@ struct UniformData {
 bool Application::applicationInit()
 {
 	TextureResourceCreateInfo textureResourceCreateInfo = {};
+	textureResourceCreateInfo.samplerResourceCreateInfo.minFilter = VK_FILTER_NEAREST;
+	textureResourceCreateInfo.samplerResourceCreateInfo.magFilter = VK_FILTER_NEAREST;
 
 	std::string extension = HelperFile::getExtension(filename);
 
@@ -78,7 +80,7 @@ bool Application::applicationInit()
 		//
 
 		auto newFormat = spec.format;
-		// Always use floats as best supported by hardware
+		// Always use floats and four channles as best supported by hardware
 		newFormat.basetype = TypeDesc::BASETYPE::FLOAT;
 
 		//
@@ -206,9 +208,6 @@ bool Application::applicationInit()
 
 		return false;
 	}
-
-	textureResourceCreateInfo.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
-	textureResourceCreateInfo.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
 
 	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, textureResource, textureResourceCreateInfo))
 	{
