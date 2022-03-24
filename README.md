@@ -17,7 +17,7 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 - Done
 
 ### glTF  
-- Done
+- [ ] Align with [glTF Sample Viewer](https://github.com/KhronosGroup/glTF-Sample-Viewer) implementation
 
 ### OpenXR  
 - [ ] Initial component
@@ -26,9 +26,12 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 - [ ] Prefilter IBL on the fly
 - [ ] Remove Slim KTX2 dependency
 - [ ] Remove BasisU dependency
+- [ ] Remove stb dependency
+- [ ] Use [https://github.com/OpenImageIO/oiio](OpenImageIO) for image loading and saving
 
 ## How to build?
-- [Vulkan SDK 1.2.198.0 or later](https://vulkan.lunarg.com/sdk/home)
+- [Vulkan SDK 1.3.204.1 or later](https://vulkan.lunarg.com/sdk/home)
+  - Earlier versions do work with high chance but are not tested
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
    - GCC for Linux
    - [MinGW64](https://www.msys2.org/) for Windows 
