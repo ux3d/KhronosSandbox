@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
 	// 5 ACES (Narkowicz)
 	// 6 Extended Reinhard Luminance
 	// 7 Uncharted 2
+	// 8 Lottes
 	int32_t tonemap = 4;
 
 	// Test file
