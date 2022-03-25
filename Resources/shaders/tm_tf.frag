@@ -12,6 +12,7 @@ layout(binding = 0) uniform UniformBufferObject {
 	float minLuminance;
 	float maxLuminance;
 	float maxWhite;
+	float exposure;
 } in_ub;
 
 layout (binding = 1) uniform sampler2D u_colorTexture;
@@ -334,6 +335,8 @@ void main()
 	{
 		c = srgbNonLinearToRec709Fast(c);
 	}
+
+	c *= in_ub.exposure;
 
 	//
 	// Tone mapping
