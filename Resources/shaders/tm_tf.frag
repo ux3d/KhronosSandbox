@@ -12,6 +12,7 @@ layout(binding = 0) uniform UniformBufferObject {
 	float minLuminance;
 	float maxLuminance;
 	float maxWhite;
+	float contentFactor;
 	float exposure;
 } in_ub;
 
@@ -354,6 +355,14 @@ void main()
 	{
 		c = srgbNonLinearToRec709Fast(c);
 	}
+
+	// For debugging a content factor
+
+	c *= in_ub.contentFactor;
+
+	//
+	// Exposure
+	//
 
 	c *= in_ub.exposure;
 

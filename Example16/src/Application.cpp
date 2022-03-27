@@ -19,6 +19,7 @@ struct UniformData {
 	float minLuminance;
 	float maxLuminance;
 	float maxWhite;
+	float contentFactor;
 	float exposure;
 };
 
@@ -582,6 +583,7 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	uniformData.minLuminance = hdrMetadata.minLuminance;
 	uniformData.maxLuminance = hdrMetadata.maxLuminance;
 	uniformData.maxWhite = maxWhite;
+	uniformData.contentFactor = contentFactor;
 	uniformData.exposure = exposure;
 
 	if (!VulkanResource::copyHostToDevice(device, uniformBufferResources[frameIndex].bufferResource, &uniformData, sizeof(uniformData)))
@@ -658,8 +660,8 @@ void Application::applicationTerminate()
 
 // Public
 
-Application::Application(int32_t tonemap, const std::string& filename, const VkHdrMetadataEXT& hdrMetadata, float maxWhite, float exposure, bool debug) :
-	tonemap(tonemap), filename(filename), hdrMetadata(hdrMetadata), maxWhite(maxWhite), exposure(exposure), debug(debug)
+Application::Application(int32_t tonemap, const std::string& filename, const VkHdrMetadataEXT& hdrMetadata, float maxWhite, float exposure, float contentFactor, bool debug) :
+	tonemap(tonemap), filename(filename), hdrMetadata(hdrMetadata), maxWhite(maxWhite), exposure(exposure), contentFactor(contentFactor), debug(debug)
 {
 }
 

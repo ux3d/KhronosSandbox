@@ -38,11 +38,11 @@ int main(int argc, char *argv[])
 	// Maximum scene white
 	float maxWhite = 1.0f;
 
-	// Artistic changes
-	float outputFactor = 1.0f;
-
 	// Exposure
 	float exposure = 1.0f;
+
+	// Content factor for debugging
+	float contentFactor = 1.0f;
 
 	// If true, all pixels having a channel larger than 1.0 do become red.
 	bool debug = false;
@@ -65,9 +65,9 @@ int main(int argc, char *argv[])
         {
         	maxWhite = std::stof(argv[i + 1]);
         }
-        if (strcmp(argv[i], "-o") == 0 && (i + 1 < argc))
+        if (strcmp(argv[i], "-c") == 0 && (i + 1 < argc))
         {
-        	outputFactor = std::stof(argv[i + 1]);
+        	contentFactor = std::stof(argv[i + 1]);
         }
         if (strcmp(argv[i], "-e") == 0 && (i + 1 < argc))
         {
@@ -82,8 +82,6 @@ int main(int argc, char *argv[])
 		}
     }
 
-	hdrMetadata.maxContentLightLevel *= outputFactor;
-
 	//
 	//
 	//
@@ -95,7 +93,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	Application application(tonemap, filename, hdrMetadata, maxWhite, exposure, debug);
+	Application application(tonemap, filename, hdrMetadata, maxWhite, exposure, contentFactor, debug);
 	application.setApplicationName(APP_TITLE);
 	application.setMinor(2);
 	application.addEnabledInstanceLayerName("VK_LAYER_KHRONOS_validation");
