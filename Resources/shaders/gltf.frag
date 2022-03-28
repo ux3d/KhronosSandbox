@@ -93,12 +93,37 @@ vec3 toNonLinear(vec3 color)
 
 #ifdef UNIFORMBUFFER_BINDING
 
-vec3 getLambertian(vec3 normal, vec3 diffuseColor)
+vec3 getLambertian(vec3 normal, vec3 view, float roughness, vec3 diffuseColor, vec3 f0)
 {
-    return diffuseColor * texture(u_diffuseTexture, normal).rgb;
+	vec3 irradiance = texture(u_diffuseTexture, normal).rgb;
+
+	// Image Based Lighting with Multiple Scattering
+	// Fdez-Aguera (Original)
+	// see https://jcgt.org/published/0008/01/03/paper.pdf Listing 1 
+	// Bruno Opsenica (Adaptions)
+    // see https://bruop.github.io/ibl/#single_scattering_results GLSL Shader Code
+
+    float NdotV = clamp(dot(normal, view), 0.0, 1.0);
+    vec2 brdfSamplePoint = clamp(vec2(NdotV, roughness), vec2(0.0, 0.0), vec2(1.0, 1.0));
+    vec2 f_ab = texture(u_lutTexture, brdfSamplePoint).rg;
+
+	// Roughness dependent fresnel
+    vec3 Fr = max(vec3(1.0 - roughness), f0) - f0;
+    vec3 k_S = f0 + Fr * pow(1.0 - NdotV, 5.0);
+    vec3 FssEss = k_S * f_ab.x + f_ab.y;
+
+    // Multiple scattering
+    float Ess = f_ab.x + f_ab.y;
+    float Ems = 1.0 - Ess;
+    vec3 F_avg = f0 + (1.0 - f0) / 21.0;
+    vec3 FmsEms = Ems * FssEss * F_avg / (1.0 - F_avg * Ems);
+		
+    vec3 k_D = diffuseColor * (1.0 - FssEss + FmsEms);
+
+    return (FmsEms + k_D) * irradiance;
 }
 
-vec3 getSpecular(vec3 normal, vec3 view, float alpha, vec3 f0)
+vec3 getGGX(vec3 normal, vec3 view, float alpha, vec3 f0)
 {
     float NdotV = dot(normal, view);
     
@@ -264,11 +289,13 @@ void main()
     float roughness = getRoughness();
 
     // BRDF
-    vec3 lambert = getLambertian(normal, diffuseColor);
-    vec3 specular = getSpecular(normal, view, roughness, f0);
+    vec3 f_diffuse = getLambertian(normal, view, roughness, diffuseColor, f0);
+    vec3 f_specular = getGGX(normal, view, roughness, f0);
 
     // Ambient occlusion
-    vec3 color = mix(lambert, lambert * getOcclusion(), in_ub.occlusionStrength) + specular;
+    f_diffuse = mix(f_diffuse, f_diffuse * getOcclusion(), in_ub.occlusionStrength);
+    
+    vec3 color = f_diffuse + f_specular;
 #else
 	vec3 color = baseColor.rgb;
 #endif
