@@ -19,6 +19,7 @@ private:
 	PFN_xrGetVulkanDeviceExtensionsKHR pfnGetVulkanDeviceExtensionsKHR = nullptr;
 	PFN_xrGetVulkanGraphicsDeviceKHR pfnGetVulkanGraphicsDeviceKHR = nullptr;
 	PFN_xrGetVulkanGraphicsRequirementsKHR pfnGetVulkanGraphicsRequirementsKHR = nullptr;
+	PFN_xrGetVulkanGraphicsRequirements2KHR pfnGetVulkanGraphicsRequirements2KHR = nullptr;
 
 	XrInstance instance = XR_NULL_HANDLE;
 	XrSystemId systemId = XR_NULL_SYSTEM_ID;
@@ -45,7 +46,7 @@ public:
 
 	bool prepare();
 
-	bool init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDevice, VkDevice vulkanDevice, uint32_t vulkanQueueFamilyIndex, uint32_t vulkanQueueIndex, VkFormat vulkanFormat);
+	bool init();
 	bool resize();
 	bool update(uint32_t frameIndex, double deltaTime, double totalTime);
 	bool terminate();

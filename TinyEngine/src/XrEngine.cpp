@@ -49,14 +49,19 @@ bool XrEngine::bindFunctions()
 	}
 
 	return true;
-}
 
-bool XrEngine::prepare()
-{
+    result = xrGetInstanceProcAddr(instance, "xrGetVulkanGraphicsRequirements2KHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfnGetVulkanGraphicsRequirements2KHR));
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
 	return true;
 }
 
-bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDevice, VkDevice vulkanDevice, uint32_t vulkanQueueFamilyIndex, uint32_t vulkanQueueIndex, VkFormat vulkanFormat)
+bool XrEngine::prepare()
 {
 	std::vector<const char*> enabledInstanceExtensionNames;
 	enabledInstanceExtensionNames.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
@@ -142,12 +147,15 @@ bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDe
 
 	environmentBlendMode = environmentBlendModes[0];
 
-	// Vulkan specific
+	return true;
+}
 
-	XrGraphicsRequirementsVulkanKHR graphicsRequirementsVulkan = {};
+bool XrEngine::init()
+{
+	/*XrGraphicsRequirementsVulkanKHR graphicsRequirementsVulkan = {};
 	graphicsRequirementsVulkan.type = XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN_KHR;
 
-	result = pfnGetVulkanGraphicsRequirementsKHR(instance, systemId, &graphicsRequirementsVulkan);
+	XrResult result = pfnGetVulkanGraphicsRequirementsKHR(instance, systemId, &graphicsRequirementsVulkan);
 	if (result != XR_SUCCESS)
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
@@ -301,9 +309,7 @@ bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDe
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
 
 		return false;
-	}
-
-	//
+	}*/
 
 	return true;
 }

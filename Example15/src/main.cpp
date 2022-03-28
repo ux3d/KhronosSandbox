@@ -1,21 +1,20 @@
-#include "Application.h"
+#include "TinyEngine.h"
 
-#define APP_TITLE "Example15: Hello OpenXR"
+#include "XrEngine.h"
 
 int main(int argc, char **argv)
 {
 	XrEngine engine;
 
-	Application application;
-	application.setApplicationName(APP_TITLE);
-	application.addEnabledInstanceLayerName("VK_LAYER_KHRONOS_validation");
-
-	if (!application.prepare())
+	if (!engine.prepare())
 	{
 	    return -1;
 	}
 
-	application.terminate();
+	if (!engine.init())
+	{
+	    return -1;
+	}
 
 	return 0;
 }

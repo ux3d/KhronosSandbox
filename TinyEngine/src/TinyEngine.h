@@ -115,6 +115,8 @@ public:
 	//
 
 	VkInstance getInstance() const;
+	VkPhysicalDevice getPhysicalDevice() const;
+	VkDevice getDevice() const;
 
 	const std::string& getApplicationName() const;
 	void setApplicationName(const std::string& applicationName);

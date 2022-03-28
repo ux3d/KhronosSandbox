@@ -1240,6 +1240,16 @@ VkInstance TinyEngine::getInstance() const
 	return instance;
 }
 
+VkPhysicalDevice TinyEngine::getPhysicalDevice() const
+{
+	return physicalDevice;
+}
+
+VkDevice TinyEngine::getDevice() const
+{
+	return getDevice();
+}
+
 const std::string& TinyEngine::getApplicationName() const
 {
 	return applicationName;
