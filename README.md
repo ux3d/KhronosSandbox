@@ -17,7 +17,7 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 - Done
 
 ### glTF  
-- [ ] Align with [glTF Sample Viewer](https://github.com/KhronosGroup/glTF-Sample-Viewer) implementation
+- Done
 
 ### OpenXR  
 - [ ] Initial component
