@@ -82,9 +82,9 @@ void RenderManager::terminate(InstanceResource& instanceResource, VkDevice devic
 
 void RenderManager::terminate(LightResource& lightResource, VkDevice device)
 {
-	VulkanResource::destroyTextureResource(device, lightResource.diffuse);
-	VulkanResource::destroyTextureResource(device, lightResource.specular);
-	VulkanResource::destroyTextureResource(device, lightResource.lut);
+	VulkanResource::destroyTextureResource(device, lightResource.lambertian);
+	VulkanResource::destroyTextureResource(device, lightResource.ggx);
+	VulkanResource::destroyTextureResource(device, lightResource.ggxLUT);
 }
 
 void RenderManager::terminate(CameraResource& cameraResource, VkDevice device)
@@ -1579,12 +1579,12 @@ bool RenderManager::instanceFinalize(uint64_t instanceHandle)
 			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 			VkDescriptorImageInfo descriptorImageInfo = {};
-			descriptorImageInfo.sampler = lightResource->diffuse.samplerResource.sampler;
-			descriptorImageInfo.imageView = lightResource->diffuse.imageViewResource.imageView;
+			descriptorImageInfo.sampler = lightResource->lambertian.samplerResource.sampler;
+			descriptorImageInfo.imageView = lightResource->lambertian.imageViewResource.imageView;
 			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			descriptorImageInfos.push_back(descriptorImageInfo);
 
-			geometryModelResource->macros["DIFFUSE_BINDING"] = std::to_string(binding);
+			geometryModelResource->macros["LAMBERTIAN_BINDING"] = std::to_string(binding);
 
 			binding++;
 
@@ -1598,12 +1598,12 @@ bool RenderManager::instanceFinalize(uint64_t instanceHandle)
 			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 			descriptorImageInfo = {};
-			descriptorImageInfo.sampler = lightResource->specular.samplerResource.sampler;
-			descriptorImageInfo.imageView = lightResource->specular.imageViewResource.imageView;
+			descriptorImageInfo.sampler = lightResource->ggx.samplerResource.sampler;
+			descriptorImageInfo.imageView = lightResource->ggx.imageViewResource.imageView;
 			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			descriptorImageInfos.push_back(descriptorImageInfo);
 
-			geometryModelResource->macros["SPECULAR_BINDING"] = std::to_string(binding);
+			geometryModelResource->macros["GGX_BINDING"] = std::to_string(binding);
 
 			binding++;
 
@@ -1617,12 +1617,12 @@ bool RenderManager::instanceFinalize(uint64_t instanceHandle)
 			descriptorSetLayoutBindings.push_back(descriptorSetLayoutBinding);
 
 			descriptorImageInfo = {};
-			descriptorImageInfo.sampler = lightResource->lut.samplerResource.sampler;
-			descriptorImageInfo.imageView = lightResource->lut.imageViewResource.imageView;
+			descriptorImageInfo.sampler = lightResource->ggxLUT.samplerResource.sampler;
+			descriptorImageInfo.imageView = lightResource->ggxLUT.imageViewResource.imageView;
 			descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			descriptorImageInfos.push_back(descriptorImageInfo);
 
-			geometryModelResource->macros["LUT_BINDING"] = std::to_string(binding);
+			geometryModelResource->macros["GGX_LUT_BINDING"] = std::to_string(binding);
 		}
 
 		//
@@ -1943,58 +1943,58 @@ bool RenderManager::lightFinalize(uint64_t lightHandle)
 		return false;
 	}
 
-	// Diffuse
+	// LAMBERTIAN
 
-	std::string diffuseFilename = lightResource->environment + "/" + "diffuse.ktx2";
-	TextureResourceCreateInfo diffuseMap = {};
-	diffuseMap.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
-	diffuseMap.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
-	diffuseMap.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+	std::string lambertianFilename = lightResource->environment + "/" + "diffuse.ktx2";
+	TextureResourceCreateInfo lambertian = {};
+	lambertian.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
+	lambertian.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
+	lambertian.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
 
-	if(!ImageDataIO::open(diffuseMap.imageDataResources, diffuseFilename))
+	if(!ImageDataIO::open(lambertian.imageDataResources, lambertianFilename))
 	{
 		return false;
 	}
 
-	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, lightResource->diffuse, diffuseMap))
+	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, lightResource->lambertian, lambertian))
 	{
 		return false;
 	}
 
-	// Specular
+	// GGX
 
-	std::string specularFilename = lightResource->environment + "/" + "specular.ktx2";
-	TextureResourceCreateInfo specularMap = {};
-	specularMap.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
-	specularMap.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
-	specularMap.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+	std::string ggxFilename = lightResource->environment + "/" + "specular.ktx2";
+	TextureResourceCreateInfo ggx = {};
+	ggx.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
+	ggx.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
+	ggx.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
-	if(!ImageDataIO::open(specularMap.imageDataResources, specularFilename))
+	if(!ImageDataIO::open(ggx.imageDataResources, ggxFilename))
 	{
 		return false;
 	}
 
-	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, lightResource->specular, specularMap))
+	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, lightResource->ggx, ggx))
 	{
 		return false;
 	}
 
-	// LUT
+	// GGX LUT
 
-	std::string lutFilename = "../Resources/brdf/lut_ggx.png";
-	TextureResourceCreateInfo lutMap = {};
-	lutMap.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
-	lutMap.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
-	lutMap.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
-	lutMap.samplerResourceCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-	lutMap.samplerResourceCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+	std::string ggxLUTFilename = "../Resources/brdf/lut_ggx.png";
+	TextureResourceCreateInfo ggxLUT = {};
+	ggxLUT.samplerResourceCreateInfo.minFilter = VK_FILTER_LINEAR;
+	ggxLUT.samplerResourceCreateInfo.magFilter = VK_FILTER_LINEAR;
+	ggxLUT.samplerResourceCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+	ggxLUT.samplerResourceCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+	ggxLUT.samplerResourceCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 
-	if(!ImageDataIO::open(lutMap.imageDataResources, lutFilename))
+	if(!ImageDataIO::open(ggxLUT.imageDataResources, ggxLUTFilename))
 	{
 		return false;
 	}
 
-	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, lightResource->lut, lutMap))
+	if (!VulkanResource::createTextureResource(physicalDevice, device, queue, commandPool, lightResource->ggxLUT, ggxLUT))
 	{
 		return false;
 	}

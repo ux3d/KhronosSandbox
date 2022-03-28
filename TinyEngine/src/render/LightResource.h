@@ -11,9 +11,9 @@ struct LightResource : BaseResource {
 
 	std::string environment;
 
-	TextureResource diffuse;
-	TextureResource specular;
-	TextureResource lut;
+	TextureResource lambertian;
+	TextureResource ggx;
+	TextureResource ggxLUT;
 
 };
 

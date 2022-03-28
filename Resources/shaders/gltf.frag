@@ -19,11 +19,11 @@ layout(binding = UNIFORMBUFFER_BINDING) uniform UniformBuffer {
 
 //
 
-layout (binding = DIFFUSE_BINDING) uniform samplerCube u_diffuseTexture;
+layout (binding = LAMBERTIAN_BINDING) uniform samplerCube u_lambertianTexture;
 
-layout (binding = SPECULAR_BINDING) uniform samplerCube u_specularTexture;
+layout (binding = GGX_BINDING) uniform samplerCube u_ggxTexture;
 
-layout (binding = LUT_BINDING) uniform sampler2D u_lutTexture;
+layout (binding = GGX_LUT_BINDING) uniform sampler2D u_ggxLUT;
 
 #endif
 
@@ -95,7 +95,7 @@ vec3 toNonLinear(vec3 color)
 
 vec3 getLambertian(vec3 normal, vec3 view, float roughness, vec3 diffuseColor, vec3 f0)
 {
-	vec3 irradiance = texture(u_diffuseTexture, normal).rgb;
+	vec3 irradiance = texture(u_lambertianTexture, normal).rgb;
 
 	// Image Based Lighting with Multiple Scattering
 	// Fdez-Aguera (Original)
@@ -105,7 +105,7 @@ vec3 getLambertian(vec3 normal, vec3 view, float roughness, vec3 diffuseColor, v
 
     float NdotV = clamp(dot(normal, view), 0.0, 1.0);
     vec2 brdfSamplePoint = clamp(vec2(NdotV, roughness), vec2(0.0, 0.0), vec2(1.0, 1.0));
-    vec2 f_ab = texture(u_lutTexture, brdfSamplePoint).rg;
+    vec2 f_ab = texture(u_ggxLUT, brdfSamplePoint).rg;
 
 	// Roughness dependent fresnel
     vec3 Fr = max(vec3(1.0 - roughness), f0) - f0;
@@ -123,19 +123,26 @@ vec3 getLambertian(vec3 normal, vec3 view, float roughness, vec3 diffuseColor, v
     return (FmsEms + k_D) * irradiance;
 }
 
-vec3 getGGX(vec3 normal, vec3 view, float alpha, vec3 f0)
+vec3 getGGX(vec3 normal, vec3 view, float roughness, vec3 f0)
 {
     float NdotV = dot(normal, view);
     
-    float mipLevels = float(textureQueryLevels(u_specularTexture) - 1);
+    float mipLevels = float(textureQueryLevels(u_ggxTexture) - 1);
     vec3 reflection = normalize(reflect(-view, normal));
-    float lod = clamp(alpha * mipLevels, 0.0, mipLevels);
-    vec3 specularSample = textureLod(u_specularTexture, reflection, lod).rgb;
+    float lod = clamp(roughness * mipLevels, 0.0, mipLevels);
+    vec3 radiance = textureLod(u_ggxTexture, reflection, lod).rgb;
 
-    vec2 brdfSamplePoint = clamp(vec2(NdotV, alpha), vec2(0.0, 0.0), vec2(1.0, 1.0));
-    vec2 brdf = texture(u_lutTexture, brdfSamplePoint).rg;
+    vec2 brdfSamplePoint = clamp(vec2(NdotV, roughness), vec2(0.0, 0.0), vec2(1.0, 1.0));
+    vec2 f_ab = texture(u_ggxLUT, brdfSamplePoint).rg;
 
-    return specularSample * (f0 * brdf.x + brdf.y);
+	// see Image Based Lighting with Multiple Scattering above
+
+	// Roughness dependent fresnel
+	vec3 Fr = max(vec3(1.0 - roughness), f0) - f0;
+    vec3 k_S = f0 + Fr * pow(1.0 - NdotV, 5.0);
+    vec3 FssEss = k_S * f_ab.x + f_ab.y;
+
+    return radiance * FssEss;
 }
 
 #endif
