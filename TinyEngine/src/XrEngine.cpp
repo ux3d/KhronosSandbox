@@ -56,7 +56,7 @@ bool XrEngine::prepare()
 	return true;
 }
 
-bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDevice, VkDevice vulkanDevice, uint32_t vulkanQueueFamilyIndex, uint32_t vulkanQueueIndex, VkFormat vulkanFormat, IXr& xr)
+bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDevice, VkDevice vulkanDevice, uint32_t vulkanQueueFamilyIndex, uint32_t vulkanQueueIndex, VkFormat vulkanFormat)
 {
 	std::vector<const char*> enabledInstanceExtensionNames;
 	enabledInstanceExtensionNames.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
@@ -305,11 +305,6 @@ bool XrEngine::init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDe
 
 	//
 
-	if (!xr.applicationInitXr())
-	{
-		return false;
-	}
-
 	return true;
 }
 
@@ -318,7 +313,7 @@ bool XrEngine::resize()
 	return true;
 }
 
-bool XrEngine::update(uint32_t frameIndex, double deltaTime, double totalTime, IXr& xr)
+bool XrEngine::update(uint32_t frameIndex, double deltaTime, double totalTime)
 {
 	XrResult result = XR_SUCCESS;
 
@@ -534,7 +529,6 @@ bool XrEngine::update(uint32_t frameIndex, double deltaTime, double totalTime, I
     		//
 
         	// TODO: Add camera information.
-    		xr.applicationUpdateXr(frameIndex, deltaTime, totalTime);
 
         	//
 
@@ -577,12 +571,8 @@ bool XrEngine::update(uint32_t frameIndex, double deltaTime, double totalTime, I
 	return true;
 }
 
-bool XrEngine::terminate(IXr& xr)
+bool XrEngine::terminate()
 {
-	xr.applicationTerminateXr();
-
-	//
-
 	if (space != XR_NULL_HANDLE)
 	{
 		xrDestroySpace(space);

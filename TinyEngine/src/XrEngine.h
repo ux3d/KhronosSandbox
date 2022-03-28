@@ -6,8 +6,6 @@
 
 #include "composite/Composite.h"
 
-#include "IXr.h"
-
 #define XR_USE_GRAPHICS_API_VULKAN
 #include <openxr/openxr.h>
 #include <openxr/openxr_platform.h>
@@ -47,10 +45,10 @@ public:
 
 	bool prepare();
 
-	bool init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDevice, VkDevice vulkanDevice, uint32_t vulkanQueueFamilyIndex, uint32_t vulkanQueueIndex, VkFormat vulkanFormat, IXr& xr);
+	bool init(VkInstance vulkanInstance, VkPhysicalDevice vulkanPhysicalDevice, VkDevice vulkanDevice, uint32_t vulkanQueueFamilyIndex, uint32_t vulkanQueueIndex, VkFormat vulkanFormat);
 	bool resize();
-	bool update(uint32_t frameIndex, double deltaTime, double totalTime, IXr& xr);
-	bool terminate(IXr& xr);
+	bool update(uint32_t frameIndex, double deltaTime, double totalTime);
+	bool terminate();
 
 };
 
