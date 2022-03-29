@@ -11,16 +11,16 @@ struct VertexData {
 };
 
 struct UniformData {
-	int32_t colorSpace;
-	int32_t tonemap;
-	int32_t transferFunction;
 	int32_t imageSrgbNonLinear;
-	int32_t debug;
-	float minLuminance;
-	float maxLuminance;
-	float maxWhite;
 	float contentFactor;
 	float exposure;
+	float maxWhite;
+	int32_t tonemap;
+	int32_t colorSpace;
+	float hdrOffset;
+	float hdrScale;
+	int32_t transferFunction;
+	int32_t debug;
 };
 
 bool Application::applicationInit()
@@ -169,6 +169,11 @@ bool Application::applicationInit()
 	{
 		if (surfaceFormat.format == VK_FORMAT_R16G16B16A16_SFLOAT)
 		{
+			// Extended sRGB (also called scRGB)
+			// see https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_gl_colorspace_scrgb.txt
+			hdrScale = (hdrMetadata.maxLuminance - hdrMetadata.minLuminance) / 80.0f;
+			hdrOffset = hdrMetadata.minLuminance;
+
 			transferFunction = 0;	// Format: R16G16B16A16_SFLOAT and ColorSpace: EXTENDED_SRGB_LINEAR => No transfer function
 		}
 		else
@@ -184,6 +189,11 @@ bool Application::applicationInit()
 
 		if (surfaceFormat.format == VK_FORMAT_A2B10G10R10_UNORM_PACK32)
 		{
+			// Converts scene referred linear data between 0.0 and 1.0 to an ultrawide display-referred data set
+			// also see https://docs.microsoft.com/en-us/windows/win32/direct3darticles/high-dynamic-range
+			hdrScale = hdrMetadata.maxLuminance - hdrMetadata.minLuminance;
+			hdrOffset = hdrMetadata.minLuminance;
+
 			transferFunction = 2;	// Format: FORMAT_A2B10G10R10_UNORM_PACK32 and ColorSpace: COLOR_SPACE_HDR10_ST2084 => PQ transfer function
 		}
 		else
@@ -575,16 +585,16 @@ bool Application::applicationUpdate(uint32_t frameIndex, double deltaTime, doubl
 	vkCmdBindPipeline(commandBuffers[frameIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
 	UniformData uniformData = {};
-	uniformData.colorSpace = colorSpace;
-	uniformData.tonemap = tonemap;
-	uniformData.transferFunction = transferFunction;
 	uniformData.imageSrgbNonLinear = (int32_t)imageSrgbNonLinear;
-	uniformData.debug = (int32_t)debug;
-	uniformData.minLuminance = hdrMetadata.minLuminance;
-	uniformData.maxLuminance = hdrMetadata.maxLuminance;
-	uniformData.maxWhite = maxWhite;
 	uniformData.contentFactor = contentFactor;
 	uniformData.exposure = exposure;
+	uniformData.maxWhite = maxWhite;
+	uniformData.tonemap = tonemap;
+	uniformData.colorSpace = colorSpace;
+	uniformData.hdrOffset = hdrOffset;
+	uniformData.hdrScale = hdrScale;
+	uniformData.transferFunction = transferFunction;
+	uniformData.debug = (int32_t)debug;
 
 	if (!VulkanResource::copyHostToDevice(device, uniformBufferResources[frameIndex].bufferResource, &uniformData, sizeof(uniformData)))
 	{
@@ -660,8 +670,8 @@ void Application::applicationTerminate()
 
 // Public
 
-Application::Application(int32_t tonemap, const std::string& filename, const VkHdrMetadataEXT& hdrMetadata, float maxWhite, float exposure, float contentFactor, bool debug) :
-	tonemap(tonemap), filename(filename), hdrMetadata(hdrMetadata), maxWhite(maxWhite), exposure(exposure), contentFactor(contentFactor), debug(debug)
+Application::Application(const std::string& filename, const VkHdrMetadataEXT& hdrMetadata, float contentFactor, float exposure, float maxWhite, int32_t tonemap, bool debug) :
+	filename(filename), hdrMetadata(hdrMetadata), contentFactor(contentFactor), exposure(exposure), maxWhite(maxWhite), tonemap(tonemap), debug(debug)
 {
 }
 

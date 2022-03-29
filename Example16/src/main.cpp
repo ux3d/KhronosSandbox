@@ -10,6 +10,10 @@
 
 int main(int argc, char *argv[])
 {
+	std::string filename = "../Resources/images/field.hdr";
+
+	//
+
 	VkHdrMetadataEXT hdrMetadata;
 	if (!getHdrMetdata(hdrMetadata))
 	{
@@ -17,6 +21,18 @@ int main(int argc, char *argv[])
 	}
 
 	//
+
+	// See buffer and color space combinations below
+	int32_t surfaceFormat = 0;
+
+	// Content factor for demo purposes
+	float contentFactor = 1.0f;
+
+	// Exposure
+	float exposure = 1.0f;
+
+	// Maximum scene white
+	float maxWhite = 1.0f;
 
 	// 0 None
 	// 1 Reinhard
@@ -29,30 +45,11 @@ int main(int argc, char *argv[])
 	// 8 Lottes
 	int32_t tonemap = 4;
 
-	// Test file
-	std::string filename = "../Resources/images/field.hdr";
-
-	// see below
-	int32_t surfaceFormat = 0;
-
-	// Maximum scene white
-	float maxWhite = 1.0f;
-
-	// Exposure
-	float exposure = 1.0f;
-
-	// Content factor for debugging
-	float contentFactor = 1.0f;
-
 	// If true, all pixels having a channel larger than 1.0 do become red.
 	bool debug = false;
 
     for (int i = 0; i < argc; i++)
     {
-        if (strcmp(argv[i], "-t") == 0 && (i + 1 < argc))
-        {
-            tonemap = (int32_t)std::stoi(argv[i + 1]);
-        }
         if (strcmp(argv[i], "-f") == 0 && (i + 1 < argc))
         {
             filename = argv[i + 1];
@@ -61,13 +58,17 @@ int main(int argc, char *argv[])
         {
         	surfaceFormat = (int32_t)std::stoi(argv[i + 1]);
         }
+        if (strcmp(argv[i], "-c") == 0 && (i + 1 < argc))
+        {
+        	contentFactor = std::stof(argv[i + 1]);
+        }
         if (strcmp(argv[i], "-w") == 0 && (i + 1 < argc))
         {
         	maxWhite = std::stof(argv[i + 1]);
         }
-        if (strcmp(argv[i], "-c") == 0 && (i + 1 < argc))
+        if (strcmp(argv[i], "-t") == 0 && (i + 1 < argc))
         {
-        	contentFactor = std::stof(argv[i + 1]);
+            tonemap = (int32_t)std::stoi(argv[i + 1]);
         }
         if (strcmp(argv[i], "-e") == 0 && (i + 1 < argc))
         {
@@ -93,7 +94,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	Application application(tonemap, filename, hdrMetadata, maxWhite, exposure, contentFactor, debug);
+	Application application(filename, hdrMetadata, contentFactor, exposure, maxWhite, tonemap, debug);
 	application.setApplicationName(APP_TITLE);
 	application.setMinor(2);
 	application.addEnabledInstanceLayerName("VK_LAYER_KHRONOS_validation");

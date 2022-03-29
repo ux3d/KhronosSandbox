@@ -4,16 +4,16 @@ const float SRGB_GAMMA_FAST = 2.2;
 const float SRGB_INV_GAMMA_FAST = 1.0 / SRGB_GAMMA_FAST;
 
 layout(binding = 0) uniform UniformBufferObject {
-	int colorSpace;
-	int tonemap;
-	int transferFunction;
     bool imageSrgbNonLinear;
-	bool debug;
-	float minLuminance;
-	float maxLuminance;
-	float maxWhite;
 	float contentFactor;
 	float exposure;
+	float maxWhite;
+	int tonemap;
+	int colorSpace;
+	float hdrOffset;
+	float hdrScale;
+	int transferFunction;
+	bool debug;
 } in_ub;
 
 layout (binding = 1) uniform sampler2D u_colorTexture;
@@ -446,6 +446,12 @@ void main()
 
 		c = xyzToRec2020(c);
 	}
+
+	//
+	// HDR Scale
+	//
+
+	c = c * in_ub.hdrScale + in_ub.hdrOffset; 
 	
 	//
 	// Transfer function
@@ -453,7 +459,7 @@ void main()
 
 	if (in_ub.transferFunction == 0)
 	{
-		// sRGB or Rec709 or Rec2020 Linear
+		// sRGB or Extended sRGB or Rec709 or Rec2020 Linear
 
 		// No conversion required
 	}
@@ -462,22 +468,9 @@ void main()
 		// sRGB Non-Linear
 
 		c = rec709ToSrgbNonLinear(c);
-
-		/*
-		c = 1.099 * pow(46.42 * c, vec3(0.45)) - 0.099;
-		c = 100.0 * pow(c, vec3(2.4));
-
-		// PQ
-
-		c = rec2020ToPq(c);
-		*/
 	}
 	else if (in_ub.transferFunction == 2)
 	{
-		// Converts scene referred linear data between 0.0 and 1.0 to an ultrawide display-referred data set
-		// also see https://docs.microsoft.com/en-us/windows/win32/direct3darticles/high-dynamic-range
-		c = c * (in_ub.maxLuminance - in_ub.minLuminance) + in_ub.minLuminance;
-
 		// PQ
 
 		c = rec2020ToPq(c);

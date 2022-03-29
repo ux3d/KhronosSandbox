@@ -36,7 +36,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/OpenXR-SDK/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${env_var:VULKAN_SDK}/include&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.806184164" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++17" valueType="enumerated"/>
@@ -108,7 +107,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/OpenXR-SDK/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${env_var:VULKAN_SDK}/include&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.712102086" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++17" valueType="enumerated"/>
@@ -173,7 +171,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/OpenXR-SDK/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${env_var:VULKAN_SDK}/include&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.optimization.level.228859252" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
@@ -235,7 +232,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/stb}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/tinygltf}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/volk}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Third-Party/GitHub/OpenXR-SDK/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${env_var:VULKAN_SDK}/include&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.optimization.level.502422672" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>

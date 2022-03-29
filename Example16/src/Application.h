@@ -23,24 +23,26 @@ private:
 
 	TextureResource textureResource  = {};
 
-	int32_t colorSpace = 0;
-	int32_t tonemap = 0;
 	std::string filename;
-	bool imageSrgbNonLinear = false;
 	VkHdrMetadataEXT hdrMetadata{};
-	float maxWhite = 1.0f;
-	float exposure = 1.0f;
-	float contentFactor = 1.0f;
-	bool debug = false;
 
+	bool imageSrgbNonLinear = false;
+	float contentFactor = 1.0f;
+	float exposure = 1.0f;
+	float maxWhite = 1.0f;
+	int32_t tonemap = 0;
+	int32_t colorSpace = 0;
+	float hdrOffset = 0.0f;
+	float hdrScale = 1.0f;
 	int32_t transferFunction = 0;
+	bool debug = false;
 
 	virtual bool applicationInit();
 	virtual bool applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime);
 	virtual void applicationTerminate();
 
 public:
-	Application(int32_t tonemap, const std::string& filename, const VkHdrMetadataEXT& hdrMetadata, float maxWhite, float exposure, float contentFactor, bool debug);
+	Application(const std::string& filename, const VkHdrMetadataEXT& hdrMetadata, float contentFactor, float exposure, float maxWhite, int32_t tonemap, bool debug);
 	~Application();
 };
 
