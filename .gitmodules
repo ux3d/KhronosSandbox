@@ -19,6 +19,3 @@
 [submodule "Third-Party/GitHub/shaderc"]
 	path = Third-Party/GitHub/shaderc
 	url = https://github.com/google/shaderc.git
-[submodule "Third-Party/GitHub/OpenXR-SDK"]
-	path = "Third-Party/GitHub/OpenXR-SDK"
-	url = https://github.com/KhronosGroup/OpenXR-SDK.git
