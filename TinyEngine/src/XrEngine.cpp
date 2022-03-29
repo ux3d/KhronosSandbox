@@ -16,7 +16,7 @@ bool XrEngine::bindFunctions()
 {
 	XrResult result = XR_SUCCESS;
 
-    result = xrGetInstanceProcAddr(instance, "xrGetVulkanInstanceExtensionsKHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfnGetVulkanInstanceExtensionsKHR));
+    result = xrGetInstanceProcAddr(instance, "xrCreateVulkanInstanceKHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfnCreateVulkanInstanceKHR));
 	if (result != XR_SUCCESS)
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
@@ -24,7 +24,7 @@ bool XrEngine::bindFunctions()
 		return false;
 	}
 
-    result = xrGetInstanceProcAddr(instance, "xrGetVulkanDeviceExtensionsKHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfnGetVulkanDeviceExtensionsKHR));
+    result = xrGetInstanceProcAddr(instance, "xrCreateVulkanDeviceKHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfnCreateVulkanDeviceKHR));
 	if (result != XR_SUCCESS)
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
@@ -32,23 +32,13 @@ bool XrEngine::bindFunctions()
 		return false;
 	}
 
-    result = xrGetInstanceProcAddr(instance, "xrGetVulkanGraphicsDeviceKHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfnGetVulkanGraphicsDeviceKHR));
+    result = xrGetInstanceProcAddr(instance, "xrGetVulkanGraphicsDevice2KHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfnGetVulkanGraphicsDevice2KHR));
 	if (result != XR_SUCCESS)
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
 
 		return false;
 	}
-
-    result = xrGetInstanceProcAddr(instance, "xrGetVulkanGraphicsRequirementsKHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfnGetVulkanGraphicsRequirementsKHR));
-	if (result != XR_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
-
-		return false;
-	}
-
-	return true;
 
     result = xrGetInstanceProcAddr(instance, "xrGetVulkanGraphicsRequirements2KHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfnGetVulkanGraphicsRequirements2KHR));
 	if (result != XR_SUCCESS)
@@ -64,7 +54,7 @@ bool XrEngine::bindFunctions()
 bool XrEngine::prepare()
 {
 	std::vector<const char*> enabledInstanceExtensionNames;
-	enabledInstanceExtensionNames.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
+	enabledInstanceExtensionNames.push_back(XR_KHR_VULKAN_ENABLE2_EXTENSION_NAME);
 
 	//
 
@@ -152,10 +142,10 @@ bool XrEngine::prepare()
 
 bool XrEngine::init()
 {
-	/*XrGraphicsRequirementsVulkanKHR graphicsRequirementsVulkan = {};
-	graphicsRequirementsVulkan.type = XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN_KHR;
+	XrGraphicsRequirementsVulkan2KHR graphicsRequirementsVulkan2 = {};
+	graphicsRequirementsVulkan2.type = XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN2_KHR;
 
-	XrResult result = pfnGetVulkanGraphicsRequirementsKHR(instance, systemId, &graphicsRequirementsVulkan);
+	XrResult result = pfnGetVulkanGraphicsRequirements2KHR(instance, systemId, &graphicsRequirementsVulkan2);
 	if (result != XR_SUCCESS)
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
@@ -163,7 +153,38 @@ bool XrEngine::init()
 		return false;
 	}
 
-	XrGraphicsBindingVulkanKHR graphicsBindingVulkan = {};
+	VkApplicationInfo appInfo{VK_STRUCTURE_TYPE_APPLICATION_INFO};
+	appInfo.pApplicationName = "hello_xr";
+	appInfo.applicationVersion = 1;
+	appInfo.pEngineName = "hello_xr";
+	appInfo.engineVersion = 1;
+	appInfo.apiVersion = VK_API_VERSION_1_0;
+
+	VkInstanceCreateInfo instInfo{VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO};
+	instInfo.pApplicationInfo = &appInfo;
+	instInfo.enabledLayerCount = 0;
+	instInfo.ppEnabledLayerNames = nullptr;
+	instInfo.enabledExtensionCount = 0;
+	instInfo.ppEnabledExtensionNames = nullptr;
+
+	XrVulkanInstanceCreateInfoKHR createInfo{XR_TYPE_VULKAN_INSTANCE_CREATE_INFO_KHR};
+	createInfo.systemId = systemId;
+	createInfo.pfnGetInstanceProcAddr = vkGetInstanceProcAddr;
+	createInfo.vulkanCreateInfo = &instInfo;
+	createInfo.vulkanAllocator = nullptr;
+
+	VkInstance m_vkInstance{VK_NULL_HANDLE};
+	VkResult err;
+
+	result = pfnCreateVulkanInstanceKHR(instance, &createInfo, &m_vkInstance, &err);
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+	/*XrGraphicsBindingVulkanKHR graphicsBindingVulkan = {};
 	graphicsBindingVulkan.type = XR_TYPE_GRAPHICS_BINDING_VULKAN_KHR;
 	graphicsBindingVulkan.instance = vulkanInstance;
 	graphicsBindingVulkan.physicalDevice = vulkanPhysicalDevice;
