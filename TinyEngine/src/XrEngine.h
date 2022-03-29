@@ -13,10 +13,12 @@
 class XrEngine
 {
 
-private:
+//private:
+public:
 
 	PFN_xrGetVulkanGraphicsRequirementsKHR pfn_xrGetVulkanGraphicsRequirementsKHR = nullptr;
 	PFN_xrGetVulkanGraphicsDeviceKHR pfn_xrGetVulkanGraphicsDeviceKHR = nullptr;
+	PFN_xrGetVulkanInstanceExtensionsKHR pfn_xrGetVulkanInstanceExtensionsKHR = nullptr;
 
 	XrInstance instance = XR_NULL_HANDLE;
 	XrSystemId systemId = XR_NULL_SYSTEM_ID;
@@ -26,6 +28,9 @@ private:
 	uint32_t vulkanMajor = 1;
 	uint32_t vulkanMinor = 0;
 	uint32_t vulkanPatch = 0;
+
+	std::vector<char> instanceExtensionsString;
+	std::vector<const char *> instanceExtensions;
 
 	XrSession session = XR_NULL_HANDLE;
 	XrSessionState sessionState = XR_SESSION_STATE_UNKNOWN;
@@ -43,7 +48,7 @@ private:
     VkInstance m_vkInstance{VK_NULL_HANDLE};
     VkPhysicalDevice m_vkPhysicalDevice{VK_NULL_HANDLE};
     VkDevice m_vkDevice{VK_NULL_HANDLE};
-    uint32_t m_queueFamilyIndex = 0;
+    uint32_t m_vkQueueFamilyIndex = 0;
     VkQueue m_vkQueue{VK_NULL_HANDLE};
     VkSemaphore m_vkDrawDone{VK_NULL_HANDLE};
 

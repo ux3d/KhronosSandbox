@@ -32,6 +32,14 @@ bool XrEngine::bindFunctions()
 		return false;
 	}
 
+    result = xrGetInstanceProcAddr(instance, "xrGetVulkanInstanceExtensionsKHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfn_xrGetVulkanInstanceExtensionsKHR));
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
 	return true;
 }
 
@@ -137,6 +145,40 @@ bool XrEngine::prepare()
 	vulkanMinor = (graphicsRequirementsVulkan.maxApiVersionSupported >> 32) & 0xFFFF;
 	vulkanPatch = (graphicsRequirementsVulkan.maxApiVersionSupported >>  0) & 0xFFFFFFFF;
 
+	//
+
+    uint32_t extensionNamesSize = 0;
+    result = pfn_xrGetVulkanInstanceExtensionsKHR(instance, systemId, 0, &extensionNamesSize, nullptr);
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+	instanceExtensionsString.resize(extensionNamesSize);
+    result = pfn_xrGetVulkanInstanceExtensionsKHR(instance, systemId, extensionNamesSize, &extensionNamesSize, instanceExtensionsString.data());
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+	char* names = &instanceExtensionsString[0];
+	while (*names != 0)
+	{
+		instanceExtensions.push_back(names);
+		while (*(++names) != 0)
+		{
+			if (*names == ' ')
+			{
+				*names++ = '\0';
+				break;
+			}
+		}
+	}
+
 	return true;
 }
 
@@ -157,6 +199,30 @@ uint32_t XrEngine::getVulkanPatch() const
 
 bool XrEngine::init()
 {
+	XrResult result = XR_SUCCESS;
+
+	XrGraphicsBindingVulkanKHR graphicsBindingVulkan = {};
+	graphicsBindingVulkan.type = XR_TYPE_GRAPHICS_BINDING_VULKAN_KHR;
+	graphicsBindingVulkan.instance = m_vkInstance;
+	graphicsBindingVulkan.physicalDevice = m_vkPhysicalDevice;
+	graphicsBindingVulkan.device = m_vkDevice;
+	graphicsBindingVulkan.queueFamilyIndex = m_vkQueueFamilyIndex;
+	graphicsBindingVulkan.queueIndex = 0;
+
+	//
+
+    XrSessionCreateInfo sessionCreateInfo = {};
+    sessionCreateInfo.type = XR_TYPE_SESSION_CREATE_INFO;
+    sessionCreateInfo.next = &graphicsBindingVulkan;
+    sessionCreateInfo.systemId = systemId;
+    result = xrCreateSession(instance, &sessionCreateInfo, &session);
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
 	return true;
 }
 

@@ -67,7 +67,7 @@ protected:
 	VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
 
 	VkDevice device = VK_NULL_HANDLE;
-	std::optional<uint32_t> queueFamilyIndex;
+	uint32_t queueFamilyIndex = 0;
 	VkQueue queue = VK_NULL_HANDLE;
 
 	VkSwapchainKHR swapchain = VK_NULL_HANDLE;
@@ -117,6 +117,7 @@ public:
 	VkInstance getInstance() const;
 	VkPhysicalDevice getPhysicalDevice() const;
 	VkDevice getDevice() const;
+	uint32_t getQueueFamilyIndex() const;
 
 	const std::string& getApplicationName() const;
 	void setApplicationName(const std::string& applicationName);
