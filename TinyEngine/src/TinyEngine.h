@@ -67,7 +67,7 @@ protected:
 	VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
 
 	VkDevice device = VK_NULL_HANDLE;
-	uint32_t queueFamilyIndex = 0;
+	std::optional<uint32_t> queueFamilyIndex;
 	VkQueue queue = VK_NULL_HANDLE;
 
 	VkSwapchainKHR swapchain = VK_NULL_HANDLE;

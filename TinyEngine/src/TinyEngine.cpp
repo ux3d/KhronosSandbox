@@ -282,7 +282,6 @@ bool TinyEngine::createDevice()
 	std::vector<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyPropertyCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertyCount, queueFamilyProperties.data());
 
-	bool found = false;
 	for (uint32_t currentQueueFamilyIndex = 0; currentQueueFamilyIndex < queueFamilyPropertyCount; currentQueueFamilyIndex++)
 	{
 		VkBool32 surfaceSupport = VK_FALSE;
@@ -297,11 +296,10 @@ bool TinyEngine::createDevice()
 		if ((queueFamilyProperties[currentQueueFamilyIndex].queueFlags & VK_QUEUE_GRAPHICS_BIT) && surfaceSupport)
 		{
 			queueFamilyIndex = currentQueueFamilyIndex;
-			found = true;
 			break;
 		}
 	}
-	if (!found)
+	if (!queueFamilyIndex.has_value())
 	{
 		return false;
 	}
@@ -310,7 +308,7 @@ bool TinyEngine::createDevice()
 
 	VkDeviceQueueCreateInfo deviceQueueCreateInfo = {};
 	deviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	deviceQueueCreateInfo.queueFamilyIndex = queueFamilyIndex;
+	deviceQueueCreateInfo.queueFamilyIndex = queueFamilyIndex.value();
 	deviceQueueCreateInfo.queueCount = 1;
 	deviceQueueCreateInfo.pQueuePriorities = &queuePriorities;
 
@@ -382,7 +380,7 @@ bool TinyEngine::createDevice()
 		return false;
 	}
 
-	vkGetDeviceQueue(device, queueFamilyIndex, 0, &queue);
+	vkGetDeviceQueue(device, queueFamilyIndex.value(), 0, &queue);
 
 	//
 
@@ -695,7 +693,7 @@ bool TinyEngine::createCommandResources()
 	VkCommandPoolCreateInfo commandPoolCreateInfo = {};
 	commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-	commandPoolCreateInfo.queueFamilyIndex = queueFamilyIndex;
+	commandPoolCreateInfo.queueFamilyIndex = queueFamilyIndex.value();
 
 	result = vkCreateCommandPool(device, &commandPoolCreateInfo, nullptr, &commandPool);
 	if (result != VK_SUCCESS)
@@ -1254,7 +1252,7 @@ VkDevice TinyEngine::getDevice() const
 
 uint32_t TinyEngine::getQueueFamilyIndex() const
 {
-	return queueFamilyIndex;
+	return queueFamilyIndex.value();
 }
 
 const std::string& TinyEngine::getApplicationName() const
