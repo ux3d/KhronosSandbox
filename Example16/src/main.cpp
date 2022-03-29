@@ -6,7 +6,7 @@
 
 #define APP_WIDTH 1920
 #define APP_HEIGHT 1080
-#define APP_TITLE "Example16: HDR tests"
+#define APP_TITLE "Example16: SDR & HDR"
 
 int main(int argc, char *argv[])
 {
@@ -108,27 +108,39 @@ int main(int argc, char *argv[])
 	// SurfaceFormat 0 is available in most cases. This index is not the one from the vulkaninfo list.
 	//
 
+	std::string title = APP_TITLE;
+
 	switch (surfaceFormat)
 	{
 		case 0:
 			application.setColorFormat(VK_FORMAT_B8G8R8A8_UNORM);
 			application.setColorSpace(VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
+
+			title = title + " - VK_FORMAT_B8G8R8A8_UNORM - VK_COLOR_SPACE_SRGB_NONLINEAR_KHR";
 		break;
 		case 1:
 			application.setColorFormat(VK_FORMAT_B8G8R8A8_SRGB);
 			application.setColorSpace(VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
+
+			title = title + " - VK_FORMAT_B8G8R8A8_SRGB - VK_COLOR_SPACE_SRGB_NONLINEAR_KHR";
 		break;
 		case 2:
 			application.setColorFormat(VK_FORMAT_A2B10G10R10_UNORM_PACK32);
 			application.setColorSpace(VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
+
+			title = title + " - VK_FORMAT_A2B10G10R10_UNORM_PACK32 - VK_COLOR_SPACE_SRGB_NONLINEAR_KHR";
 		break;
 		case 3:
 			application.setColorFormat(VK_FORMAT_R16G16B16A16_SFLOAT);
 			application.setColorSpace(VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT);
+
+			title = title + " - VK_FORMAT_R16G16B16A16_SFLOAT - VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT";
 		break;
 		case 4:
 			application.setColorFormat(VK_FORMAT_A2B10G10R10_UNORM_PACK32);
 			application.setColorSpace(VK_COLOR_SPACE_HDR10_ST2084_EXT);
+
+			title = title + " - VK_FORMAT_A2B10G10R10_UNORM_PACK32 - VK_COLOR_SPACE_HDR10_ST2084_EXT";
 		break;
 		default:
 			glfwTerminate();
@@ -146,7 +158,7 @@ int main(int argc, char *argv[])
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-	window = glfwCreateWindow(APP_WIDTH, APP_HEIGHT, APP_TITLE, NULL, NULL);
+	window = glfwCreateWindow(APP_WIDTH, APP_HEIGHT, title.c_str(), NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
