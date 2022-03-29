@@ -201,6 +201,19 @@ bool XrEngine::init()
 {
 	XrResult result = XR_SUCCESS;
 
+	//
+
+	VkPhysicalDevice vkPhysicalDevice;
+	result = pfn_xrGetVulkanGraphicsDeviceKHR(instance, systemId, m_vkInstance, &vkPhysicalDevice);
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+	//
+
 	XrGraphicsBindingVulkanKHR graphicsBindingVulkan = {};
 	graphicsBindingVulkan.type = XR_TYPE_GRAPHICS_BINDING_VULKAN_KHR;
 	graphicsBindingVulkan.instance = m_vkInstance;
