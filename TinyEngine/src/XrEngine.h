@@ -15,15 +15,18 @@ class XrEngine
 
 private:
 
-	PFN_xrCreateVulkanInstanceKHR pfnCreateVulkanInstanceKHR = nullptr;
-	PFN_xrCreateVulkanDeviceKHR pfnCreateVulkanDeviceKHR = nullptr;
-	PFN_xrGetVulkanGraphicsDevice2KHR pfnGetVulkanGraphicsDevice2KHR = nullptr;
-	PFN_xrGetVulkanGraphicsRequirements2KHR pfnGetVulkanGraphicsRequirements2KHR = nullptr;
+	PFN_xrGetVulkanGraphicsRequirementsKHR pfn_xrGetVulkanGraphicsRequirementsKHR = nullptr;
+	PFN_xrGetVulkanGraphicsDeviceKHR pfn_xrGetVulkanGraphicsDeviceKHR = nullptr;
 
 	XrInstance instance = XR_NULL_HANDLE;
 	XrSystemId systemId = XR_NULL_SYSTEM_ID;
 	XrViewConfigurationType viewConfigurationType = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 	XrEnvironmentBlendMode environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
+
+	uint32_t vulkanMajor = 1;
+	uint32_t vulkanMinor = 0;
+	uint32_t vulkanPatch = 0;
+
 	XrSession session = XR_NULL_HANDLE;
 	XrSessionState sessionState = XR_SESSION_STATE_UNKNOWN;
 	bool sessionRunning = false;
@@ -37,6 +40,13 @@ private:
 
 	XrSpace space = XR_NULL_HANDLE;
 
+    VkInstance m_vkInstance{VK_NULL_HANDLE};
+    VkPhysicalDevice m_vkPhysicalDevice{VK_NULL_HANDLE};
+    VkDevice m_vkDevice{VK_NULL_HANDLE};
+    uint32_t m_queueFamilyIndex = 0;
+    VkQueue m_vkQueue{VK_NULL_HANDLE};
+    VkSemaphore m_vkDrawDone{VK_NULL_HANDLE};
+
 	bool bindFunctions();
 
 public:
@@ -44,6 +54,10 @@ public:
 	virtual ~XrEngine();
 
 	bool prepare();
+
+	uint32_t getVulkanMajor() const;
+	uint32_t getVulkanMinor() const;
+	uint32_t getVulkanPatch() const;
 
 	bool init();
 	bool resize();

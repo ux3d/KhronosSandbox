@@ -16,7 +16,7 @@ bool XrEngine::bindFunctions()
 {
 	XrResult result = XR_SUCCESS;
 
-    result = xrGetInstanceProcAddr(instance, "xrCreateVulkanInstanceKHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfnCreateVulkanInstanceKHR));
+    result = xrGetInstanceProcAddr(instance, "xrGetVulkanGraphicsRequirementsKHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfn_xrGetVulkanGraphicsRequirementsKHR));
 	if (result != XR_SUCCESS)
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
@@ -24,23 +24,7 @@ bool XrEngine::bindFunctions()
 		return false;
 	}
 
-    result = xrGetInstanceProcAddr(instance, "xrCreateVulkanDeviceKHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfnCreateVulkanDeviceKHR));
-	if (result != XR_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
-
-		return false;
-	}
-
-    result = xrGetInstanceProcAddr(instance, "xrGetVulkanGraphicsDevice2KHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfnGetVulkanGraphicsDevice2KHR));
-	if (result != XR_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
-
-		return false;
-	}
-
-    result = xrGetInstanceProcAddr(instance, "xrGetVulkanGraphicsRequirements2KHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfnGetVulkanGraphicsRequirements2KHR));
+    result = xrGetInstanceProcAddr(instance, "xrGetVulkanGraphicsDeviceKHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfn_xrGetVulkanGraphicsDeviceKHR));
 	if (result != XR_SUCCESS)
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
@@ -54,7 +38,7 @@ bool XrEngine::bindFunctions()
 bool XrEngine::prepare()
 {
 	std::vector<const char*> enabledInstanceExtensionNames;
-	enabledInstanceExtensionNames.push_back(XR_KHR_VULKAN_ENABLE2_EXTENSION_NAME);
+	enabledInstanceExtensionNames.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
 
 	//
 
@@ -137,201 +121,42 @@ bool XrEngine::prepare()
 
 	environmentBlendMode = environmentBlendModes[0];
 
+	//
+
+    XrGraphicsRequirementsVulkanKHR graphicsRequirementsVulkan{XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN_KHR};
+
+	result = pfn_xrGetVulkanGraphicsRequirementsKHR(instance, systemId, &graphicsRequirementsVulkan);
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+	vulkanMajor = (graphicsRequirementsVulkan.maxApiVersionSupported >> 48) & 0xFFFF;
+	vulkanMinor = (graphicsRequirementsVulkan.maxApiVersionSupported >> 32) & 0xFFFF;
+	vulkanPatch = (graphicsRequirementsVulkan.maxApiVersionSupported >>  0) & 0xFFFFFFFF;
+
 	return true;
+}
+
+uint32_t XrEngine::getVulkanMajor() const
+{
+	return vulkanMajor;
+}
+
+uint32_t XrEngine::getVulkanMinor() const
+{
+	return vulkanMinor;
+}
+
+uint32_t XrEngine::getVulkanPatch() const
+{
+	return vulkanPatch;
 }
 
 bool XrEngine::init()
 {
-	XrGraphicsRequirementsVulkan2KHR graphicsRequirementsVulkan2 = {};
-	graphicsRequirementsVulkan2.type = XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN2_KHR;
-
-	XrResult result = pfnGetVulkanGraphicsRequirements2KHR(instance, systemId, &graphicsRequirementsVulkan2);
-	if (result != XR_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
-
-		return false;
-	}
-
-	VkApplicationInfo appInfo{VK_STRUCTURE_TYPE_APPLICATION_INFO};
-	appInfo.pApplicationName = "hello_xr";
-	appInfo.applicationVersion = 1;
-	appInfo.pEngineName = "hello_xr";
-	appInfo.engineVersion = 1;
-	appInfo.apiVersion = VK_API_VERSION_1_0;
-
-	VkInstanceCreateInfo instInfo{VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO};
-	instInfo.pApplicationInfo = &appInfo;
-	instInfo.enabledLayerCount = 0;
-	instInfo.ppEnabledLayerNames = nullptr;
-	instInfo.enabledExtensionCount = 0;
-	instInfo.ppEnabledExtensionNames = nullptr;
-
-	XrVulkanInstanceCreateInfoKHR createInfo{XR_TYPE_VULKAN_INSTANCE_CREATE_INFO_KHR};
-	createInfo.systemId = systemId;
-	createInfo.pfnGetInstanceProcAddr = vkGetInstanceProcAddr;
-	createInfo.vulkanCreateInfo = &instInfo;
-	createInfo.vulkanAllocator = nullptr;
-
-	VkInstance m_vkInstance{VK_NULL_HANDLE};
-	VkResult err;
-
-	result = pfnCreateVulkanInstanceKHR(instance, &createInfo, &m_vkInstance, &err);
-	if (result != XR_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
-
-		return false;
-	}
-
-	/*XrGraphicsBindingVulkanKHR graphicsBindingVulkan = {};
-	graphicsBindingVulkan.type = XR_TYPE_GRAPHICS_BINDING_VULKAN_KHR;
-	graphicsBindingVulkan.instance = vulkanInstance;
-	graphicsBindingVulkan.physicalDevice = vulkanPhysicalDevice;
-	graphicsBindingVulkan.device = vulkanDevice;
-	graphicsBindingVulkan.queueFamilyIndex = vulkanQueueFamilyIndex;
-	graphicsBindingVulkan.queueIndex = vulkanQueueIndex;
-
-	//
-
-    XrSessionCreateInfo sessionCreateInfo = {};
-    sessionCreateInfo.type = XR_TYPE_SESSION_CREATE_INFO;
-    sessionCreateInfo.next = &graphicsBindingVulkan;
-    sessionCreateInfo.systemId = systemId;
-    result = xrCreateSession(instance, &sessionCreateInfo, &session);
-	if (result != XR_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
-
-		return false;
-	}
-
-	//
-
-	uint32_t formatCount = 0;
-	result = xrEnumerateSwapchainFormats(session, 0, &formatCount, nullptr);
-	if (result != XR_SUCCESS || formatCount == 0)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
-
-		return false;
-	}
-
-    std::vector<int64_t> formats(formatCount);
-    result = xrEnumerateSwapchainFormats(session, formatCount, &formatCount, formats.data());
-	if (result != XR_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
-
-		return false;
-	}
-
-	int64_t swapchainFormat = 0;
-	for (int64_t currentFormat : formats)
-	{
-		if ((VkFormat)currentFormat == vulkanFormat)
-		{
-			swapchainFormat = currentFormat;
-			break;
-		}
-	}
-
-	if (swapchainFormat == 0)
-	{
-		return false;
-	}
-
-	//
-
-    result = xrEnumerateViewConfigurationViews(instance, systemId, viewConfigurationType, 0, &viewCount, nullptr);
-	if (result != XR_SUCCESS || viewCount == 0)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
-
-		return false;
-	}
-
-	viewConfigurationView.resize(viewCount);
-	swapchains.resize(viewCount);
-	views.resize(viewCount);
-	compositionLayerProjectionView.resize(viewCount);
-
-	result = xrEnumerateViewConfigurationViews(instance, systemId, viewConfigurationType, viewCount, &viewCount, viewConfigurationView.data());
-	if (result != XR_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
-
-		return false;
-	}
-
-	for (uint32_t i = 0; i < viewCount; i++)
-	{
-		XrSwapchainCreateInfo swapchainCreateInfo = {};
-		swapchainCreateInfo.type = XR_TYPE_SWAPCHAIN_CREATE_INFO;
-		swapchainCreateInfo.arraySize = 1;
-		swapchainCreateInfo.format = swapchainFormat;
-		swapchainCreateInfo.width = viewConfigurationView[i].recommendedImageRectWidth;
-		swapchainCreateInfo.height = viewConfigurationView[i].recommendedImageRectHeight;
-		swapchainCreateInfo.mipCount = 1;
-		swapchainCreateInfo.faceCount = 1;
-		swapchainCreateInfo.sampleCount = viewConfigurationView[i].recommendedSwapchainSampleCount;
-		swapchainCreateInfo.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
-
-		result = xrCreateSwapchain(session, &swapchainCreateInfo, &swapchains[i]);
-		if (result != XR_SUCCESS)
-		{
-			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
-
-			return false;
-		}
-
-		//
-
-        uint32_t imageCount = 0;
-        result = xrEnumerateSwapchainImages(swapchains[i], 0, &imageCount, nullptr);
-		if (result != XR_SUCCESS)
-		{
-			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
-
-			return false;
-		}
-
-		uint32_t oldImageCount = static_cast<uint32_t>(swapchainImages.size());
-		swapchainImages.resize(oldImageCount + imageCount, {XR_TYPE_SWAPCHAIN_IMAGE_VULKAN_KHR});
-
-		if (oldImageCount / imageCount != i)
-		{
-			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR: Swapchain images count differ");
-
-			return false;
-		}
-
-		result = xrEnumerateSwapchainImages(swapchains[i], imageCount * sizeof(XrSwapchainImageVulkanKHR), &imageCount, reinterpret_cast<XrSwapchainImageBaseHeader*>(&swapchainImages[oldImageCount]));
-		if (result != XR_SUCCESS)
-		{
-			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
-
-			return false;
-		}
-	}
-
-	//
-
-    XrReferenceSpaceCreateInfo referenceSpaceCreateInfo = {};
-    referenceSpaceCreateInfo.type = XR_TYPE_REFERENCE_SPACE_CREATE_INFO;
-
-    referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
-    referenceSpaceCreateInfo.poseInReferenceSpace.orientation = {0.0f, 0.0f, 0.0f, 1.0f};
-    referenceSpaceCreateInfo.poseInReferenceSpace.position = {0.0f, 0.0f, 0.0f};
-
-    result = xrCreateReferenceSpace(session, &referenceSpaceCreateInfo, &space);
-	if (result != XR_SUCCESS)
-	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
-
-		return false;
-	}*/
-
 	return true;
 }
 
