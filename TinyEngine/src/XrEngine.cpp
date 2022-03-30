@@ -1,15 +1,69 @@
 #include "XrEngine.h"
 
-#include <cstring>
+#include "TinyEngine.h"
 
-#include "common/Common.h"
+// Private
 
-XrEngine::XrEngine()
+bool XrEngine::createInstance()
 {
-}
+	VkResult result = VK_SUCCESS;
 
-XrEngine::~XrEngine()
-{
+	//
+
+	result = volkInitialize();
+	if (result != VK_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+		return false;
+	}
+
+	//
+
+	VkApplicationInfo applicationInfo = {};
+	applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+	applicationInfo.pApplicationName = "Hello XR";
+	applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+	applicationInfo.pEngineName = "Tiny Engine";
+	applicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+	applicationInfo.apiVersion = VK_MAKE_VERSION(vulkanMajor, vulkanMinor, 0);
+
+	VkInstanceCreateInfo instanceCreateInfo = {};
+	instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	instanceCreateInfo.pApplicationInfo = &applicationInfo;
+	instanceCreateInfo.enabledLayerCount = static_cast<uint32_t>(vulkanEnabledInstanceLayerNames.size());
+	instanceCreateInfo.ppEnabledLayerNames = vulkanEnabledInstanceLayerNames.data();
+	instanceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(vulkanEnabledInstanceExtensionNames.size());
+	instanceCreateInfo.ppEnabledExtensionNames = vulkanEnabledInstanceExtensionNames.data();
+
+	//
+
+	for (const char* instanceLayerName : vulkanEnabledInstanceLayerNames)
+	{
+		Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "Instance layer '%s'", instanceLayerName);
+	}
+	for (const char* instanceExtensionNames : vulkanEnabledInstanceExtensionNames)
+	{
+		Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "Instance extension '%s'", instanceExtensionNames);
+	}
+
+	//
+
+	result = vkCreateInstance(&instanceCreateInfo, nullptr, &m_vkInstance);
+	if (result != VK_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, result);
+
+		return false;
+	}
+
+	//
+
+	volkLoadInstance(m_vkInstance);
+
+	Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "Created VkInstance with version %u.%u.%u", vulkanMajor, vulkanMinor, 0);
+
+	return true;
 }
 
 bool XrEngine::bindFunctions()
@@ -40,13 +94,30 @@ bool XrEngine::bindFunctions()
 		return false;
 	}
 
+    result = xrGetInstanceProcAddr(instance, "xrGetVulkanDeviceExtensionsKHR", reinterpret_cast<PFN_xrVoidFunction*>(&pfn_xrGetVulkanDeviceExtensionsKHR));
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
 	return true;
+}
+
+XrEngine::XrEngine()
+{
+}
+
+XrEngine::~XrEngine()
+{
 }
 
 bool XrEngine::prepare()
 {
 	std::vector<const char*> enabledApiLayerNames;
 	enabledApiLayerNames.push_back("XR_APILAYER_LUNARG_core_validation");
+	enabledApiLayerNames.push_back("XR_APILAYER_LUNARG_api_dump");
 
 	std::vector<const char*> enabledExtensionNames;
 	enabledExtensionNames.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
@@ -89,6 +160,17 @@ bool XrEngine::prepare()
 
 	//
 
+	XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
+	result = xrGetInstanceProperties(instance, &instanceProperties);
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+	//
+
     XrSystemGetInfo systemGetInfo = {};
     systemGetInfo.type = XR_TYPE_SYSTEM_GET_INFO;
     systemGetInfo.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
@@ -101,10 +183,10 @@ bool XrEngine::prepare()
 		return false;
 	}
 
-    XrSystemProperties systemProperties = {};
-    systemProperties.type = XR_TYPE_SYSTEM_PROPERTIES;
+	//
 
-    result = xrGetSystemProperties(instance, systemId, &systemProperties);
+	uint32_t viewConfigurationTypeCountOutput;
+	result = xrEnumerateViewConfigurations(instance, systemId, 0, &viewConfigurationTypeCountOutput, nullptr);
 	if (result != XR_SUCCESS)
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
@@ -112,9 +194,47 @@ bool XrEngine::prepare()
 		return false;
 	}
 
-	Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "System Name: '%s'", systemProperties.systemName);
+    std::vector<XrViewConfigurationType> viewConfigurationTypes(viewConfigurationTypeCountOutput);
+	result = xrEnumerateViewConfigurations(instance, systemId, viewConfigurationTypeCountOutput, &viewConfigurationTypeCountOutput, viewConfigurationTypes.data());
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
 
 	//
+
+	for (XrViewConfigurationType& viewConfigurationType : viewConfigurationTypes)
+	{
+		XrViewConfigurationProperties viewConfigurationProperties{XR_TYPE_VIEW_CONFIGURATION_PROPERTIES};
+		result = xrGetViewConfigurationProperties(instance, systemId, viewConfigurationType, &viewConfigurationProperties);
+		if (result != XR_SUCCESS)
+		{
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+			return false;
+		}
+
+		uint32_t viewCount;
+		result = xrEnumerateViewConfigurationViews(instance, systemId, viewConfigurationType, 0, &viewCount, nullptr);
+		if (result != XR_SUCCESS || viewCount == 0)
+		{
+			Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+			return false;
+		}
+
+		std::vector<XrViewConfigurationView> viewConfigurationViews(viewCount, {XR_TYPE_VIEW_CONFIGURATION_VIEW});
+		result = xrEnumerateViewConfigurationViews(instance, systemId, viewConfigurationType, viewCount, &viewCount, viewConfigurationViews.data());
+
+		for (uint32_t i = 0; i < viewConfigurationViews.size(); i++)
+		{
+			const XrViewConfigurationView& currentViewConfigurationView = viewConfigurationViews[i];
+
+			Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "XrViewConfigurationView #%u %u %u %u", i, currentViewConfigurationView.recommendedImageRectWidth, currentViewConfigurationView.recommendedImageRectHeight, currentViewConfigurationView.recommendedSwapchainSampleCount);
+		}
+	}
 
 	uint32_t environmentBlendModeCount = 0;
 	result = xrEnumerateEnvironmentBlendModes(instance, systemId, viewConfigurationType, 0, &environmentBlendModeCount, nullptr);
@@ -136,6 +256,8 @@ bool XrEngine::prepare()
 
 	environmentBlendMode = environmentBlendModes[0];
 
+	//
+	// Vulkan dependent
 	//
 
     XrGraphicsRequirementsVulkanKHR graphicsRequirementsVulkan{XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN_KHR};
@@ -175,7 +297,7 @@ bool XrEngine::prepare()
 	char* names = &instanceExtensionsString[0];
 	while (*names != 0)
 	{
-		instanceExtensions.push_back(names);
+		vulkanEnabledInstanceExtensionNames.push_back(names);
 		while (*(++names) != 0)
 		{
 			if (*names == ' ')
@@ -185,6 +307,23 @@ bool XrEngine::prepare()
 			}
 		}
 	}
+
+	//
+	// Non-Vulkan dependent
+	//
+
+    XrSystemProperties systemProperties = {};
+    systemProperties.type = XR_TYPE_SYSTEM_PROPERTIES;
+
+    result = xrGetSystemProperties(instance, systemId, &systemProperties);
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+	Logger::print(TinyEngine_INFO, __FILE__, __LINE__, "System Name: '%s'", systemProperties.systemName);
 
 	return true;
 }
@@ -210,9 +349,7 @@ bool XrEngine::init()
 
 	//
 
-	VkPhysicalDevice vkPhysicalDevice;
-	result = pfn_xrGetVulkanGraphicsDeviceKHR(instance, systemId, m_vkInstance, &vkPhysicalDevice);
-	if (result != XR_SUCCESS)
+	if (!createInstance())
 	{
 		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
 
@@ -220,6 +357,16 @@ bool XrEngine::init()
 	}
 
 	//
+
+	result = pfn_xrGetVulkanGraphicsDeviceKHR(instance, systemId, m_vkInstance, &m_vkPhysicalDevice);
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+	// TODO: From here, values maybe are not initialized and/or correct
 
 	XrGraphicsBindingVulkanKHR graphicsBindingVulkan = {};
 	graphicsBindingVulkan.type = XR_TYPE_GRAPHICS_BINDING_VULKAN_KHR;

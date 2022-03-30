@@ -13,12 +13,12 @@
 class XrEngine
 {
 
-//private:
-public:
+private:
 
 	PFN_xrGetVulkanGraphicsRequirementsKHR pfn_xrGetVulkanGraphicsRequirementsKHR = nullptr;
 	PFN_xrGetVulkanGraphicsDeviceKHR pfn_xrGetVulkanGraphicsDeviceKHR = nullptr;
 	PFN_xrGetVulkanInstanceExtensionsKHR pfn_xrGetVulkanInstanceExtensionsKHR = nullptr;
+	PFN_xrGetVulkanDeviceExtensionsKHR pfn_xrGetVulkanDeviceExtensionsKHR = nullptr;
 
 	XrInstance instance = XR_NULL_HANDLE;
 	XrSystemId systemId = XR_NULL_SYSTEM_ID;
@@ -29,8 +29,13 @@ public:
 	uint32_t vulkanMinor = 0;
 	uint32_t vulkanPatch = 0;
 
+	std::vector<const char*> vulkanEnabledInstanceLayerNames = { "VK_LAYER_KHRONOS_validation" };
+	std::vector<const char*> vulkanEnabledInstanceExtensionNames = {};
+
+	std::vector<const char*> vulkanEnabledDeviceExtensionNames = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+
+
 	std::vector<char> instanceExtensionsString;
-	std::vector<const char *> instanceExtensions;
 
 	XrSession session = XR_NULL_HANDLE;
 	XrSessionState sessionState = XR_SESSION_STATE_UNKNOWN;
@@ -51,6 +56,8 @@ public:
     uint32_t m_vkQueueFamilyIndex = 0;
     VkQueue m_vkQueue{VK_NULL_HANDLE};
     VkSemaphore m_vkDrawDone{VK_NULL_HANDLE};
+
+    bool createInstance();
 
 	bool bindFunctions();
 
