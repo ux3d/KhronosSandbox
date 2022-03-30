@@ -289,29 +289,6 @@ bool XrEngine::init()
 		return false;
 	}
 
-	//
-
-    uint32_t queueFamilyPropertyCount = 0;
-    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertyCount, nullptr);
-    std::vector<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyPropertyCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertyCount, queueFamilyProperties.data());
-
-    for (uint32_t i = 0; i < queueFamilyPropertyCount; ++i)
-    {
-        if ((queueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0u)
-        {
-            queueFamilyIndex = i;
-            break;
-        }
-    }
-
-    if (!queueFamilyIndex.has_value())
-    {
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
-
-		return false;
-    }
-
     //
 
     uint32_t extensionNamesSize = 0;
@@ -348,33 +325,12 @@ bool XrEngine::init()
 
     //
 
-    float queuePriorities = 0;
-
-    VkDeviceQueueCreateInfo deviceQueueCreateInfo{VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO};
-    deviceQueueCreateInfo.queueFamilyIndex = queueFamilyIndex.value();
-    deviceQueueCreateInfo.queueCount = 1;
-    deviceQueueCreateInfo.pQueuePriorities = &queuePriorities;
-
-	VkDeviceCreateInfo deviceCreateInfo = {};
-	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	deviceCreateInfo.queueCreateInfoCount = 1;
-	deviceCreateInfo.pQueueCreateInfos = &deviceQueueCreateInfo;
-	deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(enabledDeviceExtensionNames.size());
-	deviceCreateInfo.ppEnabledExtensionNames = enabledDeviceExtensionNames.data();
-
-	VkResult vkResult = vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device);
-	if (vkResult != VK_SUCCESS)
+	if (!createDevice())
 	{
-		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, vkResult);
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
 
 		return false;
 	}
-
-	vkGetDeviceQueue(device, queueFamilyIndex.value(), 0, &queue);
-
-	//
-
-	volkLoadDevice(device);
 
 	//
 

@@ -25,6 +25,8 @@ protected:
 
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
+	VkSurfaceKHR surface = VK_NULL_HANDLE;
+
 	std::optional<uint32_t> queueFamilyIndex;
 	VkQueue queue = VK_NULL_HANDLE;
 
@@ -34,9 +36,15 @@ protected:
 
 	bool createInstance();
 
+	bool createDevice();
+
 public:
 	BaseEngine();
 	virtual ~BaseEngine();
+
+	bool hasEnabledInstanceExtensionName(const char* extensionName) const;
+	bool hasEnabledDeviceExtensionName(const char* extensionName) const;
+
 };
 
 #endif /* BASEENGINE_H_ */

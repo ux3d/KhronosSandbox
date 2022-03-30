@@ -22,7 +22,6 @@ class TinyEngine : public BaseEngine
 private:
 	bool choosePhysicalDevice();
 	bool createSurface();
-	bool createDevice();
 	bool createSwapchain();
 	bool createColorResources();
 	bool createDepthStencilResources();
@@ -42,7 +41,6 @@ protected:
 	VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
 	VkImageUsageFlags imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	VkSurfaceKHR surface = VK_NULL_HANDLE;
 	uint32_t minImageCount = 0;
 	VkSurfaceFormatKHR surfaceFormat = {};
 	VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
@@ -107,11 +105,9 @@ public:
 	void addEnabledInstanceLayerName(const char* layerName);
 	void removeEnabledInstanceLayerName(const char* layerName);
 
-	bool hasEnabledInstanceExtensionName(const char* extensionName) const;
 	void addEnabledInstanceExtensionName(const char* extensionName);
 	void removeEnabledInstanceExtensionName(const char* extensionName);
 
-	bool hasEnabledDeviceExtensionName(const char* extensionName) const;
 	void addEnabledDeviceExtensionName(const char* extensionName);
 	void removeEnabledDeviceExtensionName(const char* extensionName);
 
