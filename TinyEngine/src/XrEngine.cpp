@@ -356,6 +356,26 @@ bool XrEngine::init()
 		return false;
 	}
 
+	//
+
+    uint32_t spaceCount;
+    result = xrEnumerateReferenceSpaces(xrSession, 0, &spaceCount, nullptr);
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+	std::vector<XrReferenceSpaceType> referenceSpaceTypes(spaceCount);
+    result = xrEnumerateReferenceSpaces(xrSession, spaceCount, &spaceCount, referenceSpaceTypes.data());
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
 	return true;
 }
 
