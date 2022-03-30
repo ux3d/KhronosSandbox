@@ -289,14 +289,101 @@ bool XrEngine::init()
 		return false;
 	}
 
-	// TODO: From here, values maybe are not initialized and/or correct
+	//
+
+    uint32_t queueFamilyPropertyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertyCount, nullptr);
+    std::vector<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyPropertyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertyCount, queueFamilyProperties.data());
+
+    for (uint32_t i = 0; i < queueFamilyPropertyCount; ++i)
+    {
+        if ((queueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0u)
+        {
+            queueFamilyIndex = i;
+            break;
+        }
+    }
+
+    if (!queueFamilyIndex.has_value())
+    {
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+    }
+
+    //
+
+    uint32_t extensionNamesSize = 0;
+    result = pfn_xrGetVulkanDeviceExtensionsKHR(xrInstance, xrSystemId, 0, &extensionNamesSize, nullptr);
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+	xrDeviceExtensionsString.resize(extensionNamesSize);
+    result = pfn_xrGetVulkanDeviceExtensionsKHR(xrInstance, xrSystemId, extensionNamesSize, &extensionNamesSize, xrDeviceExtensionsString.data());
+	if (result != XR_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, "OpenXR");
+
+		return false;
+	}
+
+	char* names = &xrDeviceExtensionsString[0];
+	while (*names != 0)
+	{
+		enabledDeviceExtensionNames.push_back(names);
+		while (*(++names) != 0)
+		{
+			if (*names == ' ')
+			{
+				*names++ = '\0';
+				break;
+			}
+		}
+	}
+
+    //
+
+    float queuePriorities = 0;
+
+    VkDeviceQueueCreateInfo deviceQueueCreateInfo{VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO};
+    deviceQueueCreateInfo.queueFamilyIndex = queueFamilyIndex.value();
+    deviceQueueCreateInfo.queueCount = 1;
+    deviceQueueCreateInfo.pQueuePriorities = &queuePriorities;
+
+	VkDeviceCreateInfo deviceCreateInfo = {};
+	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	deviceCreateInfo.queueCreateInfoCount = 1;
+	deviceCreateInfo.pQueueCreateInfos = &deviceQueueCreateInfo;
+	deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(enabledDeviceExtensionNames.size());
+	deviceCreateInfo.ppEnabledExtensionNames = enabledDeviceExtensionNames.data();
+
+	VkResult vkResult = vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device);
+	if (vkResult != VK_SUCCESS)
+	{
+		Logger::print(TinyEngine_ERROR, __FILE__, __LINE__, vkResult);
+
+		return false;
+	}
+
+	vkGetDeviceQueue(device, queueFamilyIndex.value(), 0, &queue);
+
+	//
+
+	volkLoadDevice(device);
+
+	//
 
 	XrGraphicsBindingVulkanKHR graphicsBindingVulkan = {};
 	graphicsBindingVulkan.type = XR_TYPE_GRAPHICS_BINDING_VULKAN_KHR;
 	graphicsBindingVulkan.instance = instance;
 	graphicsBindingVulkan.physicalDevice = physicalDevice;
-	graphicsBindingVulkan.device = VK_NULL_HANDLE;			// TODO
-	graphicsBindingVulkan.queueFamilyIndex = 0;				// TODO
+	graphicsBindingVulkan.device = device;
+	graphicsBindingVulkan.queueFamilyIndex = queueFamilyIndex.value();
 	graphicsBindingVulkan.queueIndex = 0;
 
 	//
@@ -332,6 +419,15 @@ bool XrEngine::terminate()
 
 	if (!inResize)
 	{
+		queue = VK_NULL_HANDLE;
+		queueFamilyIndex = 0;
+
+		if (device)
+		{
+			vkDestroyDevice(device, nullptr);
+			device = VK_NULL_HANDLE;
+		}
+
 		physicalDevice = VK_NULL_HANDLE;
 
 		if (instance)
@@ -340,6 +436,12 @@ bool XrEngine::terminate()
 			instance = VK_NULL_HANDLE;
 		}
 	}
+
+    if (xrSession != XR_NULL_HANDLE)
+    {
+        xrDestroySession(xrSession);
+        xrSession = XR_NULL_HANDLE;
+    }
 
 	if (xrInstance != XR_NULL_HANDLE)
 	{

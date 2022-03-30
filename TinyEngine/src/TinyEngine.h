@@ -3,8 +3,6 @@
 
 #include "BaseEngine.h"
 
-#include <optional>
-
 #include "math/Math.h"
 
 #include "activity/Activity.h"
@@ -48,10 +46,6 @@ protected:
 	uint32_t minImageCount = 0;
 	VkSurfaceFormatKHR surfaceFormat = {};
 	VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
-
-	VkDevice device = VK_NULL_HANDLE;
-	std::optional<uint32_t> queueFamilyIndex;
-	VkQueue queue = VK_NULL_HANDLE;
 
 	VkSwapchainKHR swapchain = VK_NULL_HANDLE;
 	std::vector<VkImage> swapchainImages;

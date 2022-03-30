@@ -28,6 +28,7 @@ private:
 	XrEnvironmentBlendMode xrEnvironmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
 
 	std::vector<char> xrInstanceExtensionsString;
+	std::vector<char> xrDeviceExtensionsString;
 
 	XrSession xrSession = XR_NULL_HANDLE;
 

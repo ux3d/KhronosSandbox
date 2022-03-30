@@ -2,6 +2,7 @@
 #define BASEENGINE_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,6 +24,11 @@ protected:
 	VkInstance instance = VK_NULL_HANDLE;
 
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+
+	std::optional<uint32_t> queueFamilyIndex;
+	VkQueue queue = VK_NULL_HANDLE;
+
+	VkDevice device = VK_NULL_HANDLE;
 
 	bool inResize = false;
 
