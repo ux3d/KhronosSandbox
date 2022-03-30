@@ -1,12 +1,10 @@
 #ifndef TINYENGINE_H_
 #define TINYENGINE_H_
 
-#include <cstdint>
-#include <optional>
-#include <string>
-#include <vector>
+#include "BaseEngine.h"
 
-#include "common/Common.h"
+#include <optional>
+
 #include "math/Math.h"
 
 #include "activity/Activity.h"
@@ -21,20 +19,9 @@
 
 #include "builder/Builder.h"
 
-class TinyEngine
+class TinyEngine : public BaseEngine
 {
 private:
-	std::string applicationName = "TinyEngineApp";
-	uint32_t major = 1;
-	uint32_t minor = 0;
-	uint32_t patch = 0;
-
-	std::vector<const char*> enabledInstanceLayerNames = {};
-	std::vector<const char*> enabledInstanceExtensionNames = {};
-
-	std::vector<const char*> enabledDeviceExtensionNames = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
-
-	bool createInstance();
 	bool choosePhysicalDevice();
 	bool createSurface();
 	bool createDevice();
@@ -56,10 +43,6 @@ protected:
 	VkFormat depthStencilFormat = VK_FORMAT_UNDEFINED;
 	VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
 	VkImageUsageFlags imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-	VkInstance instance = VK_NULL_HANDLE;
-
-	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
 	VkSurfaceKHR surface = VK_NULL_HANDLE;
 	uint32_t minImageCount = 0;
@@ -94,8 +77,6 @@ protected:
 
 	VkPhysicalDeviceFeatures physicalDeviceFeatures = {};
 	VkPhysicalDeviceFeatures2 physicalDeviceFeatures2 = {};
-
-	bool inResize = false;
 
 	virtual bool applicationInit() = 0;
 	virtual bool applicationUpdate(uint32_t frameIndex, double deltaTime, double totalTime) = 0;
