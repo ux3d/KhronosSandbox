@@ -330,6 +330,17 @@ bool XrEngine::terminate()
 {
 	// TODO: Session termination
 
+	if (!inResize)
+	{
+		physicalDevice = VK_NULL_HANDLE;
+
+		if (instance)
+		{
+			vkDestroyInstance(instance, nullptr);
+			instance = VK_NULL_HANDLE;
+		}
+	}
+
 	if (xrInstance != XR_NULL_HANDLE)
 	{
 		xrDestroyInstance(xrInstance);

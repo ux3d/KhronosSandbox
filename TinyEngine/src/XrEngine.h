@@ -30,17 +30,6 @@ private:
 	std::vector<char> xrInstanceExtensionsString;
 
 	XrSession xrSession = XR_NULL_HANDLE;
-	XrSessionState xrSessionState = XR_SESSION_STATE_UNKNOWN;
-	bool sessionRunning = false;
-
-    uint32_t xrViewCount = 0;
-    std::vector<XrViewConfigurationView> xrViewConfigurationView;
-    std::vector<XrSwapchain> xrSwapchains;
-    std::vector<XrSwapchainImageVulkanKHR> xrSwapchainImages;
-	std::vector<XrView> xrViews;
-	std::vector<XrCompositionLayerProjectionView> xrCompositionLayerProjectionView;
-
-	XrSpace xrSpace = XR_NULL_HANDLE;
 
 	bool bindFunctions();
 
