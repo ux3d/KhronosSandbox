@@ -45,8 +45,11 @@ bool XrEngine::bindFunctions()
 
 bool XrEngine::prepare()
 {
-	std::vector<const char*> enabledInstanceExtensionNames;
-	enabledInstanceExtensionNames.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
+	std::vector<const char*> enabledApiLayerNames;
+	enabledApiLayerNames.push_back("XR_APILAYER_LUNARG_core_validation");
+
+	std::vector<const char*> enabledExtensionNames;
+	enabledExtensionNames.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
 
 	//
 
@@ -62,8 +65,12 @@ bool XrEngine::prepare()
     instanceCreateInfo.applicationInfo.engineVersion = 1;
     instanceCreateInfo.applicationInfo.apiVersion = XR_CURRENT_API_VERSION;
 
-    instanceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(enabledInstanceExtensionNames.size());
-	instanceCreateInfo.enabledExtensionNames = enabledInstanceExtensionNames.data();
+
+    instanceCreateInfo.enabledApiLayerCount = static_cast<uint32_t>(enabledApiLayerNames.size());
+    instanceCreateInfo.enabledApiLayerNames = enabledApiLayerNames.data();
+
+    instanceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(enabledExtensionNames.size());
+	instanceCreateInfo.enabledExtensionNames = enabledExtensionNames.data();
 
     result = xrCreateInstance(&instanceCreateInfo, &instance);
 	if (result != XR_SUCCESS)

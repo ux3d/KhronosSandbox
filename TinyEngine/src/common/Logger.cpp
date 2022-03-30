@@ -84,4 +84,6 @@ void Logger::print(DebugLevel debugLevel, const char* fileName, uint32_t lineNum
 	}
 
 	va_end(argList);
+
+	fflush(stdout);
 }
