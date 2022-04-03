@@ -1,21 +1,12 @@
 [submodule "Third-Party/GitHub/tinygltf"]
 	path = Third-Party/GitHub/tinygltf
 	url = https://github.com/syoyo/tinygltf.git
-[submodule "Third-Party/GitHub/glfw"]
-	path = Third-Party/GitHub/glfw
-	url = https://github.com/glfw/glfw.git
-[submodule "Third-Party/GitHub/glm"]
-	path = Third-Party/GitHub/glm
-	url = https://github.com/g-truc/glm.git
 [submodule "Third-Party/GitHub/slimktx2"]
 	path = Third-Party/GitHub/slimktx2
 	url = https://github.com/ux3d/slimktx2.git
 [submodule "Third-Party/GitHub/volk"]
 	path = Third-Party/GitHub/volk
 	url = https://github.com/zeux/volk
-[submodule "Third-Party/GitHub/stb"]
-	path = Third-Party/GitHub/stb
-	url = https://github.com/nothings/stb.git
 [submodule "Third-Party/GitHub/shaderc"]
 	path = Third-Party/GitHub/shaderc
 	url = https://github.com/google/shaderc.git
