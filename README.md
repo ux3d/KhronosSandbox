@@ -50,26 +50,30 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 
 ## Used tools
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
-- [Gestaltor - Visual glTF editor](https://gestaltor.io/)
 - [MSYS2](https://www.msys2.org/) on Windows  
-  Execute `pacman -S mingw-w64-x86_64-gcc` to install MinGW64  
-  Execute `pacman -S mingw-w64-x86_64-gdb` to install gdb for MinGW64  
+  Execute `pacman -S mingw-w64-x86_64-gcc` to install gcc  
+  Execute `pacman -S mingw-w64-x86_64-gdb` to install gdb  
 
 ## Used assets
 - [glTF 2.0 Sample Models](https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0)
 - [glTF Sample Environments](https://github.com/ux3d/glTF-Sample-Environments)
 
-## Used libraries
+## Used libraries and code
 - [basis_universal](https://github.com/BinomialLLC/basis_universal)
 - [glTF Sample Viewer](https://github.com/KhronosGroup/glTF-Sample-Viewer)
-- [GLFW](https://github.com/glfw/glfw)
-- [glm](https://github.com/g-truc/glm)
-- [Shaderc](https://github.com/google/shaderc)  
+- [GLFW](https://github.com/glfw/glfw)  
+  `pacman -S mingw-w64-x86_64-glfw`
+- [glm](https://github.com/g-truc/glm)  
+  `pacman -S mingw-w64-x86_64-glm`
+- [OpenXR](https://github.com/KhronosGroup/OpenXR-SDK-Source)  
+  `pacman -S mingw-w64-x86_64-openxr-sdk`
+- [Shaderc](https://github.com/google/shaderc)
 - [Slim KTX2](https://github.com/ux3d/slimktx2)
    - basis_universal
-- [stb](https://github.com/nothings/stb)    
-- [tiny glTF](https://github.com/syoyo/tinygltf)  
-- [volk](https://github.com/zeux/volk)  
+- [stb](https://github.com/nothings/stb)  
+  `pacman -S mingw-w64-x86_64-stb`
+- [tiny glTF](https://github.com/syoyo/tinygltf)
+- [volk](https://github.com/zeux/volk)
 - [Vulkan SDK](https://vulkan.lunarg.com/)
    - Shaderc
 
