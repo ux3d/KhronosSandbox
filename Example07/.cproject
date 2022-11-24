@@ -55,6 +55,10 @@
 									<listOptionValue builtIn="false" value="slimktx2"/>
 									<listOptionValue builtIn="false" value="basisu"/>
 									<listOptionValue builtIn="false" value="shaderc_combined"/>
+									<listOptionValue builtIn="false" value="glslang"/>
+									<listOptionValue builtIn="false" value="SPIRV"/>
+									<listOptionValue builtIn="false" value="SPIRV-Tools"/>
+									<listOptionValue builtIn="false" value="SPIRV-Tools-opt"/>
 									<listOptionValue builtIn="false" value="glfw3"/>
 									<listOptionValue builtIn="false" value="gdi32"/>
 								</option>
@@ -126,6 +130,10 @@
 									<listOptionValue builtIn="false" value="slimktx2"/>
 									<listOptionValue builtIn="false" value="basisu"/>
 									<listOptionValue builtIn="false" value="shaderc_combined"/>
+									<listOptionValue builtIn="false" value="glslang"/>
+									<listOptionValue builtIn="false" value="SPIRV"/>
+									<listOptionValue builtIn="false" value="SPIRV-Tools"/>
+									<listOptionValue builtIn="false" value="SPIRV-Tools-opt"/>
 									<listOptionValue builtIn="false" value="glfw3"/>
 									<listOptionValue builtIn="false" value="gdi32"/>
 								</option>
@@ -191,6 +199,10 @@
 									<listOptionValue builtIn="false" value="slimktx2"/>
 									<listOptionValue builtIn="false" value="basisu"/>
 									<listOptionValue builtIn="false" value="shaderc_combined"/>
+									<listOptionValue builtIn="false" value="glslang"/>
+									<listOptionValue builtIn="false" value="SPIRV"/>
+									<listOptionValue builtIn="false" value="SPIRV-Tools"/>
+									<listOptionValue builtIn="false" value="SPIRV-Tools-opt"/>
 									<listOptionValue builtIn="false" value="glfw3"/>
 									<listOptionValue builtIn="false" value="X11"/>
 									<listOptionValue builtIn="false" value="pthread"/>
@@ -264,6 +276,10 @@
 									<listOptionValue builtIn="false" value="slimktx2"/>
 									<listOptionValue builtIn="false" value="basisu"/>
 									<listOptionValue builtIn="false" value="shaderc_combined"/>
+									<listOptionValue builtIn="false" value="glslang"/>
+									<listOptionValue builtIn="false" value="SPIRV"/>
+									<listOptionValue builtIn="false" value="SPIRV-Tools"/>
+									<listOptionValue builtIn="false" value="SPIRV-Tools-opt"/>
 									<listOptionValue builtIn="false" value="glfw3"/>
 									<listOptionValue builtIn="false" value="X11"/>
 									<listOptionValue builtIn="false" value="pthread"/>
