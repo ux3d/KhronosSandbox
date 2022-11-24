@@ -1,6 +1,6 @@
 # Sandbox for Vulkan, SPIR-V, glTF and OpenXR
 
-This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a sandbox to evaluate [Khronos](https://www.khronos.org/) API's like [Vulkan](https://www.khronos.org/vulkan/), [SPIR-V](https://www.khronos.org/spir/), [glTF](https://www.khronos.org/gltf/) and [OpenXR](https://www.khronos.org/openxr/).
+This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a sandbox to evaluate [Khronos](https://www.khronos.org/) API's like [Vulkan](https://www.khronos.org/vulkan/), [SPIR-V](https://www.khronos.org/spir/) and [glTF](https://www.khronos.org/gltf/).  
 
 ![Screenshot DamagedHelmet](screenshot.jpg)
 
@@ -19,18 +19,16 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 ### glTF  
 - Done
 
-### OpenXR  
-- [ ] Initial component
-
 ### General  
 - [ ] Prefilter IBL on the fly
 - [ ] Remove Slim KTX2 dependency
 - [ ] Remove BasisU dependency
 - [ ] Remove stb dependency
+- [ ] Remove TinyGLTF dependency
 - [ ] Use [https://github.com/OpenImageIO/oiio](OpenImageIO) for image loading and saving
 
 ## How to build?
-- [Vulkan SDK 1.3.204.1 or later](https://vulkan.lunarg.com/sdk/home)
+- [Vulkan SDK 1.3.231.1 or later](https://vulkan.lunarg.com/sdk/home)
   - Earlier versions do work with high chance but are not tested
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
    - GCC for Linux
@@ -59,23 +57,19 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 - [glTF Sample Environments](https://github.com/ux3d/glTF-Sample-Environments)
 
 ## Used libraries and code
-- [basis_universal](https://github.com/BinomialLLC/basis_universal)
-- [glTF Sample Viewer](https://github.com/KhronosGroup/glTF-Sample-Viewer)
 - [GLFW](https://github.com/glfw/glfw)  
   `pacman -S mingw-w64-x86_64-glfw`
 - [glm](https://github.com/g-truc/glm)  
   `pacman -S mingw-w64-x86_64-glm`
-- [OpenXR](https://github.com/KhronosGroup/OpenXR-SDK-Source)  
-  `pacman -S mingw-w64-x86_64-openxr-sdk`
-- [Shaderc](https://github.com/google/shaderc)
-- [Slim KTX2](https://github.com/ux3d/slimktx2)
+- [Shaderc](https://github.com/google/shaderc)  
+  `pacman -S mingw-w64-x86_64-shaderc`
+- [Slim KTX2](https://github.com/ux3d/slimktx2)  
    - basis_universal
 - [stb](https://github.com/nothings/stb)  
   `pacman -S mingw-w64-x86_64-stb`
-- [tiny glTF](https://github.com/syoyo/tinygltf)
-- [volk](https://github.com/zeux/volk)
-- [Vulkan SDK](https://vulkan.lunarg.com/)
-   - Shaderc
+- [tiny glTF](https://github.com/syoyo/tinygltf)  
+- [volk](https://github.com/zeux/volk)  
+- [Vulkan SDK](https://vulkan.lunarg.com/)  
 
 ## Limitiations by purpose
 - Vulkan  

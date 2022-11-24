@@ -7,6 +7,3 @@
 [submodule "Third-Party/GitHub/volk"]
 	path = Third-Party/GitHub/volk
 	url = https://github.com/zeux/volk
-[submodule "Third-Party/GitHub/shaderc"]
-	path = Third-Party/GitHub/shaderc
-	url = https://github.com/google/shaderc.git
