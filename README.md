@@ -23,9 +23,7 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 - [ ] Prefilter IBL on the fly
 - [ ] Remove Slim KTX2 dependency
 - [ ] Remove BasisU dependency
-- [ ] Remove stb dependency
 - [ ] Remove TinyGLTF dependency
-- [ ] Use [https://github.com/OpenImageIO/oiio](OpenImageIO) for image loading and saving
 
 ## How to build?
 - [Vulkan SDK 1.3.231.1 or later](https://vulkan.lunarg.com/sdk/home)
@@ -49,8 +47,8 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
 ## Used tools
 - [Eclipse C/C++ Development Tooling](https://projects.eclipse.org/projects/tools.cdt)
 - [MSYS2](https://www.msys2.org/) on Windows  
-  Execute `pacman -S mingw-w64-x86_64-gcc` to install gcc  
-  Execute `pacman -S mingw-w64-x86_64-gdb` to install gdb  
+  `pacman -S mingw-w64-x86_64-gcc`  
+  `pacman -S mingw-w64-x86_64-gdb`  
 
 ## Used assets
 - [glTF 2.0 Sample Models](https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0)
@@ -61,12 +59,12 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
   `pacman -S mingw-w64-x86_64-glfw`
 - [glm](https://github.com/g-truc/glm)  
   `pacman -S mingw-w64-x86_64-glm`
+- [OpenImageIO](https://github.com/OpenImageIO/oiio)  
+  `pacman -S mingw-w64-x86_64-openimageio`
 - [Shaderc](https://github.com/google/shaderc)  
   `pacman -S mingw-w64-x86_64-shaderc`
 - [Slim KTX2](https://github.com/ux3d/slimktx2)  
    - basis_universal
-- [stb](https://github.com/nothings/stb)  
-  `pacman -S mingw-w64-x86_64-stb`
 - [tiny glTF](https://github.com/syoyo/tinygltf)  
 - [volk](https://github.com/zeux/volk)  
 - [Vulkan SDK](https://vulkan.lunarg.com/)  
