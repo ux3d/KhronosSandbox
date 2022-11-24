@@ -4,6 +4,3 @@
 [submodule "Third-Party/GitHub/slimktx2"]
 	path = Third-Party/GitHub/slimktx2
 	url = https://github.com/ux3d/slimktx2.git
-[submodule "Third-Party/GitHub/volk"]
-	path = Third-Party/GitHub/volk
-	url = https://github.com/zeux/volk
