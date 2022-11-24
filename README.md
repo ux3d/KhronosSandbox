@@ -1,4 +1,4 @@
-# Sandbox for Vulkan, SPIR-V, glTF and OpenXR
+# Sandbox for Vulkan, SPIR-V and glTF
 
 This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a sandbox to evaluate [Khronos](https://www.khronos.org/) API's like [Vulkan](https://www.khronos.org/vulkan/), [SPIR-V](https://www.khronos.org/spir/) and [glTF](https://www.khronos.org/gltf/).  
 
@@ -67,6 +67,7 @@ This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a 
    - basis_universal
 - [tiny glTF](https://github.com/syoyo/tinygltf)  
 - [volk](https://github.com/zeux/volk)  
+   - Integrated in TinyEngine
 - [Vulkan SDK](https://vulkan.lunarg.com/)  
 
 ## Limitiations by purpose
