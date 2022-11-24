@@ -61,6 +61,8 @@
 									<listOptionValue builtIn="false" value="SPIRV-Tools-opt"/>
 									<listOptionValue builtIn="false" value="glfw3"/>
 									<listOptionValue builtIn="false" value="gdi32"/>
+									<listOptionValue builtIn="false" value="OpenImageIO"/>
+									<listOptionValue builtIn="false" value="OpenImageIO_Util"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1536359372" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -136,6 +138,8 @@
 									<listOptionValue builtIn="false" value="SPIRV-Tools-opt"/>
 									<listOptionValue builtIn="false" value="glfw3"/>
 									<listOptionValue builtIn="false" value="gdi32"/>
+									<listOptionValue builtIn="false" value="OpenImageIO"/>
+									<listOptionValue builtIn="false" value="OpenImageIO_Util"/>									
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1701367787" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -207,6 +211,8 @@
 									<listOptionValue builtIn="false" value="X11"/>
 									<listOptionValue builtIn="false" value="pthread"/>
 									<listOptionValue builtIn="false" value="dl"/>
+									<listOptionValue builtIn="false" value="OpenImageIO"/>
+									<listOptionValue builtIn="false" value="OpenImageIO_Util"/>									
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.380279737" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Debug_Linux}&quot;"/>
@@ -284,6 +290,8 @@
 									<listOptionValue builtIn="false" value="X11"/>
 									<listOptionValue builtIn="false" value="pthread"/>
 									<listOptionValue builtIn="false" value="dl"/>
+									<listOptionValue builtIn="false" value="OpenImageIO"/>
+									<listOptionValue builtIn="false" value="OpenImageIO_Util"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.1169196020" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TinyEngine/Release_Linux}&quot;"/>

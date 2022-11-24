@@ -2,11 +2,9 @@
 
 #include <cstdio>
 
-#define STB_IMAGE_IMPLEMENTATION
-#define STBI_ONLY_JPEG
-#define STBI_ONLY_PNG
-#define STBI_ONLY_HDR
-#include <stb_image.h>
+#include <OpenImageIO/filesystem.h>
+#include <OpenImageIO/imageio.h>
+using namespace OIIO;
 
 #include "slimktx2.h"
 #include "DefaultAllocationCallback.h"
@@ -90,44 +88,58 @@ bool ImageDataIO::open(ImageDataResources& output, const uint8_t* data, size_t l
 	}
 	else
 	{
-		int x = 0;
-		int y = 0;
-		int comp = 0;
-		int req_comp = static_cast<int>(channels);
+		Filesystem::IOMemReader memReader((void*)data, length);
 
-		uint32_t bytesPerChannel = 1;
-		bool isHDR = (bool)stbi_is_hdr_from_memory((const stbi_uc*)data, (int)length);
-
-		uint8_t* tempData = nullptr;
-
-		if (isHDR)
-		{
-			bytesPerChannel = 4;
-
-			tempData = reinterpret_cast<uint8_t*>(stbi_loadf_from_memory((const stbi_uc*)data, (int)length, &x, &y, &comp, req_comp));
-		}
-		else
-		{
-			tempData = static_cast<uint8_t*>(stbi_load_from_memory((const stbi_uc*)data, (int)length, &x, &y, &comp, req_comp));
-		}
-
-		if (!tempData)
+		auto imageInput = ImageInput::open("dummy", nullptr, &memReader);
+		if (!imageInput)
 		{
 			return false;
 		}
 
+		uint32_t bytesPerChannel = 0;
+		bool isHDR = false;
 
+		const ImageSpec& imageSpec = imageInput->spec();
+		auto newFormat = imageSpec.format;
 
-		output.images[0].width = static_cast<uint32_t>(x);
-		output.images[0].height = static_cast<uint32_t>(y);
+		if (imageSpec.format == TypeDesc::UINT8)
+		{
+			bytesPerChannel = 1;
+		}
+		else if (imageSpec.format == TypeDesc::HALF)
+		{
+			bytesPerChannel = 2;
+			isHDR = true;
+		}
+		else if (imageSpec.format == TypeDesc::FLOAT)
+		{
+			bytesPerChannel = 4;
+			isHDR = true;
+		}
+		else
+		{
+			return false;
+		}
+
+		output.images[0].width = static_cast<uint32_t>(imageSpec.width);
+		output.images[0].height = static_cast<uint32_t>(imageSpec.height);
 		output.images[0].pixels.resize(output.images[0].width * output.images[0].height * channels * bytesPerChannel);
-		memcpy(output.images[0].pixels.data(), tempData, output.images[0].width * output.images[0].height * channels * bytesPerChannel);
+
+		imageInput->read_image(0, 0, 0, -1, newFormat, output.images[0].pixels.data(), channels * bytesPerChannel);
+
 		switch (channels)
 		{
 			case 1:
 				if (isHDR)
 				{
-					output.images[0].format = VK_FORMAT_R32_SFLOAT;
+					if (bytesPerChannel == 2)
+					{
+						output.images[0].format = VK_FORMAT_R16_SFLOAT;
+					}
+					else
+					{
+						output.images[0].format = VK_FORMAT_R32_SFLOAT;
+					}
 				}
 				else
 				{
@@ -137,7 +149,14 @@ bool ImageDataIO::open(ImageDataResources& output, const uint8_t* data, size_t l
 			case 2:
 				if (isHDR)
 				{
-					output.images[0].format = VK_FORMAT_R32G32_SFLOAT;
+					if (bytesPerChannel == 2)
+					{
+						output.images[0].format = VK_FORMAT_R16G16_SFLOAT;
+					}
+					else
+					{
+						output.images[0].format = VK_FORMAT_R32G32_SFLOAT;
+					}
 				}
 				else
 				{
@@ -147,7 +166,14 @@ bool ImageDataIO::open(ImageDataResources& output, const uint8_t* data, size_t l
 			case 3:
 				if (isHDR)
 				{
-					output.images[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+					if (bytesPerChannel == 2)
+					{
+						output.images[0].format = VK_FORMAT_R16G16B16_SFLOAT;
+					}
+					else
+					{
+						output.images[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+					}
 				}
 				else
 				{
@@ -157,7 +183,14 @@ bool ImageDataIO::open(ImageDataResources& output, const uint8_t* data, size_t l
 			case 4:
 				if (isHDR)
 				{
-					output.images[0].format = VK_FORMAT_R32G32B32A32_SFLOAT;
+					if (bytesPerChannel == 2)
+					{
+						output.images[0].format = VK_FORMAT_R16G16B16A16_SFLOAT;
+					}
+					else
+					{
+						output.images[0].format = VK_FORMAT_R32G32B32A32_SFLOAT;
+					}
 				}
 				else
 				{
@@ -165,8 +198,6 @@ bool ImageDataIO::open(ImageDataResources& output, const uint8_t* data, size_t l
 				}
 				break;
 		}
-
-		free(tempData);
 
 		return true;
 	}
@@ -187,11 +218,7 @@ bool ImageDataIO::open(ImageDataResources& output, const std::string& filename, 
 		return false;
 	}
 
-	if (HelperFile::getExtension(filename) == "ktx2")
-	{
-		return open(output, (const uint8_t*)binary.data(), binary.length(), channels);
-	}
-	else if (HelperFile::getExtension(filename) == "png" || HelperFile::getExtension(filename) == "jpg" || HelperFile::getExtension(filename) == "jpeg" || HelperFile::getExtension(filename) == "hdr")
+	if (HelperFile::getExtension(filename) == "ktx2" || HelperFile::getExtension(filename) == "png" || HelperFile::getExtension(filename) == "jpg" || HelperFile::getExtension(filename) == "jpeg" || HelperFile::getExtension(filename) == "hdr" || HelperFile::getExtension(filename) == "exr")
 	{
 		return open(output, (const uint8_t*)binary.data(), binary.length(), channels);
 	}
