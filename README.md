@@ -2,11 +2,7 @@
 
 This [R&D](https://en.wikipedia.org/wiki/Research_and_development) project is a sandbox to evaluate [Khronos](https://www.khronos.org/) API's like [Vulkan](https://www.khronos.org/vulkan/), [SPIR-V](https://www.khronos.org/spir/) and [glTF](https://www.khronos.org/gltf/).  
 
-![Screenshot DamagedHelmet](screenshot.jpg)
-
-## TinyEngine architecture
-
-![Components](Architecture/components.png)
+![Screenshot](screenshot.jpg)
 
 ## Work in Progress
 
