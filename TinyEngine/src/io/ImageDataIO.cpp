@@ -15,18 +15,9 @@ using namespace OIIO;
 
 using namespace ux3d;
 
-bool ImageDataIO::open(ImageDataResources& output, const uint8_t* data, size_t length, uint32_t channels)
+bool ImageDataIO::open(ImageDataResources& output, const std::string& extension, const uint8_t* data, size_t length, uint32_t channels)
 {
-	static uint8_t KTX2Identifier[12] = {
-	  0xAB, 0x4B, 0x54, 0x58, 0x20, 0x32, 0x30, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A
-	};
-
-	if (!data || length < 12)
-	{
-		return false;
-	}
-
-	if (memcmp(data, KTX2Identifier, 12) == 0)
+	if (extension == "ktx2")
 	{
 		slimktx2::DefaultMemoryStream defaultMemoryStream(data, length);
 
@@ -88,9 +79,9 @@ bool ImageDataIO::open(ImageDataResources& output, const uint8_t* data, size_t l
 	}
 	else
 	{
-		Filesystem::IOMemReader memReader((void*)data, length);
+		Filesystem::IOMemReader memReader((const void*)data, length);
 
-		auto imageInput = ImageInput::open("dummy", nullptr, &memReader);
+		auto imageInput = ImageInput::open("dummy." + extension, nullptr, &memReader);
 		if (!imageInput)
 		{
 			return false;
@@ -218,9 +209,11 @@ bool ImageDataIO::open(ImageDataResources& output, const std::string& filename, 
 		return false;
 	}
 
-	if (HelperFile::getExtension(filename) == "ktx2" || HelperFile::getExtension(filename) == "png" || HelperFile::getExtension(filename) == "jpg" || HelperFile::getExtension(filename) == "jpeg" || HelperFile::getExtension(filename) == "hdr" || HelperFile::getExtension(filename) == "exr")
+	std::string extension = HelperFile::getExtension(filename);
+
+	if (extension == "ktx2" || extension == "png" || extension == "jpg" || extension == "jpeg" || extension == "hdr" || extension == "exr")
 	{
-		return open(output, (const uint8_t*)binary.data(), binary.length(), channels);
+		return open(output, extension, (const uint8_t*)binary.data(), binary.length(), channels);
 	}
 
 	return false;

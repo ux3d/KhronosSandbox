@@ -15,39 +15,6 @@
 
 #include "HelperAccess.h"
 
-static bool LoadImageData(tinygltf::Image *image, const int image_idx, std::string *err, std::string *warn, int req_width, int req_height, const unsigned char *bytes, int size, void *user_data) {
-	ImageDataResources imageDataResources;
-
-	// Defaulting to 4 channels.
-	if (!ImageDataIO::open(imageDataResources, bytes, size))
-	{
-		return false;
-	}
-
-	if (imageDataResources.faceCount != 1 || imageDataResources.mipLevels != 1 || imageDataResources.images.size() != 1)
-	{
-		return false;
-	}
-
-	ImageDataResource& imageDataResource = imageDataResources.images[0];
-
-	if (imageDataResource.pixels.size() != imageDataResource.width * imageDataResource.height * 4)
-	{
-		return false;
-	}
-
-	image->width = (int)imageDataResource.width;
-	image->height = (int)imageDataResource.height;
-	image->component = 4;
-	image->bits = 8;
-	image->pixel_type = 8;
-
-	image->image.resize(imageDataResource.pixels.size());
-	memcpy(image->image.data(), imageDataResource.pixels.data(), imageDataResource.pixels.size());
-
-	return true;
-}
-
 static bool FileExists(const std::string &abs_filename, void *user_data)
 {
 	return HelperFile::exists(abs_filename);
@@ -1009,7 +976,6 @@ bool HelperLoad::open(GLTF& glTF, const std::string& filename)
 	tinygltfCallbacks.ReadWholeFile = ::ReadWholeFile;
 
 	tinygltf::TinyGLTF tinyGLTF;
-	tinyGLTF.SetImageLoader(::LoadImageData, nullptr);
 	tinyGLTF.SetFsCallbacks(tinygltfCallbacks);
 
 	bool status = false;
